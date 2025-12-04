@@ -265,6 +265,10 @@ class PLATFORM_EXPORT ContouredRect {
   bool IsRenderable() const { return rect_.IsRenderable(); }
   String ToString() const;
   Path GetPath() const;
+
+  // The origin rect, which usually correspond to the border box of an element,
+  // is used to align the curves of an inset/outset ContouredRect to the
+  // original ContouredRect, so that the curve thickness appears to be constant.
   const FloatRoundedRect& GetOriginRect() const {
     return origin_rect_ ? *origin_rect_ : rect_;
   }

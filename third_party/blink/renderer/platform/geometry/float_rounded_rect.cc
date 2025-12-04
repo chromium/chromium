@@ -257,7 +257,7 @@ void FloatRoundedRect::OutsetWithCornerCorrection(
 
   const gfx::SizeF size = rect_.size();
   rect_.Outset(outsets);
-  if (RuntimeEnabledFeatures::BorderRadiusCorrectionCoverageFactorEnabled() &&
+  if (RuntimeEnabledFeatures::ShadowContourFollowsBorderEnabled() &&
       !size.IsEmpty()) {
     radii_.OutsetWithCornerCorrectionUsingCoverageFactor(outsets, size);
   } else {

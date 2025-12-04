@@ -779,11 +779,6 @@
       name: "BlockingFocusWithoutUserActivation",
       status: "experimental",
     },
-    // https://chromestatus.com/feature/5176753681203200
-    {
-      name: "BorderRadiusCorrectionCoverageFactor",
-      status: "test",
-    },
     // https://crbug.com/415304289: Mouse and Pointer boundary event dispatch
     // (i.e. dispatch of enter, leave, over, out events) tracks DOM node removal
     // to fix event pairing on ancestor nodes.
@@ -1375,11 +1370,6 @@
       // https://drafts.csswg.org/css-conditional-5/#typedef-style-range
       name: "CSSContainerStyleQueriesRange",
       status: "stable",
-    },
-    {
-      // https://drafts.csswg.org/css-borders-4/#corner-shaping
-      name: "CSSCornerShapeInsetBoxShadowFollowsContour",
-      status: "test",
     },
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
@@ -4727,6 +4717,11 @@
     {
       name: "SetSequentialFocusStartingPoint",
       status: "experimental",
+    },
+    // https://chromestatus.com/feature/5176753681203200
+    {
+      name: "ShadowContourFollowsBorder",
+      status: "test",
     },
     {
       // Reference Target allows IDREF attributes to refer inside Shadow DOM.
