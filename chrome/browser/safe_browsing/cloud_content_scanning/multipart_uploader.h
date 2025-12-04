@@ -101,9 +101,6 @@ class MultipartUploadRequest
       const std::string& histogram_suffix,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
-
- private:
-  scoped_refptr<base::TaskRunner> GetTaskRunner() override;
 };
 
 }  // namespace safe_browsing

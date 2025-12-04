@@ -13,7 +13,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/enterprise/connectors/core/uploader_test_utils.h"
 #include "components/file_access/test/mock_scoped_file_access_delegate.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -31,31 +30,22 @@ using ::testing::Return;
 
 namespace {
 
-class TestBrowserThreadGuard : public BrowserThreadGuard {
- public:
-  void AssertCalledOnUIThread() override {}
-};
-
 class MockMultipartUploadRequestBase : public MultipartUploadRequestBase {
  public:
   using MultipartUploadRequestBase::MultipartUploadRequestBase;
 
   MockMultipartUploadRequestBase()
-      : MultipartUploadRequestBase(nullptr,
-                                   GURL(),
-                                   std::string(),
-                                   std::string(),
-                                   std::string(),
-                                   TRAFFIC_ANNOTATION_FOR_TESTS,
-                                   base::DoNothing(),
-                                   std::make_unique<TestBrowserThreadGuard>()) {
-    ON_CALL(*this, GetTaskRunner())
-        .WillByDefault(
-            Return(base::SingleThreadTaskRunner::GetCurrentDefault()));
-  }
+      : MultipartUploadRequestBase(
+            nullptr,
+            GURL(),
+            std::string(),
+            std::string(),
+            std::string(),
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            base::DoNothing(),
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MOCK_METHOD0(SendRequest, void());
-  MOCK_METHOD0(GetTaskRunner, scoped_refptr<base::TaskRunner>());
 };
 
 class MockMultipartUploadDataPipeRequest : public MultipartUploadRequestBase {
@@ -63,40 +53,33 @@ class MockMultipartUploadDataPipeRequest : public MultipartUploadRequestBase {
   MockMultipartUploadDataPipeRequest(
       const base::FilePath& path,
       MultipartUploadRequestBase::Callback callback)
-      : MultipartUploadRequestBase(nullptr,
-                                   GURL(),
-                                   "metadata",
-                                   path,
-                                   123,
-                                   false,
-                                   "histogram_suffix",
-                                   TRAFFIC_ANNOTATION_FOR_TESTS,
-                                   std::move(callback),
-                                   std::make_unique<TestBrowserThreadGuard>()) {
-    ON_CALL(*this, GetTaskRunner())
-        .WillByDefault(
-            Return(base::SingleThreadTaskRunner::GetCurrentDefault()));
-  }
+      : MultipartUploadRequestBase(
+            nullptr,
+            GURL(),
+            "metadata",
+            path,
+            123,
+            false,
+            "histogram_suffix",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            std::move(callback),
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MockMultipartUploadDataPipeRequest(
       base::ReadOnlySharedMemoryRegion page_region,
       MultipartUploadRequestBase::Callback callback)
-      : MultipartUploadRequestBase(nullptr,
-                                   GURL(),
-                                   "metadata",
-                                   std::move(page_region),
-                                   "histogram_suffix",
-                                   TRAFFIC_ANNOTATION_FOR_TESTS,
-                                   std::move(callback),
-                                   std::make_unique<TestBrowserThreadGuard>()) {
-    ON_CALL(*this, GetTaskRunner())
-        .WillByDefault(
-            Return(base::SingleThreadTaskRunner::GetCurrentDefault()));
-  }
+      : MultipartUploadRequestBase(
+            nullptr,
+            GURL(),
+            "metadata",
+            std::move(page_region),
+            "histogram_suffix",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            std::move(callback),
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MOCK_METHOD1(CompleteSendRequest,
                void(std::unique_ptr<network::ResourceRequest> request));
-  MOCK_METHOD0(GetTaskRunner, scoped_refptr<base::TaskRunner>());
 };
 
 }  // namespace
@@ -146,7 +129,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectBody) {
   auto request = std::make_unique<MockMultipartUploadRequestBase>(
       nullptr, GURL(), "metadata", "data", "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   std::string expected_body =
       "--boundary\r\n"
@@ -393,7 +376,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_StringRequest) {
   auto request = std::make_unique<MockMultipartUploadRequestBase>(
       nullptr, GURL(), "metadata", "data", "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
@@ -413,7 +396,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_FileRequest) {
   auto request = std::make_unique<MockMultipartUploadRequestBase>(
       nullptr, GURL(), "metadata", CreateFile("my_file_name.foo", "file_data"),
       9, false, "histogram_suffix", TRAFFIC_ANNOTATION_FOR_TESTS,
-      base::DoNothing(), std::make_unique<TestBrowserThreadGuard>());
+      base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault());
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));
@@ -433,7 +416,7 @@ TEST_F(MultipartUploadRequestBaseTest, GeneratesCorrectHeaders_PageRequest) {
   auto request = std::make_unique<MockMultipartUploadRequestBase>(
       nullptr, GURL(), "metadata", CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(),
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
 
   request->SetRequestHeaders(&resource_request);
   ASSERT_TRUE(resource_request.headers.HasHeader("X-Goog-Upload-Protocol"));

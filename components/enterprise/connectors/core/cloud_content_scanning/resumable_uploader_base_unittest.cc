@@ -23,7 +23,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/connector_upload_request.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/uploader_test_utils.h"
@@ -46,11 +45,6 @@ using ::testing::_;
 constexpr char kUploadUrl[] =
     "http://uploads.google.com?upload_id=ABC&upload_protocol=resumable";
 
-class TestBrowserThreadGuard : public BrowserThreadGuard {
- public:
-  void AssertCalledOnUIThread() override {}
-};
-
 class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
  public:
   using ResumableUploadRequestBase::ResumableUploadRequestBase;
@@ -64,20 +58,20 @@ class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
       bool force_sync_upload)
-      : ResumableUploadRequestBase(url_loader_factory,
-                                   GURL("https://google.com"),
-                                   "metadata",
-                                   get_data_result,
-                                   path,
-                                   123,
-                                   false,
-                                   "DummySuffix",
-                                   TRAFFIC_ANNOTATION_FOR_TESTS,
-                                   std::move(verdict_received_callback),
-                                   std::move(content_uploaded_callback),
-                                   force_sync_upload,
-                                   std::make_unique<TestBrowserThreadGuard>()) {
-  }
+      : ResumableUploadRequestBase(
+            url_loader_factory,
+            GURL("https://google.com"),
+            "metadata",
+            get_data_result,
+            path,
+            123,
+            false,
+            "DummySuffix",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            std::move(verdict_received_callback),
+            std::move(content_uploaded_callback),
+            force_sync_upload,
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   MockResumableUploadRequestBase(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -88,18 +82,18 @@ class MockResumableUploadRequestBase : public ResumableUploadRequestBase {
       ResumableUploadRequestBase::ContentUploadedCallback
           content_uploaded_callback,
       bool force_sync_upload)
-      : ResumableUploadRequestBase(url_loader_factory,
-                                   GURL("https://google.com"),
-                                   "metadata",
-                                   get_data_result,
-                                   std::move(page_region),
-                                   "DummySuffix",
-                                   TRAFFIC_ANNOTATION_FOR_TESTS,
-                                   std::move(verdict_received_callback),
-                                   std::move(content_uploaded_callback),
-                                   force_sync_upload,
-                                   std::make_unique<TestBrowserThreadGuard>()) {
-  }
+      : ResumableUploadRequestBase(
+            url_loader_factory,
+            GURL("https://google.com"),
+            "metadata",
+            get_data_result,
+            std::move(page_region),
+            "DummySuffix",
+            TRAFFIC_ANNOTATION_FOR_TESTS,
+            std::move(verdict_received_callback),
+            std::move(content_uploaded_callback),
+            force_sync_upload,
+            base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 };
 
 }  // namespace
@@ -223,7 +217,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::SUCCESS,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "9");
@@ -236,7 +230,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::FILE_TOO_LARGE,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "9");
@@ -249,7 +243,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::FILE_ENCRYPTED,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "9");
@@ -262,7 +256,7 @@ TEST_F(ResumableUploadRequestBaseTest,
       nullptr, GURL(), "metadata", ScanRequestUploadResult::SUCCESS,
       CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "10");
@@ -279,7 +273,7 @@ TEST_F(ResumableUploadStringRequestTest,
   auto request = std::make_unique<MockResumableUploadRequestBase>(
       nullptr, GURL(), "metadata", "string_data", "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
-      std::make_unique<TestBrowserThreadGuard>());
+      base::SingleThreadTaskRunner::GetCurrentDefault());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "11", "image/png");
@@ -438,7 +432,7 @@ class ResumableUploadSendContentRequestBaseTest
             GURL("https://google.com"), "metadata", GetContent(), "DummySuffix",
             TRAFFIC_ANNOTATION_FOR_TESTS, std::move(verdict_received_callback),
             std::move(content_uploaded_callback), force_sync_upload,
-            std::make_unique<TestBrowserThreadGuard>());
+            base::SingleThreadTaskRunner::GetCurrentDefault());
     }
   }
 

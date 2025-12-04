@@ -17,7 +17,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -78,19 +77,19 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              data,
                              histogram_suffix,
                              traffic_annotation,
-                             std::move(callback)),
-      thread_guard_(std::move(thread_guard)),
+                             std::move(callback),
+                             ui_task_runner),
       boundary_(net::GenerateMimeMultipartBoundary()),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 MultipartUploadRequestBase::MultipartUploadRequestBase(
@@ -103,7 +102,7 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -112,13 +111,13 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
                              is_obfuscated,
                              histogram_suffix,
                              traffic_annotation,
-                             std::move(callback)),
-      thread_guard_(std::move(thread_guard)),
+                             std::move(callback),
+                             ui_task_runner),
       boundary_(net::GenerateMimeMultipartBoundary()),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0),
       is_obfuscated_(is_obfuscated) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 MultipartUploadRequestBase::MultipartUploadRequestBase(
@@ -129,19 +128,19 @@ MultipartUploadRequestBase::MultipartUploadRequestBase(
     const std::string& histogram_suffix,
     const net::NetworkTrafficAnnotationTag& traffic_annotation,
     Callback callback,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
                              histogram_suffix,
                              traffic_annotation,
-                             std::move(callback)),
-      thread_guard_(std::move(thread_guard)),
+                             std::move(callback),
+                             ui_task_runner),
       boundary_(net::GenerateMimeMultipartBoundary()),
       current_backoff_(base::Seconds(kInitialBackoffSeconds)),
       retry_count_(0) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 std::string MultipartUploadRequestBase::GetUploadInfo() {
@@ -195,9 +194,8 @@ void MultipartUploadRequestBase::RetryOrFinish(
       std::move(callback_).Run(/*success=*/false, response_code,
                                std::move(response));
     } else {
-      auto task_runner = GetTaskRunner();
-      CHECK(task_runner);
-      task_runner->PostDelayedTask(
+      CHECK(ui_task_runner_);
+      ui_task_runner_->PostDelayedTask(
           FROM_HERE,
           base::BindOnce(&MultipartUploadRequestBase::SendRequest,
                          weak_factory_.GetWeakPtr()),
@@ -215,7 +213,7 @@ void MultipartUploadRequestBase::MarkScanAsCompleteForTesting() {
 MultipartUploadRequestBase::~MultipartUploadRequestBase() = default;
 
 void MultipartUploadRequestBase::Start() {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 
   start_time_ = base::Time::Now();
   SendRequest();
@@ -339,7 +337,7 @@ void MultipartUploadRequestBase::CreateDatapipe(
 
 void MultipartUploadRequestBase::OnURLLoaderComplete(
     std::optional<std::string> response_body) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
   scan_complete_ = true;
 
   int response_code = 0;

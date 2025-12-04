@@ -17,7 +17,6 @@
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/enterprise/connectors/core/cloud_content_scanning/browser_thread_guard.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/file_access/scoped_file_access_delegate.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -87,7 +86,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
@@ -96,14 +95,14 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              is_obfuscated,
                              histogram_suffix,
                              traffic_annotation,
-                             base::DoNothing()),
+                             base::DoNothing(),
+                             ui_task_runner),
       verdict_received_callback_(std::move(verdict_received_callback)),
-      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
       is_obfuscated_(is_obfuscated),
       force_sync_upload_(force_sync_upload) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
@@ -117,20 +116,20 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              std::move(page_region),
                              histogram_suffix,
                              traffic_annotation,
-                             base::DoNothing()),
+                             base::DoNothing(),
+                             ui_task_runner),
       verdict_received_callback_(std::move(verdict_received_callback)),
-      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(get_data_result),
       force_sync_upload_(force_sync_upload) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 ResumableUploadRequestBase::ResumableUploadRequestBase(
@@ -143,20 +142,20 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
     VerdictReceivedCallback verdict_received_callback,
     ContentUploadedCallback content_uploaded_callback,
     bool force_sync_upload,
-    std::unique_ptr<BrowserThreadGuard> thread_guard)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : ConnectorUploadRequest(std::move(url_loader_factory),
                              base_url,
                              metadata,
                              data,
                              histogram_suffix,
                              traffic_annotation,
-                             base::DoNothing()),
+                             base::DoNothing(),
+                             ui_task_runner),
       verdict_received_callback_(std::move(verdict_received_callback)),
-      thread_guard_(std::move(thread_guard)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
       get_data_result_(ScanRequestUploadResult::SUCCESS),
       force_sync_upload_(force_sync_upload) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 }
 
 ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
@@ -164,7 +163,7 @@ ResumableUploadRequestBase::~ResumableUploadRequestBase() = default;
 void ResumableUploadRequestBase::OnSendContentCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
 
   // If this has already been called after the metadata check, that means that
   // we have set the value to ASYNC.
@@ -229,7 +228,7 @@ std::string ResumableUploadRequestBase::GetUploadInfo() {
 }
 
 void ResumableUploadRequestBase::Start() {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
   SendMetadataRequest();
 }
 
@@ -373,7 +372,7 @@ void ResumableUploadRequestBase::SendContentNow(
 void ResumableUploadRequestBase::OnMetadataUploadCompleted(
     base::TimeTicks start_time,
     std::optional<std::string> response_body) {
-  thread_guard_->AssertCalledOnUIThread();
+  AssertCalledOnUIThread();
   scan_type_ = METADATA_ONLY;
   base::UmaHistogramCustomTimes(
       base::StrCat({"Enterprise.ResumableRequest.MetadataCheck.",

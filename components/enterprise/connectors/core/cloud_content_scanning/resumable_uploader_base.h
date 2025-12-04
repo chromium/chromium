@@ -9,8 +9,6 @@
 
 namespace enterprise_connectors {
 
-class BrowserThreadGuard;
-
 class ResumableUploadRequestBase : public ConnectorUploadRequest {
  public:
   using ContentUploadedCallback = base::OnceClosure;
@@ -38,7 +36,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
-      std::unique_ptr<BrowserThreadGuard> thread_guard);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of
   // the page to the given `base_url`, and then the content of `page_region` if
@@ -54,7 +52,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
-      std::unique_ptr<BrowserThreadGuard> thread_guard);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   // Creates a ResumableUploadRequestBase, which will upload the `metadata` of a
   // pasted image to the given `base_url`, and then the `data` if necessary.
@@ -68,7 +66,7 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
       VerdictReceivedCallback verdict_received_callback,
       ContentUploadedCallback content_uploaded_callback,
       bool force_sync_upload,
-      std::unique_ptr<BrowserThreadGuard> thread_guard);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
   ResumableUploadRequestBase(const ResumableUploadRequestBase&) = delete;
   ResumableUploadRequestBase& operator=(const ResumableUploadRequestBase&) =
@@ -147,8 +145,6 @@ class ResumableUploadRequestBase : public ConnectorUploadRequest {
     FULL_CONTENT = 2,
     ASYNC = 3
   } scan_type_ = PENDING;
-
-  std::unique_ptr<BrowserThreadGuard> thread_guard_;
 
   ContentUploadedCallback content_uploaded_callback_;
   std::string access_token_;

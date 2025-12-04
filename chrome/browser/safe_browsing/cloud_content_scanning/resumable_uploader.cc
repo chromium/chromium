@@ -9,8 +9,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/browser_thread_guard_impl.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/common.h"
+#include "content/public/browser/browser_thread.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -47,7 +47,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                                  std::move(verdict_received_callback),
                                  std::move(content_uploaded_callback),
                                  force_sync_upload,
-                                 std::make_unique<BrowserThreadGuardImpl>()) {}
+                                 content::GetUIThreadTaskRunner({})) {}
 
 ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -70,7 +70,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                                  std::move(verdict_received_callback),
                                  std::move(content_uploaded_callback),
                                  force_sync_upload,
-                                 std::make_unique<BrowserThreadGuardImpl>()) {}
+                                 content::GetUIThreadTaskRunner({})) {}
 
 ResumableUploadRequest::ResumableUploadRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -91,7 +91,7 @@ ResumableUploadRequest::ResumableUploadRequest(
                                  std::move(verdict_received_callback),
                                  std::move(content_uploaded_callback),
                                  force_sync_upload,
-                                 std::make_unique<BrowserThreadGuardImpl>()) {}
+                                 content::GetUIThreadTaskRunner({})) {}
 
 ResumableUploadRequest::~ResumableUploadRequest() = default;
 
