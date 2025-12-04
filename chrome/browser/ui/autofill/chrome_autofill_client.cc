@@ -166,6 +166,7 @@
 #include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_accessibility_utils.h"
 #include "chrome/browser/ui/android/autofill/save_update_address_profile_flow_manager.h"
+#include "chrome/browser/ui/autofill/autofill_message_controller.h"
 #include "chrome/browser/ui/autofill/autofill_snackbar_type.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/payments/autofill_save_card_infobar_delegate_mobile.h"
@@ -1154,6 +1155,16 @@ ChromeAutofillClient::GetAutofillSnackbarController() {
   }
 
   return autofill_snackbar_controller_impl_.get();
+}
+
+AutofillMessageController*
+ChromeAutofillClient::GetAutofillMessageController() {
+  if (!autofill_message_controller_) {
+    autofill_message_controller_ =
+        std::make_unique<AutofillMessageController>(web_contents());
+  }
+
+  return autofill_message_controller_.get();
 }
 #endif
 

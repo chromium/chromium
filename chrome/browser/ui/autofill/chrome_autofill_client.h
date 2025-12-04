@@ -57,9 +57,9 @@ namespace autofill {
 
 #if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/364089352): When //c/b/ui/android/autofill gets modularized,
-// //c/b/ui/autofill/ can depend directly on it. Now, forward declare the
-// SaveUpdateAddressProfileFlowManager.
+// //c/b/ui/autofill/ can depend directly on it.
 class SaveUpdateAddressProfileFlowManager;
+class AutofillMessageController;
 #endif
 
 class AutofillOptimizationGuideDecider;
@@ -211,6 +211,10 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // The AutofillSnackbarController is used to show a snackbar notification
   // on Android.
   AutofillSnackbarControllerImpl* GetAutofillSnackbarController() final;
+
+  // The AutofillMessageController is used to show native Android messages via
+  // the messages API.
+  AutofillMessageController* GetAutofillMessageController();
 #endif
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() final;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
@@ -319,6 +323,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   // the test machine, that may normally cause the popup to be hidden
   bool keep_popup_open_for_testing_ = false;
 #if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<AutofillMessageController> autofill_message_controller_;
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>
       save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
