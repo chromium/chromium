@@ -12,8 +12,8 @@ namespace autofill {
 class AutofillMessageControllerTestApi {
  public:
   explicit AutofillMessageControllerTestApi(
-      AutofillMessageController* controller)
-      : controller_(*controller) {}
+      AutofillMessageController& controller)
+      : controller_(controller) {}
 
   ~AutofillMessageControllerTestApi() = default;
 
@@ -36,7 +36,7 @@ class AutofillMessageControllerTestApi {
 
 inline AutofillMessageControllerTestApi test_api(
     AutofillMessageController& controller) {
-  return AutofillMessageControllerTestApi(&controller);
+  return AutofillMessageControllerTestApi(controller);
 }
 
 }  // namespace autofill
