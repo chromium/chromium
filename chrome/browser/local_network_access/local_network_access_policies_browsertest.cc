@@ -36,31 +36,6 @@ class LocalNetworkAccessPoliciesBrowserTest
     : public LocalNetworkAccessBrowserTestBase {};
 
 IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
-                       CheckEnterprisePolicyEnableLNA) {
-  policy::PolicyMap policies;
-  SetPolicy(&policies, policy::key::kLocalNetworkAccessRestrictionsEnabled,
-            std::optional<base::Value>(true));
-  UpdateProviderPolicy(policies);
-
-  ASSERT_TRUE(content::NavigateToURL(
-      web_contents(),
-      https_server().GetURL(
-          "a.com",
-          "/local_network_access/no-favicon-treat-as-public-address.html")));
-
-  // Enable auto-denial of LNA permission request.
-  bubble_factory()->set_response_type(
-      permissions::PermissionRequestManager::AutoResponseType::DENY_ALL);
-
-  // Expect LNA fetch to fail.
-  EXPECT_THAT(content::EvalJs(
-                  web_contents(),
-                  content::JsReplace("fetch($1).then(response => response.ok)",
-                                     https_server().GetURL("b.com", kLnaPath))),
-              content::EvalJsResult::IsError());
-}
-
-IN_PROC_BROWSER_TEST_F(LocalNetworkAccessPoliciesBrowserTest,
                        CheckEnterprisePolicyOptOut) {
   policy::PolicyMap policies;
   SetPolicy(&policies,

@@ -7695,11 +7695,6 @@ ChromeContentBrowserClient::ShouldOverridePrivateNetworkRequestPolicy(
 #endif
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (profile->GetPrefs()->GetBoolean(
-          prefs::kManagedLocalNetworkAccessRestrictionsEnabled)) {
-    return content::ContentBrowserClient::PrivateNetworkRequestPolicyOverride::
-        kBlockInsteadOfWarn;
-  }
 
   if (profile->GetPrefs()->GetBoolean(
           prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut)) {

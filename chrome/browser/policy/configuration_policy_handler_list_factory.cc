@@ -2415,9 +2415,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kCACertificateManagementAllowed,
     base::Value::Type::INTEGER },
 #endif  // !BUILDFLAG(IS_ANDROID)
-  { key::kLocalNetworkAccessRestrictionsEnabled,
-    prefs::kManagedLocalNetworkAccessRestrictionsEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kLocalNetworkAccessRestrictionsTemporaryOptOut,
     prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut,
     base::Value::Type::BOOLEAN },

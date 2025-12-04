@@ -2036,9 +2036,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   registry->RegisterBooleanPref(
-      prefs::kManagedLocalNetworkAccessRestrictionsEnabled, false);
-
-  registry->RegisterBooleanPref(
       prefs::kManagedLocalNetworkAccessRestrictionsTemporaryOptOut, false);
 
 #if BUILDFLAG(IS_ANDROID)

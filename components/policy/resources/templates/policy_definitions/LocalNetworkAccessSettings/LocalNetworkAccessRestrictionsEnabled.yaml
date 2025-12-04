@@ -21,14 +21,12 @@ desc: |-
   See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
 
-  This policy is deprecated because <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph>
-  has launched by default. The policy will be removed in a future release.
 default: false
 
 supported_on:
-- chrome.*:138-
-- chrome_os:138-
-- android:139-
+- chrome.*:138-144
+- chrome_os:138-144
+- android:139-144
 
 features:
   dynamic_refresh: true

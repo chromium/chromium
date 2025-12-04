@@ -19,16 +19,12 @@ desc: |-
   See https://wicg.github.io/local-network-access/ for <ph
   name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> restrictions.
 
-  This enterprise policy is temporary, and will be removed after M146.
+  This enterprise policy is temporary, and will be removed after M152.
 
   Long term, the policy <ph
   name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME">LocalNetworkAccessAllowedForUrls</ph>
   can be used to allowlist URL patterns that should be automatically granted
   the <ph name="LOCAL_NETWORK_ACCESS">Local Network Access</ph> permission.
-
-  Note that if the policy <ph
-  name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME">LocalNetworkAccessRestrictionsEnabled</ph>
-  is enabled, it will take precedence over this policy.
 default: false
 
 supported_on:
