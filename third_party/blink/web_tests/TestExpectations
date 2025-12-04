@@ -3210,7 +3210,6 @@ crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 
 # ====== New tests from wpt-importer added here ======
 crbug.com/465595013 [ Linux ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]
-crbug.com/465595013 [ Linux ] external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure ]
 crbug.com/465457329 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_timezone_override/user_contexts.py [ Failure ]
 crbug.com/465457329 external/wpt/webdriver/tests/classic/get_all_cookies/get.py [ Failure ]
 crbug.com/465457329 external/wpt/webdriver/tests/classic/get_all_cookies/user_prompts.py [ Failure ]
@@ -3479,7 +3478,6 @@ crbug.com/431036875 [ Win11-arm64 ] external/wpt/content-security-policy/report-
 crbug.com/431039944 [ Mac14 ] external/wpt/cookies/samesite/window-open-reload.https.html [ Timeout ]
 crbug.com/431033198 [ Mac14 ] external/wpt/css/css-cascade/all-prop-revert-layer.html [ Timeout ]
 crbug.com/431038525 external/wpt/css/css-masking/clip-path/clip-path-inline-002.html [ Failure ]
-crbug.com/431038525 [ Mac ] external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure ]
 crbug.com/431038525 [ Mac15-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]
 crbug.com/431038525 [ Mac15 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]
 crbug.com/431038525 [ Mac14-arm64 ] external/wpt/css/css-masking/clip-path/clip-path-inline-004.html [ Failure ]
@@ -9938,3 +9936,6 @@ crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ F
 # Gardener 2025-12-03
 crbug.com/439641227 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Pass Timeout ]
 crbug.com/465812582 external/wpt/storage-access-api/requestStorageAccess-same-site-iframe.sub.https.window.html [ Crash Timeout Failure Pass ]
+
+# Gardener 2025-12-04
+crbug.com/465643000 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Pass Failure ]
