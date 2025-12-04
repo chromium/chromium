@@ -395,15 +395,8 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
     blink::mojom::ManifestPtr opt_manifest) {
   CHECK_EQ(stage_, ManifestSilentUpdateCommandStage::kAcquiringAppLock);
   CHECK(app_lock_->IsGranted());
-
-  bool is_trusted_app_for_manifest_installs =
-      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
-
-  // Only allow apps that are either trusted, or they open in a dedicated
-  // window.
-  if (!is_trusted_app_for_manifest_installs &&
-      !app_lock_->registrar().AppMatches(
-          app_id_, WebAppFilter::OpensInDedicatedWindow())) {
+  if (!app_lock_->registrar().AppMatches(app_id_,
+                                         WebAppFilter::InstalledInChrome())) {
     CompleteCommandAndSelfDestruct(
         FROM_HERE, ManifestSilentUpdateCheckResult::kAppNotAllowedToUpdate);
     return;
@@ -414,7 +407,7 @@ void ManifestSilentUpdateCommand::StartManifestToInstallInfoJob(
   construct_options.defer_icon_fetching = true;
   construct_options.record_icon_results_on_update = true;
   construct_options.use_manifest_icons_as_trusted =
-      is_trusted_app_for_manifest_installs;
+      app_lock_->registrar().AppMatches(app_id_, WebAppFilter::IsTrusted());
 
   // The `background_installation` and `install_source` fields here don't matter
   // because this is not logged anywhere.

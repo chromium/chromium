@@ -449,6 +449,13 @@ void WebAppInstallFinalizer::OnOriginAssociationValidated(
       weak_ptr_factory_.GetWeakPtr(), std::move(callback), app_id, options,
       std::move(old_scope));
 
+  // Ensure that the pending update info is always reset whenever Finalize*() is
+  // called, to ensure that the state of icons on disk or new installs do not
+  // have left over pending updates.
+  if (options.overwrite_existing_manifest_fields) {
+    web_app->SetPendingUpdateInfo(std::nullopt);
+  }
+
   if (options.overwrite_existing_manifest_fields || !existing_web_app) {
     SetWebAppManifestFieldsAndWriteData(
         web_app_info, std::move(web_app), std::move(commit_callback),

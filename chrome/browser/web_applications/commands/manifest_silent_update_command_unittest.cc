@@ -1296,7 +1296,7 @@ TEST_F(ManifestSilentUpdateCommandTest, NoIconToIcons) {
   EXPECT_TRUE(IsAppUpdated(result));
 }
 
-TEST_F(ManifestSilentUpdateCommandTest, OpenInBrowserTabNoUpdate) {
+TEST_F(ManifestSilentUpdateCommandTest, OpenInBrowserTabUpdate) {
   auto web_app_install_info =
       WebAppInstallInfo::CreateWithStartUrlForTesting(kAppUrl);
   web_app_install_info->title = u"A Basic Web App";
@@ -1307,7 +1307,7 @@ TEST_F(ManifestSilentUpdateCommandTest, OpenInBrowserTabNoUpdate) {
 
   SetupBasicInstallablePageState();
   ManifestSilentUpdateCheckResult result = RunManifestUpdateAndGetResult();
-  EXPECT_FALSE(IsAppUpdated(result));
+  EXPECT_TRUE(IsAppUpdated(result));
 }
 
 TEST_F(ManifestSilentUpdateCommandTest, IconDownloadFailure) {
