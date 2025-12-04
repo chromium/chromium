@@ -1065,12 +1065,6 @@ bool IsBestOfAppLensAnimatedPromoEnabled() {
                                          kBestOfAppFRE, "variant") == "2");
 }
 
-BASE_FEATURE(kFeedbackIncludeGWSVariations, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsFeedbackIncludeGWSVariationsEnabled() {
-  return base::FeatureList::IsEnabled(kFeedbackIncludeGWSVariations);
-}
-
 bool IsDefaultBrowserPromoPropensityModelEnabled() {
   return base::FeatureList::IsEnabled(
       segmentation_platform::features::kDefaultBrowserPromoPropensityModel);

@@ -1031,12 +1031,6 @@ bool IsBestOfAppLensInteractivePromoEnabled();
 // Whether the Lens Animated Promo variant of `kBestOfAppFRE` is enabled.
 bool IsBestOfAppLensAnimatedPromoEnabled();
 
-// Feature flag to include GWS variations in feedback.
-BASE_DECLARE_FEATURE(kFeedbackIncludeGWSVariations);
-
-// Whether the feature to include GWS variations in feedback is enabled.
-bool IsFeedbackIncludeGWSVariationsEnabled();
-
 // Whether the `kDefaultBrowserPromoPropensityModel` feature is enabled.
 bool IsDefaultBrowserPromoPropensityModelEnabled();
 

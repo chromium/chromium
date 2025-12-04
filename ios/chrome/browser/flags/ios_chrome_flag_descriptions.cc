@@ -634,11 +634,6 @@ const char kFeedSwipeInProductHelpName[] = "Enable Feed Swipe IPH";
 const char kFeedSwipeInProductHelpDescription[] =
     "Presents an in-product help on the NTP to promote swiping on the Feed";
 
-const char kFeedbackIncludeGWSVariationsName[] =
-    "Include GWS variations in feedback";
-const char kFeedbackIncludeGWSVariationsDescription[] =
-    "Includes GWS variations in Chrome feedback reports.";
-
 const char kFeedbackIncludeVariationsName[] = "Feedback include variations";
 const char kFeedbackIncludeVariationsDescription[] =
     "In Chrome feedback report, include commandline variations.";

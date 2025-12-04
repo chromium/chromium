@@ -382,9 +382,6 @@ extern const char kFeedBackgroundRefreshDescription[];
 extern const char kFeedSwipeInProductHelpName[];
 extern const char kFeedSwipeInProductHelpDescription[];
 
-extern const char kFeedbackIncludeGWSVariationsName[];
-extern const char kFeedbackIncludeGWSVariationsDescription[];
-
 extern const char kFeedbackIncludeVariationsName[];
 extern const char kFeedbackIncludeVariationsDescription[];
 
