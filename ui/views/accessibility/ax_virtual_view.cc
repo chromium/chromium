@@ -108,6 +108,8 @@ void AXVirtualView::AddChildViewAt(std::unique_ptr<AXVirtualView> view,
       /* ancestor_focusable */ data().HasState(ax::mojom::State::kFocusable) ||
       has_focusable_ancestor());
 
+  AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
+
   if (owner_view) {
     owner_view->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
@@ -181,6 +183,8 @@ std::unique_ptr<AXVirtualView> AXVirtualView::RemoveChildView(
     GetOwnerView()->NotifyAccessibilityEventDeprecated(
         ax::mojom::Event::kChildrenChanged, true);
   }
+
+  AXUpdateNotifier::Get()->NotifyChildRemoved(child.get(), this);
 
   return child;
 }

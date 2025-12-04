@@ -143,6 +143,8 @@ void ViewAccessibility::AddVirtualChildViewAt(
 
   AXVirtualView* added_view = virtual_children_[index].get();
   added_view->OnViewHasNewAncestor(view_);
+
+  AXUpdateNotifier::Get()->NotifyChildAdded(added_view, this);
 }
 
 std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
@@ -161,6 +163,9 @@ std::unique_ptr<AXVirtualView> ViewAccessibility::RemoveVirtualChildView(
   if (focused_virtual_child_ && child->Contains(focused_virtual_child_)) {
     OverrideFocus(nullptr);
   }
+
+  AXUpdateNotifier::Get()->NotifyChildRemoved(child.get(), this);
+
   return child;
 }
 
