@@ -1,0 +1,184 @@
+actions {
+  new_idb_factory {
+    id: 0
+  }
+}
+actions {
+  idb_factory_remote_action {
+    id: 0
+    m_open {
+      m_client: 0
+      m_database_callbacks: 0
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 116 }  # 't'
+            values { value: 101 }  # 'e'
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+          }
+        }
+      }
+      m_version: 1
+      m_version_change_transaction_receiver: 0
+      m_transaction_id: 1
+      m_priority: 0
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_create_object_store {
+      m_object_store_id: 1
+      m_name {
+        new {
+          id: 0
+          m_data {
+            values { value: 115 }  # 's'
+            values { value: 116 }  # 't'
+            values { value: 111 }  # 'o'
+            values { value: 114 }  # 'r'
+            values { value: 101 }  # 'e'
+          }
+        }
+      }
+      m_key_path {
+        new {
+          id: 0
+          m_data {
+            new {
+              id: 0
+              m_string {
+                new {
+                  id: 0
+                  m_data {
+                    values { value: 105 }  # 'i'
+                    values { value: 100 }  # 'd'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      m_auto_increment: true
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_commit {
+      m_num_errors_handled: 0
+    }
+  }
+}
+actions {
+  run_thread {
+    id: Bucket
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_create_transaction {
+      m_transaction_receiver: 1
+      m_transaction_id: 2
+      m_object_store_ids {
+        values { value: 1 }
+      }
+      m_mode: 1
+      m_durability: 2
+    }
+  }
+}
+actions {
+  idb_transaction_associated_remote_action {
+    id: 0
+    m_put {
+      m_object_store_id: 1
+      m_value {
+        new {
+          id: 0
+          m_bits {
+            new {
+              id: 0
+              m_bytes {
+                values { value: 1 }
+              }
+            }
+          }
+          m_external_objects {
+          }
+        }
+      }
+      m_key {
+        new {
+          id: 0
+          m_number: 1.0
+        }
+      }
+      m_mode: 0
+      m_index_keys {
+      }
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    m_get {
+      m_transaction_id: 2
+      m_object_store_id: 1
+      m_index_id: -1
+      m_key_range {
+        new {
+          id: 0
+          m_lower {
+            new {
+              id: 0
+              m_number: 1.0
+            }
+          }
+          m_upper {
+            new {
+              id: 0
+              m_number: 1.0
+            }
+          }
+          m_lower_open: false
+          m_upper_open: false
+        }
+      }
+      m_key_only: false
+    }
+  }
+}
+actions {
+  idb_database_associated_remote_action {
+    id: 0
+    reset {
+    }
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+  action_indexes: 4
+  action_indexes: 2
+  action_indexes: 3
+  action_indexes: 4
+  action_indexes: 5
+  action_indexes: 4
+  action_indexes: 6
+  action_indexes: 7
+  action_indexes: 4
+  action_indexes: 3
+  action_indexes: 4
+  action_indexes: 8
+}
+sequence_indexes: 0
+in_memory: false
+use_sqlite: false
