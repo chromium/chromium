@@ -126,7 +126,7 @@
   justify-content: center;
   opacity: 0;
   position: absolute;
-  right: 0;
+  inset-inline-end: 0;
   top: 0;
   width: 44px;
 }
@@ -138,11 +138,10 @@
     var(--color-composebox-file-carousel-remove-gradient-end) 123.53%
   );
   border-radius: 0 8px 8px 0;
-  height: 44px;
-  left: -12px;
+  inset-block: 0;
+  inset-inline-end: 0;
+  inline-size: 56px;
   position: absolute;
-  top: 0;
-  width: 56px;
   pointer-events: none;
 }
 
@@ -156,6 +155,10 @@
   border-radius: 50%;
   color: var(--color-composebox-pdf-chip-icon);
   position: relative;
+}
+
+:host-context([dir='rtl']) .gradient-protection {
+  transform: scaleX(-1);
 }
 
 .title {
