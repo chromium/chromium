@@ -175,13 +175,14 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
   if (frame->storage_type() == VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE) {
     // TODO(andrescj): This is a workaround. ClientNativePixmapFactoryDmabuf
     // creates ClientNativePixmapOpaque for SCANOUT_VDA_WRITE buffers which
-    // does not allow us to map GpuMemoryBuffers easily for testing.
+    // does not allow us to map easily for testing (see the creation and use of
+    // VideoFrameMapper below).
     // Therefore, we extract the dma-buf FDs. Alternatively, we could consider
     // creating our own ClientNativePixmapFactory for testing.
     frame = CreateDmabufVideoFrame(frame.get());
     if (!frame) {
       LOG(ERROR) << "Failed to create Dmabuf-backed VideoFrame from "
-                 << "GpuMemoryBuffer-based VideoFrame";
+                 << "MappableSI-based VideoFrame";
       return;
     }
   }
