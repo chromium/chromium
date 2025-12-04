@@ -123,7 +123,7 @@ source_set("impl") {
       "directory_monitor.cc",
       "get_installed_version_mac.mm",
     ]
-    deps += [ "//chrome/browser/updater" ]
+    deps += [ "//chrome/browser/updater:browser_updater_client" ]
   }
 
   if (is_linux) {

@@ -7,11 +7,7 @@
 #include "chrome/installer/util/install_util.h"
 #include "chrome/updater/updater_scope.h"
 
-namespace updater {
-
-UpdaterScope GetBrowserUpdaterScope() {
-  return InstallUtil::IsPerUserInstall() ? UpdaterScope::kUser
-                                         : UpdaterScope::kSystem;
+updater::UpdaterScope GetBrowserUpdaterScope() {
+  return InstallUtil::IsPerUserInstall() ? updater::UpdaterScope::kUser
+                                         : updater::UpdaterScope::kSystem;
 }
-
-}  // namespace updater

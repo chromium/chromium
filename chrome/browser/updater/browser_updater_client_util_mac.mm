@@ -46,8 +46,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
-namespace updater {
-
 namespace {
 
 constexpr char kInstallCommand[] = "install";
@@ -142,8 +140,9 @@ bool ShouldPromoteUpdater() {
 int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
   base::CommandLine command(exe_path);
   command.AppendSwitch(cmd_switch);
-  command.AppendSwitch(kEnableLoggingSwitch);
-  command.AppendSwitchASCII(kLoggingModuleSwitch, kLoggingModuleSwitchValue);
+  command.AppendSwitch(updater::kEnableLoggingSwitch);
+  command.AppendSwitchASCII(updater::kLoggingModuleSwitch,
+                            updater::kLoggingModuleSwitchValue);
 
   int exit_code = -1;
   auto process = base::LaunchProcess(command, {});
@@ -157,7 +156,7 @@ int RunCommand(const base::FilePath& exe_path, const char* cmd_switch) {
 
 // Only works in kUser scope.
 void RegisterBrowser(base::OnceClosure complete) {
-  BrowserUpdaterClient::Create(UpdaterScope::kUser)
+  BrowserUpdaterClient::Create(updater::UpdaterScope::kUser)
       ->Register(std::move(complete));
 }
 
@@ -233,10 +232,11 @@ std::string CurrentlyInstalledVersion() {
       info_plist[@"CFBundleShortVersionString"]));
 }
 
-UpdaterScope GetBrowserUpdaterScope() {
+updater::UpdaterScope GetBrowserUpdaterScope() {
   std::optional<uid_t> owner = GetBundleOwner();
-  return owner && (*owner == 0 || *owner != geteuid()) ? UpdaterScope::kSystem
-                                                       : UpdaterScope::kUser;
+  return owner && (*owner == 0 || *owner != geteuid())
+             ? updater::UpdaterScope::kSystem
+             : updater::UpdaterScope::kUser;
 }
 
 void EnsureUpdater(base::TaskPriority priority,
@@ -253,7 +253,7 @@ void EnsureUpdater(base::TaskPriority priority,
       base::BindOnce(&GetBrowserUpdaterScope),
       base::BindOnce(
           [](base::TaskPriority priority, base::OnceClosure prompt,
-             base::OnceClosure complete, UpdaterScope scope) {
+             base::OnceClosure complete, updater::UpdaterScope scope) {
             scoped_refptr<BrowserUpdaterClient> client =
                 BrowserUpdaterClient::Create(scope);
             client->IsBrowserRegistered(base::BindOnce(
@@ -300,7 +300,7 @@ void EnsureUpdater(base::TaskPriority priority,
           priority, std::move(prompt), std::move(complete)));
 }
 
-void SetUpSystemUpdater() {
+void SetupSystemUpdater() {
   NSString* prompt = l10n_util::GetNSStringFWithFixup(
       IDS_PROMOTE_AUTHENTICATION_PROMPT,
       l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
@@ -333,5 +333,3 @@ void SetUpSystemUpdater() {
             << result;
       }));
 }
-
-}  // namespace updater

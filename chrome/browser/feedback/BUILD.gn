@@ -113,7 +113,6 @@ source_set("feedback_impl") {
       "//chrome/browser/ui:ui_features",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
-      "//chrome/browser/updater",
       "//chrome/common",
       "//components/device_event_log",
       "//components/feedback",
@@ -151,6 +150,9 @@ source_set("feedback_impl") {
       "//chromeos/components/kiosk",
       "//chromeos/version",
     ]
+  }
+  if (is_win || is_mac) {
+    deps += [ "//chrome/browser/updater:browser_updater_client" ]
   }
   if (is_linux) {
     sources += [

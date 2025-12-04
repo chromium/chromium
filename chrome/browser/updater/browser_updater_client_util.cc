@@ -6,9 +6,5 @@
 
 #include "chrome/updater/updater_branding.h"
 
-namespace updater {
-
 const char kUpdaterName[] = PRODUCT_FULLNAME_STRING;
 const char kPrivilegedHelperName[] = PRIVILEGED_HELPER_NAME;
-
-}  // namespace updater
