@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "components/zucchini/element_detection.h"
 #include "components/zucchini/io_utils.h"
 
 namespace zucchini {

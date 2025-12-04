@@ -27,6 +27,7 @@
 #include "components/zucchini/buffer_source.h"
 #include "components/zucchini/buffer_view.h"
 #include "components/zucchini/io_utils.h"
+#include "components/zucchini/type_dex.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 namespace zucchini {
