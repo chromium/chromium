@@ -30,7 +30,7 @@
   {
     "name": "Driver's license",
     "attributes": [ "Name", "State", "Number", "Issue date", "Expiration date" ],
-    "obfuscated attributes": [ ],
+    "obfuscated attributes": [ "Number" ],
     "required fields": "any",
     "import constraints": [
       [ "Number" ]
