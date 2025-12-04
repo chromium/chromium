@@ -1922,15 +1922,12 @@ targets.mixin(
     ),
 )
 
-# TODO(crbug.com/462477380): Switch this to the same as
-# mac_retina_amd_gpu_stable after ANGLE is switched to use
-# mac_retina_amd_555x_gpu_stable.
 targets.mixin(
     name = "mac_retina_amd_gpu_experimental",
     swarming = targets.swarming(
         dimensions = {
             "cpu": "x86-64",
-            "gpu": "1002:67ef",
+            "gpu": "1002:7340",
             "hidpi": "1",
             "os": "Mac-14.4.1",
             "pool": "chromium.tests.gpu",
