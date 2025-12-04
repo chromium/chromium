@@ -6959,7 +6959,7 @@
   {
     "name": "media-codec-low-delay-mode",
     "owners": [ "dalecurtis@chromium.org", "media-dev@chromium.org" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "media-indicators-android",
