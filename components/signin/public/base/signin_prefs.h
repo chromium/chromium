@@ -112,6 +112,9 @@ class SigninPrefs {
   void IncrementAddressSigninPromoImpressionCount(const GaiaId& gaia_id);
   int GetAddressSigninPromoImpressionCount(const GaiaId& gaia_id) const;
 
+  void IncrementBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id);
+  int GetBookmarkSigninPromoImpressionCount(const GaiaId& gaia_id) const;
+
   void IncrementAutofillSigninPromoDismissCount(const GaiaId& gaia_id);
   int GetAutofillSigninPromoDismissCount(const GaiaId& gaia_id) const;
 

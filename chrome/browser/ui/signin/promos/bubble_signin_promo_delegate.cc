@@ -128,7 +128,8 @@ void BubbleSignInPromoDelegate::OnSignIn(const AccountInfo& account) {
   // pending state and will automatically be uploaded after the user completes
   // the sign in, so there is no need to wait for a sign in event with the
   // correct access point.
-  if (!signin::IsAutofillSigninPromo(access_point_) &&
+  if (access_point_ != signin_metrics::AccessPoint::kPasswordBubble &&
+      access_point_ != signin_metrics::AccessPoint::kAddressBubble &&
       signed_in_state == signin_util::SignedInState::kSignInPending) {
     return;
   }

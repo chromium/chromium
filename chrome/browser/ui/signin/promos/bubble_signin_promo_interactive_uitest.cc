@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/autofill/address_sign_in_promo_view.h"
 #include "chrome/browser/ui/views/autofill/save_address_profile_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
 #include "chrome/browser/ui/views/extensions/extension_post_install_dialog_delegate.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/passwords/password_save_update_view.h"
@@ -103,6 +104,7 @@ class BubbleSignInPromoInteractiveUITest : public ManagePasswordsTest {
          syncer::kUnoPhase2FollowUp},
         /*disabled_features=*/{});
   }
+
   void SetUpInProcessBrowserTestFixture() override {
     ManagePasswordsTest::SetUpInProcessBrowserTestFixture();
     url_loader_factory_helper_.SetUp();
@@ -850,17 +852,22 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   browser()->window()->ShowBookmarkBubble(kUrl, false);
   ASSERT_EQ(1u, model->other_node()->children().size());
 
-  // Click the sign in button.
+  // Accept the save bubble, wait for it to be replaced with the sign in promo
+  // and click the sign in button.
   RunTestSequence(
-      EnsurePresent(kBookmarkBubbleFrameViewId),
+      PressButton(kBookmarkBubbleOkButtonId),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId),
+      EnsurePresent(kBookmarkSigninPromoFrameViewId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      Screenshot(kBookmarkSigninPromoFrameViewId, std::string(), "7213561"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+      EnsureNotPresent(kBookmarkSigninPromoFrameViewId));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -935,19 +942,23 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
                                        syncer::BOOKMARKS, items));
 
-  // Click the sign in button. This should directly sign the user in and move
-  // the bookmark.
-  ActivateSyncService();
+  // Accept the save bubble, wait for it to be replaced with the sign in promo
+  // and click the sign in button. This should directly sign the user in and
+  // move the bookmark.
   RunTestSequence(
-      EnsurePresent(kBookmarkBubbleFrameViewId),
+      PressButton(kBookmarkBubbleOkButtonId),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId),
+      EnsurePresent(kBookmarkSigninPromoFrameViewId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      Screenshot(kBookmarkSigninPromoFrameViewId, std::string(), "7213561"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+      EnsureNotPresent(kBookmarkSigninPromoFrameViewId));
 
   // Check that there is no helper attached to the sign in tab, because the
   // bookmark was already moved.
@@ -1011,17 +1022,22 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   browser()->window()->ShowBookmarkBubble(kUrl, false);
   ASSERT_EQ(1u, model->other_node()->children().size());
 
-  // Click the sign in button.
+  // Accept the save bubble, wait for it to be replaced with the sign in promo
+  // and click the sign in button.
   RunTestSequence(
-      EnsurePresent(kBookmarkBubbleFrameViewId),
+      PressButton(kBookmarkBubbleOkButtonId),
+      WaitForEvent(BubbleSignInPromoSignInButtonView::kPromoSignInButton,
+                   kBubbleSignInPromoSignInButtonHasCallback),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId),
+      EnsurePresent(kBookmarkSigninPromoFrameViewId),
       SetOnIncompatibleAction(
           OnIncompatibleAction::kIgnoreAndContinue,
           "Screenshot can only run in pixel_tests on Windows."),
-      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "6329378"),
+      Screenshot(kBookmarkSigninPromoFrameViewId, std::string(), "7213561"),
       NameChildViewByType<views::MdTextButton>(
           BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
       PressButton(kButton).SetMustRemainVisible(false),
-      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+      EnsureNotPresent(kBookmarkSigninPromoFrameViewId));
 
   // Check that clicking the sign in button navigated to a sign in page.
   EXPECT_TRUE(IsSignInURL());
@@ -1389,4 +1405,255 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
   histogram_tester.ExpectUniqueSample(
       "Signin.SigninPending.Offered",
       signin_metrics::AccessPoint::kPasswordBubble, 0);
+}
+
+// The bookmark sign in promo is split into a separate bubble with
+// `UnoPhase2FollowUp` enabled. These are regression tests for the old footnote
+// promo.
+class BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp
+    : public BubbleSignInPromoInteractiveUITest {
+ public:
+  BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {switches::kSyncEnableBookmarksInTransportMode,
+         switches::kChromeIdentitySurveySigninPromoBubbleDismissed},
+        /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
+                       BookmarkSignInPromoNoAccountPresent) {
+  base::HistogramTester histogram_tester;
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // Click the sign in button.
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "7213561"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // Check that there is a helper attached to the sign in tab, because the
+  // bookmark still needs to be moved.
+  EXPECT_TRUE(SigninPromoTabHelper::GetForWebContents(
+                  *browser()->tab_strip_model()->GetActiveWebContents())
+                  ->IsInitializedForTesting());
+
+  // This would move the bookmark to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items));
+
+  // Simulate a sign in event with the correct access point, which will move the
+  // bookmark.
+  SignIn(signin_metrics::AccessPoint::kBookmarkBubble);
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - Offered/Started/Completed are recorded, but no values for
+  // WebSignin (WithDefault).
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Started", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kBookmarkBubble,
+      1);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
+                       BookmarkSignInPromoWithWebSignedInAccount) {
+  base::HistogramTester histogram_tester;
+
+  // Sign in with an account, but only on the web. The primary account is not
+  // set.
+  AccountInfo info = signin::MakeAccountAvailable(
+      identity_manager(),
+      signin::AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .WithAccessPoint(signin_metrics::AccessPoint::kWebSignin)
+          .Build("test@email.com"));
+  ExtendAccountInfo(info);
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // This would move the bookmark to account storage.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items));
+
+  // Click the sign in button. This should directly sign the user in and move
+  // the bookmark.
+  ActivateSyncService();
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "7213561"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that there is no helper attached to the sign in tab, because the
+  // bookmark was already moved.
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - WebSignin (WithDefault) metrics are also recorded.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Completed", signin_metrics::AccessPoint::kBookmarkBubble,
+      1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered", signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignIn.Offered.WithDefault",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectBucketCount(
+      "Signin.WebSignin.SourceToChromeSignin",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 0);
+}
+
+IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITestWithoutPhase2FollowUp,
+                       BookmarkSignInPromoWithAccountSignInPending) {
+  // Sign in with an account, and put its refresh token into an error
+  // state. This simulates the "sign in pending" state.
+  AccountInfo info = signin::MakePrimaryAccountAvailable(
+      identity_manager(), "test@email.com", signin::ConsentLevel::kSignin);
+  ExtendAccountInfo(info);
+  signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager());
+
+  // The promo in sign in pending state is only shown if account storage for
+  // bookmarks is already enabled.
+  ON_CALL(*sync_service_mock().GetMockUserSettings(), GetSelectedTypes())
+      .WillByDefault(Return(syncer::UserSelectableTypeSet::All()));
+
+  // Start recording metrics after signing in.
+  base::HistogramTester histogram_tester;
+
+  // Trigger the bookmark bubble.
+  const GURL kUrl("http://test.com");
+  bookmarks::BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(browser()->profile());
+  const bookmarks::BookmarkNode* bookmark =
+      model->AddURL(model->other_node(), 0, std::u16string(), kUrl);
+  browser()->window()->ShowBookmarkBubble(kUrl, false);
+  ASSERT_EQ(1u, model->other_node()->children().size());
+
+  // Click the sign in button.
+  RunTestSequence(
+      EnsurePresent(kBookmarkBubbleFrameViewId),
+      SetOnIncompatibleAction(
+          OnIncompatibleAction::kIgnoreAndContinue,
+          "Screenshot can only run in pixel_tests on Windows."),
+      Screenshot(kBookmarkBubbleFrameViewId, std::string(), "7213561"),
+      NameChildViewByType<views::MdTextButton>(
+          BubbleSignInPromoSignInButtonView::kPromoSignInButton, kButton),
+      PressButton(kButton).SetMustRemainVisible(false),
+      EnsureNotPresent(kBookmarkBubbleFrameViewId));
+
+  // Check that clicking the sign in button navigated to a sign in page.
+  EXPECT_TRUE(IsSignInURL());
+
+  // Check that there is no helper attached to the sign in tab, because the
+  // bookmark will be moved automatically upon sign in.
+  EXPECT_FALSE(SigninPromoTabHelper::GetForWebContents(
+                   *browser()->tab_strip_model()->GetActiveWebContents())
+                   ->IsInitializedForTesting());
+
+  // This would try to move a bookmark to account storage. Should not be called.
+  std::vector<syncer::LocalDataItemModel::DataId> items{bookmark->id()};
+  EXPECT_CALL(sync_service_mock(), SelectTypeAndMigrateLocalDataItemsWhenActive(
+                                       syncer::BOOKMARKS, items))
+      .Times(0);
+
+  // Set a new refresh token for the primary account, which verifies the
+  // user's identity and signs them back in. This would trigger the automatic
+  // upload.
+  ActivateSyncService();
+  identity_manager()->GetAccountsMutator()->AddOrUpdateAccount(
+      info.gaia, info.email, "dummy_refresh_token",
+      /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::kBookmarkBubble,
+      signin_metrics::SourceForRefreshTokenOperation::
+          kDiceResponseHandler_Signin);
+
+  // Check that the sign in was successful.
+  EXPECT_TRUE(IsSignedIn());
+
+  // Signin metrics - nothing should be recorded for reauth.
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Started", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Completed", 0);
+  histogram_tester.ExpectTotalCount("Signin.SignIn.Offered.WithDefault", 0);
+  histogram_tester.ExpectTotalCount(
+      "Signin.SignIn.Offered.NewAccountNoExistingAccount", 0);
+  histogram_tester.ExpectTotalCount("Signin.WebSignin.SourceToChromeSignin", 0);
+
+  // It was recorded that the reauth sign in promo was shown and accepted.
+  histogram_tester.ExpectBucketCount(
+      "Signin.SignInPromo.Accepted",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SigninPending.Offered",
+      signin_metrics::AccessPoint::kBookmarkBubble, 1);
 }

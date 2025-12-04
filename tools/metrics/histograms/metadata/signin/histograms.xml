@@ -2716,6 +2716,8 @@ should be kept to monitor/debug signin Multilogin issues-->
   <token key="PromoType">
     <variant name="AddressSigninPromoShown"
         summary="Address sign-in promo was shown"/>
+    <variant name="BookmarkSigninPromoShown"
+        summary="Bookmark sign-in promo was shown"/>
     <variant name="PasswordSigninPromoShown"
         summary="Password sign-in promo was shown"/>
     <variant name="UnoBubbleReprompt" summary="Uno bubble was reprompted"/>
@@ -3819,6 +3821,7 @@ should be kept for as long as we store refresh tokens in an SQLite DB. -->
   </summary>
   <token key="AccessPoint">
     <variant name="AddressSigninPromo" summary="the Address Sign-in promo"/>
+    <variant name="BookmarkSigninPromo" summary="the Bookmark Sign-in promo"/>
     <variant name="PasswordSigninPromo" summary="the Password Sign-in promo"/>
     <variant name="ProfileMenu" summary="the Profile Menu"/>
   </token>

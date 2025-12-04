@@ -70,6 +70,8 @@ extern const char kSigninInterceptionIDPCookiesUrl[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kAddressSignInPromoShownCountPerProfileForLimitsExperiment[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const char kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment[];
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kPasswordSignInPromoShownCountPerProfileForLimitsExperiment[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kProfileSeparationSettings[];

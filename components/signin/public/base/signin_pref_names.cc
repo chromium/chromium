@@ -164,6 +164,12 @@ const char kSigninInterceptionIDPCookiesUrl[] =
 const char kAddressSignInPromoShownCountPerProfileForLimitsExperiment[] =
     "signin.AddressSignInPromoShownCountForLimitsExperiment";
 
+// Integer pref to store the number of times the bookmark bubble signin promo
+// has been shown per profile while the user is signed out used for
+// SigninPromoLimitsExperiment.
+const char kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.BookmarkSignInPromoShownCountForLimitsExperiment";
+
 // Integer pref to store the number of times the password bubble signin promo
 // has been shown per profile while the user is signed out used for
 // SigninPromoLimitsExperiment.

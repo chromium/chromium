@@ -69,6 +69,8 @@
 
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_view.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_sign_in_promo_bubble_view.h"
+#include "components/sync/base/features.h"
 #endif
 
 using base::UserMetricsAction;
@@ -210,6 +212,35 @@ actions::ActionItem& GetBookmarkActionItem(BrowserWindowInterface* bwi) {
   CHECK(action_item);
   return *action_item;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+void MaybeShowSignInPromo(bool already_bookmarked,
+                          Profile* profile,
+                          views::View* anchor_view,
+                          content::WebContents* web_contents,
+                          const bookmarks::BookmarkNode* bookmark) {
+  if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+    return;
+  }
+
+  if (!anchor_view) {
+    return;
+  }
+
+  if (!signin::ShouldShowBookmarkSignInPromo(*profile)) {
+    return;
+  }
+
+  if (!bookmark || already_bookmarked) {
+    return;
+  }
+
+  BookmarkSigninPromoBubbleView* bubble =
+      new BookmarkSigninPromoBubbleView(anchor_view, web_contents, bookmark);
+  views::BubbleDialogDelegateView::CreateBubble(bubble);
+  bubble->ShowForReason(LocationBarBubbleDelegateView::USER_GESTURE);
+}
+#endif
 
 }  // namespace
 
@@ -367,6 +398,9 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
     return;
   }
   Profile* profile = browser->profile();
+  CHECK(profile);
+  CHECK(web_contents);
+
   bookmarks::BookmarkModel* bookmark_model =
       BookmarkModelFactory::GetForBrowserContext(profile);
   const bookmarks::BookmarkNode* bookmark_node =
@@ -416,7 +450,13 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
           base::BindOnce(&BookmarkBubbleDelegate::OnWindowClosing,
                          base::Unretained(bubble_delegate)))
       .AddOkButton(base::BindOnce(&BookmarkBubbleDelegate::ApplyEdits,
-                                  base::Unretained(bubble_delegate)),
+                                  base::Unretained(bubble_delegate))
+#if !BUILDFLAG(IS_CHROMEOS)
+                       .Then(base::BindOnce(
+                           MaybeShowSignInPromo, already_bookmarked, profile,
+                           anchor_view, web_contents, bookmark_node))
+#endif
+                       ,
                    ui::DialogModel::Button::Params()
                        .SetLabel(l10n_util::GetStringUTF16(IDS_DONE))
                        .SetId(kBookmarkBubbleOkButtonId))
@@ -481,22 +521,21 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
                                            bookmark_node)) {
     bubble->SetFootnoteView(
         std::make_unique<commerce::ShoppingCollectionIphView>());
-  } else if (signin::ShouldShowBookmarkSignInPromo(*profile) ||
-             (signin::ShouldShowSyncPromo(*profile) &&
-              !base::FeatureList::IsEnabled(
-                  switches::kSyncEnableBookmarksInTransportMode))) {
+  } else if (signin::ShouldShowBookmarkSignInPromo(*profile)) {
 #if !BUILDFLAG(IS_CHROMEOS)
-    // TODO(pbos): Consider adding model support for footnotes so that this does
-    // not need to be tied to views.
-    // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize the
-    // widget to account for it.
-    bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
-        web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
-        syncer::LocalDataItemModel::DataId(bookmark_node->id()),
-        ui::ButtonStyle::kDefault));
+    if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+      // TODO(pbos): Consider adding model support for footnotes so that this
+      // does not need to be tied to views.
+      // TODO(pbos): Consider updating ::SetFootnoteView so that it can resize
+      // the widget to account for it.
+      bubble->SetFootnoteView(std::make_unique<BubbleSignInPromoView>(
+          web_contents, signin_metrics::AccessPoint::kBookmarkBubble,
+          syncer::LocalDataItemModel::DataId(bookmark_node->id()),
+          ui::ButtonStyle::kDefault));
 
-    ChromeSigninClient::
-        MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
+      ChromeSigninClient::
+          MaybeAddUserToBookmarksBubblePromoShownSyntheticFieldTrial();
+    }
 #endif
   }
 
