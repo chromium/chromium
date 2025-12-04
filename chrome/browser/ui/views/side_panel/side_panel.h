@@ -117,6 +117,8 @@ class SidePanel : public views::AccessiblePaneView,
   // This is the parent view for the contents of the side panel.
   views::View* GetContentParentView();
 
+  views::View* resize_area_for_testing() { return resize_area_; }
+
  private:
   class BorderView;
   class VisibleBoundsViewClipper;

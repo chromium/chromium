@@ -399,6 +399,7 @@ SidePanel::SidePanel(BrowserView* browser_view,
       std::make_unique<views::SidePanelResizeArea>(this);
   resize_area_ = resize_area.get();
   AddChildView(std::move(resize_area));
+  resize_area_->InsertBeforeInFocusList(content_parent_view_);
 
   pref_change_registrar_.Init(browser_view->GetProfile()->GetPrefs());
 
@@ -575,6 +576,7 @@ void SidePanel::AddHeaderView(std::unique_ptr<views::View> view) {
   }
   header_view_ = view.get();
   AddChildView(std::move(view));
+  header_view_->InsertAfterInFocusList(resize_area_);
   header_view_->DeprecatedLayoutImmediately();
   if (border_view_) {
     border_view_->HeaderViewChanged(header_view_);
