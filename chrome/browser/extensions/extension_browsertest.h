@@ -362,7 +362,7 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   content::WebContents* web_contents();
 
   // Returns the BrowserWindowInterface for the initially-created browser.
-  // TODO(crbug.com/434990953): Convert callers of NavigateToURL() to use this
+  // TODO(crbug.com/465157755): Convert callers of NavigateToURL() to use this
   // method.
   BrowserWindowInterface* browser_window_interface();
 
