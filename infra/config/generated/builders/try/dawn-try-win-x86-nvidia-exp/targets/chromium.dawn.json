@@ -20,7 +20,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -50,7 +50,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -79,7 +79,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -109,7 +109,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -139,7 +139,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -167,7 +167,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -200,7 +200,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -232,7 +232,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -257,7 +257,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -290,7 +290,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -323,7 +323,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -362,7 +362,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -404,7 +404,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -438,7 +438,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -471,7 +471,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -510,7 +510,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
@@ -552,7 +552,7 @@
         "swarming": {
           "dimensions": {
             "display_attached": "1",
-            "gpu": "10de:2184-32.0.15.7602",
+            "gpu": "10de:2184-32.0.15.8180",
             "os": "Windows-11-26100",
             "pool": "chromium.tests.gpu"
           },
