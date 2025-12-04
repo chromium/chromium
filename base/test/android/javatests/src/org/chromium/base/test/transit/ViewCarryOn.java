@@ -6,6 +6,8 @@ package org.chromium.base.test.transit;
 
 import android.view.View;
 
+import org.chromium.build.annotations.Nullable;
+
 /**
  * A {@link CarryOn} that contains a single {@link ViewElement}.
  *
@@ -13,9 +15,21 @@ import android.view.View;
  */
 public class ViewCarryOn<ViewT extends View> extends CarryOn {
     public final ViewElement<ViewT> viewElement;
+    public final @Nullable ActivityElement<?> activityElement;
 
-    public ViewCarryOn(ViewSpec<ViewT> viewSpec, ViewElement.Options options) {
+    public ViewCarryOn(
+            @Nullable ActivityElement<?> ownerActivityElement,
+            ViewSpec<ViewT> viewSpec,
+            ViewElement.Options options) {
         super();
+        if (ownerActivityElement != null) {
+            // Restrict searching the view to one specific Activity. Avoids matching the View
+            // in other Activities.
+            activityElement = declareActivity(ownerActivityElement.getActivityClass());
+            activityElement.requireToBeInSameTask(ownerActivityElement.get());
+        } else {
+            activityElement = null;
+        }
         viewElement = declareView(viewSpec.getViewClass(), viewSpec.getViewMatcher(), options);
     }
 
