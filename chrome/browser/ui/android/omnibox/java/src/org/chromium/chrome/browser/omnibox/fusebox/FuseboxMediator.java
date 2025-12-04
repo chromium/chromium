@@ -335,6 +335,10 @@ public class FuseboxMediator {
     @VisibleForTesting
     void onTabPickerClicked() {
         mPopup.dismiss();
+        if (mModelList.getRemainingAttachments() < 1) {
+            warnForMaxAttachments();
+            return;
+        }
         Intent intent;
         ArrayList<Integer> preselectedIds = new ArrayList<>(getAttachedTabIds());
         try {
@@ -407,6 +411,10 @@ public class FuseboxMediator {
     void onCameraClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CAMERA);
+        if (mModelList.getRemainingAttachments() < 1) {
+            warnForMaxAttachments();
+            return;
+        }
         if (mPermissionDelegate.hasPermission(Manifest.permission.CAMERA)) {
             launchCamera();
         } else {
@@ -469,6 +477,11 @@ public class FuseboxMediator {
         mPopup.dismiss();
 
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.GALLERY);
+        if (mModelList.getRemainingAttachments() < 1) {
+            warnForMaxAttachments();
+            return;
+        }
+
         Intent i;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             i =
@@ -508,6 +521,10 @@ public class FuseboxMediator {
     void onFilePickerClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.FILES);
+        if (mModelList.getRemainingAttachments() < 1) {
+            warnForMaxAttachments();
+            return;
+        }
         var i =
                 new Intent(Intent.ACTION_OPEN_DOCUMENT)
                         .addCategory(Intent.CATEGORY_OPENABLE)
@@ -537,6 +554,10 @@ public class FuseboxMediator {
     void onClipboardClicked() {
         mPopup.dismiss();
         FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.CLIPBOARD);
+        if (mModelList.getRemainingAttachments() < 1) {
+            warnForMaxAttachments();
+            return;
+        }
         new AsyncTask<byte[]>() {
             @Override
             protected byte[] doInBackground() {

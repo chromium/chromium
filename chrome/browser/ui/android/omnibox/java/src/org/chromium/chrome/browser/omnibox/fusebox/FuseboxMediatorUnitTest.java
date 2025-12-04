@@ -17,6 +17,7 @@ import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -776,6 +777,15 @@ public class FuseboxMediatorUnitTest {
         mMediator.updateCurrentlyAttachedTabs(newlySelectedIds);
         verify(mSnackbarManager).showSnackbar(any());
         assertEquals(FuseboxAttachmentModelList.MAX_ATTACHMENTS, mAttachments.size());
+
+        mMediator.onFilePickerClicked();
+        mMediator.onClipboardClicked();
+        mMediator.onCameraClicked();
+        mMediator.onImagePickerClicked();
+        mMediator.onTabPickerClicked();
+
+        verify(mSnackbarManager, times(6)).showSnackbar(any());
+        verify(mWindowAndroid, never()).showCancelableIntent(any(Intent.class), any(), any());
     }
 
     @Test
