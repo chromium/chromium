@@ -814,7 +814,9 @@ scoped_refptr<Buffer> InProcessCommandBuffer::CreateTransferBuffer(
     int32_t* id,
     uint32_t alignment,
     TransferBufferAllocationOption option) {
-  scoped_refptr<Buffer> buffer = MakeMemoryBuffer(size, alignment);
+  constexpr uint32_t kDefaultAlignment = 16;
+  uint32_t buffer_alignment = std::max(alignment, kDefaultAlignment);
+  scoped_refptr<Buffer> buffer = MakeMemoryBuffer(size, buffer_alignment);
   *id = GetNextBufferId();
   ScheduleGpuTask(
       base::BindOnce(&InProcessCommandBuffer::RegisterTransferBufferOnGpuThread,
