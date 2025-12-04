@@ -142,12 +142,11 @@ bool GetString(const base::Value::Dict& dict,
 }  // namespace
 
 UnsentLogStore::LogInfo::LogInfo() = default;
-UnsentLogStore::LogInfo::~LogInfo() = default;
 
-void UnsentLogStore::LogInfo::Init(const std::string& log_data,
-                                   const std::string& log_timestamp,
-                                   const std::string& signing_key,
-                                   const LogMetadata& optional_log_metadata) {
+UnsentLogStore::LogInfo::LogInfo(const std::string& log_data,
+                                 const std::string& log_timestamp,
+                                 const std::string& signing_key,
+                                 const LogMetadata& optional_log_metadata) {
   DCHECK(!log_data.empty());
 
   if (!compression::GzipCompress(log_data, &compressed_log_data)) {
@@ -162,12 +161,15 @@ void UnsentLogStore::LogInfo::Init(const std::string& log_data,
   log_metadata = optional_log_metadata;
 }
 
-void UnsentLogStore::LogInfo::Init(const std::string& log_data,
-                                   const std::string& signing_key,
-                                   const LogMetadata& optional_log_metadata) {
-  Init(log_data, base::NumberToString(base::Time::Now().ToTimeT()), signing_key,
-       optional_log_metadata);
-}
+UnsentLogStore::LogInfo::LogInfo(const std::string& log_data,
+                                 const std::string& signing_key,
+                                 const LogMetadata& optional_log_metadata)
+    : LogInfo(log_data,
+              base::NumberToString(base::Time::Now().ToTimeT()),
+              signing_key,
+              optional_log_metadata) {}
+
+UnsentLogStore::LogInfo::~LogInfo() = default;
 
 UnsentLogStore::UnsentLogStore(std::unique_ptr<UnsentLogStoreMetrics> metrics,
                                PrefService* local_state,
@@ -373,8 +375,8 @@ void UnsentLogStore::LoadPersistedUnsentLogs() {
 void UnsentLogStore::StoreLog(const std::string& log_data,
                               const LogMetadata& log_metadata,
                               MetricsLogsEventManager::CreateReason reason) {
-  std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
-  info->Init(log_data, signing_key_, log_metadata);
+  std::unique_ptr<LogInfo> info =
+      std::make_unique<LogInfo>(log_data, signing_key_, log_metadata);
   StoreLogInfo(std::move(info), log_data.size(), reason);
 }
 
@@ -409,8 +411,8 @@ std::string UnsentLogStore::ReplaceLogAtIndex(size_t index,
   std::string old_hash;
   old_hash.swap(list_[index]->hash);
 
-  std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>();
-  info->Init(new_log_data, old_timestamp, signing_key_, log_metadata);
+  std::unique_ptr<LogInfo> info = std::make_unique<LogInfo>(
+      new_log_data, old_timestamp, signing_key_, log_metadata);
   // Note that both the compression ratio of the new log and the log that is
   // being replaced are recorded.
   metrics_->RecordCompressionRatio(info->compressed_log_data.size(),

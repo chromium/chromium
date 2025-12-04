@@ -93,11 +93,6 @@ class UnsentLogStore : public LogStore {
   struct LogInfo {
     LogInfo();
 
-    LogInfo(const LogInfo&) = delete;
-    LogInfo& operator=(const LogInfo&) = delete;
-
-    ~LogInfo();
-
     // Initializes the members based on uncompressed |log_data|,
     // |log_timestamp|, and |signing_key|. |log_data| is the uncompressed
     // serialized log protobuf. A hash and a signature are computed from
@@ -105,18 +100,21 @@ class UnsentLogStore : public LogStore {
     // will be compressed and stored in |compressed_log_data|. |log_timestamp|
     // is stored as is. |log_metadata| is any optional metadata that will be
     // attached to the log.
-    // TODO(crbug.com/40119012): Make this a ctor instead.
-    void Init(const std::string& log_data,
-              const std::string& log_timestamp,
-              const std::string& signing_key,
-              const LogMetadata& log_metadata);
+    LogInfo(const std::string& log_data,
+            const std::string& log_timestamp,
+            const std::string& signing_key,
+            const LogMetadata& log_metadata);
 
     // Same as above, but the |timestamp| field will be filled with the current
     // time.
-    // TODO(crbug.com/40119012): Make this a ctor instead.
-    void Init(const std::string& log_data,
-              const std::string& signing_key,
-              const LogMetadata& log_metadata);
+    LogInfo(const std::string& log_data,
+            const std::string& signing_key,
+            const LogMetadata& log_metadata);
+
+    LogInfo(const LogInfo&) = delete;
+    LogInfo& operator=(const LogInfo&) = delete;
+
+    ~LogInfo();
 
     // Compressed log data - a serialized protobuf that's been gzipped.
     std::string compressed_log_data;

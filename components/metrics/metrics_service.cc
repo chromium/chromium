@@ -1662,8 +1662,8 @@ MetricsService::FinalizedLog MetricsService::FinalizeLog(
 
   FinalizedLog finalized_log;
   finalized_log.uncompressed_log_size = log_data.size();
-  finalized_log.log_info = std::make_unique<UnsentLogStore::LogInfo>();
-  finalized_log.log_info->Init(log_data, signing_key, log->log_metadata());
+  finalized_log.log_info = std::make_unique<UnsentLogStore::LogInfo>(
+      log_data, signing_key, log->log_metadata());
   return finalized_log;
 }
 
