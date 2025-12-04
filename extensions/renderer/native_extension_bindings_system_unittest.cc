@@ -1395,35 +1395,66 @@ INSTANTIATE_TEST_SUITE_P(
     FeatureAvailabilityNativeExtensionBindingsSystemUnittest,
     testing::Bool());
 
+class NativeExtensionBindingsSystemBrowserUnittest
+    : public NativeExtensionBindingsSystemUnittest {
+ protected:
+  void Verify(const scoped_refptr<const Extension>& extension) {
+    RegisterExtension(extension);
+
+    v8::HandleScope handle_scope(isolate());
+    v8::Local<v8::Context> context = MainContext();
+
+    ScriptContext* script_context = CreateScriptContext(
+        context, extension.get(), mojom::ContextType::kPrivilegedExtension);
+    script_context->set_url(extension->url());
+
+    // Set `window.browser` to a non-object (string).
+    v8::Local<v8::String> browser_str = gin::StringToV8(isolate(), "a string");
+    context->Global()
+        ->Set(context, gin::StringToSymbol(isolate(), "browser"), browser_str)
+        .Check();
+
+    // This should not crash.
+    bindings_system()->UpdateBindingsForContext(script_context);
+  }
+};
+
 // Tests that updating bindings does not crash if the global "browser" property
 // is defined but is not an object when the
 // `extensions_features::kExtensionBrowserNamespaceAlternative` feature is
 // enabled. Regression test for crbug.com/459049475.
-// TODO(crbug.com/459049475): Create a test for `set_restricted_accessor` too.
-TEST_F(NativeExtensionBindingsSystemUnittest, TestWindowBrowserCrash) {
+TEST_F(NativeExtensionBindingsSystemBrowserUnittest,
+       TestWindowBrowserCrashNonRestricted) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       extensions_features::kExtensionBrowserNamespaceAlternative);
 
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("foo").SetManifestVersion(3).Build();
-  RegisterExtension(extension);
+  Verify(extension);
+}
 
-  v8::HandleScope handle_scope(isolate());
-  v8::Local<v8::Context> context = MainContext();
+// Same regression test as above but for restricted APIs.
+// Note: Although we set `window.browser` to a non-object here, this doesn't
+// actually test the restricted API setup logic. This is because the standard
+// API setup (used for APIs like `runtime`) runs first and aborts if
+// `window.browser` is invalid (before the restricted API setup can run). So
+// restricted API setup is currently unreachable if `window.browser` is invalid.
+// However, we still include this test to guard against future changes where the
+// order might flip or standard APIs (like `runtime`) might not be present.
+TEST_F(NativeExtensionBindingsSystemBrowserUnittest,
+       TestWindowBrowserCrashRestricted) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {extensions_features::kExtensionBrowserNamespaceAlternative,
+       extensions_features::kDebuggerAPIRestrictedToDevMode},
+      {});
 
-  ScriptContext* script_context = CreateScriptContext(
-      context, extension.get(), mojom::ContextType::kPrivilegedExtension);
-  script_context->set_url(extension->url());
-
-  // Set `window.browser` to a non-object (string).
-  v8::Local<v8::String> browser_str = gin::StringToV8(isolate(), "a string");
-  context->Global()
-      ->Set(context, gin::StringToSymbol(isolate(), "browser"), browser_str)
-      .Check();
-
-  // This should not crash.
-  bindings_system()->UpdateBindingsForContext(script_context);
+  scoped_refptr<const Extension> extension = ExtensionBuilder("foo")
+                                                 .SetManifestVersion(3)
+                                                 .AddAPIPermission("debugger")
+                                                 .Build();
+  Verify(extension);
 }
 
 }  // namespace extensions
