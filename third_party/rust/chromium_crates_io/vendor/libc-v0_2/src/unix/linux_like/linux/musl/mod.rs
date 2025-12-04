@@ -63,36 +63,29 @@ impl siginfo_t {
     }
 }
 
-// Internal, for casts to access union fields
-#[repr(C)]
-struct sifields_sigchld {
-    si_pid: crate::pid_t,
-    si_uid: crate::uid_t,
-    si_status: c_int,
-    si_utime: c_long,
-    si_stime: c_long,
-}
-impl Copy for sifields_sigchld {}
-impl Clone for sifields_sigchld {
-    fn clone(&self) -> sifields_sigchld {
-        *self
+s_no_extra_traits! {
+    // Internal, for casts to access union fields
+    struct sifields_sigchld {
+        si_pid: crate::pid_t,
+        si_uid: crate::uid_t,
+        si_status: c_int,
+        si_utime: c_long,
+        si_stime: c_long,
     }
-}
 
-// Internal, for casts to access union fields
-#[repr(C)]
-union sifields {
-    _align_pointer: *mut c_void,
-    sigchld: sifields_sigchld,
-}
+    // Internal, for casts to access union fields
+    union sifields {
+        _align_pointer: *mut c_void,
+        sigchld: sifields_sigchld,
+    }
 
-// Internal, for casts to access union fields. Note that some variants
-// of sifields start with a pointer, which makes the alignment of
-// sifields vary on 32-bit and 64-bit architectures.
-#[repr(C)]
-struct siginfo_f {
-    _siginfo_base: [c_int; 3],
-    sifields: sifields,
+    // Internal, for casts to access union fields. Note that some variants
+    // of sifields start with a pointer, which makes the alignment of
+    // sifields vary on 32-bit and 64-bit architectures.
+    struct siginfo_f {
+        _siginfo_base: [c_int; 3],
+        sifields: sifields,
+    }
 }
 
 impl siginfo_t {
@@ -192,7 +185,7 @@ s! {
         #[cfg(target_endian = "little")]
         pub f_fsid: c_ulong,
         #[cfg(target_pointer_width = "32")]
-        __pad: c_int,
+        __pad: Padding<c_int>,
         #[cfg(target_endian = "big")]
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
@@ -212,7 +205,7 @@ s! {
         #[cfg(target_endian = "little")]
         pub f_fsid: c_ulong,
         #[cfg(target_pointer_width = "32")]
-        __pad: c_int,
+        __pad: Padding<c_int>,
         #[cfg(target_endian = "big")]
         pub f_fsid: c_ulong,
         pub f_flag: c_ulong,
@@ -252,7 +245,7 @@ s! {
     pub struct regex_t {
         __re_nsub: size_t,
         __opaque: *mut c_void,
-        __padding: [*mut c_void; 4usize],
+        __padding: Padding<[*mut c_void; 4usize]>,
         __nsub2: size_t,
         __padding2: c_char,
     }
@@ -422,9 +415,7 @@ s! {
         pub f_flags: c_ulong,
         pub f_spare: [c_ulong; 4],
     }
-}
 
-s_no_extra_traits! {
     pub struct sysinfo {
         pub uptime: c_ulong,
         pub loads: [c_ulong; 3],
@@ -444,7 +435,7 @@ s_no_extra_traits! {
 
     pub struct utmpx {
         pub ut_type: c_short,
-        __ut_pad1: c_short,
+        __ut_pad1: Padding<c_short>,
         pub ut_pid: crate::pid_t,
         pub ut_line: [c_char; 32],
         pub ut_id: [c_char; 4],
@@ -462,110 +453,18 @@ s_no_extra_traits! {
 
         #[cfg(musl_v1_2_3)]
         #[cfg(not(target_endian = "little"))]
-        __ut_pad2: c_int,
+        __ut_pad2: Padding<c_int>,
 
         #[cfg(musl_v1_2_3)]
         pub ut_session: c_int,
 
         #[cfg(musl_v1_2_3)]
         #[cfg(target_endian = "little")]
-        __ut_pad2: c_int,
+        __ut_pad2: Padding<c_int>,
 
         pub ut_tv: crate::timeval,
         pub ut_addr_v6: [c_uint; 4],
-        __unused: [c_char; 20],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sysinfo {
-            fn eq(&self, other: &sysinfo) -> bool {
-                self.uptime == other.uptime
-                    && self.loads == other.loads
-                    && self.totalram == other.totalram
-                    && self.freeram == other.freeram
-                    && self.sharedram == other.sharedram
-                    && self.bufferram == other.bufferram
-                    && self.totalswap == other.totalswap
-                    && self.freeswap == other.freeswap
-                    && self.procs == other.procs
-                    && self.pad == other.pad
-                    && self.totalhigh == other.totalhigh
-                    && self.freehigh == other.freehigh
-                    && self.mem_unit == other.mem_unit
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sysinfo {}
-
-        impl hash::Hash for sysinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uptime.hash(state);
-                self.loads.hash(state);
-                self.totalram.hash(state);
-                self.freeram.hash(state);
-                self.sharedram.hash(state);
-                self.bufferram.hash(state);
-                self.totalswap.hash(state);
-                self.freeswap.hash(state);
-                self.procs.hash(state);
-                self.pad.hash(state);
-                self.totalhigh.hash(state);
-                self.freehigh.hash(state);
-                self.mem_unit.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for utmpx {
-            #[allow(deprecated)]
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    //&& self.__ut_pad1 == other.__ut_pad1
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_line == other.ut_line
-                    && self.ut_id == other.ut_id
-                    && self.ut_user == other.ut_user
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a,b)| a == b)
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    //&& self.__ut_pad2 == other.__ut_pad2
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_addr_v6 == other.ut_addr_v6
-                    && self.__unused == other.__unused
-            }
-        }
-
-        impl Eq for utmpx {}
-
-        impl hash::Hash for utmpx {
-            #[allow(deprecated)]
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_type.hash(state);
-                //self.__ut_pad1.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_user.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                //self.__ut_pad2.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_addr_v6.hash(state);
-                self.__unused.hash(state);
-            }
-        }
+        __unused: Padding<[c_char; 20]>,
     }
 }
 
@@ -848,20 +747,6 @@ cfg_if! {
 }
 
 extern "C" {
-    pub fn sendmmsg(
-        sockfd: c_int,
-        msgvec: *mut crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_uint,
-    ) -> c_int;
-    pub fn recvmmsg(
-        sockfd: c_int,
-        msgvec: *mut crate::mmsghdr,
-        vlen: c_uint,
-        flags: c_uint,
-        timeout: *mut crate::timespec,
-    ) -> c_int;
-
     pub fn getrlimit(resource: c_int, rlim: *mut crate::rlimit) -> c_int;
     pub fn setrlimit(resource: c_int, rlim: *const crate::rlimit) -> c_int;
     pub fn prlimit(

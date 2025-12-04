@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "libc"
-version = "0.2.177"
+version = "0.2.178"
 authors = ["The Rust Project Developers"]
 build = "build.rs"
 exclude = [
@@ -21,6 +21,7 @@ exclude = [
     "/.github/*",
     "/.cirrus.yml",
     "/triagebot.toml",
+    "cherry-pick-stable.sh",
 ]
 autolib = false
 autobins = false
@@ -158,6 +159,10 @@ targets = [
     "x86_64-wrs-vxworks",
 ]
 cargo-args = ["-Zbuild-std=core"]
+
+[package.metadata.cargo-semver-checks.lints]
+repr_align_removed = "warn"
+global_value_marked_deprecated = "warn"
 
 [features]
 align = []

@@ -1,10 +1,8 @@
 //! Header: `uapi/linux/can.h`
 
+pub(crate) mod bcm;
 pub(crate) mod j1939;
 pub(crate) mod raw;
-
-pub use j1939::*;
-pub use raw::*;
 
 use crate::prelude::*;
 
@@ -43,7 +41,7 @@ s! {
         pub can_id: canid_t,
         // FIXME(1.0): this field was renamed to `len` in Linux 5.11
         pub can_dlc: u8,
-        __pad: u8,
+        __pad: Padding<u8>,
         __res0: u8,
         pub len8_dlc: u8,
         pub data: [u8; CAN_MAX_DLEN],
@@ -70,7 +68,6 @@ pub const CANXL_XLF: c_int = 0x80;
 pub const CANXL_SEC: c_int = 0x01;
 
 s! {
-    #[repr(align(8))]
     pub struct canxl_frame {
         pub prio: canid_t,
         pub flags: u8,

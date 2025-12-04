@@ -59,13 +59,8 @@ cfg_if! {
 
 // link.h
 
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
 }
 
 impl siginfo_t {
@@ -118,12 +113,12 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
         pub gl_pathv: *mut *mut c_char,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
-        __unused6: *mut c_void,
-        __unused7: *mut c_void,
-        __unused8: *mut c_void,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
+        __unused6: Padding<*mut c_void>,
+        __unused7: Padding<*mut c_void>,
+        __unused8: Padding<*mut c_void>,
     }
 
     pub struct addrinfo {
@@ -150,8 +145,8 @@ s! {
         pub si_status: c_int,
         pub si_addr: *mut c_void,
         pub si_value: crate::sigval,
-        _pad1: c_long,
-        _pad2: [c_int; 7],
+        _pad1: Padding<c_long>,
+        _pad2: Padding<[c_int; 7]>,
     }
 
     pub struct sigaction {
@@ -386,43 +381,13 @@ s! {
     pub struct eui64 {
         pub octet: [u8; EUI64_LEN],
     }
-}
 
-s_no_extra_traits! {
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: crate::sa_family_t,
-        __ss_pad1: [u8; 6],
+        __ss_pad1: Padding<[u8; 6]>,
         __ss_align: i64,
-        __ss_pad2: [u8; 112],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_len == other.ss_len
-                    && self.ss_family == other.ss_family
-                    && self.__ss_pad1 == other.__ss_pad1
-                    && self.__ss_align == other.__ss_align
-                    && self
-                        .__ss_pad2
-                        .iter()
-                        .zip(other.__ss_pad2.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_storage {}
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_len.hash(state);
-                self.ss_family.hash(state);
-                self.__ss_pad1.hash(state);
-                self.__ss_align.hash(state);
-                self.__ss_pad2.hash(state);
-            }
-        }
+        __ss_pad2: Padding<[u8; 112]>,
     }
 }
 
@@ -577,9 +542,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const F_LOCK: c_int = 1;
 pub const F_TEST: c_int = 3;
 pub const F_TLOCK: c_int = 2;

@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use crate::{cmsghdr, off_t};
+use crate::{
+    cmsghdr,
+    off_t,
+};
 
 pub type dev_t = u32;
 pub type wchar_t = i32;
@@ -45,13 +48,8 @@ pub type vm_map_entry_t = *mut vm_map_entry;
 
 pub type pmap = __c_anonymous_pmap;
 
-#[derive(Debug)]
-pub enum sem {}
-impl Copy for sem {}
-impl Clone for sem {
-    fn clone(&self) -> sem {
-        *self
-    }
+extern_ty! {
+    pub enum sem {}
 }
 
 e! {
@@ -411,9 +409,7 @@ s! {
         pub data: *mut c_void,
         pub size: size_t,
     }
-}
 
-s_no_extra_traits! {
     pub struct utmpx {
         pub ut_name: [c_char; 32],
         pub ut_id: [c_char; 4],
@@ -442,8 +438,8 @@ s_no_extra_traits! {
         pub d_fileno: crate::ino_t,
         pub d_namlen: u16,
         pub d_type: u8,
-        __unused1: u8,
-        __unused2: u32,
+        __unused1: Padding<u8>,
+        __unused2: Padding<u32>,
         pub d_name: [c_char; 256],
     }
 
@@ -476,13 +472,13 @@ s_no_extra_traits! {
         pub sigev_notify: c_int,
         // The union is 8-byte in size, so it is aligned at a 8-byte offset.
         #[cfg(target_pointer_width = "64")]
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub sigev_signo: c_int, //actually a union
         // pad the union
         #[cfg(target_pointer_width = "64")]
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub sigev_value: crate::sigval,
-        __unused3: *mut c_void, //actually a function pointer
+        __unused3: Padding<*mut c_void>, //actually a function pointer
     }
 
     pub struct mcontext_t {
@@ -515,9 +511,9 @@ s_no_extra_traits! {
         pub mc_len: c_uint,
         pub mc_fpformat: c_uint,
         pub mc_ownedfp: c_uint,
-        __reserved: c_uint,
-        __unused: [c_uint; 8],
-        pub mc_fpregs: [[c_uint; 8]; 32],
+        __reserved: Padding<c_uint>,
+        __unused: Padding<[c_uint; 8]>,
+        pub mc_fpregs: [c_uint; 256],
     }
 
     // FIXME(1.0): This should not implement `PartialEq`
@@ -529,256 +525,7 @@ s_no_extra_traits! {
         pub uc_stack: stack_t,
         pub uc_cofunc: Option<unsafe extern "C" fn(uc: *mut ucontext_t, arg: *mut c_void)>,
         pub uc_arg: *mut c_void,
-        __pad: [c_int; 4],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_name == other.ut_name
-                    && self.ut_id == other.ut_id
-                    && self.ut_line == other.ut_line
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self.ut_unused == other.ut_unused
-                    && self.ut_session == other.ut_session
-                    && self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_ss == other.ut_ss
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_unused2 == other.ut_unused2
-            }
-        }
-        impl Eq for utmpx {}
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_name.hash(state);
-                self.ut_id.hash(state);
-                self.ut_line.hash(state);
-                self.ut_host.hash(state);
-                self.ut_unused.hash(state);
-                self.ut_session.hash(state);
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_ss.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_unused2.hash(state);
-            }
-        }
-        impl PartialEq for lastlogx {
-            fn eq(&self, other: &lastlogx) -> bool {
-                self.ll_tv == other.ll_tv
-                    && self.ll_line == other.ll_line
-                    && self.ll_host == other.ll_host
-                    && self.ll_ss == other.ll_ss
-            }
-        }
-        impl Eq for lastlogx {}
-        impl hash::Hash for lastlogx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ll_tv.hash(state);
-                self.ll_line.hash(state);
-                self.ll_host.hash(state);
-                self.ll_ss.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_fileno == other.d_fileno
-                    && self.d_namlen == other.d_namlen
-                    && self.d_type == other.d_type
-                    // Ignore __unused1
-                    // Ignore __unused2
-                    && self
-                    .d_name
-                    .iter()
-                    .zip(other.d_name.iter())
-                    .all(|(a,b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_fileno.hash(state);
-                self.d_namlen.hash(state);
-                self.d_type.hash(state);
-                // Ignore __unused1
-                // Ignore __unused2
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for statfs {
-            fn eq(&self, other: &statfs) -> bool {
-                self.f_bsize == other.f_bsize
-                    && self.f_iosize == other.f_iosize
-                    && self.f_blocks == other.f_blocks
-                    && self.f_bfree == other.f_bfree
-                    && self.f_bavail == other.f_bavail
-                    && self.f_files == other.f_files
-                    && self.f_ffree == other.f_ffree
-                    && self.f_fsid == other.f_fsid
-                    && self.f_owner == other.f_owner
-                    && self.f_type == other.f_type
-                    && self.f_flags == other.f_flags
-                    && self.f_syncwrites == other.f_syncwrites
-                    && self.f_asyncwrites == other.f_asyncwrites
-                    && self.f_fstypename == other.f_fstypename
-                    && self
-                        .f_mntonname
-                        .iter()
-                        .zip(other.f_mntonname.iter())
-                        .all(|(a, b)| a == b)
-                    && self.f_syncreads == other.f_syncreads
-                    && self.f_asyncreads == other.f_asyncreads
-                    && self
-                        .f_mntfromname
-                        .iter()
-                        .zip(other.f_mntfromname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for statfs {}
-        impl hash::Hash for statfs {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.f_bsize.hash(state);
-                self.f_iosize.hash(state);
-                self.f_blocks.hash(state);
-                self.f_bfree.hash(state);
-                self.f_bavail.hash(state);
-                self.f_files.hash(state);
-                self.f_ffree.hash(state);
-                self.f_fsid.hash(state);
-                self.f_owner.hash(state);
-                self.f_type.hash(state);
-                self.f_flags.hash(state);
-                self.f_syncwrites.hash(state);
-                self.f_asyncwrites.hash(state);
-                self.f_fstypename.hash(state);
-                self.f_mntonname.hash(state);
-                self.f_syncreads.hash(state);
-                self.f_asyncreads.hash(state);
-                self.f_mntfromname.hash(state);
-            }
-        }
-
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_notify == other.sigev_notify
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_value == other.sigev_value
-            }
-        }
-        impl Eq for sigevent {}
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_notify.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_value.hash(state);
-            }
-        }
-        impl PartialEq for mcontext_t {
-            fn eq(&self, other: &mcontext_t) -> bool {
-                self.mc_onstack == other.mc_onstack
-                    && self.mc_rdi == other.mc_rdi
-                    && self.mc_rsi == other.mc_rsi
-                    && self.mc_rdx == other.mc_rdx
-                    && self.mc_rcx == other.mc_rcx
-                    && self.mc_r8 == other.mc_r8
-                    && self.mc_r9 == other.mc_r9
-                    && self.mc_rax == other.mc_rax
-                    && self.mc_rbx == other.mc_rbx
-                    && self.mc_rbp == other.mc_rbp
-                    && self.mc_r10 == other.mc_r10
-                    && self.mc_r11 == other.mc_r11
-                    && self.mc_r12 == other.mc_r12
-                    && self.mc_r13 == other.mc_r13
-                    && self.mc_r14 == other.mc_r14
-                    && self.mc_r15 == other.mc_r15
-                    && self.mc_xflags == other.mc_xflags
-                    && self.mc_trapno == other.mc_trapno
-                    && self.mc_addr == other.mc_addr
-                    && self.mc_flags == other.mc_flags
-                    && self.mc_err == other.mc_err
-                    && self.mc_rip == other.mc_rip
-                    && self.mc_cs == other.mc_cs
-                    && self.mc_rflags == other.mc_rflags
-                    && self.mc_rsp == other.mc_rsp
-                    && self.mc_ss == other.mc_ss
-                    && self.mc_len == other.mc_len
-                    && self.mc_fpformat == other.mc_fpformat
-                    && self.mc_ownedfp == other.mc_ownedfp
-                    && self.mc_fpregs == other.mc_fpregs
-            }
-        }
-        impl Eq for mcontext_t {}
-        impl hash::Hash for mcontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.mc_onstack.hash(state);
-                self.mc_rdi.hash(state);
-                self.mc_rsi.hash(state);
-                self.mc_rdx.hash(state);
-                self.mc_rcx.hash(state);
-                self.mc_r8.hash(state);
-                self.mc_r9.hash(state);
-                self.mc_rax.hash(state);
-                self.mc_rbx.hash(state);
-                self.mc_rbp.hash(state);
-                self.mc_r10.hash(state);
-                self.mc_r11.hash(state);
-                self.mc_r10.hash(state);
-                self.mc_r11.hash(state);
-                self.mc_r12.hash(state);
-                self.mc_r13.hash(state);
-                self.mc_r14.hash(state);
-                self.mc_r15.hash(state);
-                self.mc_xflags.hash(state);
-                self.mc_trapno.hash(state);
-                self.mc_addr.hash(state);
-                self.mc_flags.hash(state);
-                self.mc_err.hash(state);
-                self.mc_rip.hash(state);
-                self.mc_cs.hash(state);
-                self.mc_rflags.hash(state);
-                self.mc_rsp.hash(state);
-                self.mc_ss.hash(state);
-                self.mc_len.hash(state);
-                self.mc_fpformat.hash(state);
-                self.mc_ownedfp.hash(state);
-                self.mc_fpregs.hash(state);
-            }
-        }
-        // FIXME(msrv): suggested method was added in 1.85
-        #[allow(unpredictable_function_pointer_comparisons)]
-        impl PartialEq for ucontext_t {
-            fn eq(&self, other: &ucontext_t) -> bool {
-                self.uc_sigmask == other.uc_sigmask
-                    && self.uc_mcontext == other.uc_mcontext
-                    && self.uc_link == other.uc_link
-                    && self.uc_stack == other.uc_stack
-                    && self.uc_cofunc == other.uc_cofunc
-                    && self.uc_arg == other.uc_arg
-            }
-        }
-        impl Eq for ucontext_t {}
-        impl hash::Hash for ucontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uc_sigmask.hash(state);
-                self.uc_mcontext.hash(state);
-                self.uc_link.hash(state);
-                self.uc_stack.hash(state);
-                self.uc_cofunc.hash(state);
-                self.uc_arg.hash(state);
-            }
-        }
+        __pad: Padding<[c_int; 4]>,
     }
 }
 
@@ -1624,12 +1371,4 @@ extern "C" {
         map: vm_map_entry_t,
         entry: vm_map_entry_t,
     ) -> vm_map_entry_t;
-}
-
-// DIFF(main): module removed in de76fee6
-cfg_if! {
-    if #[cfg(libc_thread_local)] {
-        mod errno;
-        pub use self::errno::*;
-    }
 }

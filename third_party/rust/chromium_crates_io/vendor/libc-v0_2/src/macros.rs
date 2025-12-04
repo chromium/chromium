@@ -76,26 +76,60 @@ macro_rules! prelude {
             #[allow(unused_imports)]
             pub(crate) use core::default::Default;
             #[allow(unused_imports)]
-            pub(crate) use core::marker::{Copy, Send, Sync};
+            pub(crate) use core::marker::{
+                Copy,
+                Send,
+                Sync,
+            };
             #[allow(unused_imports)]
             pub(crate) use core::option::Option;
             #[allow(unused_imports)]
             pub(crate) use core::prelude::v1::derive;
             #[allow(unused_imports)]
-            pub(crate) use core::{fmt, hash, iter, mem, ptr};
+            pub(crate) use core::{
+                cfg,
+                fmt,
+                hash,
+                iter,
+                mem,
+                ptr,
+            };
 
             #[allow(unused_imports)]
             pub(crate) use fmt::Debug;
             #[allow(unused_imports)]
-            pub(crate) use mem::{align_of, align_of_val, size_of, size_of_val};
+            pub(crate) use mem::{
+                align_of,
+                align_of_val,
+                size_of,
+                size_of_val,
+            };
 
             #[allow(unused_imports)]
-            pub(crate) use crate::types::{CEnumRepr, Padding};
+            pub(crate) use crate::types::{
+                CEnumRepr,
+                Padding,
+            };
             // Commonly used types defined in this crate
             #[allow(unused_imports)]
             pub(crate) use crate::{
-                c_char, c_double, c_float, c_int, c_long, c_longlong, c_short, c_uchar, c_uint,
-                c_ulong, c_ulonglong, c_ushort, c_void, intptr_t, size_t, ssize_t, uintptr_t,
+                c_char,
+                c_double,
+                c_float,
+                c_int,
+                c_long,
+                c_longlong,
+                c_short,
+                c_uchar,
+                c_uint,
+                c_ulong,
+                c_ulonglong,
+                c_ushort,
+                c_void,
+                intptr_t,
+                size_t,
+                ssize_t,
+                uintptr_t,
             };
         }
     };
@@ -109,30 +143,30 @@ macro_rules! prelude {
 macro_rules! s {
     ($(
         $(#[$attr:meta])*
-        pub $t:ident $i:ident { $($field:tt)* }
+        $pub:vis $t:ident $i:ident { $($field:tt)* }
     )*) => ($(
-        s!(it: $(#[$attr])* pub $t $i { $($field)* });
+        s!(it: $(#[$attr])* $pub $t $i { $($field)* });
     )*);
 
-    (it: $(#[$attr:meta])* pub union $i:ident { $($field:tt)* }) => (
+    (it: $(#[$attr:meta])* $pub:vis union $i:ident { $($field:tt)* }) => (
         compile_error!("unions cannot derive extra traits, use s_no_extra_traits instead");
     );
 
-    (it: $(#[$attr:meta])* pub struct $i:ident { $($field:tt)* }) => (
+    (it: $(#[$attr:meta])* $pub:vis struct $i:ident { $($field:tt)* }) => (
         __item! {
             #[repr(C)]
-            #[cfg_attr(
-                feature = "extra_traits",
-                ::core::prelude::v1::derive(Eq, Hash, PartialEq)
-            )]
             #[::core::prelude::v1::derive(
                 ::core::clone::Clone,
                 ::core::marker::Copy,
                 ::core::fmt::Debug,
             )]
+            #[cfg_attr(
+                feature = "extra_traits",
+                ::core::prelude::v1::derive(Eq, Hash, PartialEq)
+            )]
             #[allow(deprecated)]
             $(#[$attr])*
-            pub struct $i { $($field)* }
+            $pub struct $i { $($field)* }
         }
     );
 }
@@ -169,17 +203,17 @@ macro_rules! s_paren {
 macro_rules! s_no_extra_traits {
     ($(
         $(#[$attr:meta])*
-        pub $t:ident $i:ident { $($field:tt)* }
+        $pub:vis $t:ident $i:ident { $($field:tt)* }
     )*) => ($(
-        s_no_extra_traits!(it: $(#[$attr])* pub $t $i { $($field)* });
+        s_no_extra_traits!(it: $(#[$attr])* $pub $t $i { $($field)* });
     )*);
 
-    (it: $(#[$attr:meta])* pub union $i:ident { $($field:tt)* }) => (
+    (it: $(#[$attr:meta])* $pub:vis union $i:ident { $($field:tt)* }) => (
         __item! {
             #[repr(C)]
             #[::core::prelude::v1::derive(::core::clone::Clone, ::core::marker::Copy)]
             $(#[$attr])*
-            pub union $i { $($field)* }
+            $pub union $i { $($field)* }
         }
 
         impl ::core::fmt::Debug for $i {
@@ -189,7 +223,7 @@ macro_rules! s_no_extra_traits {
         }
     );
 
-    (it: $(#[$attr:meta])* pub struct $i:ident { $($field:tt)* }) => (
+    (it: $(#[$attr:meta])* $pub:vis struct $i:ident { $($field:tt)* }) => (
         __item! {
             #[repr(C)]
             #[::core::prelude::v1::derive(
@@ -198,20 +232,30 @@ macro_rules! s_no_extra_traits {
                 ::core::fmt::Debug,
             )]
             $(#[$attr])*
-            pub struct $i { $($field)* }
+            $pub struct $i { $($field)* }
         }
     );
 }
 
-/// Specify that an enum should have no traits that aren't specified in the macro
-/// invocation, i.e. no `Clone` or `Copy`.
-macro_rules! missing {
+/// Create an uninhabited type that can't be constructed. It implements `Debug`, `Clone`,
+/// and `Copy`, but these aren't meaningful for extern types so they should eventually
+/// be removed.
+///
+/// Really what we want here is something that also can't be named without indirection (in
+/// ADTs or function signatures), but this doesn't exist.
+macro_rules! extern_ty {
     ($(
         $(#[$attr:meta])*
         pub enum $i:ident {}
     )*) => ($(
         $(#[$attr])*
-        #[allow(missing_copy_implementations)]
+        // FIXME(1.0): the type is uninhabited so these traits are unreachable and could be
+        // removed.
+        #[::core::prelude::v1::derive(
+            ::core::clone::Clone,
+            ::core::marker::Copy,
+            ::core::fmt::Debug,
+        )]
         pub enum $i { }
     )*);
 }
@@ -246,40 +290,68 @@ macro_rules! e {
 /// unlisted values, but this is UB in Rust. This enum doesn't implement any traits, its main
 /// purpose is to calculate the correct enum values.
 ///
+/// Use the magic name `#anon` if the C enum doesn't create a type.
+///
 /// See <https://github.com/rust-lang/libc/issues/4419> for more.
 macro_rules! c_enum {
+    // Matcher for multiple enums
     ($(
         $(#[repr($repr:ty)])?
-        pub enum $ty_name:ident {
-            $($variant:ident $(= $value:expr)?,)+
+        pub enum $($ty_name:ident)? $(#$anon:ident)? {
+            $($vis:vis $variant:ident $(= $value:expr)?,)+
         }
     )+) => {
-        $(c_enum!(@expand;
+        $(c_enum!(@single;
             $(#[repr($repr)])?
-            pub enum $ty_name {
-                $($variant $(= $value)?,)+
+            pub enum $($ty_name)? $(#$anon)? {
+                $($vis $variant $(= $value)?,)+
             }
         );)+
     };
 
-    (@expand;
+    // Matcher for a single enum
+    (@single;
         $(#[repr($repr:ty)])?
         pub enum $ty_name:ident {
-            $($variant:ident $(= $value:expr)?,)+
+            $($vis:vis $variant:ident $(= $value:expr)?,)+
         }
     ) => {
         pub type $ty_name = c_enum!(@ty $($repr)?);
-        c_enum!(@one; $ty_name; 0; $($variant $(= $value)?,)+);
+        c_enum! {
+            @variant;
+            ty: $ty_name;
+            default: 0;
+            variants: [$($vis $variant $(= $value)?,)+]
+        }
     };
 
-    // Matcher for a single variant
-    (@one; $_ty_name:ident; $_idx:expr;) => {};
-    (
-        @one; $ty_name:ident; $default_val:expr;
-        $variant:ident $(= $value:expr)?,
-        $($tail:tt)*
+    // Matcher for a single anonymous enum
+    (@single;
+        $(#[repr($repr:ty)])?
+        pub enum #anon {
+            $($vis:vis $variant:ident $(= $value:expr)?,)+
+        }
     ) => {
-        pub const $variant: $ty_name = {
+        c_enum! {
+            @variant;
+            ty: c_enum!(@ty $($repr)?);
+            default: 0;
+            variants: [$($vis $variant $(= $value)?,)+]
+        }
+    };
+
+    // Matcher for variants: eats a single variant then recurses with the rest
+    (@variant; ty: $_ty_name:ty; default: $_idx:expr; variants: []) => { /* end of the chain */ };
+    (
+        @variant;
+        ty: $ty_name:ty;
+        default: $default_val:expr;
+        variants: [
+            $vis:vis $variant:ident $(= $value:expr)?,
+            $($tail:tt)*
+        ]
+    ) => {
+        $vis const $variant: $ty_name = {
             #[allow(unused_variables)]
             let r = $default_val;
             $(let r = $value;)?
@@ -288,7 +360,12 @@ macro_rules! c_enum {
 
         // The next value is always one more than the previous value, unless
         // set explicitly.
-        c_enum!(@one; $ty_name; $variant + 1; $($tail)*);
+        c_enum! {
+            @variant;
+            ty: $ty_name;
+            default: $variant + 1;
+            variants: [$($tail)*]
+        }
     };
 
     // Use a specific type if provided, otherwise default to `CEnumRepr`
@@ -370,12 +447,31 @@ macro_rules! deprecated_mach {
     }
 }
 
+/// Polyfill for std's `offset_of`.
+// FIXME(msrv): stabilized in std in 1.77
+macro_rules! offset_of {
+    ($Ty:path, $field:ident) => {{
+        // Taken from bytemuck, avoids accidentally calling on deref
+        #[allow(clippy::unneeded_field_pattern)]
+        let $Ty { $field: _, .. };
+        let data = core::mem::MaybeUninit::<$Ty>::uninit();
+        let ptr = data.as_ptr();
+        // SAFETY: computed address is inbounds since we have a stack alloc for T
+        let fptr = unsafe { core::ptr::addr_of!((*ptr).$field) };
+        let off = (fptr as usize).checked_sub(ptr as usize).unwrap();
+        assert!(off <= core::mem::size_of::<$Ty>());
+        off
+    }};
+}
+
 #[cfg(test)]
 mod tests {
+    use core::any::TypeId;
+
     use crate::types::CEnumRepr;
 
     #[test]
-    fn c_enumbasic() {
+    fn c_enum_basic() {
         // By default, variants get sequential values.
         c_enum! {
             pub enum e {
@@ -383,28 +479,50 @@ mod tests {
                 VAR1,
                 VAR2,
             }
+
+            // Also check enums that don't create a type.
+            pub enum #anon {
+                ANON0,
+                ANON1,
+                ANON2,
+            }
         }
 
+        assert_eq!(TypeId::of::<e>(), TypeId::of::<CEnumRepr>());
         assert_eq!(VAR0, 0 as CEnumRepr);
         assert_eq!(VAR1, 1 as CEnumRepr);
         assert_eq!(VAR2, 2 as CEnumRepr);
+
+        assert_eq!(type_id_of_val(&ANON0), TypeId::of::<CEnumRepr>());
+        assert_eq!(ANON0, 0 as CEnumRepr);
+        assert_eq!(ANON1, 1 as CEnumRepr);
+        assert_eq!(ANON2, 2 as CEnumRepr);
     }
 
     #[test]
-    fn c_enumrepr() {
-        // By default, variants get sequential values.
+    fn c_enum_repr() {
+        // Check specifying the integer representation
         c_enum! {
             #[repr(u16)]
             pub enum e {
                 VAR0,
             }
+
+            #[repr(u16)]
+            pub enum #anon {
+                ANON0,
+            }
         }
 
+        assert_eq!(TypeId::of::<e>(), TypeId::of::<u16>());
         assert_eq!(VAR0, 0_u16);
+
+        assert_eq!(type_id_of_val(&ANON0), TypeId::of::<u16>());
+        assert_eq!(ANON0, 0_u16);
     }
 
     #[test]
-    fn c_enumset_value() {
+    fn c_enum_set_value() {
         // Setting an explicit value resets the count.
         c_enum! {
             pub enum e {
@@ -420,7 +538,7 @@ mod tests {
     }
 
     #[test]
-    fn c_enummultiple_set_value() {
+    fn c_enum_multiple_set_value() {
         // C enums always take one more than the previous value, unless set to a specific
         // value. Duplicates are allowed.
         c_enum! {
@@ -442,5 +560,101 @@ mod tests {
         assert_eq!(VAR2_1, 2 as CEnumRepr);
         assert_eq!(VAR3_1, 3 as CEnumRepr);
         assert_eq!(VAR4_1, 4 as CEnumRepr);
+    }
+
+    #[test]
+    fn c_enum_vis() {
+        mod priv1 {
+            c_enum! {
+                #[repr(u8)]
+                pub enum e1 {
+                    PRIV_ON_1 = 10,
+                    // Variant should still be usable within its visibility
+                    pub PUB1 = PRIV_ON_1 * 2,
+                }
+            }
+        }
+        mod priv2 {
+            c_enum! {
+                #[repr(u16)]
+                pub enum e2 {
+                    pub PRIV_ON_1 = 42,
+                    pub PUB2 = PRIV_ON_1 * 2,
+                }
+            }
+        }
+
+        use priv1::*;
+        use priv2::*;
+
+        assert_eq!(TypeId::of::<e1>(), TypeId::of::<u8>());
+        assert_eq!(TypeId::of::<e2>(), TypeId::of::<u16>());
+        assert_eq!(PUB1, 10u8 * 2);
+        assert_eq!(PUB2, 42u16 * 2);
+        // Verify that the default is private. If `PRIV_ON_1` was actually public in `priv1`, this
+        // would be an ambiguous import and/or type mismatch error.
+        assert_eq!(PRIV_ON_1, 42u16);
+    }
+
+    fn type_id_of_val<T: 'static>(_: &T) -> TypeId {
+        TypeId::of::<T>()
+    }
+
+    #[test]
+    fn test_offset_of() {
+        #[repr(C)]
+        struct Off1 {
+            a: u8,
+            b: u32,
+            c: Off2,
+            d: u64,
+        }
+
+        #[repr(C)]
+        #[repr(align(128))]
+        struct Off2 {}
+
+        assert_eq!(core::mem::offset_of!(Off1, a), offset_of!(Off1, a));
+        assert_eq!(core::mem::offset_of!(Off1, b), offset_of!(Off1, b));
+        assert_eq!(core::mem::offset_of!(Off1, c), offset_of!(Off1, c));
+        assert_eq!(core::mem::offset_of!(Off1, d), offset_of!(Off1, d));
+    }
+}
+
+#[cfg(test)]
+#[allow(unused)]
+mod macro_checks {
+    s! {
+        pub struct S1 {
+            pub a: u32,
+            b: u32,
+        }
+
+        struct S1Priv {
+            pub a: u32,
+            b: u32,
+        }
+    }
+
+    s_no_extra_traits! {
+        pub struct S2 {
+            pub a: u32,
+            b: u32,
+        }
+
+        struct S2Priv {
+            pub a: u32,
+            b: u32,
+        }
+
+        pub union U2 {
+            pub a: u32,
+            b: f32,
+        }
+
+        union U2Priv {
+            pub a: u32,
+            b: f32,
+        }
     }
 }

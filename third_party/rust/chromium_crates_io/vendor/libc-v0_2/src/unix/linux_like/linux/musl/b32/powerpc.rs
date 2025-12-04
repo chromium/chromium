@@ -33,7 +33,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_long; 2],
+        __unused: Padding<[c_long; 2]>,
     }
 
     pub struct stat64 {
@@ -54,7 +54,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_long; 2],
+        __unused: Padding<[c_long; 2]>,
     }
 
     pub struct stack_t {
@@ -79,43 +79,43 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         pub __seq: c_int,
-        __pad1: c_int,
-        __pad2: c_longlong,
-        __pad3: c_longlong,
+        __pad1: Padding<c_int>,
+        __pad2: Padding<c_longlong>,
+        __pad3: Padding<c_longlong>,
     }
 
     pub struct shmid_ds {
         pub shm_perm: crate::ipc_perm,
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub shm_atime: crate::time_t,
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub shm_dtime: crate::time_t,
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub shm_ctime: crate::time_t,
-        __unused4: c_int,
+        __unused4: Padding<c_int>,
         pub shm_segsz: size_t,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub msg_stime: crate::time_t,
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub msg_rtime: crate::time_t,
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub msg_ctime: crate::time_t,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 }
 
@@ -222,9 +222,6 @@ pub const MAP_SYNC: c_int = 0x080000;
 
 pub const PTRACE_SYSEMU: c_int = 0x1d;
 pub const PTRACE_SYSEMU_SINGLESTEP: c_int = 0x1e;
-
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
 
 pub const EDEADLK: c_int = 35;
 pub const ENAMETOOLONG: c_int = 36;

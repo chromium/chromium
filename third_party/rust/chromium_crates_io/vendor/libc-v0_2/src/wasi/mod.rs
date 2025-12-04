@@ -33,6 +33,10 @@ pub type wchar_t = i32;
 pub type nl_item = c_int;
 pub type __wasi_rights_t = u64;
 pub type locale_t = *mut __locale_struct;
+pub type pthread_t = *mut c_void;
+pub type pthread_once_t = c_int;
+pub type pthread_key_t = c_uint;
+pub type pthread_spinlock_t = c_int;
 
 s_no_extra_traits! {
     #[repr(align(16))]
@@ -155,7 +159,7 @@ s! {
         pub st_mode: mode_t,
         pub st_uid: uid_t,
         pub st_gid: gid_t,
-        __pad0: c_uint,
+        __pad0: Padding<c_uint>,
         pub st_rdev: dev_t,
         pub st_size: off_t,
         pub st_blksize: blksize_t,
@@ -163,12 +167,48 @@ s! {
         pub st_atim: timespec,
         pub st_mtim: timespec,
         pub st_ctim: timespec,
-        __reserved: [c_longlong; 3],
+        __reserved: Padding<[c_longlong; 3]>,
     }
 
     pub struct fd_set {
         __nfds: usize,
         __fds: [c_int; FD_SETSIZE as usize],
+    }
+
+    pub struct pthread_attr_t {
+        size: [c_long; 9],
+    }
+
+    pub struct pthread_mutexattr_t {
+        __attr: c_uint,
+    }
+
+    pub struct pthread_condattr_t {
+        __attr: c_uint,
+    }
+
+    pub struct pthread_barrierattr_t {
+        __attr: c_uint,
+    }
+
+    pub struct pthread_rwlockattr_t {
+        __attr: [c_uint; 2],
+    }
+
+    pub struct pthread_cond_t {
+        size: [*mut c_void; 12],
+    }
+
+    pub struct pthread_mutex_t {
+        size: [*mut c_void; 6],
+    }
+
+    pub struct pthread_rwlock_t {
+        size: [*mut c_void; 8],
+    }
+
+    pub struct pthread_barrier_t {
+        size: [*mut c_void; 5],
     }
 }
 
@@ -262,7 +302,9 @@ pub const DT_BLK: u8 = 1;
 pub const DT_CHR: u8 = 2;
 pub const DT_DIR: u8 = 3;
 pub const DT_REG: u8 = 4;
+pub const DT_FIFO: u8 = 6;
 pub const DT_LNK: u8 = 7;
+pub const DT_SOCK: u8 = 20;
 pub const FIONREAD: c_int = 1;
 pub const FIONBIO: c_int = 2;
 pub const F_OK: c_int = 0;
@@ -437,6 +479,9 @@ pub const YESEXPR: crate::nl_item = 0x50000;
 pub const NOEXPR: crate::nl_item = 0x50001;
 pub const YESSTR: crate::nl_item = 0x50002;
 pub const NOSTR: crate::nl_item = 0x50003;
+
+pub const PTHREAD_STACK_MIN: usize = 2048;
+pub const TIMER_ABSTIME: c_int = 1;
 
 f! {
     pub fn FD_ISSET(fd: c_int, set: *const fd_set) -> bool {
@@ -748,6 +793,7 @@ extern "C" {
         timeout: *const timeval,
     ) -> c_int;
 
+    #[cfg(target_env = "p1")]
     pub fn __wasilibc_register_preopened_fd(fd: c_int, path: *const c_char) -> c_int;
     pub fn __wasilibc_fd_renumber(fd: c_int, newfd: c_int) -> c_int;
     pub fn __wasilibc_unlinkat(fd: c_int, path: *const c_char) -> c_int;
@@ -843,6 +889,72 @@ extern "C" {
     pub fn arc4random_uniform(a: u32) -> u32;
 
     pub fn __errno_location() -> *mut c_int;
+
+    pub fn chmod(path: *const c_char, mode: mode_t) -> c_int;
+    pub fn fchmod(fd: c_int, mode: mode_t) -> c_int;
+    pub fn realpath(pathname: *const c_char, resolved: *mut c_char) -> *mut c_char;
+
+    pub fn pthread_self() -> pthread_t;
+    pub fn pthread_create(
+        native: *mut pthread_t,
+        attr: *const pthread_attr_t,
+        f: extern "C" fn(*mut c_void) -> *mut c_void,
+        value: *mut c_void,
+    ) -> c_int;
+    pub fn pthread_equal(t1: pthread_t, t2: pthread_t) -> c_int;
+    pub fn pthread_join(native: pthread_t, value: *mut *mut c_void) -> c_int;
+    pub fn pthread_attr_init(attr: *mut pthread_attr_t) -> c_int;
+    pub fn pthread_attr_destroy(attr: *mut pthread_attr_t) -> c_int;
+    pub fn pthread_attr_getstacksize(attr: *const pthread_attr_t, stacksize: *mut size_t) -> c_int;
+    pub fn pthread_attr_setstacksize(attr: *mut pthread_attr_t, stack_size: size_t) -> c_int;
+    pub fn pthread_attr_setdetachstate(attr: *mut pthread_attr_t, state: c_int) -> c_int;
+    pub fn pthread_detach(thread: pthread_t) -> c_int;
+
+    pub fn pthread_key_create(
+        key: *mut pthread_key_t,
+        dtor: Option<unsafe extern "C" fn(*mut c_void)>,
+    ) -> c_int;
+    pub fn pthread_key_delete(key: pthread_key_t) -> c_int;
+    pub fn pthread_getspecific(key: pthread_key_t) -> *mut c_void;
+    pub fn pthread_setspecific(key: pthread_key_t, value: *const c_void) -> c_int;
+    pub fn pthread_mutex_init(
+        lock: *mut pthread_mutex_t,
+        attr: *const pthread_mutexattr_t,
+    ) -> c_int;
+    pub fn pthread_mutex_destroy(lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_lock(lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_trylock(lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_unlock(lock: *mut pthread_mutex_t) -> c_int;
+
+    pub fn pthread_mutexattr_init(attr: *mut pthread_mutexattr_t) -> c_int;
+    pub fn pthread_mutexattr_destroy(attr: *mut pthread_mutexattr_t) -> c_int;
+    pub fn pthread_mutexattr_settype(attr: *mut pthread_mutexattr_t, _type: c_int) -> c_int;
+
+    pub fn pthread_cond_init(cond: *mut pthread_cond_t, attr: *const pthread_condattr_t) -> c_int;
+    pub fn pthread_cond_wait(cond: *mut pthread_cond_t, lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_cond_timedwait(
+        cond: *mut pthread_cond_t,
+        lock: *mut pthread_mutex_t,
+        abstime: *const timespec,
+    ) -> c_int;
+    pub fn pthread_cond_signal(cond: *mut pthread_cond_t) -> c_int;
+    pub fn pthread_cond_broadcast(cond: *mut pthread_cond_t) -> c_int;
+    pub fn pthread_cond_destroy(cond: *mut pthread_cond_t) -> c_int;
+    pub fn pthread_condattr_init(attr: *mut pthread_condattr_t) -> c_int;
+    pub fn pthread_condattr_destroy(attr: *mut pthread_condattr_t) -> c_int;
+
+    pub fn pthread_rwlock_init(
+        lock: *mut pthread_rwlock_t,
+        attr: *const pthread_rwlockattr_t,
+    ) -> c_int;
+    pub fn pthread_rwlock_destroy(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_rdlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_tryrdlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_wrlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_trywrlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_unlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlockattr_init(attr: *mut pthread_rwlockattr_t) -> c_int;
+    pub fn pthread_rwlockattr_destroy(attr: *mut pthread_rwlockattr_t) -> c_int;
 }
 
 cfg_if! {

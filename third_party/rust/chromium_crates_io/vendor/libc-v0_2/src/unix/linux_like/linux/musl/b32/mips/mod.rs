@@ -6,14 +6,14 @@ pub type wchar_t = c_int;
 s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
-        __st_padding1: [c_long; 2],
+        __st_padding1: Padding<[c_long; 2]>,
         pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __st_padding2: [c_long; 2],
+        __st_padding2: Padding<[c_long; 2]>,
         pub st_size: off_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -22,21 +22,21 @@ s! {
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
-        __st_padding3: c_long,
+        __st_padding3: Padding<c_long>,
         pub st_blocks: crate::blkcnt_t,
-        __st_padding4: [c_long; 14],
+        __st_padding4: Padding<[c_long; 14]>,
     }
 
     pub struct stat64 {
         pub st_dev: crate::dev_t,
-        __st_padding1: [c_long; 2],
+        __st_padding1: Padding<[c_long; 2]>,
         pub st_ino: crate::ino64_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __st_padding2: [c_long; 2],
+        __st_padding2: Padding<[c_long; 2]>,
         pub st_size: off_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -45,9 +45,9 @@ s! {
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
         pub st_blksize: crate::blksize_t,
-        __st_padding3: c_long,
+        __st_padding3: Padding<c_long>,
         pub st_blocks: crate::blkcnt64_t,
-        __st_padding4: [c_long; 14],
+        __st_padding4: Padding<[c_long; 14]>,
     }
 
     pub struct stack_t {
@@ -72,8 +72,8 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         pub __seq: c_int,
-        __unused1: c_long,
-        __unused2: c_long,
+        __unused1: Padding<c_long>,
+        __unused2: Padding<c_long>,
     }
 
     pub struct shmid_ds {
@@ -85,34 +85,34 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
         #[cfg(target_endian = "big")]
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub msg_stime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         #[cfg(target_endian = "big")]
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub msg_rtime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         #[cfg(target_endian = "big")]
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub msg_ctime: crate::time_t,
         #[cfg(target_endian = "little")]
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct statfs {
@@ -338,9 +338,6 @@ pub const ENOTRECOVERABLE: c_int = 166;
 pub const EHWPOISON: c_int = 168;
 pub const ERFKILL: c_int = 167;
 
-pub const SOCK_STREAM: c_int = 2;
-pub const SOCK_DGRAM: c_int = 1;
-
 pub const SA_ONSTACK: c_int = 0x08000000;
 pub const SA_SIGINFO: c_int = 8;
 pub const SA_NOCLDWAIT: c_int = 0x10000;
@@ -363,7 +360,6 @@ pub const SIGTSTP: c_int = 24;
 pub const SIGURG: c_int = 21;
 pub const SIGIO: c_int = 22;
 pub const SIGSYS: c_int = 12;
-pub const SIGSTKFLT: c_int = 7;
 pub const SIGPOLL: c_int = crate::SIGIO;
 pub const SIGPWR: c_int = 19;
 pub const SIG_SETMASK: c_int = 3;

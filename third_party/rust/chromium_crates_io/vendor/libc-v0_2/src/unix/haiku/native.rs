@@ -37,200 +37,200 @@ pub type image_id = i32;
 c_enum! {
     // kernel/OS.h
     pub enum thread_state {
-        B_THREAD_RUNNING = 1,
-        B_THREAD_READY,
-        B_THREAD_RECEIVING,
-        B_THREAD_ASLEEP,
-        B_THREAD_SUSPENDED,
-        B_THREAD_WAITING,
+        pub B_THREAD_RUNNING = 1,
+        pub B_THREAD_READY,
+        pub B_THREAD_RECEIVING,
+        pub B_THREAD_ASLEEP,
+        pub B_THREAD_SUSPENDED,
+        pub B_THREAD_WAITING,
     }
 
     // kernel/image.h
     pub enum image_type {
-        B_APP_IMAGE = 1,
-        B_LIBRARY_IMAGE,
-        B_ADD_ON_IMAGE,
-        B_SYSTEM_IMAGE,
+        pub B_APP_IMAGE = 1,
+        pub B_LIBRARY_IMAGE,
+        pub B_ADD_ON_IMAGE,
+        pub B_SYSTEM_IMAGE,
     }
 
     // kernel/scheduler.h
 
     pub enum be_task_flags {
-        B_DEFAULT_MEDIA_PRIORITY = 0x000,
-        B_OFFLINE_PROCESSING = 0x001,
-        B_STATUS_RENDERING = 0x002,
-        B_USER_INPUT_HANDLING = 0x004,
-        B_LIVE_VIDEO_MANIPULATION = 0x008,
-        B_VIDEO_PLAYBACK = 0x010,
-        B_VIDEO_RECORDING = 0x020,
-        B_LIVE_AUDIO_MANIPULATION = 0x040,
-        B_AUDIO_PLAYBACK = 0x080,
-        B_AUDIO_RECORDING = 0x100,
-        B_LIVE_3D_RENDERING = 0x200,
-        B_NUMBER_CRUNCHING = 0x400,
-        B_MIDI_PROCESSING = 0x800,
+        pub B_DEFAULT_MEDIA_PRIORITY = 0x000,
+        pub B_OFFLINE_PROCESSING = 0x001,
+        pub B_STATUS_RENDERING = 0x002,
+        pub B_USER_INPUT_HANDLING = 0x004,
+        pub B_LIVE_VIDEO_MANIPULATION = 0x008,
+        pub B_VIDEO_PLAYBACK = 0x010,
+        pub B_VIDEO_RECORDING = 0x020,
+        pub B_LIVE_AUDIO_MANIPULATION = 0x040,
+        pub B_AUDIO_PLAYBACK = 0x080,
+        pub B_AUDIO_RECORDING = 0x100,
+        pub B_LIVE_3D_RENDERING = 0x200,
+        pub B_NUMBER_CRUNCHING = 0x400,
+        pub B_MIDI_PROCESSING = 0x800,
     }
 
     pub enum schduler_mode {
-        SCHEDULER_MODE_LOW_LATENCY,
-        SCHEDULER_MODE_POWER_SAVING,
+        pub SCHEDULER_MODE_LOW_LATENCY,
+        pub SCHEDULER_MODE_POWER_SAVING,
     }
 
     // FindDirectory.h
     pub enum path_base_directory {
-        B_FIND_PATH_INSTALLATION_LOCATION_DIRECTORY,
-        B_FIND_PATH_ADD_ONS_DIRECTORY,
-        B_FIND_PATH_APPS_DIRECTORY,
-        B_FIND_PATH_BIN_DIRECTORY,
-        B_FIND_PATH_BOOT_DIRECTORY,
-        B_FIND_PATH_CACHE_DIRECTORY,
-        B_FIND_PATH_DATA_DIRECTORY,
-        B_FIND_PATH_DEVELOP_DIRECTORY,
-        B_FIND_PATH_DEVELOP_LIB_DIRECTORY,
-        B_FIND_PATH_DOCUMENTATION_DIRECTORY,
-        B_FIND_PATH_ETC_DIRECTORY,
-        B_FIND_PATH_FONTS_DIRECTORY,
-        B_FIND_PATH_HEADERS_DIRECTORY,
-        B_FIND_PATH_LIB_DIRECTORY,
-        B_FIND_PATH_LOG_DIRECTORY,
-        B_FIND_PATH_MEDIA_NODES_DIRECTORY,
-        B_FIND_PATH_PACKAGES_DIRECTORY,
-        B_FIND_PATH_PREFERENCES_DIRECTORY,
-        B_FIND_PATH_SERVERS_DIRECTORY,
-        B_FIND_PATH_SETTINGS_DIRECTORY,
-        B_FIND_PATH_SOUNDS_DIRECTORY,
-        B_FIND_PATH_SPOOL_DIRECTORY,
-        B_FIND_PATH_TRANSLATORS_DIRECTORY,
-        B_FIND_PATH_VAR_DIRECTORY,
-        B_FIND_PATH_IMAGE_PATH = 1000,
-        B_FIND_PATH_PACKAGE_PATH,
+        pub B_FIND_PATH_INSTALLATION_LOCATION_DIRECTORY,
+        pub B_FIND_PATH_ADD_ONS_DIRECTORY,
+        pub B_FIND_PATH_APPS_DIRECTORY,
+        pub B_FIND_PATH_BIN_DIRECTORY,
+        pub B_FIND_PATH_BOOT_DIRECTORY,
+        pub B_FIND_PATH_CACHE_DIRECTORY,
+        pub B_FIND_PATH_DATA_DIRECTORY,
+        pub B_FIND_PATH_DEVELOP_DIRECTORY,
+        pub B_FIND_PATH_DEVELOP_LIB_DIRECTORY,
+        pub B_FIND_PATH_DOCUMENTATION_DIRECTORY,
+        pub B_FIND_PATH_ETC_DIRECTORY,
+        pub B_FIND_PATH_FONTS_DIRECTORY,
+        pub B_FIND_PATH_HEADERS_DIRECTORY,
+        pub B_FIND_PATH_LIB_DIRECTORY,
+        pub B_FIND_PATH_LOG_DIRECTORY,
+        pub B_FIND_PATH_MEDIA_NODES_DIRECTORY,
+        pub B_FIND_PATH_PACKAGES_DIRECTORY,
+        pub B_FIND_PATH_PREFERENCES_DIRECTORY,
+        pub B_FIND_PATH_SERVERS_DIRECTORY,
+        pub B_FIND_PATH_SETTINGS_DIRECTORY,
+        pub B_FIND_PATH_SOUNDS_DIRECTORY,
+        pub B_FIND_PATH_SPOOL_DIRECTORY,
+        pub B_FIND_PATH_TRANSLATORS_DIRECTORY,
+        pub B_FIND_PATH_VAR_DIRECTORY,
+        pub B_FIND_PATH_IMAGE_PATH = 1000,
+        pub B_FIND_PATH_PACKAGE_PATH,
     }
 
     pub enum directory_which {
-        B_DESKTOP_DIRECTORY = 0,
-        B_TRASH_DIRECTORY,
-        B_SYSTEM_DIRECTORY = 1000,
-        B_SYSTEM_ADDONS_DIRECTORY = 1002,
-        B_SYSTEM_BOOT_DIRECTORY,
-        B_SYSTEM_FONTS_DIRECTORY,
-        B_SYSTEM_LIB_DIRECTORY,
-        B_SYSTEM_SERVERS_DIRECTORY,
-        B_SYSTEM_APPS_DIRECTORY,
-        B_SYSTEM_BIN_DIRECTORY,
-        B_SYSTEM_DOCUMENTATION_DIRECTORY = 1010,
-        B_SYSTEM_PREFERENCES_DIRECTORY,
-        B_SYSTEM_TRANSLATORS_DIRECTORY,
-        B_SYSTEM_MEDIA_NODES_DIRECTORY,
-        B_SYSTEM_SOUNDS_DIRECTORY,
-        B_SYSTEM_DATA_DIRECTORY,
-        B_SYSTEM_DEVELOP_DIRECTORY,
-        B_SYSTEM_PACKAGES_DIRECTORY,
-        B_SYSTEM_HEADERS_DIRECTORY,
-        B_SYSTEM_ETC_DIRECTORY = 2008,
-        B_SYSTEM_SETTINGS_DIRECTORY = 2010,
-        B_SYSTEM_LOG_DIRECTORY = 2012,
-        B_SYSTEM_SPOOL_DIRECTORY,
-        B_SYSTEM_TEMP_DIRECTORY,
-        B_SYSTEM_VAR_DIRECTORY,
-        B_SYSTEM_CACHE_DIRECTORY = 2020,
-        B_SYSTEM_NONPACKAGED_DIRECTORY = 2023,
-        B_SYSTEM_NONPACKAGED_ADDONS_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_TRANSLATORS_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_MEDIA_NODES_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_BIN_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_DATA_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_FONTS_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_SOUNDS_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_DOCUMENTATION_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_LIB_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_HEADERS_DIRECTORY,
-        B_SYSTEM_NONPACKAGED_DEVELOP_DIRECTORY,
-        B_USER_DIRECTORY = 3000,
-        B_USER_CONFIG_DIRECTORY,
-        B_USER_ADDONS_DIRECTORY,
-        B_USER_BOOT_DIRECTORY,
-        B_USER_FONTS_DIRECTORY,
-        B_USER_LIB_DIRECTORY,
-        B_USER_SETTINGS_DIRECTORY,
-        B_USER_DESKBAR_DIRECTORY,
-        B_USER_PRINTERS_DIRECTORY,
-        B_USER_TRANSLATORS_DIRECTORY,
-        B_USER_MEDIA_NODES_DIRECTORY,
-        B_USER_SOUNDS_DIRECTORY,
-        B_USER_DATA_DIRECTORY,
-        B_USER_CACHE_DIRECTORY,
-        B_USER_PACKAGES_DIRECTORY,
-        B_USER_HEADERS_DIRECTORY,
-        B_USER_NONPACKAGED_DIRECTORY,
-        B_USER_NONPACKAGED_ADDONS_DIRECTORY,
-        B_USER_NONPACKAGED_TRANSLATORS_DIRECTORY,
-        B_USER_NONPACKAGED_MEDIA_NODES_DIRECTORY,
-        B_USER_NONPACKAGED_BIN_DIRECTORY,
-        B_USER_NONPACKAGED_DATA_DIRECTORY,
-        B_USER_NONPACKAGED_FONTS_DIRECTORY,
-        B_USER_NONPACKAGED_SOUNDS_DIRECTORY,
-        B_USER_NONPACKAGED_DOCUMENTATION_DIRECTORY,
-        B_USER_NONPACKAGED_LIB_DIRECTORY,
-        B_USER_NONPACKAGED_HEADERS_DIRECTORY,
-        B_USER_NONPACKAGED_DEVELOP_DIRECTORY,
-        B_USER_DEVELOP_DIRECTORY,
-        B_USER_DOCUMENTATION_DIRECTORY,
-        B_USER_SERVERS_DIRECTORY,
-        B_USER_APPS_DIRECTORY,
-        B_USER_BIN_DIRECTORY,
-        B_USER_PREFERENCES_DIRECTORY,
-        B_USER_ETC_DIRECTORY,
-        B_USER_LOG_DIRECTORY,
-        B_USER_SPOOL_DIRECTORY,
-        B_USER_VAR_DIRECTORY,
-        B_APPS_DIRECTORY = 4000,
-        B_PREFERENCES_DIRECTORY,
-        B_UTILITIES_DIRECTORY,
-        B_PACKAGE_LINKS_DIRECTORY,
+        pub B_DESKTOP_DIRECTORY = 0,
+        pub B_TRASH_DIRECTORY,
+        pub B_SYSTEM_DIRECTORY = 1000,
+        pub B_SYSTEM_ADDONS_DIRECTORY = 1002,
+        pub B_SYSTEM_BOOT_DIRECTORY,
+        pub B_SYSTEM_FONTS_DIRECTORY,
+        pub B_SYSTEM_LIB_DIRECTORY,
+        pub B_SYSTEM_SERVERS_DIRECTORY,
+        pub B_SYSTEM_APPS_DIRECTORY,
+        pub B_SYSTEM_BIN_DIRECTORY,
+        pub B_SYSTEM_DOCUMENTATION_DIRECTORY = 1010,
+        pub B_SYSTEM_PREFERENCES_DIRECTORY,
+        pub B_SYSTEM_TRANSLATORS_DIRECTORY,
+        pub B_SYSTEM_MEDIA_NODES_DIRECTORY,
+        pub B_SYSTEM_SOUNDS_DIRECTORY,
+        pub B_SYSTEM_DATA_DIRECTORY,
+        pub B_SYSTEM_DEVELOP_DIRECTORY,
+        pub B_SYSTEM_PACKAGES_DIRECTORY,
+        pub B_SYSTEM_HEADERS_DIRECTORY,
+        pub B_SYSTEM_ETC_DIRECTORY = 2008,
+        pub B_SYSTEM_SETTINGS_DIRECTORY = 2010,
+        pub B_SYSTEM_LOG_DIRECTORY = 2012,
+        pub B_SYSTEM_SPOOL_DIRECTORY,
+        pub B_SYSTEM_TEMP_DIRECTORY,
+        pub B_SYSTEM_VAR_DIRECTORY,
+        pub B_SYSTEM_CACHE_DIRECTORY = 2020,
+        pub B_SYSTEM_NONPACKAGED_DIRECTORY = 2023,
+        pub B_SYSTEM_NONPACKAGED_ADDONS_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_TRANSLATORS_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_MEDIA_NODES_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_BIN_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_DATA_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_FONTS_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_SOUNDS_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_DOCUMENTATION_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_LIB_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_HEADERS_DIRECTORY,
+        pub B_SYSTEM_NONPACKAGED_DEVELOP_DIRECTORY,
+        pub B_USER_DIRECTORY = 3000,
+        pub B_USER_CONFIG_DIRECTORY,
+        pub B_USER_ADDONS_DIRECTORY,
+        pub B_USER_BOOT_DIRECTORY,
+        pub B_USER_FONTS_DIRECTORY,
+        pub B_USER_LIB_DIRECTORY,
+        pub B_USER_SETTINGS_DIRECTORY,
+        pub B_USER_DESKBAR_DIRECTORY,
+        pub B_USER_PRINTERS_DIRECTORY,
+        pub B_USER_TRANSLATORS_DIRECTORY,
+        pub B_USER_MEDIA_NODES_DIRECTORY,
+        pub B_USER_SOUNDS_DIRECTORY,
+        pub B_USER_DATA_DIRECTORY,
+        pub B_USER_CACHE_DIRECTORY,
+        pub B_USER_PACKAGES_DIRECTORY,
+        pub B_USER_HEADERS_DIRECTORY,
+        pub B_USER_NONPACKAGED_DIRECTORY,
+        pub B_USER_NONPACKAGED_ADDONS_DIRECTORY,
+        pub B_USER_NONPACKAGED_TRANSLATORS_DIRECTORY,
+        pub B_USER_NONPACKAGED_MEDIA_NODES_DIRECTORY,
+        pub B_USER_NONPACKAGED_BIN_DIRECTORY,
+        pub B_USER_NONPACKAGED_DATA_DIRECTORY,
+        pub B_USER_NONPACKAGED_FONTS_DIRECTORY,
+        pub B_USER_NONPACKAGED_SOUNDS_DIRECTORY,
+        pub B_USER_NONPACKAGED_DOCUMENTATION_DIRECTORY,
+        pub B_USER_NONPACKAGED_LIB_DIRECTORY,
+        pub B_USER_NONPACKAGED_HEADERS_DIRECTORY,
+        pub B_USER_NONPACKAGED_DEVELOP_DIRECTORY,
+        pub B_USER_DEVELOP_DIRECTORY,
+        pub B_USER_DOCUMENTATION_DIRECTORY,
+        pub B_USER_SERVERS_DIRECTORY,
+        pub B_USER_APPS_DIRECTORY,
+        pub B_USER_BIN_DIRECTORY,
+        pub B_USER_PREFERENCES_DIRECTORY,
+        pub B_USER_ETC_DIRECTORY,
+        pub B_USER_LOG_DIRECTORY,
+        pub B_USER_SPOOL_DIRECTORY,
+        pub B_USER_VAR_DIRECTORY,
+        pub B_APPS_DIRECTORY = 4000,
+        pub B_PREFERENCES_DIRECTORY,
+        pub B_UTILITIES_DIRECTORY,
+        pub B_PACKAGE_LINKS_DIRECTORY,
     }
 
     // kernel/OS.h
 
     pub enum topology_level_type {
-        B_TOPOLOGY_UNKNOWN,
-        B_TOPOLOGY_ROOT,
-        B_TOPOLOGY_SMT,
-        B_TOPOLOGY_CORE,
-        B_TOPOLOGY_PACKAGE,
+        pub B_TOPOLOGY_UNKNOWN,
+        pub B_TOPOLOGY_ROOT,
+        pub B_TOPOLOGY_SMT,
+        pub B_TOPOLOGY_CORE,
+        pub B_TOPOLOGY_PACKAGE,
     }
 
     pub enum cpu_platform {
-        B_CPU_UNKNOWN,
-        B_CPU_x86,
-        B_CPU_x86_64,
-        B_CPU_PPC,
-        B_CPU_PPC_64,
-        B_CPU_M68K,
-        B_CPU_ARM,
-        B_CPU_ARM_64,
-        B_CPU_ALPHA,
-        B_CPU_MIPS,
-        B_CPU_SH,
-        B_CPU_SPARC,
-        B_CPU_RISC_V,
+        pub B_CPU_UNKNOWN,
+        pub B_CPU_x86,
+        pub B_CPU_x86_64,
+        pub B_CPU_PPC,
+        pub B_CPU_PPC_64,
+        pub B_CPU_M68K,
+        pub B_CPU_ARM,
+        pub B_CPU_ARM_64,
+        pub B_CPU_ALPHA,
+        pub B_CPU_MIPS,
+        pub B_CPU_SH,
+        pub B_CPU_SPARC,
+        pub B_CPU_RISC_V,
     }
 
     pub enum cpu_vendor {
-        B_CPU_VENDOR_UNKNOWN,
-        B_CPU_VENDOR_AMD,
-        B_CPU_VENDOR_CYRIX,
-        B_CPU_VENDOR_IDT,
-        B_CPU_VENDOR_INTEL,
-        B_CPU_VENDOR_NATIONAL_SEMICONDUCTOR,
-        B_CPU_VENDOR_RISE,
-        B_CPU_VENDOR_TRANSMETA,
-        B_CPU_VENDOR_VIA,
-        B_CPU_VENDOR_IBM,
-        B_CPU_VENDOR_MOTOROLA,
-        B_CPU_VENDOR_NEC,
-        B_CPU_VENDOR_HYGON,
-        B_CPU_VENDOR_SUN,
-        B_CPU_VENDOR_FUJITSU,
+        pub B_CPU_VENDOR_UNKNOWN,
+        pub B_CPU_VENDOR_AMD,
+        pub B_CPU_VENDOR_CYRIX,
+        pub B_CPU_VENDOR_IDT,
+        pub B_CPU_VENDOR_INTEL,
+        pub B_CPU_VENDOR_NATIONAL_SEMICONDUCTOR,
+        pub B_CPU_VENDOR_RISE,
+        pub B_CPU_VENDOR_TRANSMETA,
+        pub B_CPU_VENDOR_VIA,
+        pub B_CPU_VENDOR_IBM,
+        pub B_CPU_VENDOR_MOTOROLA,
+        pub B_CPU_VENDOR_NEC,
+        pub B_CPU_VENDOR_HYGON,
+        pub B_CPU_VENDOR_SUN,
+        pub B_CPU_VENDOR_FUJITSU,
     }
 }
 
@@ -440,7 +440,7 @@ s! {
     }
 
     pub struct __c_anonymous_eax_3 {
-        __reserved: [u32; 2],
+        __reserved: Padding<[u32; 2]>,
         pub serial_number_high: u32,
         pub serial_number_low: u32,
     }
@@ -450,6 +450,13 @@ s! {
         pub ebx: u32,
         pub edx: u32,
         pub ecx: u32,
+    }
+
+    pub struct cpu_topology_node_info {
+        pub id: u32,
+        pub type_: topology_level_type,
+        pub level: u32,
+        pub data: __c_anonymous_cpu_topology_info_data,
     }
 }
 
@@ -468,13 +475,6 @@ s_no_extra_traits! {
         pub package: cpu_topology_package_info,
         pub core: cpu_topology_core_info,
     }
-
-    pub struct cpu_topology_node_info {
-        pub id: u32,
-        pub type_: topology_level_type,
-        pub level: u32,
-        pub data: __c_anonymous_cpu_topology_info_data,
-    }
 }
 
 cfg_if! {
@@ -492,6 +492,11 @@ cfg_if! {
             }
         }
         impl Eq for cpuid_info {}
+        impl hash::Hash for cpuid_info {
+            fn hash<H: hash::Hasher>(&self, _state: &mut H) {
+                unimplemented!("traits");
+            }
+        }
 
         impl PartialEq for __c_anonymous_cpu_topology_info_data {
             fn eq(&self, other: &__c_anonymous_cpu_topology_info_data) -> bool {
@@ -503,14 +508,11 @@ cfg_if! {
             }
         }
         impl Eq for __c_anonymous_cpu_topology_info_data {}
-
-        impl PartialEq for cpu_topology_node_info {
-            fn eq(&self, other: &cpu_topology_node_info) -> bool {
-                self.id == other.id && self.type_ == other.type_ && self.level == other.level
+        impl hash::Hash for __c_anonymous_cpu_topology_info_data {
+            fn hash<H: hash::Hasher>(&self, _state: &mut H) {
+                unimplemented!("traits");
             }
         }
-
-        impl Eq for cpu_topology_node_info {}
     }
 }
 

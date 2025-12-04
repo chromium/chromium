@@ -181,36 +181,29 @@ impl siginfo_t {
     }
 }
 
-// Internal, for casts to access union fields
-#[repr(C)]
-struct sifields_sigchld {
-    si_pid: crate::pid_t,
-    si_uid: crate::uid_t,
-    si_status: c_int,
-    si_utime: c_long,
-    si_stime: c_long,
-}
-impl Copy for sifields_sigchld {}
-impl Clone for sifields_sigchld {
-    fn clone(&self) -> sifields_sigchld {
-        *self
+s_no_extra_traits! {
+    // Internal, for casts to access union fields
+    struct sifields_sigchld {
+        si_pid: crate::pid_t,
+        si_uid: crate::uid_t,
+        si_status: c_int,
+        si_utime: c_long,
+        si_stime: c_long,
     }
-}
 
-// Internal, for casts to access union fields
-#[repr(C)]
-union sifields {
-    _align_pointer: *mut c_void,
-    sigchld: sifields_sigchld,
-}
+    // Internal, for casts to access union fields
+    union sifields {
+        _align_pointer: *mut c_void,
+        sigchld: sifields_sigchld,
+    }
 
-// Internal, for casts to access union fields. Note that some variants
-// of sifields start with a pointer, which makes the alignment of
-// sifields vary on 32-bit and 64-bit architectures.
-#[repr(C)]
-struct siginfo_f {
-    _siginfo_base: [c_int; 3],
-    sifields: sifields,
+    // Internal, for casts to access union fields. Note that some variants
+    // of sifields start with a pointer, which makes the alignment of
+    // sifields vary on 32-bit and 64-bit architectures.
+    struct siginfo_f {
+        _siginfo_base: [c_int; 3],
+        sifields: sifields,
+    }
 }
 
 impl siginfo_t {

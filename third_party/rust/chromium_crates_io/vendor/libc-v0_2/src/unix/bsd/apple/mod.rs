@@ -3,7 +3,10 @@
 //! This covers *-apple-* triples currently
 
 use crate::prelude::*;
-use crate::{cmsghdr, off_t};
+use crate::{
+    cmsghdr,
+    off_t,
+};
 
 pub type wchar_t = i32;
 pub type clock_t = c_ulong;
@@ -15,7 +18,6 @@ pub type mode_t = u16;
 pub type nlink_t = u16;
 pub type blksize_t = i32;
 pub type rlim_t = u64;
-pub type pthread_key_t = c_ulong;
 pub type sigset_t = u32;
 pub type clockid_t = c_uint;
 pub type fsblkcnt_t = c_uint;
@@ -128,8 +130,6 @@ pub type thread_latency_qos_policy_t = *mut thread_latency_qos_policy;
 pub type thread_throughput_qos_policy_data_t = thread_throughput_qos_policy;
 pub type thread_throughput_qos_policy_t = *mut thread_throughput_qos_policy;
 
-pub type pthread_introspection_hook_t =
-    extern "C" fn(event: c_uint, thread: crate::pthread_t, addr: *mut c_void, size: size_t);
 pub type pthread_jit_write_callback_t = Option<extern "C" fn(ctx: *mut c_void) -> c_int>;
 
 pub type os_clockid_t = u32;
@@ -179,30 +179,8 @@ deprecated_mach! {
     pub type mach_timebase_info_data_t = mach_timebase_info;
 }
 
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
-}
-
-#[derive(Debug)]
-#[repr(u32)]
-pub enum qos_class_t {
-    QOS_CLASS_USER_INTERACTIVE = 0x21,
-    QOS_CLASS_USER_INITIATED = 0x19,
-    QOS_CLASS_DEFAULT = 0x15,
-    QOS_CLASS_UTILITY = 0x11,
-    QOS_CLASS_BACKGROUND = 0x09,
-    QOS_CLASS_UNSPECIFIED = 0x00,
-}
-impl Copy for qos_class_t {}
-impl Clone for qos_class_t {
-    fn clone(&self) -> qos_class_t {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
 }
 
 #[derive(Debug)]
@@ -286,18 +264,18 @@ s! {
 
     pub struct glob_t {
         pub gl_pathc: size_t,
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub gl_offs: size_t,
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub gl_pathv: *mut *mut c_char,
 
-        __unused3: *mut c_void,
+        __unused3: Padding<*mut c_void>,
 
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
-        __unused6: *mut c_void,
-        __unused7: *mut c_void,
-        __unused8: *mut c_void,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
+        __unused6: Padding<*mut c_void>,
+        __unused7: Padding<*mut c_void>,
+        __unused8: Padding<*mut c_void>,
     }
 
     pub struct addrinfo {
@@ -342,21 +320,6 @@ s! {
         pub st_qspare: [i64; 2],
     }
 
-    pub struct pthread_mutexattr_t {
-        __sig: c_long,
-        __opaque: [u8; 8],
-    }
-
-    pub struct pthread_condattr_t {
-        __sig: c_long,
-        __opaque: [u8; __PTHREAD_CONDATTR_SIZE__],
-    }
-
-    pub struct pthread_rwlockattr_t {
-        __sig: c_long,
-        __opaque: [u8; __PTHREAD_RWLOCKATTR_SIZE__],
-    }
-
     pub struct siginfo_t {
         pub si_signo: c_int,
         pub si_errno: c_int,
@@ -367,7 +330,7 @@ s! {
         pub si_addr: *mut c_void,
         //Requires it to be union for tests
         //pub si_value: crate::sigval,
-        _pad: [usize; 9],
+        _pad: Padding<[usize; 9]>,
     }
 
     pub struct sigaction {
@@ -903,12 +866,6 @@ s! {
         pub size: crate::vm_size_t,
     }
 
-    // sched.h
-    pub struct sched_param {
-        pub sched_priority: c_int,
-        __opaque: [c_char; 4],
-    }
-
     pub struct vinfo_stat {
         pub vst_dev: u32,
         pub vst_mode: u16,
@@ -1144,7 +1101,7 @@ s! {
         pub tcpi_state: u8,
         pub tcpi_snd_wscale: u8,
         pub tcpi_rcv_wscale: u8,
-        __pad1: u8,
+        __pad1: Padding<u8>,
         pub tcpi_options: u32,
         pub tcpi_flags: u32,
         pub tcpi_rto: u32,
@@ -1172,7 +1129,7 @@ s! {
         pub tcpi_tfo_send_blackhole: u32,
         pub tcpi_tfo_recv_blackhole: u32,
         pub tcpi_tfo_onebyte_proxy: u32,
-        __pad2: u32,
+        __pad2: Padding<u32>,
         pub tcpi_txpackets: u64,
         pub tcpi_txbytes: u64,
         pub tcpi_txretransmitbytes: u64,
@@ -1309,14 +1266,6 @@ s! {
         pub proc_fd: i32,
         pub proc_fdtype: u32,
     }
-}
-
-s_no_extra_traits! {
-    #[repr(packed(4))]
-    pub struct ifconf {
-        pub ifc_len: c_int,
-        pub ifc_ifcu: __c_anonymous_ifc_ifcu,
-    }
 
     #[repr(packed(4))]
     pub struct kevent {
@@ -1398,27 +1347,12 @@ s_no_extra_traits! {
         pub d_name: [c_char; 1024],
     }
 
-    pub struct pthread_rwlock_t {
-        __sig: c_long,
-        __opaque: [u8; __PTHREAD_RWLOCK_SIZE__],
-    }
-
-    pub struct pthread_mutex_t {
-        __sig: c_long,
-        __opaque: [u8; __PTHREAD_MUTEX_SIZE__],
-    }
-
-    pub struct pthread_cond_t {
-        __sig: c_long,
-        __opaque: [u8; __PTHREAD_COND_SIZE__],
-    }
-
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: crate::sa_family_t,
-        __ss_pad1: [u8; 6],
+        __ss_pad1: Padding<[u8; 6]>,
         __ss_align: i64,
-        __ss_pad2: [u8; 112],
+        __ss_pad2: Padding<[u8; 112]>,
     }
 
     pub struct utmpx {
@@ -1436,7 +1370,7 @@ s_no_extra_traits! {
         pub sigev_notify: c_int,
         pub sigev_signo: c_int,
         pub sigev_value: crate::sigval,
-        __unused1: *mut c_void, //actually a function pointer
+        __unused1: Padding<*mut c_void>, //actually a function pointer
         pub sigev_notify_attributes: *mut crate::pthread_attr_t,
     }
 
@@ -1612,16 +1546,33 @@ s_no_extra_traits! {
         pub ifdm_max: c_int,
     }
 
-    pub union __c_anonymous_ifk_data {
-        pub ifk_ptr: *mut c_void,
-        pub ifk_value: c_int,
-    }
-
     #[repr(packed(4))]
     pub struct ifkpi {
         pub ifk_module_id: c_uint,
         pub ifk_type: c_uint,
         pub ifk_data: __c_anonymous_ifk_data,
+    }
+
+    pub struct ifreq {
+        pub ifr_name: [c_char; crate::IFNAMSIZ],
+        pub ifr_ifru: __c_anonymous_ifr_ifru,
+    }
+
+    pub struct in6_ifreq {
+        pub ifr_name: [c_char; crate::IFNAMSIZ],
+        pub ifr_ifru: __c_anonymous_ifr_ifru6,
+    }
+}
+
+s_no_extra_traits! {
+    #[repr(packed(4))]
+    pub struct ifconf {
+        pub ifc_len: c_int,
+        pub ifc_ifcu: __c_anonymous_ifc_ifcu,
+    }
+    pub union __c_anonymous_ifk_data {
+        pub ifk_ptr: *mut c_void,
+        pub ifk_value: c_int,
     }
 
     pub union __c_anonymous_ifr_ifru {
@@ -1643,11 +1594,6 @@ s_no_extra_traits! {
         pub ifru_functional_type: u32,
     }
 
-    pub struct ifreq {
-        pub ifr_name: [c_char; crate::IFNAMSIZ],
-        pub ifr_ifru: __c_anonymous_ifr_ifru,
-    }
-
     pub union __c_anonymous_ifc_ifcu {
         pub ifcu_buf: *mut c_char,
         pub ifcu_req: *mut ifreq,
@@ -1665,11 +1611,6 @@ s_no_extra_traits! {
         pub ifru_stat: in6_ifstat,
         pub ifru_icmp6stat: icmp6_ifstat,
         pub ifru_scope_id: [u32; SCOPE6_ID_MAX],
-    }
-
-    pub struct in6_ifreq {
-        pub ifr_name: [c_char; crate::IFNAMSIZ],
-        pub ifr_ifru: __c_anonymous_ifr_ifru6,
     }
 }
 
@@ -1754,838 +1695,6 @@ cfg_if! {
         }
         impl Eq for ifconf {}
 
-        impl PartialEq for kevent {
-            fn eq(&self, other: &kevent) -> bool {
-                self.ident == other.ident
-                    && self.filter == other.filter
-                    && self.flags == other.flags
-                    && self.fflags == other.fflags
-                    && self.data == other.data
-                    && self.udata == other.udata
-            }
-        }
-        impl Eq for kevent {}
-        impl hash::Hash for kevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let ident = self.ident;
-                let filter = self.filter;
-                let flags = self.flags;
-                let fflags = self.fflags;
-                let data = self.data;
-                let udata = self.udata;
-                ident.hash(state);
-                filter.hash(state);
-                flags.hash(state);
-                fflags.hash(state);
-                data.hash(state);
-                udata.hash(state);
-            }
-        }
-
-        impl PartialEq for semid_ds {
-            fn eq(&self, other: &semid_ds) -> bool {
-                let sem_perm = self.sem_perm;
-                let sem_pad3 = self.sem_pad3;
-                let other_sem_perm = other.sem_perm;
-                let other_sem_pad3 = other.sem_pad3;
-                sem_perm == other_sem_perm
-                    && self.sem_base == other.sem_base
-                    && self.sem_nsems == other.sem_nsems
-                    && self.sem_otime == other.sem_otime
-                    && self.sem_pad1 == other.sem_pad1
-                    && self.sem_ctime == other.sem_ctime
-                    && self.sem_pad2 == other.sem_pad2
-                    && sem_pad3 == other_sem_pad3
-            }
-        }
-        impl Eq for semid_ds {}
-        impl hash::Hash for semid_ds {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let sem_perm = self.sem_perm;
-                let sem_base = self.sem_base;
-                let sem_nsems = self.sem_nsems;
-                let sem_otime = self.sem_otime;
-                let sem_pad1 = self.sem_pad1;
-                let sem_ctime = self.sem_ctime;
-                let sem_pad2 = self.sem_pad2;
-                let sem_pad3 = self.sem_pad3;
-                sem_perm.hash(state);
-                sem_base.hash(state);
-                sem_nsems.hash(state);
-                sem_otime.hash(state);
-                sem_pad1.hash(state);
-                sem_ctime.hash(state);
-                sem_pad2.hash(state);
-                sem_pad3.hash(state);
-            }
-        }
-
-        impl PartialEq for shmid_ds {
-            fn eq(&self, other: &shmid_ds) -> bool {
-                let shm_perm = self.shm_perm;
-                let other_shm_perm = other.shm_perm;
-                shm_perm == other_shm_perm
-                    && self.shm_segsz == other.shm_segsz
-                    && self.shm_lpid == other.shm_lpid
-                    && self.shm_cpid == other.shm_cpid
-                    && self.shm_nattch == other.shm_nattch
-                    && self.shm_atime == other.shm_atime
-                    && self.shm_dtime == other.shm_dtime
-                    && self.shm_ctime == other.shm_ctime
-                    && self.shm_internal == other.shm_internal
-            }
-        }
-        impl Eq for shmid_ds {}
-        impl hash::Hash for shmid_ds {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let shm_perm = self.shm_perm;
-                let shm_segsz = self.shm_segsz;
-                let shm_lpid = self.shm_lpid;
-                let shm_cpid = self.shm_cpid;
-                let shm_nattch = self.shm_nattch;
-                let shm_atime = self.shm_atime;
-                let shm_dtime = self.shm_dtime;
-                let shm_ctime = self.shm_ctime;
-                let shm_internal = self.shm_internal;
-                shm_perm.hash(state);
-                shm_segsz.hash(state);
-                shm_lpid.hash(state);
-                shm_cpid.hash(state);
-                shm_nattch.hash(state);
-                shm_atime.hash(state);
-                shm_dtime.hash(state);
-                shm_ctime.hash(state);
-                shm_internal.hash(state);
-            }
-        }
-
-        impl PartialEq for proc_threadinfo {
-            fn eq(&self, other: &proc_threadinfo) -> bool {
-                self.pth_user_time == other.pth_user_time
-                    && self.pth_system_time == other.pth_system_time
-                    && self.pth_cpu_usage == other.pth_cpu_usage
-                    && self.pth_policy == other.pth_policy
-                    && self.pth_run_state == other.pth_run_state
-                    && self.pth_flags == other.pth_flags
-                    && self.pth_sleep_time == other.pth_sleep_time
-                    && self.pth_curpri == other.pth_curpri
-                    && self.pth_priority == other.pth_priority
-                    && self.pth_maxpriority == other.pth_maxpriority
-                    && self
-                        .pth_name
-                        .iter()
-                        .zip(other.pth_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for proc_threadinfo {}
-        impl hash::Hash for proc_threadinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.pth_user_time.hash(state);
-                self.pth_system_time.hash(state);
-                self.pth_cpu_usage.hash(state);
-                self.pth_policy.hash(state);
-                self.pth_run_state.hash(state);
-                self.pth_flags.hash(state);
-                self.pth_sleep_time.hash(state);
-                self.pth_curpri.hash(state);
-                self.pth_priority.hash(state);
-                self.pth_maxpriority.hash(state);
-                self.pth_name.hash(state);
-            }
-        }
-
-        impl PartialEq for statfs {
-            fn eq(&self, other: &statfs) -> bool {
-                self.f_bsize == other.f_bsize
-                    && self.f_iosize == other.f_iosize
-                    && self.f_blocks == other.f_blocks
-                    && self.f_bfree == other.f_bfree
-                    && self.f_bavail == other.f_bavail
-                    && self.f_files == other.f_files
-                    && self.f_ffree == other.f_ffree
-                    && self.f_fsid == other.f_fsid
-                    && self.f_owner == other.f_owner
-                    && self.f_flags == other.f_flags
-                    && self.f_fssubtype == other.f_fssubtype
-                    && self.f_fstypename == other.f_fstypename
-                    && self.f_type == other.f_type
-                    && self
-                        .f_mntonname
-                        .iter()
-                        .zip(other.f_mntonname.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .f_mntfromname
-                        .iter()
-                        .zip(other.f_mntfromname.iter())
-                        .all(|(a, b)| a == b)
-                    && self.f_reserved == other.f_reserved
-            }
-        }
-
-        impl Eq for statfs {}
-
-        impl hash::Hash for statfs {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.f_bsize.hash(state);
-                self.f_iosize.hash(state);
-                self.f_blocks.hash(state);
-                self.f_bfree.hash(state);
-                self.f_bavail.hash(state);
-                self.f_files.hash(state);
-                self.f_ffree.hash(state);
-                self.f_fsid.hash(state);
-                self.f_owner.hash(state);
-                self.f_flags.hash(state);
-                self.f_fssubtype.hash(state);
-                self.f_fstypename.hash(state);
-                self.f_type.hash(state);
-                self.f_mntonname.hash(state);
-                self.f_mntfromname.hash(state);
-                self.f_reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_seekoff == other.d_seekoff
-                    && self.d_reclen == other.d_reclen
-                    && self.d_namlen == other.d_namlen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_seekoff.hash(state);
-                self.d_reclen.hash(state);
-                self.d_namlen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-        impl PartialEq for pthread_rwlock_t {
-            fn eq(&self, other: &pthread_rwlock_t) -> bool {
-                self.__sig == other.__sig
-                    && self
-                        .__opaque
-                        .iter()
-                        .zip(other.__opaque.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_rwlock_t {}
-        impl hash::Hash for pthread_rwlock_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.__sig.hash(state);
-                self.__opaque.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_mutex_t {
-            fn eq(&self, other: &pthread_mutex_t) -> bool {
-                self.__sig == other.__sig
-                    && self
-                        .__opaque
-                        .iter()
-                        .zip(other.__opaque.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for pthread_mutex_t {}
-
-        impl hash::Hash for pthread_mutex_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.__sig.hash(state);
-                self.__opaque.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_cond_t {
-            fn eq(&self, other: &pthread_cond_t) -> bool {
-                self.__sig == other.__sig
-                    && self
-                        .__opaque
-                        .iter()
-                        .zip(other.__opaque.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for pthread_cond_t {}
-
-        impl hash::Hash for pthread_cond_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.__sig.hash(state);
-                self.__opaque.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_len == other.ss_len
-                    && self.ss_family == other.ss_family
-                    && self
-                        .__ss_pad1
-                        .iter()
-                        .zip(other.__ss_pad1.iter())
-                        .all(|(a, b)| a == b)
-                    && self.__ss_align == other.__ss_align
-                    && self
-                        .__ss_pad2
-                        .iter()
-                        .zip(other.__ss_pad2.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_storage {}
-
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_len.hash(state);
-                self.ss_family.hash(state);
-                self.__ss_pad1.hash(state);
-                self.__ss_align.hash(state);
-                self.__ss_pad2.hash(state);
-            }
-        }
-
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_user
-                    .iter()
-                    .zip(other.ut_user.iter())
-                    .all(|(a, b)| a == b)
-                    && self.ut_id == other.ut_id
-                    && self.ut_line == other.ut_line
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_type == other.ut_type
-                    && self.ut_tv == other.ut_tv
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self.ut_pad == other.ut_pad
-            }
-        }
-
-        impl Eq for utmpx {}
-
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_user.hash(state);
-                self.ut_id.hash(state);
-                self.ut_line.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_type.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_host.hash(state);
-                self.ut_pad.hash(state);
-            }
-        }
-
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_notify == other.sigev_notify
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_value == other.sigev_value
-                    && self.sigev_notify_attributes == other.sigev_notify_attributes
-            }
-        }
-
-        impl Eq for sigevent {}
-
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_notify.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_value.hash(state);
-                self.sigev_notify_attributes.hash(state);
-            }
-        }
-
-        impl PartialEq for processor_cpu_load_info {
-            fn eq(&self, other: &processor_cpu_load_info) -> bool {
-                self.cpu_ticks == other.cpu_ticks
-            }
-        }
-        impl Eq for processor_cpu_load_info {}
-        impl hash::Hash for processor_cpu_load_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.cpu_ticks.hash(state);
-            }
-        }
-
-        impl PartialEq for processor_basic_info {
-            fn eq(&self, other: &processor_basic_info) -> bool {
-                self.cpu_type == other.cpu_type
-                    && self.cpu_subtype == other.cpu_subtype
-                    && self.running == other.running
-                    && self.slot_num == other.slot_num
-                    && self.is_master == other.is_master
-            }
-        }
-        impl Eq for processor_basic_info {}
-        impl hash::Hash for processor_basic_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.cpu_type.hash(state);
-                self.cpu_subtype.hash(state);
-                self.running.hash(state);
-                self.slot_num.hash(state);
-                self.is_master.hash(state);
-            }
-        }
-
-        impl PartialEq for processor_set_basic_info {
-            fn eq(&self, other: &processor_set_basic_info) -> bool {
-                self.processor_count == other.processor_count
-                    && self.default_policy == other.default_policy
-            }
-        }
-        impl Eq for processor_set_basic_info {}
-        impl hash::Hash for processor_set_basic_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.processor_count.hash(state);
-                self.default_policy.hash(state);
-            }
-        }
-
-        impl PartialEq for processor_set_load_info {
-            fn eq(&self, other: &processor_set_load_info) -> bool {
-                self.task_count == other.task_count
-                    && self.thread_count == other.thread_count
-                    && self.load_average == other.load_average
-                    && self.mach_factor == other.mach_factor
-            }
-        }
-        impl Eq for processor_set_load_info {}
-        impl hash::Hash for processor_set_load_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.task_count.hash(state);
-                self.thread_count.hash(state);
-                self.load_average.hash(state);
-                self.mach_factor.hash(state);
-            }
-        }
-
-        impl PartialEq for time_value_t {
-            fn eq(&self, other: &time_value_t) -> bool {
-                self.seconds == other.seconds && self.microseconds == other.microseconds
-            }
-        }
-        impl Eq for time_value_t {}
-        impl hash::Hash for time_value_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.seconds.hash(state);
-                self.microseconds.hash(state);
-            }
-        }
-        impl PartialEq for thread_basic_info {
-            fn eq(&self, other: &thread_basic_info) -> bool {
-                self.user_time == other.user_time
-                    && self.system_time == other.system_time
-                    && self.cpu_usage == other.cpu_usage
-                    && self.policy == other.policy
-                    && self.run_state == other.run_state
-                    && self.flags == other.flags
-                    && self.suspend_count == other.suspend_count
-                    && self.sleep_time == other.sleep_time
-            }
-        }
-        impl Eq for thread_basic_info {}
-        impl hash::Hash for thread_basic_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.user_time.hash(state);
-                self.system_time.hash(state);
-                self.cpu_usage.hash(state);
-                self.policy.hash(state);
-                self.run_state.hash(state);
-                self.flags.hash(state);
-                self.suspend_count.hash(state);
-                self.sleep_time.hash(state);
-            }
-        }
-        impl PartialEq for thread_extended_info {
-            fn eq(&self, other: &thread_extended_info) -> bool {
-                self.pth_user_time == other.pth_user_time
-                    && self.pth_system_time == other.pth_system_time
-                    && self.pth_cpu_usage == other.pth_cpu_usage
-                    && self.pth_policy == other.pth_policy
-                    && self.pth_run_state == other.pth_run_state
-                    && self.pth_flags == other.pth_flags
-                    && self.pth_sleep_time == other.pth_sleep_time
-                    && self.pth_curpri == other.pth_curpri
-                    && self.pth_priority == other.pth_priority
-                    && self.pth_maxpriority == other.pth_maxpriority
-                    && self
-                        .pth_name
-                        .iter()
-                        .zip(other.pth_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for thread_extended_info {}
-        impl hash::Hash for thread_extended_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.pth_user_time.hash(state);
-                self.pth_system_time.hash(state);
-                self.pth_cpu_usage.hash(state);
-                self.pth_policy.hash(state);
-                self.pth_run_state.hash(state);
-                self.pth_flags.hash(state);
-                self.pth_sleep_time.hash(state);
-                self.pth_curpri.hash(state);
-                self.pth_priority.hash(state);
-                self.pth_maxpriority.hash(state);
-                self.pth_name.hash(state);
-            }
-        }
-        impl PartialEq for thread_identifier_info {
-            fn eq(&self, other: &thread_identifier_info) -> bool {
-                self.thread_id == other.thread_id
-                    && self.thread_handle == other.thread_handle
-                    && self.dispatch_qaddr == other.dispatch_qaddr
-            }
-        }
-        impl Eq for thread_identifier_info {}
-        impl hash::Hash for thread_identifier_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.thread_id.hash(state);
-                self.thread_handle.hash(state);
-                self.dispatch_qaddr.hash(state);
-            }
-        }
-        impl PartialEq for if_data64 {
-            fn eq(&self, other: &if_data64) -> bool {
-                self.ifi_type == other.ifi_type
-                    && self.ifi_typelen == other.ifi_typelen
-                    && self.ifi_physical == other.ifi_physical
-                    && self.ifi_addrlen == other.ifi_addrlen
-                    && self.ifi_hdrlen == other.ifi_hdrlen
-                    && self.ifi_recvquota == other.ifi_recvquota
-                    && self.ifi_xmitquota == other.ifi_xmitquota
-                    && self.ifi_unused1 == other.ifi_unused1
-                    && self.ifi_mtu == other.ifi_mtu
-                    && self.ifi_metric == other.ifi_metric
-                    && self.ifi_baudrate == other.ifi_baudrate
-                    && self.ifi_ipackets == other.ifi_ipackets
-                    && self.ifi_ierrors == other.ifi_ierrors
-                    && self.ifi_opackets == other.ifi_opackets
-                    && self.ifi_oerrors == other.ifi_oerrors
-                    && self.ifi_collisions == other.ifi_collisions
-                    && self.ifi_ibytes == other.ifi_ibytes
-                    && self.ifi_obytes == other.ifi_obytes
-                    && self.ifi_imcasts == other.ifi_imcasts
-                    && self.ifi_omcasts == other.ifi_omcasts
-                    && self.ifi_iqdrops == other.ifi_iqdrops
-                    && self.ifi_noproto == other.ifi_noproto
-                    && self.ifi_recvtiming == other.ifi_recvtiming
-                    && self.ifi_xmittiming == other.ifi_xmittiming
-                    && self.ifi_lastchange == other.ifi_lastchange
-            }
-        }
-        impl Eq for if_data64 {}
-        impl hash::Hash for if_data64 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let ifi_type = self.ifi_type;
-                let ifi_typelen = self.ifi_typelen;
-                let ifi_physical = self.ifi_physical;
-                let ifi_addrlen = self.ifi_addrlen;
-                let ifi_hdrlen = self.ifi_hdrlen;
-                let ifi_recvquota = self.ifi_recvquota;
-                let ifi_xmitquota = self.ifi_xmitquota;
-                let ifi_unused1 = self.ifi_unused1;
-                let ifi_mtu = self.ifi_mtu;
-                let ifi_metric = self.ifi_metric;
-                let ifi_baudrate = self.ifi_baudrate;
-                let ifi_ipackets = self.ifi_ipackets;
-                let ifi_ierrors = self.ifi_ierrors;
-                let ifi_opackets = self.ifi_opackets;
-                let ifi_oerrors = self.ifi_oerrors;
-                let ifi_collisions = self.ifi_collisions;
-                let ifi_ibytes = self.ifi_ibytes;
-                let ifi_obytes = self.ifi_obytes;
-                let ifi_imcasts = self.ifi_imcasts;
-                let ifi_omcasts = self.ifi_omcasts;
-                let ifi_iqdrops = self.ifi_iqdrops;
-                let ifi_noproto = self.ifi_noproto;
-                let ifi_recvtiming = self.ifi_recvtiming;
-                let ifi_xmittiming = self.ifi_xmittiming;
-                let ifi_lastchange = self.ifi_lastchange;
-                ifi_type.hash(state);
-                ifi_typelen.hash(state);
-                ifi_physical.hash(state);
-                ifi_addrlen.hash(state);
-                ifi_hdrlen.hash(state);
-                ifi_recvquota.hash(state);
-                ifi_xmitquota.hash(state);
-                ifi_unused1.hash(state);
-                ifi_mtu.hash(state);
-                ifi_metric.hash(state);
-                ifi_baudrate.hash(state);
-                ifi_ipackets.hash(state);
-                ifi_ierrors.hash(state);
-                ifi_opackets.hash(state);
-                ifi_oerrors.hash(state);
-                ifi_collisions.hash(state);
-                ifi_ibytes.hash(state);
-                ifi_obytes.hash(state);
-                ifi_imcasts.hash(state);
-                ifi_omcasts.hash(state);
-                ifi_iqdrops.hash(state);
-                ifi_noproto.hash(state);
-                ifi_recvtiming.hash(state);
-                ifi_xmittiming.hash(state);
-                ifi_lastchange.hash(state);
-            }
-        }
-        impl PartialEq for if_msghdr2 {
-            fn eq(&self, other: &if_msghdr2) -> bool {
-                self.ifm_msglen == other.ifm_msglen
-                    && self.ifm_version == other.ifm_version
-                    && self.ifm_type == other.ifm_type
-                    && self.ifm_addrs == other.ifm_addrs
-                    && self.ifm_flags == other.ifm_flags
-                    && self.ifm_index == other.ifm_index
-                    && self.ifm_snd_len == other.ifm_snd_len
-                    && self.ifm_snd_maxlen == other.ifm_snd_maxlen
-                    && self.ifm_snd_drops == other.ifm_snd_drops
-                    && self.ifm_timer == other.ifm_timer
-                    && self.ifm_data == other.ifm_data
-            }
-        }
-        impl Eq for if_msghdr2 {}
-        impl hash::Hash for if_msghdr2 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let ifm_msglen = self.ifm_msglen;
-                let ifm_version = self.ifm_version;
-                let ifm_type = self.ifm_type;
-                let ifm_addrs = self.ifm_addrs;
-                let ifm_flags = self.ifm_flags;
-                let ifm_index = self.ifm_index;
-                let ifm_snd_len = self.ifm_snd_len;
-                let ifm_snd_maxlen = self.ifm_snd_maxlen;
-                let ifm_snd_drops = self.ifm_snd_drops;
-                let ifm_timer = self.ifm_timer;
-                let ifm_data = self.ifm_data;
-                ifm_msglen.hash(state);
-                ifm_version.hash(state);
-                ifm_type.hash(state);
-                ifm_addrs.hash(state);
-                ifm_flags.hash(state);
-                ifm_index.hash(state);
-                ifm_snd_len.hash(state);
-                ifm_snd_maxlen.hash(state);
-                ifm_snd_drops.hash(state);
-                ifm_timer.hash(state);
-                ifm_data.hash(state);
-            }
-        }
-        impl PartialEq for vm_statistics64 {
-            fn eq(&self, other: &vm_statistics64) -> bool {
-                // Otherwise rustfmt crashes...
-                let total_uncompressed = self.total_uncompressed_pages_in_compressor;
-                self.free_count == other.free_count
-                    && self.active_count == other.active_count
-                    && self.inactive_count == other.inactive_count
-                    && self.wire_count == other.wire_count
-                    && self.zero_fill_count == other.zero_fill_count
-                    && self.reactivations == other.reactivations
-                    && self.pageins == other.pageins
-                    && self.pageouts == other.pageouts
-                    && self.faults == other.faults
-                    && self.cow_faults == other.cow_faults
-                    && self.lookups == other.lookups
-                    && self.hits == other.hits
-                    && self.purges == other.purges
-                    && self.purgeable_count == other.purgeable_count
-                    && self.speculative_count == other.speculative_count
-                    && self.decompressions == other.decompressions
-                    && self.compressions == other.compressions
-                    && self.swapins == other.swapins
-                    && self.swapouts == other.swapouts
-                    && self.compressor_page_count == other.compressor_page_count
-                    && self.throttled_count == other.throttled_count
-                    && self.external_page_count == other.external_page_count
-                    && self.internal_page_count == other.internal_page_count
-                    && total_uncompressed == other.total_uncompressed_pages_in_compressor
-            }
-        }
-        impl Eq for vm_statistics64 {}
-        impl hash::Hash for vm_statistics64 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let free_count = self.free_count;
-                let active_count = self.active_count;
-                let inactive_count = self.inactive_count;
-                let wire_count = self.wire_count;
-                let zero_fill_count = self.zero_fill_count;
-                let reactivations = self.reactivations;
-                let pageins = self.pageins;
-                let pageouts = self.pageouts;
-                let faults = self.faults;
-                let cow_faults = self.cow_faults;
-                let lookups = self.lookups;
-                let hits = self.hits;
-                let purges = self.purges;
-                let purgeable_count = self.purgeable_count;
-                let speculative_count = self.speculative_count;
-                let decompressions = self.decompressions;
-                let compressions = self.compressions;
-                let swapins = self.swapins;
-                let swapouts = self.swapouts;
-                let compressor_page_count = self.compressor_page_count;
-                let throttled_count = self.throttled_count;
-                let external_page_count = self.external_page_count;
-                let internal_page_count = self.internal_page_count;
-                // Otherwise rustfmt crashes...
-                let total_uncompressed = self.total_uncompressed_pages_in_compressor;
-                free_count.hash(state);
-                active_count.hash(state);
-                inactive_count.hash(state);
-                wire_count.hash(state);
-                zero_fill_count.hash(state);
-                reactivations.hash(state);
-                pageins.hash(state);
-                pageouts.hash(state);
-                faults.hash(state);
-                cow_faults.hash(state);
-                lookups.hash(state);
-                hits.hash(state);
-                purges.hash(state);
-                purgeable_count.hash(state);
-                speculative_count.hash(state);
-                decompressions.hash(state);
-                compressions.hash(state);
-                swapins.hash(state);
-                swapouts.hash(state);
-                compressor_page_count.hash(state);
-                throttled_count.hash(state);
-                external_page_count.hash(state);
-                internal_page_count.hash(state);
-                total_uncompressed.hash(state);
-            }
-        }
-
-        impl PartialEq for mach_task_basic_info {
-            fn eq(&self, other: &mach_task_basic_info) -> bool {
-                self.virtual_size == other.virtual_size
-                    && self.resident_size == other.resident_size
-                    && self.resident_size_max == other.resident_size_max
-                    && self.user_time == other.user_time
-                    && self.system_time == other.system_time
-                    && self.policy == other.policy
-                    && self.suspend_count == other.suspend_count
-            }
-        }
-        impl Eq for mach_task_basic_info {}
-        impl hash::Hash for mach_task_basic_info {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let virtual_size = self.virtual_size;
-                let resident_size = self.resident_size;
-                let resident_size_max = self.resident_size_max;
-                let user_time = self.user_time;
-                let system_time = self.system_time;
-                let policy = self.policy;
-                let suspend_count = self.suspend_count;
-                virtual_size.hash(state);
-                resident_size.hash(state);
-                resident_size_max.hash(state);
-                user_time.hash(state);
-                system_time.hash(state);
-                policy.hash(state);
-                suspend_count.hash(state);
-            }
-        }
-
-        impl PartialEq for log2phys {
-            fn eq(&self, other: &log2phys) -> bool {
-                self.l2p_flags == other.l2p_flags
-                    && self.l2p_contigbytes == other.l2p_contigbytes
-                    && self.l2p_devoffset == other.l2p_devoffset
-            }
-        }
-        impl Eq for log2phys {}
-        impl hash::Hash for log2phys {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let l2p_flags = self.l2p_flags;
-                let l2p_contigbytes = self.l2p_contigbytes;
-                let l2p_devoffset = self.l2p_devoffset;
-                l2p_flags.hash(state);
-                l2p_contigbytes.hash(state);
-                l2p_devoffset.hash(state);
-            }
-        }
-        impl PartialEq for os_unfair_lock {
-            fn eq(&self, other: &os_unfair_lock) -> bool {
-                self._os_unfair_lock_opaque == other._os_unfair_lock_opaque
-            }
-        }
-
-        impl Eq for os_unfair_lock {}
-
-        impl hash::Hash for os_unfair_lock {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self._os_unfair_lock_opaque.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_vm {
-            fn eq(&self, other: &sockaddr_vm) -> bool {
-                self.svm_len == other.svm_len
-                    && self.svm_family == other.svm_family
-                    && self.svm_reserved1 == other.svm_reserved1
-                    && self.svm_port == other.svm_port
-                    && self.svm_cid == other.svm_cid
-            }
-        }
-
-        impl Eq for sockaddr_vm {}
-
-        impl hash::Hash for sockaddr_vm {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let svm_len = self.svm_len;
-                let svm_family = self.svm_family;
-                let svm_reserved1 = self.svm_reserved1;
-                let svm_port = self.svm_port;
-                let svm_cid = self.svm_cid;
-
-                svm_len.hash(state);
-                svm_family.hash(state);
-                svm_reserved1.hash(state);
-                svm_port.hash(state);
-                svm_cid.hash(state);
-            }
-        }
-
-        impl PartialEq for ifdevmtu {
-            fn eq(&self, other: &ifdevmtu) -> bool {
-                self.ifdm_current == other.ifdm_current
-                    && self.ifdm_min == other.ifdm_min
-                    && self.ifdm_max == other.ifdm_max
-            }
-        }
-
-        impl Eq for ifdevmtu {}
-
-        impl hash::Hash for ifdevmtu {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifdm_current.hash(state);
-                self.ifdm_min.hash(state);
-                self.ifdm_max.hash(state);
-            }
-        }
-
         impl PartialEq for __c_anonymous_ifk_data {
             fn eq(&self, other: &__c_anonymous_ifk_data) -> bool {
                 unsafe { self.ifk_ptr == other.ifk_ptr && self.ifk_value == other.ifk_value }
@@ -2599,21 +1708,6 @@ cfg_if! {
                     self.ifk_ptr.hash(state);
                     self.ifk_value.hash(state);
                 }
-            }
-        }
-
-        impl PartialEq for ifkpi {
-            fn eq(&self, other: &ifkpi) -> bool {
-                self.ifk_module_id == other.ifk_module_id && self.ifk_type == other.ifk_type
-            }
-        }
-
-        impl Eq for ifkpi {}
-
-        impl hash::Hash for ifkpi {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifk_module_id.hash(state);
-                self.ifk_type.hash(state);
             }
         }
 
@@ -2669,21 +1763,6 @@ cfg_if! {
             }
         }
 
-        impl PartialEq for ifreq {
-            fn eq(&self, other: &ifreq) -> bool {
-                self.ifr_name == other.ifr_name && self.ifr_ifru == other.ifr_ifru
-            }
-        }
-
-        impl Eq for ifreq {}
-
-        impl hash::Hash for ifreq {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifr_name.hash(state);
-                self.ifr_ifru.hash(state);
-            }
-        }
-
         impl Eq for __c_anonymous_ifc_ifcu {}
 
         impl PartialEq for __c_anonymous_ifc_ifcu {
@@ -2734,14 +1813,6 @@ cfg_if! {
                 }
             }
         }
-
-        impl PartialEq for in6_ifreq {
-            fn eq(&self, other: &in6_ifreq) -> bool {
-                self.ifr_name == other.ifr_name && self.ifr_ifru == other.ifr_ifru
-            }
-        }
-
-        impl Eq for in6_ifreq {}
     }
 }
 
@@ -2934,9 +2005,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const F_LOCK: c_int = 1;
 pub const F_TEST: c_int = 3;
 pub const F_TLOCK: c_int = 2;
@@ -3275,11 +2343,6 @@ pub const AT_SYMLINK_NOFOLLOW: c_int = 0x0020;
 pub const AT_SYMLINK_FOLLOW: c_int = 0x0040;
 pub const AT_REMOVEDIR: c_int = 0x0080;
 
-pub const PTHREAD_INTROSPECTION_THREAD_CREATE: c_uint = 1;
-pub const PTHREAD_INTROSPECTION_THREAD_START: c_uint = 2;
-pub const PTHREAD_INTROSPECTION_THREAD_TERMINATE: c_uint = 3;
-pub const PTHREAD_INTROSPECTION_THREAD_DESTROY: c_uint = 4;
-
 pub const TIOCMODG: c_ulong = 0x40047403;
 pub const TIOCMODS: c_ulong = 0x80047404;
 pub const TIOCM_LE: c_int = 0x1;
@@ -3322,6 +2385,7 @@ pub const TIOCMSET: c_ulong = 0x8004746d;
 pub const TIOCMBIS: c_ulong = 0x8004746c;
 pub const TIOCMBIC: c_ulong = 0x8004746b;
 pub const TIOCMGET: c_ulong = 0x4004746a;
+#[deprecated(since = "0.2.178", note = "Removed in MacOSX 12.0.1")]
 pub const TIOCREMOTE: c_ulong = 0x80047469;
 pub const TIOCGWINSZ: c_ulong = 0x40087468;
 pub const TIOCSWINSZ: c_ulong = 0x80087467;
@@ -3430,23 +2494,6 @@ pub const _SC_XOPEN_UNIX: c_int = 115;
 pub const _SC_XOPEN_VERSION: c_int = 116;
 pub const _SC_XOPEN_XCU_VERSION: c_int = 121;
 pub const _SC_PHYS_PAGES: c_int = 200;
-
-pub const PTHREAD_PROCESS_PRIVATE: c_int = 2;
-pub const PTHREAD_PROCESS_SHARED: c_int = 1;
-pub const PTHREAD_CREATE_JOINABLE: c_int = 1;
-pub const PTHREAD_CREATE_DETACHED: c_int = 2;
-pub const PTHREAD_INHERIT_SCHED: c_int = 1;
-pub const PTHREAD_EXPLICIT_SCHED: c_int = 2;
-pub const PTHREAD_CANCEL_ENABLE: c_int = 0x01;
-pub const PTHREAD_CANCEL_DISABLE: c_int = 0x00;
-pub const PTHREAD_CANCEL_DEFERRED: c_int = 0x02;
-pub const PTHREAD_CANCEL_ASYNCHRONOUS: c_int = 0x00;
-pub const PTHREAD_CANCELED: *mut c_void = 1 as *mut c_void;
-pub const PTHREAD_SCOPE_SYSTEM: c_int = 1;
-pub const PTHREAD_SCOPE_PROCESS: c_int = 2;
-pub const PTHREAD_PRIO_NONE: c_int = 0;
-pub const PTHREAD_PRIO_INHERIT: c_int = 1;
-pub const PTHREAD_PRIO_PROTECT: c_int = 2;
 
 #[cfg(target_arch = "aarch64")]
 pub const PTHREAD_STACK_MIN: size_t = 16384;
@@ -4074,26 +3121,6 @@ pub const _CS_DARWIN_USER_DIR: c_int = 65536;
 pub const _CS_DARWIN_USER_TEMP_DIR: c_int = 65537;
 pub const _CS_DARWIN_USER_CACHE_DIR: c_int = 65538;
 
-pub const PTHREAD_MUTEX_NORMAL: c_int = 0;
-pub const PTHREAD_MUTEX_ERRORCHECK: c_int = 1;
-pub const PTHREAD_MUTEX_RECURSIVE: c_int = 2;
-pub const PTHREAD_MUTEX_DEFAULT: c_int = PTHREAD_MUTEX_NORMAL;
-pub const _PTHREAD_MUTEX_SIG_init: c_long = 0x32AAABA7;
-pub const _PTHREAD_COND_SIG_init: c_long = 0x3CB0B1BB;
-pub const _PTHREAD_RWLOCK_SIG_init: c_long = 0x2DA8B3B4;
-pub const PTHREAD_MUTEX_INITIALIZER: pthread_mutex_t = pthread_mutex_t {
-    __sig: _PTHREAD_MUTEX_SIG_init,
-    __opaque: [0; __PTHREAD_MUTEX_SIZE__],
-};
-pub const PTHREAD_COND_INITIALIZER: pthread_cond_t = pthread_cond_t {
-    __sig: _PTHREAD_COND_SIG_init,
-    __opaque: [0; __PTHREAD_COND_SIZE__],
-};
-pub const PTHREAD_RWLOCK_INITIALIZER: pthread_rwlock_t = pthread_rwlock_t {
-    __sig: _PTHREAD_RWLOCK_SIG_init,
-    __opaque: [0; __PTHREAD_RWLOCK_SIZE__],
-};
-
 pub const OS_UNFAIR_LOCK_INIT: os_unfair_lock = os_unfair_lock {
     _os_unfair_lock_opaque: 0,
 };
@@ -4114,10 +3141,6 @@ pub const SIGSTKSZ: size_t = 131072;
 pub const FD_SETSIZE: usize = 1024;
 
 pub const ST_NOSUID: c_ulong = 2;
-
-pub const SCHED_OTHER: c_int = 1;
-pub const SCHED_FIFO: c_int = 4;
-pub const SCHED_RR: c_int = 2;
 
 pub const EVFILT_READ: i16 = -1;
 pub const EVFILT_WRITE: i16 = -2;
@@ -4777,7 +3800,7 @@ pub const UF_APPEND: c_uint = 0x00000004;
 pub const UF_OPAQUE: c_uint = 0x00000008;
 pub const UF_COMPRESSED: c_uint = 0x00000020;
 pub const UF_TRACKED: c_uint = 0x00000040;
-pub const SF_SETTABLE: c_uint = 0xffff0000;
+pub const SF_SETTABLE: c_uint = 0x3fff0000;
 pub const SF_ARCHIVED: c_uint = 0x00010000;
 pub const SF_IMMUTABLE: c_uint = 0x00020000;
 pub const SF_APPEND: c_uint = 0x00040000;
@@ -5385,21 +4408,9 @@ extern "C" {
     #[deprecated(since = "0.2.55", note = "Use the `mach2` crate instead")]
     pub fn mach_thread_self() -> mach_port_t;
     pub fn pthread_cond_timedwait_relative_np(
-        cond: *mut pthread_cond_t,
-        lock: *mut pthread_mutex_t,
+        cond: *mut crate::pthread_cond_t,
+        lock: *mut crate::pthread_mutex_t,
         timeout: *const crate::timespec,
-    ) -> c_int;
-    pub fn pthread_once(
-        once_control: *mut crate::pthread_once_t,
-        init_routine: Option<unsafe extern "C" fn()>,
-    ) -> c_int;
-    pub fn pthread_attr_getinheritsched(
-        attr: *const crate::pthread_attr_t,
-        inheritsched: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_attr_getschedpolicy(
-        attr: *const crate::pthread_attr_t,
-        policy: *mut c_int,
     ) -> c_int;
     pub fn pthread_attr_getscope(
         attr: *const crate::pthread_attr_t,
@@ -5413,11 +4424,6 @@ extern "C" {
         attr: *const crate::pthread_attr_t,
         detachstate: *mut c_int,
     ) -> c_int;
-    pub fn pthread_attr_setinheritsched(
-        attr: *mut crate::pthread_attr_t,
-        inheritsched: c_int,
-    ) -> c_int;
-    pub fn pthread_attr_setschedpolicy(attr: *mut crate::pthread_attr_t, policy: c_int) -> c_int;
     pub fn pthread_attr_setscope(attr: *mut crate::pthread_attr_t, contentionscope: c_int)
         -> c_int;
     pub fn pthread_attr_setstackaddr(
@@ -5428,83 +4434,11 @@ extern "C" {
     pub fn pthread_getname_np(thread: crate::pthread_t, name: *mut c_char, len: size_t) -> c_int;
     pub fn pthread_mach_thread_np(thread: crate::pthread_t) -> crate::mach_port_t;
     pub fn pthread_from_mach_thread_np(port: crate::mach_port_t) -> crate::pthread_t;
-    pub fn pthread_create_from_mach_thread(
-        thread: *mut crate::pthread_t,
-        attr: *const crate::pthread_attr_t,
-        f: extern "C" fn(*mut c_void) -> *mut c_void,
-        value: *mut c_void,
-    ) -> c_int;
-    pub fn pthread_stack_frame_decode_np(
-        frame_addr: crate::uintptr_t,
-        return_addr: *mut crate::uintptr_t,
-    ) -> crate::uintptr_t;
     pub fn pthread_get_stackaddr_np(thread: crate::pthread_t) -> *mut c_void;
     pub fn pthread_get_stacksize_np(thread: crate::pthread_t) -> size_t;
-    pub fn pthread_condattr_setpshared(attr: *mut pthread_condattr_t, pshared: c_int) -> c_int;
-    pub fn pthread_condattr_getpshared(
-        attr: *const pthread_condattr_t,
-        pshared: *mut c_int,
-    ) -> c_int;
     pub fn pthread_main_np() -> c_int;
-    pub fn pthread_mutexattr_setpshared(attr: *mut pthread_mutexattr_t, pshared: c_int) -> c_int;
-    pub fn pthread_mutexattr_getpshared(
-        attr: *const pthread_mutexattr_t,
-        pshared: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_rwlockattr_getpshared(
-        attr: *const pthread_rwlockattr_t,
-        val: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_rwlockattr_setpshared(attr: *mut pthread_rwlockattr_t, val: c_int) -> c_int;
     pub fn pthread_threadid_np(thread: crate::pthread_t, thread_id: *mut u64) -> c_int;
-    pub fn pthread_attr_set_qos_class_np(
-        attr: *mut pthread_attr_t,
-        class: qos_class_t,
-        priority: c_int,
-    ) -> c_int;
-    pub fn pthread_attr_get_qos_class_np(
-        attr: *mut pthread_attr_t,
-        class: *mut qos_class_t,
-        priority: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_set_qos_class_self_np(class: qos_class_t, priority: c_int) -> c_int;
-    pub fn pthread_get_qos_class_np(
-        thread: crate::pthread_t,
-        class: *mut qos_class_t,
-        priority: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_attr_getschedparam(
-        attr: *const crate::pthread_attr_t,
-        param: *mut sched_param,
-    ) -> c_int;
-    pub fn pthread_attr_setschedparam(
-        attr: *mut crate::pthread_attr_t,
-        param: *const sched_param,
-    ) -> c_int;
-    pub fn pthread_getschedparam(
-        thread: crate::pthread_t,
-        policy: *mut c_int,
-        param: *mut sched_param,
-    ) -> c_int;
-    pub fn pthread_setschedparam(
-        thread: crate::pthread_t,
-        policy: c_int,
-        param: *const sched_param,
-    ) -> c_int;
 
-    // Available from Big Sur
-    pub fn pthread_introspection_hook_install(
-        hook: crate::pthread_introspection_hook_t,
-    ) -> crate::pthread_introspection_hook_t;
-    pub fn pthread_introspection_setspecific_np(
-        thread: crate::pthread_t,
-        key: crate::pthread_key_t,
-        value: *const c_void,
-    ) -> c_int;
-    pub fn pthread_introspection_getspecific_np(
-        thread: crate::pthread_t,
-        key: crate::pthread_key_t,
-    ) -> *mut c_void;
     pub fn pthread_jit_write_protect_np(enabled: c_int);
     pub fn pthread_jit_write_protect_supported_np() -> c_int;
     // An array of pthread_jit_write_with_callback_np must declare
@@ -5822,14 +4756,6 @@ extern "C" {
         count: size_t,
         pref: *mut crate::cpu_type_t,
         ocount: *mut size_t,
-    ) -> c_int;
-    pub fn posix_spawnattr_set_qos_class_np(
-        attr: *mut posix_spawnattr_t,
-        qos_class: crate::qos_class_t,
-    ) -> c_int;
-    pub fn posix_spawnattr_get_qos_class_np(
-        attr: *const posix_spawnattr_t,
-        qos_class: *mut crate::qos_class_t,
     ) -> c_int;
 
     pub fn posix_spawn_file_actions_init(actions: *mut posix_spawn_file_actions_t) -> c_int;

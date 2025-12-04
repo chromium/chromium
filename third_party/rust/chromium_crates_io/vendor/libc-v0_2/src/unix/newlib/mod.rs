@@ -176,6 +176,8 @@ s! {
         pub f_namemax: c_ulong,
     }
 
+    // FIXME(1.0): This should not implement `PartialEq`
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigaction {
         pub sa_handler: extern "C" fn(arg1: c_int),
         pub sa_mask: sigset_t,
@@ -556,10 +558,6 @@ cfg_if! {
 }
 
 pub const RTLD_LAZY: c_int = 0x1;
-
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 
 pub const SEEK_SET: c_int = 0;
 pub const SEEK_CUR: c_int = 1;

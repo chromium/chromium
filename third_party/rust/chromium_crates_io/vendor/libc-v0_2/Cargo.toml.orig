@@ -1,9 +1,9 @@
 [package]
 name = "libc"
-version = "0.2.177"
+version = "0.2.178"
 keywords = ["libc", "ffi", "bindings", "operating", "system"]
 categories = ["external-ffi-bindings", "no-std", "os"]
-exclude = ["/ci/*", "/.github/*", "/.cirrus.yml", "/triagebot.toml"]
+exclude = ["/ci/*", "/.github/*", "/.cirrus.yml", "/triagebot.toml", "cherry-pick-stable.sh"]
 description = "Raw FFI bindings to platform libraries like libc."
 authors = ["The Rust Project Developers"]
 edition = "2021"
@@ -178,3 +178,9 @@ expl_impl_clone_on_copy = "allow"
 uninlined_format_args = "allow"
 unnecessary_cast = "allow"  # some casts like `as usize` are only needed for some targets
 used_underscore_binding = "allow"
+
+[package.metadata.cargo-semver-checks.lints]
+# Alignment is an internal detail that users must not rely upon
+repr_align_removed = "warn"
+# We deprecate things all the time
+global_value_marked_deprecated = "warn"

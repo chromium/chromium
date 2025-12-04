@@ -1,7 +1,10 @@
 //! x86_64-specific definitions for 64-bit linux-like values
 
 use crate::prelude::*;
-use crate::{off64_t, off_t};
+use crate::{
+    off64_t,
+    off_t,
+};
 
 pub type wchar_t = i32;
 pub type nlink_t = u64;
@@ -18,7 +21,7 @@ s! {
         pub sa_sigaction: crate::sighandler_t,
         pub sa_mask: crate::sigset_t,
         #[cfg(target_arch = "sparc64")]
-        __reserved0: c_int,
+        __reserved0: Padding<c_int>,
         pub sa_flags: c_int,
         pub sa_restorer: Option<extern "C" fn()>,
     }
@@ -83,7 +86,7 @@ s! {
         pub st_mode: crate::mode_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        __pad0: c_int,
+        __pad0: Padding<c_int>,
         pub st_rdev: crate::dev_t,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
@@ -94,7 +97,7 @@ s! {
         pub st_mtime_nsec: i64,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: i64,
-        __unused: [i64; 3],
+        __unused: Padding<[i64; 3]>,
     }
 
     pub struct stat64 {
@@ -104,7 +107,7 @@ s! {
         pub st_mode: crate::mode_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
-        __pad0: c_int,
+        __pad0: Padding<c_int>,
         pub st_rdev: crate::dev_t,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
@@ -115,7 +118,7 @@ s! {
         pub st_mtime_nsec: i64,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: i64,
-        __reserved: [i64; 3],
+        __reserved: Padding<[i64; 3]>,
     }
 
     pub struct statfs64 {
@@ -219,12 +222,12 @@ s! {
         pub start_code: c_ulonglong,
         pub start_stack: c_ulonglong,
         pub signal: c_longlong,
-        __reserved: c_int,
+        __reserved: Padding<c_int>,
         #[cfg(target_pointer_width = "32")]
-        __pad1: u32,
+        __pad1: Padding<u32>,
         pub u_ar0: *mut user_regs_struct,
         #[cfg(target_pointer_width = "32")]
-        __pad2: u32,
+        __pad2: Padding<u32>,
         pub u_fpstate: *mut user_fpregs_struct,
         pub magic: c_ulonglong,
         pub u_comm: [c_char; 32],
@@ -244,11 +247,11 @@ s! {
         pub cuid: crate::uid_t,
         pub cgid: crate::gid_t,
         pub mode: c_ushort,
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub __seq: c_ushort,
-        __pad2: c_ushort,
-        __unused1: u64,
-        __unused2: u64,
+        __pad2: Padding<c_ushort>,
+        __unused1: Padding<u64>,
+        __unused2: Padding<u64>,
     }
 
     pub struct shmid_ds {
@@ -260,8 +263,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __unused4: u64,
-        __unused5: u64,
+        __unused4: Padding<u64>,
+        __unused5: Padding<u64>,
     }
 
     pub struct ptrace_rseq_configuration {
@@ -286,9 +289,7 @@ s! {
         pub set_tid_size: c_ulonglong,
         pub cgroup: c_ulonglong,
     }
-}
 
-s_no_extra_traits! {
     pub struct user_fpregs_struct {
         pub cwd: c_ushort,
         pub swd: c_ushort,
@@ -310,81 +311,14 @@ s_no_extra_traits! {
         pub uc_mcontext: mcontext_t,
         pub uc_sigmask: crate::sigset_t,
         __private: [u8; 512],
-        // FIXME(glibc): the shadow stack field requires glibc >= 2.28.
-        // Re-add once we drop compatibility with glibc versions older than
-        // 2.28.
-        //
-        // __ssp: [c_ulonglong; 4],
-    }
-
-    #[repr(align(16))]
-    pub struct max_align_t {
-        priv_: [f64; 4],
+        __ssp: [c_ulonglong; 4],
     }
 }
 
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for user_fpregs_struct {
-            fn eq(&self, other: &user_fpregs_struct) -> bool {
-                self.cwd == other.cwd
-                    && self.swd == other.swd
-                    && self.ftw == other.ftw
-                    && self.fop == other.fop
-                    && self.rip == other.rip
-                    && self.rdp == other.rdp
-                    && self.mxcsr == other.mxcsr
-                    && self.mxcr_mask == other.mxcr_mask
-                    && self.st_space == other.st_space
-                    && self
-                        .xmm_space
-                        .iter()
-                        .zip(other.xmm_space.iter())
-                        .all(|(a, b)| a == b)
-                // Ignore padding field
-            }
-        }
-
-        impl Eq for user_fpregs_struct {}
-
-        impl hash::Hash for user_fpregs_struct {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.cwd.hash(state);
-                self.ftw.hash(state);
-                self.fop.hash(state);
-                self.rip.hash(state);
-                self.rdp.hash(state);
-                self.mxcsr.hash(state);
-                self.mxcr_mask.hash(state);
-                self.st_space.hash(state);
-                self.xmm_space.hash(state);
-                // Ignore padding field
-            }
-        }
-
-        impl PartialEq for ucontext_t {
-            fn eq(&self, other: &ucontext_t) -> bool {
-                self.uc_flags == other.uc_flags
-                    && self.uc_link == other.uc_link
-                    && self.uc_stack == other.uc_stack
-                    && self.uc_mcontext == other.uc_mcontext
-                    && self.uc_sigmask == other.uc_sigmask
-                // Ignore __private field
-            }
-        }
-
-        impl Eq for ucontext_t {}
-
-        impl hash::Hash for ucontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uc_flags.hash(state);
-                self.uc_link.hash(state);
-                self.uc_stack.hash(state);
-                self.uc_mcontext.hash(state);
-                self.uc_sigmask.hash(state);
-                // Ignore __private field
-            }
-        }
+s_no_extra_traits! {
+    #[repr(align(16))]
+    pub struct max_align_t {
+        priv_: [f64; 4],
     }
 }
 

@@ -70,41 +70,41 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
         pub __seq: c_int,
-        __unused1: c_long,
-        __unused2: c_long,
+        __unused1: Padding<c_long>,
+        __unused2: Padding<c_long>,
     }
 
     pub struct shmid_ds {
         pub shm_perm: crate::ipc_perm,
         pub shm_segsz: size_t,
         pub shm_atime: crate::time_t,
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub shm_dtime: crate::time_t,
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub shm_ctime: crate::time_t,
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
         pub msg_stime: crate::time_t,
-        __unused1: c_int,
+        __unused1: Padding<c_int>,
         pub msg_rtime: crate::time_t,
-        __unused2: c_int,
+        __unused2: Padding<c_int>,
         pub msg_ctime: crate::time_t,
-        __unused3: c_int,
+        __unused3: Padding<c_int>,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct mcontext_t {
@@ -130,9 +130,6 @@ s! {
         pub arm_cpsr: c_ulong,
         pub fault_address: c_ulong,
     }
-}
-
-s_no_extra_traits! {
     pub struct ucontext_t {
         pub uc_flags: c_ulong,
         pub uc_link: *mut ucontext_t,
@@ -141,34 +138,12 @@ s_no_extra_traits! {
         pub uc_sigmask: crate::sigset_t,
         pub uc_regspace: [c_ulonglong; 64],
     }
+}
 
+s_no_extra_traits! {
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: (i64, i64),
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for ucontext_t {
-            fn eq(&self, other: &ucontext_t) -> bool {
-                self.uc_flags == other.uc_flags
-                    && self.uc_link == other.uc_link
-                    && self.uc_stack == other.uc_stack
-                    && self.uc_mcontext == other.uc_mcontext
-                    && self.uc_sigmask == other.uc_sigmask
-            }
-        }
-        impl Eq for ucontext_t {}
-        impl hash::Hash for ucontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uc_flags.hash(state);
-                self.uc_link.hash(state);
-                self.uc_stack.hash(state);
-                self.uc_mcontext.hash(state);
-                self.uc_sigmask.hash(state);
-            }
-        }
     }
 }
 
@@ -271,9 +246,6 @@ pub const MAP_POPULATE: c_int = 0x08000;
 pub const MAP_NONBLOCK: c_int = 0x010000;
 pub const MAP_STACK: c_int = 0x020000;
 pub const MAP_SYNC: c_int = 0x080000;
-
-pub const SOCK_STREAM: c_int = 1;
-pub const SOCK_DGRAM: c_int = 2;
 
 pub const EDEADLK: c_int = 35;
 pub const ENAMETOOLONG: c_int = 36;

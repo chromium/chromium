@@ -4,11 +4,14 @@ use crate::PT_FIRSTMACH;
 pub type c___greg_t = u64;
 pub type __cpu_simple_lock_nv_t = c_uchar;
 
+// FIXME(alignment): Type is `__aligned(8)`
+type __fpregset_t = [c_char; 512];
+
 s! {
     pub struct mcontext_t {
         pub __gregs: [c___greg_t; 26],
         pub _mc_tlsbase: c___greg_t,
-        pub __fpregs: [[c_char; 32]; 16],
+        pub __fpregs: __fpregset_t,
     }
 
     pub struct ucontext_t {

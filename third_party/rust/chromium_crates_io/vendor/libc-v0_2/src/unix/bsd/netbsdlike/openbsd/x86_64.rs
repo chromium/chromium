@@ -36,9 +36,7 @@ s! {
         pub sc_mask: c_int,
         pub sc_cookie: c_long,
     }
-}
 
-s_no_extra_traits! {
     #[repr(packed)]
     pub struct fxsave64 {
         pub fx_fcw: u16,
@@ -53,48 +51,6 @@ s_no_extra_traits! {
         pub fx_st: [[u64; 2]; 8],
         pub fx_xmm: [[u64; 2]; 16],
         __fx_unused3: [u8; 96],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        // `fxsave64` is packed, so field access is unaligned.
-        // use {x} to create temporary storage, copy field to it, and do aligned access.
-        impl PartialEq for fxsave64 {
-            fn eq(&self, other: &fxsave64) -> bool {
-                return { self.fx_fcw } == { other.fx_fcw }
-                    && { self.fx_fsw } == { other.fx_fsw }
-                    && { self.fx_ftw } == { other.fx_ftw }
-                    && { self.fx_fop } == { other.fx_fop }
-                    && { self.fx_rip } == { other.fx_rip }
-                    && { self.fx_rdp } == { other.fx_rdp }
-                    && { self.fx_mxcsr } == { other.fx_mxcsr }
-                    && { self.fx_mxcsr_mask } == { other.fx_mxcsr_mask }
-                    && { self.fx_st }
-                        .iter()
-                        .zip({ other.fx_st }.iter())
-                        .all(|(a, b)| a == b)
-                    && { self.fx_xmm }
-                        .iter()
-                        .zip({ other.fx_xmm }.iter())
-                        .all(|(a, b)| a == b);
-            }
-        }
-        impl Eq for fxsave64 {}
-        impl hash::Hash for fxsave64 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.fx_fcw }.hash(state);
-                { self.fx_fsw }.hash(state);
-                { self.fx_ftw }.hash(state);
-                { self.fx_fop }.hash(state);
-                { self.fx_rip }.hash(state);
-                { self.fx_rdp }.hash(state);
-                { self.fx_mxcsr }.hash(state);
-                { self.fx_mxcsr_mask }.hash(state);
-                { self.fx_st }.hash(state);
-                { self.fx_xmm }.hash(state);
-            }
-        }
     }
 }
 

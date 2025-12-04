@@ -1,5 +1,89 @@
 # Changelog
 
+## [0.2.178](https://github.com/rust-lang/libc/compare/0.2.177...0.2.178) - 2025-12-01
+
+### Added
+
+- BSD: Add `issetugid` ([#4744](https://github.com/rust-lang/libc/pull/4744))
+- Cygwin: Add missing utmp/x.h, grp.h, and stdio.h interfaces ([#4827](https://github.com/rust-lang/libc/pull/4827))
+- Linux s390x musl: Add `__psw_t`/`fprefset_t`/`*context_t` ([#4726](https://github.com/rust-lang/libc/pull/4726))
+- Linux, Android: Add definition for IUCLC ([#4846](https://github.com/rust-lang/libc/pull/4846))
+- Linux, FreeBSD: Add `AT_HWCAP{3,4}` ([#4734](https://github.com/rust-lang/libc/pull/4734))
+- Linux: Add definitions from linux/can/bcm.h ([#4683](https://github.com/rust-lang/libc/pull/4683))
+- Linux: Add syscalls 451-469 for m68k ([#4850](https://github.com/rust-lang/libc/pull/4850))
+- Linux: PowerPC: Add 'ucontext.h' definitions ([#4696](https://github.com/rust-lang/libc/pull/4696))
+- NetBSD: Define `eventfd` ([#4830](https://github.com/rust-lang/libc/pull/4830))
+- Newlib: Add missing constants from `unistd.h` ([#4811](https://github.com/rust-lang/libc/pull/4811))
+- QNX NTO: Add `cfmakeraw` ([#4704](https://github.com/rust-lang/libc/pull/4704))
+- QNX NTO: Add `cfsetspeed` ([#4704](https://github.com/rust-lang/libc/pull/4704))
+- Redox: Add `getresgid` and `getresuid` ([#4752](https://github.com/rust-lang/libc/pull/4752))
+- Redox: Add `setresgid` and `setresuid` ([#4752](https://github.com/rust-lang/libc/pull/4752))
+- VxWorks: Add definitions from `select.h`, `stat.h`, `poll.h`, `ttycom.h`, `utsname.h`, `resource.h`, `mman.h`, `udp.h`, `in.h`, `in6.h`, `if.h`, `fnmatch.h`, and `sioLibCommon.h` ([#4781](https://github.com/rust-lang/libc/pull/4781))
+- VxWorks: Add missing defines/functions needed by rust stdlib ([#4779](https://github.com/rust-lang/libc/pull/4779))
+- WASI: Add more definitions for libstd ([#4747](https://github.com/rust-lang/libc/pull/4747))
+
+### Deprecated:
+
+- Apple: Deprecate `TIOCREMOTE` ([#4764](https://github.com/rust-lang/libc/pull/4764))
+
+### Fixed:
+
+Note that there were a large number of fixes on NetBSD for this `libc` release, some of which include minor breakage.
+
+- AIX: Change errno `EWOULDBLOCK` to make it an alias of `EAGAIN` ([#4790](https://github.com/rust-lang/libc/pull/4790))
+- AIX: Resolve function comparison and `unnecessary_transmutes` warnings ([#4780](https://github.com/rust-lang/libc/pull/4780))
+- Apple: Correct the value of `SF_SETTABLE` ([#4764](https://github.com/rust-lang/libc/pull/4764))
+- DragonflyBSD: Fix the type of `mcontext_t.mc_fpregs` ([#]())
+- EspIDF: Fix the duplicate definition of `gethostname` ([#4773](https://github.com/rust-lang/libc/pull/4773))
+- L4Re: Update available pthread API ([#4836](https://github.com/rust-lang/libc/pull/4836))
+- Linux: Correct the value of `NFT_MSG_MAX` ([#4761](https://github.com/rust-lang/libc/pull/4761))
+- Linux: Remove incorrect `repr(align(8))` for `canxl_frame` ([#4760](https://github.com/rust-lang/libc/pull/4760))
+- Make `eventfd` argument names match OS docs/headers ([#4830](https://github.com/rust-lang/libc/pull/4830))
+- NetBSD: Account for upstream changes to ptrace with LWP ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Correct `ipc_perm`, split from OpenBSD as `ipc.rs` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Correct a number of symbol link names ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Correct the type of `kinfo_vmentry.kve_path` ([#]())
+- NetBSD: Fix `uucred.cr_ngroups` from `int` to `short` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Fix the type of `kevent.udata` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Fix the type of `mcontext_t.__fpregs` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Fix the value of `PT_SUSPEND` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Fix the values of FNM_* constants ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Increase the size of `sockaddr_dl.sdl_data` from 12 to 24 ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `if_.rs`, fix the definition of `ifreq` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `time.rs`, fix the values of `CLOCK_*_CPUTIME_ID` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `timex.rs` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `types.rs`, correct the definition of `lwpid_t` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `utmp_.rs`, correct the definition of `lastlog` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Introduce `utmpx_.rs`, correct utmpx definitions ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Make `_cpuset` an extern type ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: RISC-V 64: Fix the `mcontext` types ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- Nuttx: Resolve warnings ([#4773](https://github.com/rust-lang/libc/pull/4773))
+- OHOS: Don't emit duplicate lfs64 definitions ([#4804](https://github.com/rust-lang/libc/pull/4804))
+- Redox: Fix the type of `pid_t` ([#4825](https://github.com/rust-lang/libc/pull/4825))
+- WASI: Gate `__wasilibc_register_preopened_fd`  ([#4837](https://github.com/rust-lang/libc/pull/4837))
+- Wali: Fix unknown config ([#4773](https://github.com/rust-lang/libc/pull/4773))
+
+### Changed
+
+- AIX: Declare field 'tv_nsec' of structure 'timespec' as 'i32' in both 32-bit and 64-bit modes ([#4750](https://github.com/rust-lang/libc/pull/4750))
+- DragonFly: Avoid usage of `thread_local` ([#3653](https://github.com/rust-lang/libc/pull/3653))
+- Linux: Update the definition for `ucontext_t` and unskip its tests ([#4760](https://github.com/rust-lang/libc/pull/4760))
+- MinGW: Set `L_tmpnam` and `TMP_MAX` to the UCRT value ([#4566](https://github.com/rust-lang/libc/pull/4566))
+- WASI: More closely align pthread type reprs ([#4747](https://github.com/rust-lang/libc/pull/4747))
+- Simplify rustc-check-cfg emission in build.rs ([#4724](https://github.com/rust-lang/libc/pull/4724))
+- Transition a number of definitions to the new source structure (internal change)
+
+### Removed
+
+- MIPS Musl: Remove rogue definition of `SIGSTKFLT` ([#4749](https://github.com/rust-lang/libc/pull/4749))
+- NetBSD: Make `statvfs.f_spare` non-public ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Remove BPF constants ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Remove `*_MAXID` constants and `AT_SUN_LDPGSIZE` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Remove `IFF_NOTRAILERS` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Remove `vm_size_t` ([#4782](https://github.com/rust-lang/libc/pull/4782))
+- NetBSD: Replace REG_ENOSYS with REG_ILLSEQ ([#4782](https://github.com/rust-lang/libc/pull/4782))
+
+
 ## [0.2.177](https://github.com/rust-lang/libc/compare/0.2.176...0.2.177) - 2025-10-09
 
 ### Added

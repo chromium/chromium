@@ -14,10 +14,10 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad1: c_ulong,
+        __pad1: Padding<c_ulong>,
         pub st_size: off64_t,
         pub st_blksize: c_int,
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub st_blocks: c_long,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -25,8 +25,8 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused4: c_uint,
-        __unused5: c_uint,
+        __unused4: Padding<c_uint>,
+        __unused5: Padding<c_uint>,
     }
 
     pub struct stat64 {
@@ -37,10 +37,10 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad1: c_ulong,
+        __pad1: Padding<c_ulong>,
         pub st_size: off64_t,
         pub st_blksize: c_int,
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub st_blocks: c_long,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -48,8 +48,8 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused4: c_uint,
-        __unused5: c_uint,
+        __unused4: Padding<c_uint>,
+        __unused5: Padding<c_uint>,
     }
 
     pub struct user_regs_struct {
@@ -74,7 +74,7 @@ s! {
         pub sp: c_ulonglong,
         pub pc: c_ulonglong,
         pub pstate: c_ulonglong,
-        __reserved: [u64; 512],
+        __reserved: Padding<[u64; 512]>,
     }
 
     pub struct user_fpsimd_struct {

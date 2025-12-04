@@ -16,21 +16,9 @@ pub type id_t = u32;
 pub type sem_t = *mut sem;
 pub type key_t = c_long;
 
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
-}
-#[derive(Debug)]
-pub enum sem {}
-impl Copy for sem {}
-impl Clone for sem {
-    fn clone(&self) -> sem {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
+    pub enum sem {}
 }
 
 s! {
@@ -71,22 +59,6 @@ s! {
         pub l_pid: crate::pid_t,
         pub l_type: c_short,
         pub l_whence: c_short,
-    }
-
-    pub struct ipc_perm {
-        pub cuid: crate::uid_t,
-        pub cgid: crate::gid_t,
-        pub uid: crate::uid_t,
-        pub gid: crate::gid_t,
-        pub mode: mode_t,
-        #[cfg(target_os = "openbsd")]
-        pub seq: c_ushort,
-        #[cfg(target_os = "netbsd")]
-        pub _seq: c_ushort,
-        #[cfg(target_os = "openbsd")]
-        pub key: crate::key_t,
-        #[cfg(target_os = "netbsd")]
-        pub _key: crate::key_t,
     }
 
     pub struct ptrace_io_desc {
@@ -203,9 +175,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const F_LOCK: c_int = 1;
 pub const F_TEST: c_int = 3;
 pub const F_TLOCK: c_int = 2;
@@ -735,7 +704,8 @@ extern "C" {
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
     pub fn setpriority(which: c_int, who: crate::id_t, prio: c_int) -> c_int;
 
-    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
+    pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: crate::dev_t)
+        -> c_int;
     pub fn mkfifoat(dirfd: c_int, pathname: *const c_char, mode: mode_t) -> c_int;
     pub fn sem_timedwait(sem: *mut sem_t, abstime: *const crate::timespec) -> c_int;
     pub fn sem_getvalue(sem: *mut sem_t, sval: *mut c_int) -> c_int;
@@ -779,6 +749,7 @@ extern "C" {
     pub fn shmget(key: crate::key_t, size: size_t, shmflg: c_int) -> c_int;
     pub fn shmat(shmid: c_int, shmaddr: *const c_void, shmflg: c_int) -> *mut c_void;
     pub fn shmdt(shmaddr: *const c_void) -> c_int;
+    #[cfg_attr(target_os = "netbsd", link_name = "__shmctl50")]
     pub fn shmctl(shmid: c_int, cmd: c_int, buf: *mut crate::shmid_ds) -> c_int;
 
     // DIFF(main): changed to `*const *mut` in e77f551de9

@@ -30,8 +30,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
@@ -44,36 +44,8 @@ s! {
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
-    }
-
-    pub struct msghdr {
-        pub msg_name: *mut c_void,
-        pub msg_namelen: crate::socklen_t,
-        pub msg_iov: *mut crate::iovec,
-        #[cfg(target_endian = "big")]
-        __pad1: c_int,
-        pub msg_iovlen: c_int,
-        #[cfg(target_endian = "little")]
-        __pad1: c_int,
-        pub msg_control: *mut c_void,
-        #[cfg(target_endian = "big")]
-        __pad2: c_int,
-        pub msg_controllen: crate::socklen_t,
-        #[cfg(target_endian = "little")]
-        __pad2: c_int,
-        pub msg_flags: c_int,
-    }
-
-    pub struct cmsghdr {
-        #[cfg(target_endian = "big")]
-        pub __pad1: c_int,
-        pub cmsg_len: crate::socklen_t,
-        #[cfg(target_endian = "little")]
-        pub __pad1: c_int,
-        pub cmsg_level: c_int,
-        pub cmsg_type: c_int,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct sem_t {

@@ -1,7 +1,14 @@
 use crate::prelude::*;
 use crate::{
-    exit_status, off_t, termios, NET_MAC_AWARE, NET_MAC_AWARE_INHERIT, PRIV_AWARE_RESET,
-    PRIV_DEBUG, PRIV_PFEXEC, PRIV_XPOLICY,
+    exit_status,
+    off_t,
+    termios,
+    NET_MAC_AWARE,
+    NET_MAC_AWARE_INHERIT,
+    PRIV_AWARE_RESET,
+    PRIV_DEBUG,
+    PRIV_PFEXEC,
+    PRIV_XPOLICY,
 };
 
 pub type door_attr_t = c_uint;
@@ -55,6 +62,20 @@ s! {
         pub xrs_id: c_ulong,
         pub xrs_ptr: *mut c_char,
     }
+
+    pub struct utmpx {
+        pub ut_user: [c_char; _UTMP_USER_LEN],
+        pub ut_id: [c_char; _UTMP_ID_LEN],
+        pub ut_line: [c_char; _UTMP_LINE_LEN],
+        pub ut_pid: crate::pid_t,
+        pub ut_type: c_short,
+        pub ut_exit: exit_status,
+        pub ut_tv: crate::timeval,
+        pub ut_session: c_int,
+        pub pad: [c_int; 5],
+        pub ut_syslen: c_short,
+        pub ut_host: [c_char; 257],
+    }
 }
 
 s_no_extra_traits! {
@@ -81,62 +102,6 @@ s_no_extra_traits! {
         pub dec_num: c_uint,
         pub rbuf: *const c_char,
         pub rsize: size_t,
-    }
-
-    pub struct utmpx {
-        pub ut_user: [c_char; _UTMP_USER_LEN],
-        pub ut_id: [c_char; _UTMP_ID_LEN],
-        pub ut_line: [c_char; _UTMP_LINE_LEN],
-        pub ut_pid: crate::pid_t,
-        pub ut_type: c_short,
-        pub ut_exit: exit_status,
-        pub ut_tv: crate::timeval,
-        pub ut_session: c_int,
-        pub pad: [c_int; 5],
-        pub ut_syslen: c_short,
-        pub ut_host: [c_char; 257],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_user == other.ut_user
-                    && self.ut_line == other.ut_line
-                    && self.ut_id == other.ut_id
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_syslen == other.ut_syslen
-                    && self.pad == other.pad
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utmpx {}
-
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_user.hash(state);
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_syslen.hash(state);
-                self.pad.hash(state);
-            }
-        }
     }
 }
 

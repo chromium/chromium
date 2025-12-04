@@ -1,22 +1,20 @@
 use crate::prelude::*;
-use crate::{cmsghdr, off_t};
+use crate::{
+    cmsghdr,
+    cpuid_t,
+    lwpid_t,
+    off_t,
+};
 
-pub type clock_t = c_uint;
-pub type suseconds_t = c_int;
-pub type dev_t = u64;
 pub type blksize_t = i32;
+pub type eventfd_t = u64;
 pub type fsblkcnt_t = u64;
 pub type fsfilcnt_t = u64;
 pub type idtype_t = c_int;
-pub type mqd_t = c_int;
 type __pthread_spin_t = __cpu_simple_lock_nv_t;
-pub type vm_size_t = crate::uintptr_t; // FIXME(deprecated): deprecated since long time
-pub type lwpid_t = c_uint;
 pub type shmatt_t = c_uint;
-pub type cpuid_t = c_ulong;
 pub type cpuset_t = _cpuset;
 pub type pthread_spin_t = c_uchar;
-pub type timer_t = c_int;
 
 // elf.h
 
@@ -45,6 +43,10 @@ e! {
         FAE_DUP2,
         FAE_CLOSE,
     }
+}
+
+extern_ty! {
+    pub enum _cpuset {}
 }
 
 cfg_if! {
@@ -78,7 +80,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
-            __pad1: c_int,
+            __pad1: Padding<c_int>,
             _pid: crate::pid_t,
         }
         (*(self as *const siginfo_t as *const siginfo_timer))._pid
@@ -90,7 +92,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
-            __pad1: c_int,
+            __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
         }
@@ -103,7 +105,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
-            __pad1: c_int,
+            __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
             value: crate::sigval,
@@ -117,7 +119,7 @@ impl siginfo_t {
             _si_signo: c_int,
             _si_errno: c_int,
             _si_code: c_int,
-            __pad1: c_int,
+            __pad1: Padding<c_int>,
             _pid: crate::pid_t,
             _uid: crate::uid_t,
             _value: crate::sigval,
@@ -150,13 +152,13 @@ s! {
         pub gl_flags: c_int,
         pub gl_pathv: *mut *mut c_char,
 
-        __unused3: *mut c_void,
+        __unused3: Padding<*mut c_void>,
 
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
-        __unused6: *mut c_void,
-        __unused7: *mut c_void,
-        __unused8: *mut c_void,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
+        __unused6: Padding<*mut c_void>,
+        __unused7: Padding<*mut c_void>,
+        __unused8: Padding<*mut c_void>,
     }
 
     pub struct mq_attr {
@@ -164,11 +166,6 @@ s! {
         pub mq_maxmsg: c_long,
         pub mq_msgsize: c_long,
         pub mq_curmsgs: c_long,
-    }
-
-    pub struct itimerspec {
-        pub it_interval: crate::timespec,
-        pub it_value: crate::timespec,
     }
 
     pub struct sigset_t {
@@ -214,9 +211,9 @@ s! {
         pub si_signo: c_int,
         pub si_code: c_int,
         pub si_errno: c_int,
-        __pad1: c_int,
+        __pad1: Padding<c_int>,
         pub si_addr: *mut c_void,
-        __pad2: [u64; 13],
+        __pad2: Padding<[u64; 13]>,
     }
 
     pub struct pthread_attr_t {
@@ -298,8 +295,7 @@ s! {
         pub flags: u32,
         pub fflags: u32,
         pub data: i64,
-        // FIXME(netbsd): NetBSD 10.0 will finally have same layout as other BSD
-        pub udata: intptr_t,
+        pub udata: *mut c_void,
     }
 
     pub struct dqblk {
@@ -347,38 +343,6 @@ s! {
         pub int_n_sign_posn: c_char,
     }
 
-    pub struct if_data {
-        pub ifi_type: c_uchar,
-        pub ifi_addrlen: c_uchar,
-        pub ifi_hdrlen: c_uchar,
-        pub ifi_link_state: c_int,
-        pub ifi_mtu: u64,
-        pub ifi_metric: u64,
-        pub ifi_baudrate: u64,
-        pub ifi_ipackets: u64,
-        pub ifi_ierrors: u64,
-        pub ifi_opackets: u64,
-        pub ifi_oerrors: u64,
-        pub ifi_collisions: u64,
-        pub ifi_ibytes: u64,
-        pub ifi_obytes: u64,
-        pub ifi_imcasts: u64,
-        pub ifi_omcasts: u64,
-        pub ifi_iqdrops: u64,
-        pub ifi_noproto: u64,
-        pub ifi_lastchange: crate::timespec,
-    }
-
-    pub struct if_msghdr {
-        pub ifm_msglen: c_ushort,
-        pub ifm_version: c_uchar,
-        pub ifm_type: c_uchar,
-        pub ifm_addrs: c_int,
-        pub ifm_flags: c_int,
-        pub ifm_index: c_ushort,
-        pub ifm_data: if_data,
-    }
-
     pub struct sockcred {
         pub sc_pid: crate::pid_t,
         pub sc_uid: crate::uid_t,
@@ -393,7 +357,7 @@ s! {
         pub cr_unused: c_ushort,
         pub cr_uid: crate::uid_t,
         pub cr_gid: crate::gid_t,
-        pub cr_ngroups: c_int,
+        pub cr_ngroups: c_short,
         pub cr_groups: [crate::gid_t; NGROUPS_MAX as usize],
     }
 
@@ -411,12 +375,7 @@ s! {
         pub sdl_nlen: u8,
         pub sdl_alen: u8,
         pub sdl_slen: u8,
-        pub sdl_data: [c_char; 12],
-    }
-
-    pub struct __exit_status {
-        pub e_termination: u16,
-        pub e_exit: u16,
+        pub sdl_data: [c_char; 24],
     }
 
     pub struct shmid_ds {
@@ -429,47 +388,6 @@ s! {
         pub shm_dtime: crate::time_t,
         pub shm_ctime: crate::time_t,
         _shm_internal: *mut c_void,
-    }
-
-    pub struct utmp {
-        pub ut_line: [c_char; UT_LINESIZE],
-        pub ut_name: [c_char; UT_NAMESIZE],
-        pub ut_host: [c_char; UT_HOSTSIZE],
-        pub ut_time: crate::time_t,
-    }
-
-    pub struct lastlog {
-        pub ll_line: [c_char; UT_LINESIZE],
-        pub ll_host: [c_char; UT_HOSTSIZE],
-        pub ll_time: crate::time_t,
-    }
-
-    pub struct timex {
-        pub modes: c_uint,
-        pub offset: c_long,
-        pub freq: c_long,
-        pub maxerror: c_long,
-        pub esterror: c_long,
-        pub status: c_int,
-        pub constant: c_long,
-        pub precision: c_long,
-        pub tolerance: c_long,
-        pub ppsfreq: c_long,
-        pub jitter: c_long,
-        pub shift: c_int,
-        pub stabil: c_long,
-        pub jitcnt: c_long,
-        pub calcnt: c_long,
-        pub errcnt: c_long,
-        pub stbcnt: c_long,
-    }
-
-    pub struct ntptimeval {
-        pub time: crate::timespec,
-        pub maxerror: c_long,
-        pub esterror: c_long,
-        pub tai: c_long,
-        pub time_state: c_int,
     }
 
     // elf.h
@@ -517,10 +435,6 @@ s! {
         pub dlpi_subs: c_ulonglong,
         pub dlpi_tls_modid: usize,
         pub dlpi_tls_data: *mut c_void,
-    }
-
-    pub struct _cpuset {
-        bits: [u32; 0],
     }
 
     pub struct accept_filter_arg {
@@ -643,8 +557,8 @@ s! {
         pub l_priority: u8,
         pub l_usrpri: u8,
         pub l_stat: i8,
-        l_pad1: i8,
-        l_pad2: i32,
+        l_pad1: Padding<i8>,
+        l_pad2: Padding<i32>,
         pub l_wmesg: [c_char; KI_WMESGLEN as usize],
         pub l_wchan: u64,
         pub l_cpuid: u64,
@@ -676,7 +590,7 @@ s! {
         pub kve_vn_rdev: u64,
         pub kve_vn_type: u32,
         pub kve_vn_mode: u32,
-        pub kve_path: [[c_char; 32]; 32],
+        pub kve_path: [c_char; crate::PATH_MAX as usize],
     }
 
     pub struct __c_anonymous_posix_spawn_fae_open {
@@ -710,6 +624,7 @@ s! {
         pub fae: *mut posix_spawn_file_actions_entry_t,
     }
 
+    #[deprecated(since = "0.2.178", note = "obsolete upstream")]
     pub struct ptrace_lwpinfo {
         pub pl_lwpid: lwpid_t,
         pub pl_event: c_int,
@@ -737,15 +652,6 @@ s! {
         pub descr_ver: u32,
         pub descr_len: u32,
         pub descr_str: [c_char; 1],
-    }
-
-    pub struct ifreq {
-        pub _priv: [[c_char; 6]; 24],
-    }
-
-    pub struct ifconf {
-        pub ifc_len: c_int,
-        pub ifc_ifcu: __c_anonymous_ifc_ifcu,
     }
 
     pub struct tcp_info {
@@ -790,29 +696,6 @@ s! {
         pub tcpi_snd_zerowin: u32,
         pub __tcpi_pad: [u32; 26],
     }
-}
-
-s_no_extra_traits! {
-    pub struct utmpx {
-        pub ut_name: [c_char; _UTX_USERSIZE],
-        pub ut_id: [c_char; _UTX_IDSIZE],
-        pub ut_line: [c_char; _UTX_LINESIZE],
-        pub ut_host: [c_char; _UTX_HOSTSIZE],
-        pub ut_session: u16,
-        pub ut_type: u16,
-        pub ut_pid: crate::pid_t,
-        pub ut_exit: __exit_status, // FIXME(netbsd): when anonymous struct are supported
-        pub ut_ss: sockaddr_storage,
-        pub ut_tv: crate::timeval,
-        pub ut_pad: [u8; _UTX_PADSIZE],
-    }
-
-    pub struct lastlogx {
-        pub ll_tv: crate::timeval,
-        pub ll_line: [c_char; _UTX_LINESIZE],
-        pub ll_host: [c_char; _UTX_HOSTSIZE],
-        pub ll_ss: sockaddr_storage,
-    }
 
     pub struct in_pktinfo {
         pub ipi_addr: crate::in_addr,
@@ -852,380 +735,43 @@ s_no_extra_traits! {
         pub d_name: [c_char; 512],
     }
 
-    pub struct statvfs {
-        pub f_flag: c_ulong,
-        pub f_bsize: c_ulong,
-        pub f_frsize: c_ulong,
-        pub f_iosize: c_ulong,
-
-        pub f_blocks: crate::fsblkcnt_t,
-        pub f_bfree: crate::fsblkcnt_t,
-        pub f_bavail: crate::fsblkcnt_t,
-        pub f_bresvd: crate::fsblkcnt_t,
-
-        pub f_files: crate::fsfilcnt_t,
-        pub f_ffree: crate::fsfilcnt_t,
-        pub f_favail: crate::fsfilcnt_t,
-        pub f_fresvd: crate::fsfilcnt_t,
-
-        pub f_syncreads: u64,
-        pub f_syncwrites: u64,
-
-        pub f_asyncreads: u64,
-        pub f_asyncwrites: u64,
-
-        pub f_fsidx: crate::fsid_t,
-        pub f_fsid: c_ulong,
-        pub f_namemax: c_ulong,
-        pub f_owner: crate::uid_t,
-
-        pub f_spare: [u32; 4],
-
-        pub f_fstypename: [c_char; 32],
-        pub f_mntonname: [c_char; 1024],
-        pub f_mntfromname: [c_char; 1024],
-    }
-
     pub struct sockaddr_storage {
         pub ss_len: u8,
         pub ss_family: crate::sa_family_t,
-        __ss_pad1: [u8; 6],
-        __ss_pad2: i64,
-        __ss_pad3: [u8; 112],
+        __ss_pad1: Padding<[u8; 6]>,
+        __ss_pad2: Padding<i64>,
+        __ss_pad3: Padding<[u8; 112]>,
     }
 
     pub struct sigevent {
         pub sigev_notify: c_int,
         pub sigev_signo: c_int,
         pub sigev_value: crate::sigval,
-        __unused1: *mut c_void, //actually a function pointer
+        __unused1: Padding<*mut c_void>, //actually a function pointer
         pub sigev_notify_attributes: *mut c_void,
     }
+}
 
+s_no_extra_traits! {
     pub union __c_anonymous_posix_spawn_fae {
         pub open: __c_anonymous_posix_spawn_fae_open,
         pub dup2: __c_anonymous_posix_spawn_fae_dup2,
-    }
-
-    pub union __c_anonymous_ifc_ifcu {
-        pub ifcu_buf: *mut c_void,
-        pub ifcu_req: *mut ifreq,
     }
 }
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_name == other.ut_name
-                    && self.ut_line == other.ut_line
-                    && self.ut_id == other.ut_id
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_ss == other.ut_ss
-                    && self
-                        .ut_pad
-                        .iter()
-                        .zip(other.ut_pad.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utmpx {}
-
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_name.hash(state);
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_ss.hash(state);
-                self.ut_pad.hash(state);
-            }
-        }
-
-        impl PartialEq for lastlogx {
-            fn eq(&self, other: &lastlogx) -> bool {
-                self.ll_tv == other.ll_tv
-                    && self.ll_line == other.ll_line
-                    && self.ll_ss == other.ll_ss
-                    && self
-                        .ll_host
-                        .iter()
-                        .zip(other.ll_host.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for lastlogx {}
-
-        impl hash::Hash for lastlogx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ll_tv.hash(state);
-                self.ll_line.hash(state);
-                self.ll_host.hash(state);
-                self.ll_ss.hash(state);
-            }
-        }
-
-        impl PartialEq for in_pktinfo {
-            fn eq(&self, other: &in_pktinfo) -> bool {
-                self.ipi_addr == other.ipi_addr && self.ipi_ifindex == other.ipi_ifindex
-            }
-        }
-        impl Eq for in_pktinfo {}
-        impl hash::Hash for in_pktinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ipi_addr.hash(state);
-                self.ipi_ifindex.hash(state);
-            }
-        }
-
-        impl PartialEq for arphdr {
-            fn eq(&self, other: &arphdr) -> bool {
-                self.ar_hrd == other.ar_hrd
-                    && self.ar_pro == other.ar_pro
-                    && self.ar_hln == other.ar_hln
-                    && self.ar_pln == other.ar_pln
-                    && self.ar_op == other.ar_op
-            }
-        }
-        impl Eq for arphdr {}
-        impl hash::Hash for arphdr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let ar_hrd = self.ar_hrd;
-                let ar_pro = self.ar_pro;
-                let ar_op = self.ar_op;
-                ar_hrd.hash(state);
-                ar_pro.hash(state);
-                self.ar_hln.hash(state);
-                self.ar_pln.hash(state);
-                ar_op.hash(state);
-            }
-        }
-
-        impl PartialEq for in_addr {
-            fn eq(&self, other: &in_addr) -> bool {
-                self.s_addr == other.s_addr
-            }
-        }
-        impl Eq for in_addr {}
-        impl hash::Hash for in_addr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let s_addr = self.s_addr;
-                s_addr.hash(state);
-            }
-        }
-
-        impl PartialEq for ip_mreq {
-            fn eq(&self, other: &ip_mreq) -> bool {
-                self.imr_multiaddr == other.imr_multiaddr
-                    && self.imr_interface == other.imr_interface
-            }
-        }
-        impl Eq for ip_mreq {}
-        impl hash::Hash for ip_mreq {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.imr_multiaddr.hash(state);
-                self.imr_interface.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_in {
-            fn eq(&self, other: &sockaddr_in) -> bool {
-                self.sin_len == other.sin_len
-                    && self.sin_family == other.sin_family
-                    && self.sin_port == other.sin_port
-                    && self.sin_addr == other.sin_addr
-                    && self.sin_zero == other.sin_zero
-            }
-        }
-        impl Eq for sockaddr_in {}
-        impl hash::Hash for sockaddr_in {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sin_len.hash(state);
-                self.sin_family.hash(state);
-                self.sin_port.hash(state);
-                self.sin_addr.hash(state);
-                self.sin_zero.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_fileno == other.d_fileno
-                    && self.d_reclen == other.d_reclen
-                    && self.d_namlen == other.d_namlen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_fileno.hash(state);
-                self.d_reclen.hash(state);
-                self.d_namlen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for statvfs {
-            fn eq(&self, other: &statvfs) -> bool {
-                self.f_flag == other.f_flag
-                    && self.f_bsize == other.f_bsize
-                    && self.f_frsize == other.f_frsize
-                    && self.f_iosize == other.f_iosize
-                    && self.f_blocks == other.f_blocks
-                    && self.f_bfree == other.f_bfree
-                    && self.f_bavail == other.f_bavail
-                    && self.f_bresvd == other.f_bresvd
-                    && self.f_files == other.f_files
-                    && self.f_ffree == other.f_ffree
-                    && self.f_favail == other.f_favail
-                    && self.f_fresvd == other.f_fresvd
-                    && self.f_syncreads == other.f_syncreads
-                    && self.f_syncwrites == other.f_syncwrites
-                    && self.f_asyncreads == other.f_asyncreads
-                    && self.f_asyncwrites == other.f_asyncwrites
-                    && self.f_fsidx == other.f_fsidx
-                    && self.f_fsid == other.f_fsid
-                    && self.f_namemax == other.f_namemax
-                    && self.f_owner == other.f_owner
-                    && self.f_spare == other.f_spare
-                    && self.f_fstypename == other.f_fstypename
-                    && self
-                        .f_mntonname
-                        .iter()
-                        .zip(other.f_mntonname.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .f_mntfromname
-                        .iter()
-                        .zip(other.f_mntfromname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for statvfs {}
-        impl hash::Hash for statvfs {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.f_flag.hash(state);
-                self.f_bsize.hash(state);
-                self.f_frsize.hash(state);
-                self.f_iosize.hash(state);
-                self.f_blocks.hash(state);
-                self.f_bfree.hash(state);
-                self.f_bavail.hash(state);
-                self.f_bresvd.hash(state);
-                self.f_files.hash(state);
-                self.f_ffree.hash(state);
-                self.f_favail.hash(state);
-                self.f_fresvd.hash(state);
-                self.f_syncreads.hash(state);
-                self.f_syncwrites.hash(state);
-                self.f_asyncreads.hash(state);
-                self.f_asyncwrites.hash(state);
-                self.f_fsidx.hash(state);
-                self.f_fsid.hash(state);
-                self.f_namemax.hash(state);
-                self.f_owner.hash(state);
-                self.f_spare.hash(state);
-                self.f_fstypename.hash(state);
-                self.f_mntonname.hash(state);
-                self.f_mntfromname.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_len == other.ss_len
-                    && self.ss_family == other.ss_family
-                    && self.__ss_pad1 == other.__ss_pad1
-                    && self.__ss_pad2 == other.__ss_pad2
-                    && self
-                        .__ss_pad3
-                        .iter()
-                        .zip(other.__ss_pad3.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_storage {}
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_len.hash(state);
-                self.ss_family.hash(state);
-                self.__ss_pad1.hash(state);
-                self.__ss_pad2.hash(state);
-                self.__ss_pad3.hash(state);
-            }
-        }
-
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_notify == other.sigev_notify
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_value == other.sigev_value
-                    && self.sigev_notify_attributes == other.sigev_notify_attributes
-            }
-        }
-        impl Eq for sigevent {}
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_notify.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_value.hash(state);
-                self.sigev_notify_attributes.hash(state);
-            }
-        }
-
         impl Eq for __c_anonymous_posix_spawn_fae {}
-
         impl PartialEq for __c_anonymous_posix_spawn_fae {
             fn eq(&self, other: &__c_anonymous_posix_spawn_fae) -> bool {
                 unsafe { self.open == other.open || self.dup2 == other.dup2 }
             }
         }
-
         impl hash::Hash for __c_anonymous_posix_spawn_fae {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 unsafe {
                     self.open.hash(state);
                     self.dup2.hash(state);
-                }
-            }
-        }
-
-        impl Eq for __c_anonymous_ifc_ifcu {}
-
-        impl PartialEq for __c_anonymous_ifc_ifcu {
-            fn eq(&self, other: &__c_anonymous_ifc_ifcu) -> bool {
-                unsafe { self.ifcu_buf == other.ifcu_buf || self.ifcu_req == other.ifcu_req }
-            }
-        }
-
-        impl hash::Hash for __c_anonymous_ifc_ifcu {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                unsafe {
-                    self.ifcu_buf.hash(state);
-                    self.ifcu_req.hash(state);
                 }
             }
         }
@@ -1259,7 +805,6 @@ pub const AT_RGID: c_int = 2003;
 pub const AT_SUN_LDELF: c_int = 2004;
 pub const AT_SUN_LDSHDR: c_int = 2005;
 pub const AT_SUN_LDNAME: c_int = 2006;
-pub const AT_SUN_LDPGSIZE: c_int = 2007;
 pub const AT_SUN_PLATFORM: c_int = 2008;
 pub const AT_SUN_HWCAP: c_int = 2009;
 pub const AT_SUN_IFLUSH: c_int = 2010;
@@ -1395,22 +940,6 @@ pub const LOCAL_PEEREID: c_int = 0x0003; // get peer identification
 pub const LOCAL_CREDS: c_int = 0x0004; // pass credentials to receiver
 
 // https://github.com/NetBSD/src/blob/trunk/sys/net/if.h#L373
-pub const IFF_UP: c_int = 0x0001; // interface is up
-pub const IFF_BROADCAST: c_int = 0x0002; // broadcast address valid
-pub const IFF_DEBUG: c_int = 0x0004; // turn on debugging
-pub const IFF_LOOPBACK: c_int = 0x0008; // is a loopback net
-pub const IFF_POINTOPOINT: c_int = 0x0010; // interface is point-to-point link
-pub const IFF_NOTRAILERS: c_int = 0x0020; // avoid use of trailers
-pub const IFF_RUNNING: c_int = 0x0040; // resources allocated
-pub const IFF_NOARP: c_int = 0x0080; // no address resolution protocol
-pub const IFF_PROMISC: c_int = 0x0100; // receive all packets
-pub const IFF_ALLMULTI: c_int = 0x0200; // receive all multicast packets
-pub const IFF_OACTIVE: c_int = 0x0400; // transmission in progress
-pub const IFF_SIMPLEX: c_int = 0x0800; // can't hear own transmissions
-pub const IFF_LINK0: c_int = 0x1000; // per link layer defined bit
-pub const IFF_LINK1: c_int = 0x2000; // per link layer defined bit
-pub const IFF_LINK2: c_int = 0x4000; // per link layer defined bit
-pub const IFF_MULTICAST: c_int = 0x8000; // supports multicast
 
 // sys/netinet/in.h
 // Protocols (RFC 1700)
@@ -1502,7 +1031,6 @@ pub const NET_RT_OOOIFLIST: c_int = 3;
 pub const NET_RT_OOIFLIST: c_int = 4;
 pub const NET_RT_OIFLIST: c_int = 5;
 pub const NET_RT_IFLIST: c_int = 6;
-pub const NET_RT_MAXID: c_int = 7;
 
 pub const PF_OROUTE: c_int = AF_OROUTE;
 pub const PF_ARP: c_int = AF_ARP;
@@ -1689,12 +1217,6 @@ pub const FD_SETSIZE: usize = 0x100;
 
 pub const ST_NOSUID: c_ulong = 8;
 
-pub const BIOCGRSIG: c_ulong = 0x40044272;
-pub const BIOCSRSIG: c_ulong = 0x80044273;
-pub const BIOCSDLT: c_ulong = 0x80044278;
-pub const BIOCGSEESENT: c_ulong = 0x40044276;
-pub const BIOCSSEESENT: c_ulong = 0x80044277;
-
 // <sys/fstypes.h>
 pub const MNT_UNION: c_int = 0x00000020;
 pub const MNT_NOCOREDUMP: c_int = 0x00008000;
@@ -1738,65 +1260,16 @@ pub const fn _IOC(inout: c_ulong, group: c_ulong, num: c_ulong, len: c_ulong) ->
         | (num)
 }
 
-//<sys/timex.h>
-pub const CLOCK_PROCESS_CPUTIME_ID: crate::clockid_t = 2;
-pub const CLOCK_THREAD_CPUTIME_ID: crate::clockid_t = 4;
 pub const NTP_API: c_int = 4;
-pub const MAXPHASE: c_long = 500000000;
-pub const MAXFREQ: c_long = 500000;
-pub const MINSEC: c_int = 256;
-pub const MAXSEC: c_int = 2048;
-pub const NANOSECOND: c_long = 1000000000;
-pub const SCALE_PPM: c_int = 65;
-pub const MAXTC: c_int = 10;
-pub const MOD_OFFSET: c_uint = 0x0001;
-pub const MOD_FREQUENCY: c_uint = 0x0002;
-pub const MOD_MAXERROR: c_uint = 0x0004;
-pub const MOD_ESTERROR: c_uint = 0x0008;
-pub const MOD_STATUS: c_uint = 0x0010;
-pub const MOD_TIMECONST: c_uint = 0x0020;
-pub const MOD_PPSMAX: c_uint = 0x0040;
-pub const MOD_TAI: c_uint = 0x0080;
-pub const MOD_MICRO: c_uint = 0x1000;
-pub const MOD_NANO: c_uint = 0x2000;
-pub const MOD_CLKB: c_uint = 0x4000;
-pub const MOD_CLKA: c_uint = 0x8000;
-pub const STA_PLL: c_int = 0x0001;
-pub const STA_PPSFREQ: c_int = 0x0002;
-pub const STA_PPSTIME: c_int = 0x0004;
-pub const STA_FLL: c_int = 0x0008;
-pub const STA_INS: c_int = 0x0010;
-pub const STA_DEL: c_int = 0x0020;
-pub const STA_UNSYNC: c_int = 0x0040;
-pub const STA_FREQHOLD: c_int = 0x0080;
-pub const STA_PPSSIGNAL: c_int = 0x0100;
-pub const STA_PPSJITTER: c_int = 0x0200;
-pub const STA_PPSWANDER: c_int = 0x0400;
-pub const STA_PPSERROR: c_int = 0x0800;
-pub const STA_CLOCKERR: c_int = 0x1000;
-pub const STA_NANO: c_int = 0x2000;
-pub const STA_MODE: c_int = 0x4000;
-pub const STA_CLK: c_int = 0x8000;
-pub const STA_RONLY: c_int = STA_PPSSIGNAL
-    | STA_PPSJITTER
-    | STA_PPSWANDER
-    | STA_PPSERROR
-    | STA_CLOCKERR
-    | STA_NANO
-    | STA_MODE
-    | STA_CLK;
-pub const TIME_OK: c_int = 0;
-pub const TIME_INS: c_int = 1;
-pub const TIME_DEL: c_int = 2;
-pub const TIME_OOP: c_int = 3;
-pub const TIME_WAIT: c_int = 4;
-pub const TIME_ERROR: c_int = 5;
 
 pub const LITTLE_ENDIAN: c_int = 1234;
 pub const BIG_ENDIAN: c_int = 4321;
 
+#[deprecated(since = "0.2.178", note = "obsolete upstream")]
 pub const PL_EVENT_NONE: c_int = 0;
+#[deprecated(since = "0.2.178", note = "obsolete upstream")]
 pub const PL_EVENT_SIGNAL: c_int = 1;
+#[deprecated(since = "0.2.178", note = "obsolete upstream")]
 pub const PL_EVENT_SUSPENDED: c_int = 2;
 
 cfg_if! {
@@ -1984,7 +1457,6 @@ pub const CTL_PROC: c_int = 10;
 pub const CTL_VENDOR: c_int = 11;
 pub const CTL_EMUL: c_int = 12;
 pub const CTL_SECURITY: c_int = 13;
-pub const CTL_MAXID: c_int = 14;
 pub const KERN_OSTYPE: c_int = 1;
 pub const KERN_OSRELEASE: c_int = 2;
 pub const KERN_OSREV: c_int = 3;
@@ -2069,7 +1541,6 @@ pub const KERN_ARND: c_int = 81;
 pub const KERN_SYSVIPC: c_int = 82;
 pub const KERN_BOOTTIME: c_int = 83;
 pub const KERN_EVCNT: c_int = 84;
-pub const KERN_MAXID: c_int = 85;
 pub const KERN_PROC_ALL: c_int = 0;
 pub const KERN_PROC_PID: c_int = 1;
 pub const KERN_PROC_PGRP: c_int = 2;
@@ -2137,31 +1608,6 @@ pub const ONLRET: crate::tcflag_t = 0x40;
 pub const CDTRCTS: crate::tcflag_t = 0x00020000;
 pub const CHWFLOW: crate::tcflag_t = crate::MDMBUF | crate::CRTSCTS | crate::CDTRCTS;
 
-// pub const _PATH_UTMPX: &[c_char; 14] = b"/var/run/utmpx";
-// pub const _PATH_WTMPX: &[c_char; 14] = b"/var/log/wtmpx";
-// pub const _PATH_LASTLOGX: &[c_char; 17] = b"/var/log/lastlogx";
-// pub const _PATH_UTMP_UPDATE: &[c_char; 24] = b"/usr/libexec/utmp_update";
-pub const UT_NAMESIZE: usize = 8;
-pub const UT_LINESIZE: usize = 8;
-pub const UT_HOSTSIZE: usize = 16;
-pub const _UTX_USERSIZE: usize = 32;
-pub const _UTX_LINESIZE: usize = 32;
-pub const _UTX_PADSIZE: usize = 40;
-pub const _UTX_IDSIZE: usize = 4;
-pub const _UTX_HOSTSIZE: usize = 256;
-pub const EMPTY: u16 = 0;
-pub const RUN_LVL: u16 = 1;
-pub const BOOT_TIME: u16 = 2;
-pub const OLD_TIME: u16 = 3;
-pub const NEW_TIME: u16 = 4;
-pub const INIT_PROCESS: u16 = 5;
-pub const LOGIN_PROCESS: u16 = 6;
-pub const USER_PROCESS: u16 = 7;
-pub const DEAD_PROCESS: u16 = 8;
-pub const ACCOUNTING: u16 = 9;
-pub const SIGNATURE: u16 = 10;
-pub const DOWN_TIME: u16 = 11;
-
 pub const SOCK_CLOEXEC: c_int = 0x10000000;
 pub const SOCK_NONBLOCK: c_int = 0x20000000;
 
@@ -2176,9 +1622,10 @@ pub const FIBMAP: c_ulong = 0xc008667a;
 
 pub const SIGSTKSZ: size_t = 40960;
 
-pub const REG_ENOSYS: c_int = 17;
+pub const REG_ILLSEQ: c_int = 17;
 
 pub const PT_DUMPCORE: c_int = 12;
+#[deprecated(note = "obsolete operation")]
 pub const PT_LWPINFO: c_int = 13;
 pub const PT_SYSCALL: c_int = 14;
 pub const PT_SYSCALLEMU: c_int = 15;
@@ -2188,7 +1635,7 @@ pub const PT_GET_PROCESS_STATE: c_int = 18;
 pub const PT_SET_SIGINFO: c_int = 19;
 pub const PT_GET_SIGINFO: c_int = 20;
 pub const PT_RESUME: c_int = 21;
-pub const PT_SUSPEND: c_int = 23;
+pub const PT_SUSPEND: c_int = 22;
 pub const PT_STOP: c_int = 23;
 pub const PT_LWPSTATUS: c_int = 24;
 pub const PT_LWPNEXT: c_int = 25;
@@ -2297,6 +1744,11 @@ pub const RTA_TAG: c_int = 0x100;
 pub const RTAX_TAG: c_int = 8;
 pub const RTAX_MAX: c_int = 9;
 
+// For eventfd
+pub const EFD_SEMAPHORE: c_int = crate::O_RDWR;
+pub const EFD_NONBLOCK: c_int = crate::O_NONBLOCK;
+pub const EFD_CLOEXEC: c_int = crate::O_CLOEXEC;
+
 // sys/timerfd.h
 pub const TFD_CLOEXEC: i32 = crate::O_CLOEXEC;
 pub const TFD_NONBLOCK: i32 = crate::O_NONBLOCK;
@@ -2394,8 +1846,6 @@ safe_f! {
 }
 
 extern "C" {
-    pub fn ntp_adjtime(buf: *mut timex) -> c_int;
-    pub fn ntp_gettime(buf: *mut ntptimeval) -> c_int;
     pub fn clock_nanosleep(
         clk_id: crate::clockid_t,
         flags: c_int,
@@ -2680,7 +2130,9 @@ extern "C" {
     ) -> c_int;
     pub fn timer_delete(timerid: crate::timer_t) -> c_int;
     pub fn timer_getoverrun(timerid: crate::timer_t) -> c_int;
+    #[link_name = "__timer_gettime50"]
     pub fn timer_gettime(timerid: crate::timer_t, curr_value: *mut crate::itimerspec) -> c_int;
+    #[link_name = "__timer_settime50"]
     pub fn timer_settime(
         timerid: crate::timer_t,
         flags: c_int,
@@ -2706,6 +2158,7 @@ extern "C" {
         flags: c_int,
     ) -> *mut c_void;
 
+    #[link_name = "__sched_rr_get_interval50"]
     pub fn sched_rr_get_interval(pid: crate::pid_t, t: *mut crate::timespec) -> c_int;
     pub fn sched_setparam(pid: crate::pid_t, param: *const crate::sched_param) -> c_int;
     pub fn sched_getparam(pid: crate::pid_t, param: *mut crate::sched_param) -> c_int;
@@ -2748,18 +2201,21 @@ extern "C" {
         ntargets: size_t,
         hint: *const c_void,
     ) -> c_int;
-    #[link_name = "__getmntinfo13"]
     pub fn getmntinfo(mntbufp: *mut *mut crate::statvfs, flags: c_int) -> c_int;
-    pub fn getvfsstat(buf: *mut statvfs, bufsize: size_t, flags: c_int) -> c_int;
+    pub fn getvfsstat(buf: *mut crate::statvfs, bufsize: size_t, flags: c_int) -> c_int;
+
+    pub fn eventfd(val: c_uint, flags: c_int) -> c_int;
+    pub fn eventfd_read(efd: c_int, valp: *mut eventfd_t) -> c_int;
+    pub fn eventfd_write(efd: c_int, val: eventfd_t) -> c_int;
 
     // Added in `NetBSD` 10.0
     pub fn timerfd_create(clockid: crate::clockid_t, flags: c_int) -> c_int;
-    pub fn timerfd_gettime(fd: c_int, curr_value: *mut itimerspec) -> c_int;
+    pub fn timerfd_gettime(fd: c_int, curr_value: *mut crate::itimerspec) -> c_int;
     pub fn timerfd_settime(
         fd: c_int,
         flags: c_int,
-        new_value: *const itimerspec,
-        old_value: *mut itimerspec,
+        new_value: *const crate::itimerspec,
+        old_value: *mut crate::itimerspec,
     ) -> c_int;
 
     pub fn qsort_r(
@@ -2795,7 +2251,7 @@ extern "C" {
 
 #[link(name = "util")]
 extern "C" {
-    #[cfg_attr(target_os = "netbsd", link_name = "__getpwent_r50")]
+    #[link_name = "__getpwent_r50"]
     pub fn getpwent_r(
         pwd: *mut crate::passwd,
         buf: *mut c_char,
@@ -2808,26 +2264,6 @@ extern "C" {
         buflen: size_t,
         result: *mut *mut crate::group,
     ) -> c_int;
-
-    pub fn updwtmpx(file: *const c_char, ut: *const utmpx) -> c_int;
-    pub fn getlastlogx(fname: *const c_char, uid: crate::uid_t, ll: *mut lastlogx)
-        -> *mut lastlogx;
-    pub fn updlastlogx(fname: *const c_char, uid: crate::uid_t, ll: *mut lastlogx) -> c_int;
-    pub fn utmpxname(file: *const c_char) -> c_int;
-    pub fn getutxent() -> *mut utmpx;
-    pub fn getutxid(ut: *const utmpx) -> *mut utmpx;
-    pub fn getutxline(ut: *const utmpx) -> *mut utmpx;
-    pub fn pututxline(ut: *const utmpx) -> *mut utmpx;
-    pub fn setutxent();
-    pub fn endutxent();
-
-    pub fn getutmp(ux: *const utmpx, u: *mut utmp);
-    pub fn getutmpx(u: *const utmp, ux: *mut utmpx);
-
-    pub fn utpname(file: *const c_char) -> c_int;
-    pub fn setutent();
-    pub fn endutent();
-    pub fn getutent() -> *mut utmp;
 
     pub fn efopen(p: *const c_char, m: *const c_char) -> crate::FILE;
     pub fn emalloc(n: size_t) -> *mut c_void;
@@ -2890,9 +2326,9 @@ extern "C" {
         precision: size_t,
     ) -> *mut c_char;
     #[link_name = "__login50"]
-    pub fn login(ut: *const utmp);
+    pub fn login(ut: *const crate::utmp);
     #[link_name = "__loginx50"]
-    pub fn loginx(ut: *const utmpx);
+    pub fn loginx(ut: *const crate::utmpx);
     pub fn logout(line: *const c_char);
     pub fn logoutx(line: *const c_char, status: c_int, tpe: c_int);
     pub fn logwtmp(line: *const c_char, name: *const c_char, host: *const c_char);

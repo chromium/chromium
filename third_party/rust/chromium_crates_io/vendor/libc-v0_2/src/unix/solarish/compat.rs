@@ -3,7 +3,11 @@
 use core::cmp::min;
 
 use crate::unix::solarish::*;
-use crate::{c_char, c_int, size_t};
+use crate::{
+    c_char,
+    c_int,
+    size_t,
+};
 
 pub unsafe fn cfmakeraw(termios: *mut crate::termios) {
     (*termios).c_iflag &=

@@ -28,13 +28,8 @@ pub type nlink_t = c_ushort;
 pub type suseconds_t = c_long;
 pub type useconds_t = c_ulong;
 
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
 }
 
 pub type sigset_t = c_ulong;
@@ -75,13 +70,8 @@ pub type nfds_t = c_uint;
 
 pub type sem_t = *mut sem;
 
-#[derive(Debug)]
-pub enum sem {}
-impl Copy for sem {}
-impl Clone for sem {
-    fn clone(&self) -> sem {
-        *self
-    }
+extern_ty! {
+    pub enum sem {}
 }
 
 pub type tcflag_t = c_uint;
@@ -377,9 +367,9 @@ s! {
 
     pub struct sockaddr_storage {
         pub ss_family: sa_family_t,
-        __ss_pad1: [c_char; 6],
+        __ss_pad1: Padding<[c_char; 6]>,
         __ss_align: i64,
-        __ss_pad2: [c_char; 112],
+        __ss_pad2: Padding<[c_char; 112]>,
     }
 
     pub struct stat {
@@ -450,12 +440,19 @@ s! {
         pub f_namelen: c_long,
         pub f_spare: [c_long; 6],
     }
-}
 
-s_no_extra_traits! {
-    #[repr(align(16))]
-    pub struct max_align_t {
-        priv_: [f64; 4],
+    pub struct sockaddr_un {
+        pub sun_family: sa_family_t,
+        pub sun_path: [c_char; 108],
+    }
+
+    pub struct utsname {
+        pub sysname: [c_char; 66],
+        pub nodename: [c_char; 65],
+        pub release: [c_char; 65],
+        pub version: [c_char; 65],
+        pub machine: [c_char; 65],
+        pub domainname: [c_char; 65],
     }
 
     pub struct siginfo_t {
@@ -464,7 +461,23 @@ s_no_extra_traits! {
         pub si_pid: pid_t,
         pub si_uid: uid_t,
         pub si_errno: c_int,
-        __pad: [u32; 32],
+        __pad: Padding<[u32; 32]>,
+    }
+
+    pub struct dirent {
+        __d_version: u32,
+        pub d_ino: ino_t,
+        pub d_type: c_uchar,
+        __d_unused1: [c_uchar; 3],
+        __d_internal1: u32,
+        pub d_name: [c_char; 256],
+    }
+}
+
+s_no_extra_traits! {
+    #[repr(align(16))]
+    pub struct max_align_t {
+        priv_: [f64; 4],
     }
 
     pub union __c_anonymous_ifr_ifru {
@@ -478,7 +491,7 @@ s_no_extra_traits! {
         pub ifru_mtu: c_int,
         pub ifru_ifindex: c_int,
         pub ifru_data: *mut c_char,
-        __ifru_pad: [c_char; 28],
+        __ifru_pad: Padding<[c_char; 28]>,
     }
 
     pub struct ifreq {
@@ -497,27 +510,16 @@ s_no_extra_traits! {
         pub ifc_ifcu: __c_anonymous_ifc_ifcu,
     }
 
-    pub struct dirent {
-        __d_version: u32,
-        pub d_ino: ino_t,
-        pub d_type: c_uchar,
-        __d_unused1: [c_uchar; 3],
-        __d_internal1: u32,
-        pub d_name: [c_char; 256],
-    }
-
-    pub struct sockaddr_un {
-        pub sun_family: sa_family_t,
-        pub sun_path: [c_char; 108],
-    }
-
-    pub struct utsname {
-        pub sysname: [c_char; 66],
-        pub nodename: [c_char; 65],
-        pub release: [c_char; 65],
-        pub version: [c_char; 65],
-        pub machine: [c_char; 65],
-        pub domainname: [c_char; 65],
+    pub struct utmpx {
+        pub ut_type: c_short,
+        pub ut_pid: pid_t,
+        pub ut_line: [c_char; UT_LINESIZE],
+        pub ut_id: [c_char; UT_IDLEN],
+        pub ut_time: time_t,
+        pub ut_user: [c_char; UT_NAMESIZE],
+        pub ut_host: [c_char; UT_HOSTSIZE],
+        pub ut_addr: c_long,
+        pub ut_tv: timeval,
     }
 }
 
@@ -567,122 +569,6 @@ impl siginfo_t {
             si_value: sigval,
         }
         (*(self as *const siginfo_t as *const siginfo_si_value)).si_value
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for siginfo_t {
-            fn eq(&self, other: &siginfo_t) -> bool {
-                self.si_signo == other.si_signo
-                    && self.si_code == other.si_code
-                    && self.si_pid == other.si_pid
-                    && self.si_uid == other.si_uid
-                    && self.si_errno == other.si_errno
-            }
-        }
-
-        impl Eq for siginfo_t {}
-
-        impl hash::Hash for siginfo_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.si_signo.hash(state);
-                self.si_code.hash(state);
-                self.si_pid.hash(state);
-                self.si_uid.hash(state);
-                self.si_errno.hash(state);
-                // Ignore __pad
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for dirent {}
-
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_un {}
-
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .domainname
-                        .iter()
-                        .zip(other.domainname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utsname {}
-
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-                self.domainname.hash(state);
-            }
-        }
     }
 }
 
@@ -1015,6 +901,8 @@ pub const PATH_MAX: c_int = 4096;
 pub const PIPE_BUF: usize = 4096;
 pub const NGROUPS_MAX: c_int = 1024;
 
+pub const FILENAME_MAX: c_int = 4096;
+
 pub const FORK_RELOAD: c_int = 1;
 pub const FORK_NO_RELOAD: c_int = 0;
 
@@ -1091,6 +979,19 @@ pub const EAI_SERVICE: c_int = 9;
 pub const EAI_SOCKTYPE: c_int = 10;
 pub const EAI_SYSTEM: c_int = 11;
 pub const EAI_OVERFLOW: c_int = 14;
+
+pub const UT_LINESIZE: usize = 16;
+pub const UT_NAMESIZE: usize = 16;
+pub const UT_HOSTSIZE: usize = 256;
+pub const UT_IDLEN: usize = 2;
+pub const RUN_LVL: c_short = 1;
+pub const BOOT_TIME: c_short = 2;
+pub const NEW_TIME: c_short = 3;
+pub const OLD_TIME: c_short = 4;
+pub const INIT_PROCESS: c_short = 5;
+pub const LOGIN_PROCESS: c_short = 6;
+pub const USER_PROCESS: c_short = 7;
+pub const DEAD_PROCESS: c_short = 8;
 
 pub const POLLIN: c_short = 0x1;
 pub const POLLPRI: c_short = 0x2;
@@ -1335,9 +1236,6 @@ pub const X_OK: c_int = 1;
 pub const SEEK_SET: c_int = 0;
 pub const SEEK_CUR: c_int = 1;
 pub const SEEK_END: c_int = 2;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const _SC_ARG_MAX: c_int = 0;
 pub const _SC_CHILD_MAX: c_int = 1;
 pub const _SC_CLK_TCK: c_int = 2;
@@ -1746,6 +1644,8 @@ pub const _POSIX_VDISABLE: cc_t = 0;
 pub const GRND_NONBLOCK: c_uint = 0x1;
 pub const GRND_RANDOM: c_uint = 0x2;
 
+pub const _IOFBF: c_int = 0;
+pub const _IOLBF: c_int = 1;
 pub const _IONBF: c_int = 2;
 pub const BUFSIZ: c_int = 1024;
 
@@ -2446,6 +2346,7 @@ extern "C" {
         winp: *const crate::winsize,
     ) -> c_int;
 
+    pub fn getgrgid(gid: crate::gid_t) -> *mut crate::group;
     pub fn getgrgid_r(
         gid: crate::gid_t,
         grp: *mut crate::group,
@@ -2459,6 +2360,7 @@ extern "C" {
         groups: *mut crate::gid_t,
         ngroups: *mut c_int,
     ) -> c_int;
+    pub fn getgrnam(name: *const c_char) -> *mut crate::group;
     pub fn getgrnam_r(
         name: *const c_char,
         grp: *mut crate::group,
@@ -2474,4 +2376,13 @@ extern "C" {
     pub fn posix_fadvise(fd: c_int, offset: off_t, len: off_t, advise: c_int) -> c_int;
     pub fn posix_fallocate(fd: c_int, offset: off_t, len: off_t) -> c_int;
     pub fn fallocate(fd: c_int, mode: c_int, offset: off_t, len: off_t) -> c_int;
+
+    pub fn endutxent();
+    pub fn getutxent() -> *mut utmpx;
+    pub fn getutxid(id: *const utmpx) -> *mut utmpx;
+    pub fn getutxline(line: *const utmpx) -> *mut utmpx;
+    pub fn pututxline(utmpx: *const utmpx) -> *mut utmpx;
+    pub fn setutxent();
+    pub fn utmpxname(file: *const c_char) -> c_int;
+    pub fn updwtmpx(file: *const c_char, utmpx: *const utmpx);
 }

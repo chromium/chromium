@@ -225,22 +225,9 @@ pub type nl_item = c_int;
 
 pub type iconv_t = *mut c_void;
 
-#[derive(Debug)]
-pub enum fpos64_t {} // FIXME(hurd): fill this out with a struct
-impl Copy for fpos64_t {}
-impl Clone for fpos64_t {
-    fn clone(&self) -> fpos64_t {
-        *self
-    }
-}
-
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+extern_ty! {
+    pub enum fpos64_t {} // FIXME(hurd): fill this out with a struct
+    pub enum timezone {}
 }
 
 // structs
@@ -428,7 +415,7 @@ s! {
         pub sigev_value: crate::sigval,
         pub sigev_signo: c_int,
         pub sigev_notify: c_int,
-        __unused1: *mut c_void, //actually a function pointer
+        __unused1: Padding<*mut c_void>, //actually a function pointer
         pub sigev_notify_attributes: *mut pthread_attr_t,
     }
 
@@ -508,7 +495,7 @@ s! {
         pub stx_uid: u32,
         pub stx_gid: u32,
         pub stx_mode: u16,
-        __statx_pad1: [u16; 1],
+        __statx_pad1: Padding<[u16; 1]>,
         pub stx_ino: u64,
         pub stx_size: u64,
         pub stx_blocks: u64,
@@ -521,7 +508,7 @@ s! {
         pub stx_rdev_minor: u32,
         pub stx_dev_major: u32,
         pub stx_dev_minor: u32,
-        __statx_pad2: [u64; 14],
+        __statx_pad2: Padding<[u64; 14]>,
     }
 
     pub struct statx_timestamp {
@@ -608,7 +595,7 @@ s! {
         __return_value: ssize_t,
         pub aio_offset: off_t,
         #[cfg(all(not(target_arch = "x86_64"), target_pointer_width = "32"))]
-        __unused1: [c_char; 4],
+        __unused1: Padding<[c_char; 4]>,
         __glibc_reserved: [c_char; 32],
     }
 
@@ -934,11 +921,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct glob64_t {
@@ -947,11 +934,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct regex_t {
@@ -1008,7 +995,7 @@ s! {
         __allocated: c_int,
         __used: c_int,
         __actions: *mut c_int,
-        __pad: [c_int; 16],
+        __pad: Padding<[c_int; 16]>,
     }
 
     pub struct posix_spawnattr_t {
@@ -1018,7 +1005,7 @@ s! {
         __ss: crate::sigset_t,
         __sp: crate::sched_param,
         __policy: c_int,
-        __pad: [c_int; 16],
+        __pad: Padding<[c_int; 16]>,
     }
 
     pub struct regmatch_t {
@@ -1032,9 +1019,7 @@ s! {
         pub flag: *mut c_int,
         pub val: c_int,
     }
-}
 
-s_no_extra_traits! {
     pub struct utmpx {
         pub ut_type: c_short,
         pub ut_pid: crate::pid_t,
@@ -1057,48 +1042,6 @@ s_no_extra_traits! {
 
         pub ut_addr_v6: [i32; 4],
         __glibc_reserved: [c_char; 20],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_line == other.ut_line
-                    && self.ut_id == other.ut_id
-                    && self.ut_user == other.ut_user
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_addr_v6 == other.ut_addr_v6
-                    && self.__glibc_reserved == other.__glibc_reserved
-            }
-        }
-
-        impl Eq for utmpx {}
-
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_user.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_addr_v6.hash(state);
-                self.__glibc_reserved.hash(state);
-            }
-        }
     }
 }
 
@@ -1185,9 +1128,6 @@ pub const SHM_REMAP: c_int = 0o40000;
 pub const SHM_LOCK: c_int = 11;
 pub const SHM_UNLOCK: c_int = 12;
 // unistd.h
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const __FD_SETSIZE: usize = 256;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;

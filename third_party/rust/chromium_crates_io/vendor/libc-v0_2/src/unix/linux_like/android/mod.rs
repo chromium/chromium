@@ -1,7 +1,10 @@
 //! Android-specific definitions for linux-like values
 
 use crate::prelude::*;
-use crate::{cmsghdr, msghdr};
+use crate::{
+    cmsghdr,
+    msghdr,
+};
 
 cfg_if! {
     if #[cfg(doc)] {
@@ -134,7 +137,7 @@ s! {
     pub struct sem_t {
         count: c_uint,
         #[cfg(target_pointer_width = "64")]
-        __reserved: [c_int; 3],
+        __reserved: Padding<[c_int; 3]>,
     }
 
     pub struct exit_status {
@@ -176,11 +179,11 @@ s! {
         pub ssi_stime: c_ulonglong,
         pub ssi_addr: c_ulonglong,
         pub ssi_addr_lsb: u16,
-        _pad2: u16,
+        _pad2: Padding<u16>,
         pub ssi_syscall: i32,
         pub ssi_call_addr: u64,
         pub ssi_arch: u32,
-        _pad: [u8; 28],
+        _pad: Padding<[u8; 28]>,
     }
 
     pub struct itimerspec {
@@ -497,12 +500,10 @@ s! {
         pub if_index: c_uint,
         pub if_name: *mut c_char,
     }
-}
 
-s_no_extra_traits! {
     pub struct sockaddr_nl {
         pub nl_family: crate::sa_family_t,
-        nl_pad: c_ushort,
+        nl_pad: Padding<c_ushort>,
         pub nl_pid: u32,
         pub nl_groups: u32,
     }
@@ -575,6 +576,14 @@ s_no_extra_traits! {
         pub absflat: [crate::__s32; ABS_CNT],
     }
 
+    pub struct prop_info {
+        __name: [c_char; 32],
+        __serial: c_uint,
+        __value: [c_char; 92],
+    }
+}
+
+s_no_extra_traits! {
     /// WARNING: The `PartialEq`, `Eq` and `Hash` implementations of this
     /// type are unsound and will be removed in the future.
     #[deprecated(
@@ -585,12 +594,6 @@ s_no_extra_traits! {
     pub struct af_alg_iv {
         pub ivlen: u32,
         pub iv: [c_uchar; 0],
-    }
-
-    pub struct prop_info {
-        __name: [c_char; 32],
-        __serial: c_uint,
-        __value: [c_char; 92],
     }
 
     pub union __c_anonymous_ifr_ifru {
@@ -627,244 +630,33 @@ s_no_extra_traits! {
         pub ifc_len: c_int, /* Size of buffer.  */
         pub ifc_ifcu: __c_anonymous_ifc_ifcu,
     }
+
+    // Internal, for casts to access union fields
+    struct sifields_sigchld {
+        si_pid: crate::pid_t,
+        si_uid: crate::uid_t,
+        si_status: c_int,
+        si_utime: c_long,
+        si_stime: c_long,
+    }
+
+    // Internal, for casts to access union fields
+    union sifields {
+        _align_pointer: *mut c_void,
+        sigchld: sifields_sigchld,
+    }
+
+    // Internal, for casts to access union fields. Note that some variants
+    // of sifields start with a pointer, which makes the alignment of
+    // sifields vary on 32-bit and 64-bit architectures.
+    struct siginfo_f {
+        _siginfo_base: [c_int; 3],
+        sifields: sifields,
+    }
 }
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sockaddr_nl {
-            fn eq(&self, other: &sockaddr_nl) -> bool {
-                self.nl_family == other.nl_family
-                    && self.nl_pid == other.nl_pid
-                    && self.nl_groups == other.nl_groups
-            }
-        }
-        impl Eq for sockaddr_nl {}
-        impl hash::Hash for sockaddr_nl {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.nl_family.hash(state);
-                self.nl_pid.hash(state);
-                self.nl_groups.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for dirent {}
-
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent64 {
-            fn eq(&self, other: &dirent64) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for dirent64 {}
-
-        impl hash::Hash for dirent64 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for siginfo_t {
-            fn eq(&self, other: &siginfo_t) -> bool {
-                self.si_signo == other.si_signo
-                    && self.si_errno == other.si_errno
-                    && self.si_code == other.si_code
-                // Ignore _pad
-                // Ignore _align
-            }
-        }
-
-        impl Eq for siginfo_t {}
-
-        impl hash::Hash for siginfo_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.si_signo.hash(state);
-                self.si_errno.hash(state);
-                self.si_code.hash(state);
-                // Ignore _pad
-                // Ignore _align
-            }
-        }
-
-        impl PartialEq for lastlog {
-            fn eq(&self, other: &lastlog) -> bool {
-                self.ll_time == other.ll_time
-                    && self
-                        .ll_line
-                        .iter()
-                        .zip(other.ll_line.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .ll_host
-                        .iter()
-                        .zip(other.ll_host.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for lastlog {}
-
-        impl hash::Hash for lastlog {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ll_time.hash(state);
-                self.ll_line.hash(state);
-                self.ll_host.hash(state);
-            }
-        }
-
-        impl PartialEq for utmp {
-            fn eq(&self, other: &utmp) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_pid == other.ut_pid
-                    && self
-                        .ut_line
-                        .iter()
-                        .zip(other.ut_line.iter())
-                        .all(|(a, b)| a == b)
-                    && self.ut_id == other.ut_id
-                    && self
-                        .ut_user
-                        .iter()
-                        .zip(other.ut_user.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self.ut_exit == other.ut_exit
-                    && self.ut_session == other.ut_session
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_addr_v6 == other.ut_addr_v6
-                    && self.unused == other.unused
-            }
-        }
-
-        impl Eq for utmp {}
-
-        impl hash::Hash for utmp {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_type.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_line.hash(state);
-                self.ut_id.hash(state);
-                self.ut_user.hash(state);
-                self.ut_host.hash(state);
-                self.ut_exit.hash(state);
-                self.ut_session.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_addr_v6.hash(state);
-                self.unused.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_alg {
-            fn eq(&self, other: &sockaddr_alg) -> bool {
-                self.salg_family == other.salg_family
-                    && self
-                        .salg_type
-                        .iter()
-                        .zip(other.salg_type.iter())
-                        .all(|(a, b)| a == b)
-                    && self.salg_feat == other.salg_feat
-                    && self.salg_mask == other.salg_mask
-                    && self
-                        .salg_name
-                        .iter()
-                        .zip(other.salg_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_alg {}
-
-        impl hash::Hash for sockaddr_alg {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.salg_family.hash(state);
-                self.salg_type.hash(state);
-                self.salg_feat.hash(state);
-                self.salg_mask.hash(state);
-                self.salg_name.hash(state);
-            }
-        }
-
-        impl PartialEq for uinput_setup {
-            fn eq(&self, other: &uinput_setup) -> bool {
-                self.id == other.id
-                    && self.name[..] == other.name[..]
-                    && self.ff_effects_max == other.ff_effects_max
-            }
-        }
-        impl Eq for uinput_setup {}
-
-        impl hash::Hash for uinput_setup {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.id.hash(state);
-                self.name.hash(state);
-                self.ff_effects_max.hash(state);
-            }
-        }
-
-        impl PartialEq for uinput_user_dev {
-            fn eq(&self, other: &uinput_user_dev) -> bool {
-                self.name[..] == other.name[..]
-                    && self.id == other.id
-                    && self.ff_effects_max == other.ff_effects_max
-                    && self.absmax[..] == other.absmax[..]
-                    && self.absmin[..] == other.absmin[..]
-                    && self.absfuzz[..] == other.absfuzz[..]
-                    && self.absflat[..] == other.absflat[..]
-            }
-        }
-        impl Eq for uinput_user_dev {}
-
-        impl hash::Hash for uinput_user_dev {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.name.hash(state);
-                self.id.hash(state);
-                self.ff_effects_max.hash(state);
-                self.absmax.hash(state);
-                self.absmin.hash(state);
-                self.absfuzz.hash(state);
-                self.absflat.hash(state);
-            }
-        }
-
         #[allow(deprecated)]
         impl af_alg_iv {
             fn as_slice(&self) -> &[u8] {
@@ -888,15 +680,6 @@ cfg_if! {
                 self.as_slice().hash(state);
             }
         }
-
-        impl PartialEq for prop_info {
-            fn eq(&self, other: &prop_info) -> bool {
-                self.__name == other.__name
-                    && self.__serial == other.__serial
-                    && self.__value == other.__value
-            }
-        }
-        impl Eq for prop_info {}
     }
 }
 
@@ -1644,6 +1427,7 @@ pub const VSTART: usize = 8;
 pub const VSTOP: usize = 9;
 pub const VDISCARD: usize = 13;
 pub const VTIME: usize = 5;
+pub const IUCLC: crate::tcflag_t = 0x00000200;
 pub const IXON: crate::tcflag_t = 0x00000400;
 pub const IXOFF: crate::tcflag_t = 0x00001000;
 pub const ONLCR: crate::tcflag_t = 0x4;
@@ -3508,6 +3292,8 @@ pub const AT_RANDOM: c_ulong = 25;
 pub const AT_HWCAP2: c_ulong = 26;
 pub const AT_RSEQ_FEATURE_SIZE: c_ulong = 27;
 pub const AT_RSEQ_ALIGN: c_ulong = 28;
+pub const AT_HWCAP3: c_ulong = 29;
+pub const AT_HWCAP4: c_ulong = 30;
 pub const AT_EXECFN: c_ulong = 31;
 pub const AT_MINSIGSTKSZ: c_ulong = 51;
 
@@ -3762,11 +3548,6 @@ extern "C" {
         timeout: c_int,
     ) -> c_int;
     pub fn epoll_ctl(epfd: c_int, op: c_int, fd: c_int, event: *mut crate::epoll_event) -> c_int;
-    pub fn pthread_getschedparam(
-        native: crate::pthread_t,
-        policy: *mut c_int,
-        param: *mut crate::sched_param,
-    ) -> c_int;
     pub fn unshare(flags: c_int) -> c_int;
     pub fn umount(target: *const c_char) -> c_int;
     pub fn sched_get_priority_max(policy: c_int) -> c_int;
@@ -3780,7 +3561,7 @@ extern "C" {
         len: size_t,
         flags: c_uint,
     ) -> ssize_t;
-    pub fn eventfd(init: c_uint, flags: c_int) -> c_int;
+    pub fn eventfd(initval: c_uint, flags: c_int) -> c_int;
     pub fn eventfd_read(fd: c_int, value: *mut eventfd_t) -> c_int;
     pub fn eventfd_write(fd: c_int, value: eventfd_t) -> c_int;
     pub fn sched_rr_get_interval(pid: crate::pid_t, tp: *mut crate::timespec) -> c_int;
@@ -3807,32 +3588,7 @@ extern "C" {
         timeout: *const crate::timespec,
         sigmask: *const sigset_t,
     ) -> c_int;
-    pub fn pthread_mutex_timedlock(
-        lock: *mut pthread_mutex_t,
-        abstime: *const crate::timespec,
-    ) -> c_int;
-    pub fn pthread_barrierattr_init(attr: *mut crate::pthread_barrierattr_t) -> c_int;
-    pub fn pthread_barrierattr_destroy(attr: *mut crate::pthread_barrierattr_t) -> c_int;
-    pub fn pthread_barrierattr_getpshared(
-        attr: *const crate::pthread_barrierattr_t,
-        shared: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_barrierattr_setpshared(
-        attr: *mut crate::pthread_barrierattr_t,
-        shared: c_int,
-    ) -> c_int;
-    pub fn pthread_barrier_init(
-        barrier: *mut pthread_barrier_t,
-        attr: *const crate::pthread_barrierattr_t,
-        count: c_uint,
-    ) -> c_int;
-    pub fn pthread_barrier_destroy(barrier: *mut pthread_barrier_t) -> c_int;
-    pub fn pthread_barrier_wait(barrier: *mut pthread_barrier_t) -> c_int;
-    pub fn pthread_spin_init(lock: *mut crate::pthread_spinlock_t, pshared: c_int) -> c_int;
-    pub fn pthread_spin_destroy(lock: *mut crate::pthread_spinlock_t) -> c_int;
-    pub fn pthread_spin_lock(lock: *mut crate::pthread_spinlock_t) -> c_int;
-    pub fn pthread_spin_trylock(lock: *mut crate::pthread_spinlock_t) -> c_int;
-    pub fn pthread_spin_unlock(lock: *mut crate::pthread_spinlock_t) -> c_int;
+
     pub fn clone(
         cb: extern "C" fn(*mut c_void) -> c_int,
         child_stack: *mut c_void,
@@ -3847,29 +3603,11 @@ extern "C" {
         rqtp: *const crate::timespec,
         rmtp: *mut crate::timespec,
     ) -> c_int;
-    pub fn pthread_attr_getguardsize(
-        attr: *const crate::pthread_attr_t,
-        guardsize: *mut size_t,
-    ) -> c_int;
-    pub fn pthread_attr_setguardsize(attr: *mut crate::pthread_attr_t, guardsize: size_t) -> c_int;
-    pub fn pthread_attr_getinheritsched(
-        attr: *const crate::pthread_attr_t,
-        flag: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_attr_setinheritsched(attr: *mut crate::pthread_attr_t, flag: c_int) -> c_int;
+
     pub fn sethostname(name: *const c_char, len: size_t) -> c_int;
     pub fn sched_get_priority_min(policy: c_int) -> c_int;
-    pub fn pthread_condattr_getpshared(
-        attr: *const pthread_condattr_t,
-        pshared: *mut c_int,
-    ) -> c_int;
     pub fn sysinfo(info: *mut crate::sysinfo) -> c_int;
     pub fn umount2(target: *const c_char, flags: c_int) -> c_int;
-    pub fn pthread_setschedparam(
-        native: crate::pthread_t,
-        policy: c_int,
-        param: *const crate::sched_param,
-    ) -> c_int;
     pub fn swapon(path: *const c_char, swapflags: c_int) -> c_int;
     pub fn sched_setscheduler(
         pid: crate::pid_t,
@@ -3897,10 +3635,8 @@ extern "C" {
         buflen: size_t,
         result: *mut *mut crate::group,
     ) -> c_int;
-    pub fn pthread_sigmask(how: c_int, set: *const sigset_t, oldset: *mut sigset_t) -> c_int;
     pub fn sem_open(name: *const c_char, oflag: c_int, ...) -> *mut sem_t;
     pub fn getgrnam(name: *const c_char) -> *mut crate::group;
-    pub fn pthread_kill(thread: crate::pthread_t, sig: c_int) -> c_int;
     pub fn sem_unlink(name: *const c_char) -> c_int;
     pub fn daemon(nochdir: c_int, noclose: c_int) -> c_int;
     pub fn getpwnam_r(
@@ -3923,11 +3659,6 @@ extern "C" {
         timeout: *const crate::timespec,
     ) -> c_int;
     pub fn sigwait(set: *const sigset_t, sig: *mut c_int) -> c_int;
-    pub fn pthread_atfork(
-        prepare: Option<unsafe extern "C" fn()>,
-        parent: Option<unsafe extern "C" fn()>,
-        child: Option<unsafe extern "C" fn()>,
-    ) -> c_int;
     pub fn getgrgid(gid: crate::gid_t) -> *mut crate::group;
     pub fn getgrouplist(
         user: *const c_char,
@@ -3936,18 +3667,8 @@ extern "C" {
         ngroups: *mut c_int,
     ) -> c_int;
     pub fn initgroups(user: *const c_char, group: crate::gid_t) -> c_int;
-    pub fn pthread_mutexattr_getpshared(
-        attr: *const pthread_mutexattr_t,
-        pshared: *mut c_int,
-    ) -> c_int;
     pub fn popen(command: *const c_char, mode: *const c_char) -> *mut crate::FILE;
     pub fn faccessat(dirfd: c_int, pathname: *const c_char, mode: c_int, flags: c_int) -> c_int;
-    pub fn pthread_create(
-        native: *mut crate::pthread_t,
-        attr: *const crate::pthread_attr_t,
-        f: extern "C" fn(*mut c_void) -> *mut c_void,
-        value: *mut c_void,
-    ) -> c_int;
     pub fn __errno() -> *mut c_int;
     pub fn inotify_rm_watch(fd: c_int, wd: u32) -> c_int;
     pub fn inotify_init() -> c_int;
@@ -3983,8 +3704,6 @@ extern "C" {
     pub fn getrandom(buf: *mut c_void, buflen: size_t, flags: c_uint) -> ssize_t;
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
 
-    pub fn pthread_setname_np(thread: crate::pthread_t, name: *const c_char) -> c_int;
-
     pub fn __system_property_set(__name: *const c_char, __value: *const c_char) -> c_int;
     pub fn __system_property_get(__name: *const c_char, __value: *mut c_char) -> c_int;
     pub fn __system_property_find(__name: *const c_char) -> *const prop_info;
@@ -4008,8 +3727,6 @@ extern "C" {
     pub fn arc4random_buf(__buf: *mut c_void, __n: size_t);
 
     pub fn reallocarray(ptr: *mut c_void, nmemb: size_t, size: size_t) -> *mut c_void;
-
-    pub fn pthread_getcpuclockid(thread: crate::pthread_t, clk_id: *mut crate::clockid_t) -> c_int;
 
     pub fn dirname(path: *const c_char) -> *mut c_char;
     pub fn basename(path: *const c_char) -> *mut c_char;
@@ -4096,38 +3813,6 @@ impl siginfo_t {
         }
         (*(self as *const siginfo_t as *const siginfo_timer)).si_sigval
     }
-}
-
-// Internal, for casts to access union fields
-#[repr(C)]
-struct sifields_sigchld {
-    si_pid: crate::pid_t,
-    si_uid: crate::uid_t,
-    si_status: c_int,
-    si_utime: c_long,
-    si_stime: c_long,
-}
-impl Copy for sifields_sigchld {}
-impl Clone for sifields_sigchld {
-    fn clone(&self) -> sifields_sigchld {
-        *self
-    }
-}
-
-// Internal, for casts to access union fields
-#[repr(C)]
-union sifields {
-    _align_pointer: *mut c_void,
-    sigchld: sifields_sigchld,
-}
-
-// Internal, for casts to access union fields. Note that some variants
-// of sifields start with a pointer, which makes the alignment of
-// sifields vary on 32-bit and 64-bit architectures.
-#[repr(C)]
-struct siginfo_f {
-    _siginfo_base: [c_int; 3],
-    sifields: sifields,
 }
 
 impl siginfo_t {

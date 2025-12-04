@@ -37,10 +37,11 @@ cfg_if! {
     }
 }
 
-missing! {
-    #[derive(Debug)]
+extern_ty! {
     pub enum DIR {}
 }
+
+#[cfg(not(target_os = "nuttx"))]
 pub type locale_t = *mut c_void;
 
 s! {
@@ -59,7 +60,7 @@ s! {
     pub struct timeval {
         pub tv_sec: time_t,
         #[cfg(not(gnu_time_bits64))]
-        pub tv_usec: suseconds_t,
+        pub tv_usec: crate::suseconds_t,
         // For 64 bit time on 32 bit linux glibc, suseconds_t is still
         // a 32 bit type.  Use __suseconds64_t instead
         #[cfg(gnu_time_bits64)]
@@ -68,7 +69,7 @@ s! {
 
     // linux x32 compatibility
     // See https://sourceware.org/bugzilla/show_bug.cgi?id=16437
-    #[cfg(not(target_env = "gnu"))]
+    #[cfg(all(not(target_env = "gnu"), not(target_os = "aix")))]
     pub struct timespec {
         pub tv_sec: time_t,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
@@ -87,51 +88,52 @@ s! {
         pub ru_stime: timeval,
         pub ru_maxrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad1: u32,
+        __pad1: Padding<u32>,
         pub ru_ixrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad2: u32,
+        __pad2: Padding<u32>,
         pub ru_idrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad3: u32,
+        __pad3: Padding<u32>,
         pub ru_isrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad4: u32,
+        __pad4: Padding<u32>,
         pub ru_minflt: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad5: u32,
+        __pad5: Padding<u32>,
         pub ru_majflt: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad6: u32,
+        __pad6: Padding<u32>,
         pub ru_nswap: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad7: u32,
+        __pad7: Padding<u32>,
         pub ru_inblock: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad8: u32,
+        __pad8: Padding<u32>,
         pub ru_oublock: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad9: u32,
+        __pad9: Padding<u32>,
         pub ru_msgsnd: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad10: u32,
+        __pad10: Padding<u32>,
         pub ru_msgrcv: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad11: u32,
+        __pad11: Padding<u32>,
         pub ru_nsignals: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad12: u32,
+        __pad12: Padding<u32>,
         pub ru_nvcsw: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad13: u32,
+        __pad13: Padding<u32>,
         pub ru_nivcsw: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad14: u32,
+        __pad14: Padding<u32>,
 
         #[cfg(any(target_env = "musl", target_env = "ohos", target_os = "emscripten"))]
-        __reserved: [c_long; 16],
+        __reserved: Padding<[c_long; 16]>,
     }
 
+    #[cfg(not(target_os = "nuttx"))]
     pub struct ipv6_mreq {
         pub ipv6mr_multiaddr: in6_addr,
         #[cfg(target_os = "android")]
@@ -349,7 +351,11 @@ cfg_if! {
 pub const FNM_NOMATCH: c_int = 1;
 
 cfg_if! {
-    if #[cfg(any(target_os = "illumos", target_os = "solaris",))] {
+    if #[cfg(any(
+        target_os = "illumos",
+        target_os = "solaris",
+        target_os = "netbsd"
+    ))] {
         pub const FNM_CASEFOLD: c_int = 1 << 3;
     } else if #[cfg(not(target_os = "aix"))] {
         pub const FNM_CASEFOLD: c_int = 1 << 4;
@@ -363,6 +369,7 @@ cfg_if! {
         target_os = "android",
         target_os = "openbsd",
         target_os = "cygwin",
+        target_os = "netbsd",
     ))] {
         pub const FNM_PATHNAME: c_int = 1 << 1;
     } else {
@@ -376,6 +383,8 @@ cfg_if! {
         target_os = "freebsd",
         target_os = "android",
         target_os = "openbsd",
+        target_os = "netbsd",
+        target_os = "cygwin",
     ))] {
         pub const FNM_NOESCAPE: c_int = 1 << 0;
     } else if #[cfg(target_os = "nto")] {
@@ -567,15 +576,13 @@ cfg_if! {
 
 cfg_if! {
     if #[cfg(not(all(target_os = "linux", target_env = "gnu")))] {
-        missing! {
-            #[derive(Debug)]
+        extern_ty! {
             pub enum fpos_t {} // FIXME(unix): fill this out with a struct
         }
     }
 }
 
-missing! {
-    #[derive(Debug)]
+extern_ty! {
     pub enum FILE {}
 }
 
@@ -1259,94 +1266,100 @@ extern "C" {
     #[cfg_attr(target_os = "netbsd", link_name = "__libc_thr_yield")]
     pub fn sched_yield() -> c_int;
     pub fn pthread_key_create(
-        key: *mut pthread_key_t,
+        key: *mut crate::pthread_key_t,
         dtor: Option<unsafe extern "C" fn(*mut c_void)>,
     ) -> c_int;
-    pub fn pthread_key_delete(key: pthread_key_t) -> c_int;
-    pub fn pthread_getspecific(key: pthread_key_t) -> *mut c_void;
-    pub fn pthread_setspecific(key: pthread_key_t, value: *const c_void) -> c_int;
+    pub fn pthread_key_delete(key: crate::pthread_key_t) -> c_int;
+    pub fn pthread_getspecific(key: crate::pthread_key_t) -> *mut c_void;
+    pub fn pthread_setspecific(key: crate::pthread_key_t, value: *const c_void) -> c_int;
     pub fn pthread_mutex_init(
-        lock: *mut pthread_mutex_t,
-        attr: *const pthread_mutexattr_t,
+        lock: *mut crate::pthread_mutex_t,
+        attr: *const crate::pthread_mutexattr_t,
     ) -> c_int;
-    pub fn pthread_mutex_destroy(lock: *mut pthread_mutex_t) -> c_int;
-    pub fn pthread_mutex_lock(lock: *mut pthread_mutex_t) -> c_int;
-    pub fn pthread_mutex_trylock(lock: *mut pthread_mutex_t) -> c_int;
-    pub fn pthread_mutex_unlock(lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_destroy(lock: *mut crate::pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_lock(lock: *mut crate::pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_trylock(lock: *mut crate::pthread_mutex_t) -> c_int;
+    pub fn pthread_mutex_unlock(lock: *mut crate::pthread_mutex_t) -> c_int;
 
-    pub fn pthread_mutexattr_init(attr: *mut pthread_mutexattr_t) -> c_int;
+    pub fn pthread_mutexattr_init(attr: *mut crate::pthread_mutexattr_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_mutexattr_destroy$UNIX2003"
     )]
-    pub fn pthread_mutexattr_destroy(attr: *mut pthread_mutexattr_t) -> c_int;
-    pub fn pthread_mutexattr_settype(attr: *mut pthread_mutexattr_t, _type: c_int) -> c_int;
+    pub fn pthread_mutexattr_destroy(attr: *mut crate::pthread_mutexattr_t) -> c_int;
+    pub fn pthread_mutexattr_settype(attr: *mut crate::pthread_mutexattr_t, _type: c_int) -> c_int;
 
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_cond_init$UNIX2003"
     )]
-    pub fn pthread_cond_init(cond: *mut pthread_cond_t, attr: *const pthread_condattr_t) -> c_int;
+    pub fn pthread_cond_init(
+        cond: *mut crate::pthread_cond_t,
+        attr: *const crate::pthread_condattr_t,
+    ) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_cond_wait$UNIX2003"
     )]
-    pub fn pthread_cond_wait(cond: *mut pthread_cond_t, lock: *mut pthread_mutex_t) -> c_int;
+    pub fn pthread_cond_wait(
+        cond: *mut crate::pthread_cond_t,
+        lock: *mut crate::pthread_mutex_t,
+    ) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_cond_timedwait$UNIX2003"
     )]
     #[cfg_attr(gnu_time_bits64, link_name = "__pthread_cond_timedwait64")]
     pub fn pthread_cond_timedwait(
-        cond: *mut pthread_cond_t,
-        lock: *mut pthread_mutex_t,
+        cond: *mut crate::pthread_cond_t,
+        lock: *mut crate::pthread_mutex_t,
         abstime: *const crate::timespec,
     ) -> c_int;
-    pub fn pthread_cond_signal(cond: *mut pthread_cond_t) -> c_int;
-    pub fn pthread_cond_broadcast(cond: *mut pthread_cond_t) -> c_int;
-    pub fn pthread_cond_destroy(cond: *mut pthread_cond_t) -> c_int;
-    pub fn pthread_condattr_init(attr: *mut pthread_condattr_t) -> c_int;
-    pub fn pthread_condattr_destroy(attr: *mut pthread_condattr_t) -> c_int;
+    pub fn pthread_cond_signal(cond: *mut crate::pthread_cond_t) -> c_int;
+    pub fn pthread_cond_broadcast(cond: *mut crate::pthread_cond_t) -> c_int;
+    pub fn pthread_cond_destroy(cond: *mut crate::pthread_cond_t) -> c_int;
+    pub fn pthread_condattr_init(attr: *mut crate::pthread_condattr_t) -> c_int;
+    pub fn pthread_condattr_destroy(attr: *mut crate::pthread_condattr_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_init$UNIX2003"
     )]
     pub fn pthread_rwlock_init(
-        lock: *mut pthread_rwlock_t,
-        attr: *const pthread_rwlockattr_t,
+        lock: *mut crate::pthread_rwlock_t,
+        attr: *const crate::pthread_rwlockattr_t,
     ) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_destroy$UNIX2003"
     )]
-    pub fn pthread_rwlock_destroy(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_destroy(lock: *mut crate::pthread_rwlock_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_rdlock$UNIX2003"
     )]
-    pub fn pthread_rwlock_rdlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_rdlock(lock: *mut crate::pthread_rwlock_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_tryrdlock$UNIX2003"
     )]
-    pub fn pthread_rwlock_tryrdlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_tryrdlock(lock: *mut crate::pthread_rwlock_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_wrlock$UNIX2003"
     )]
-    pub fn pthread_rwlock_wrlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_wrlock(lock: *mut crate::pthread_rwlock_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_trywrlock$UNIX2003"
     )]
-    pub fn pthread_rwlock_trywrlock(lock: *mut pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlock_trywrlock(lock: *mut crate::pthread_rwlock_t) -> c_int;
     #[cfg_attr(
         all(target_os = "macos", target_arch = "x86"),
         link_name = "pthread_rwlock_unlock$UNIX2003"
     )]
-    pub fn pthread_rwlock_unlock(lock: *mut pthread_rwlock_t) -> c_int;
-    pub fn pthread_rwlockattr_init(attr: *mut pthread_rwlockattr_t) -> c_int;
-    pub fn pthread_rwlockattr_destroy(attr: *mut pthread_rwlockattr_t) -> c_int;
+    pub fn pthread_rwlock_unlock(lock: *mut crate::pthread_rwlock_t) -> c_int;
+    pub fn pthread_rwlockattr_init(attr: *mut crate::pthread_rwlockattr_t) -> c_int;
+    pub fn pthread_rwlockattr_destroy(attr: *mut crate::pthread_rwlockattr_t) -> c_int;
 
     #[cfg_attr(
         any(target_os = "illumos", target_os = "solaris"),
@@ -1466,6 +1479,7 @@ extern "C" {
         link_name = "mknod@FBSD_1.0"
     )]
     pub fn mknod(pathname: *const c_char, mode: mode_t, dev: crate::dev_t) -> c_int;
+    #[cfg(not(target_os = "espidf"))]
     pub fn gethostname(name: *mut c_char, len: size_t) -> c_int;
     pub fn endservent();
     pub fn getservbyname(name: *const c_char, proto: *const c_char) -> *mut servent;
@@ -1536,9 +1550,9 @@ extern "C" {
     pub fn sem_trywait(sem: *mut sem_t) -> c_int;
     pub fn sem_post(sem: *mut sem_t) -> c_int;
     #[cfg_attr(gnu_file_offset_bits64, link_name = "statvfs64")]
-    pub fn statvfs(path: *const c_char, buf: *mut statvfs) -> c_int;
+    pub fn statvfs(path: *const c_char, buf: *mut crate::statvfs) -> c_int;
     #[cfg_attr(gnu_file_offset_bits64, link_name = "fstatvfs64")]
-    pub fn fstatvfs(fd: c_int, buf: *mut statvfs) -> c_int;
+    pub fn fstatvfs(fd: c_int, buf: *mut crate::statvfs) -> c_int;
 
     #[cfg_attr(target_os = "netbsd", link_name = "__sigemptyset14")]
     pub fn sigemptyset(set: *mut sigset_t) -> c_int;
@@ -1639,6 +1653,7 @@ cfg_if! {
         target_os = "aix",
     )))] {
         extern "C" {
+            #[cfg_attr(target_os = "netbsd", link_name = "__adjtime50")]
             #[cfg_attr(gnu_time_bits64, link_name = "__adjtime64")]
             pub fn adjtime(delta: *const timeval, olddelta: *mut timeval) -> c_int;
         }
@@ -1825,18 +1840,31 @@ cfg_if! {
 }
 
 cfg_if! {
-    if #[cfg(target_os = "aix")] {
+    if #[cfg(any(target_os = "aix", target_os = "nto"))] {
         extern "C" {
             pub fn cfmakeraw(termios: *mut crate::termios) -> c_int;
+        }
+    } else if #[cfg(not(any(target_os = "solaris", target_os = "illumos",)))] {
+        extern "C" {
+            pub fn cfmakeraw(termios: *mut crate::termios);
+        }
+    }
+}
+
+cfg_if! {
+    if #[cfg(any(
+        target_os = "aix",
+        all(target_os = "nto", target_env = "nto80")
+    ))] {
+        extern "C" {
             pub fn cfsetspeed(termios: *mut crate::termios, speed: crate::speed_t) -> c_int;
         }
     } else if #[cfg(not(any(
         target_os = "solaris",
         target_os = "illumos",
-        target_os = "nto",
+        target_os = "nto"
     )))] {
         extern "C" {
-            pub fn cfmakeraw(termios: *mut crate::termios);
             pub fn cfsetspeed(termios: *mut crate::termios, speed: crate::speed_t) -> c_int;
         }
     }

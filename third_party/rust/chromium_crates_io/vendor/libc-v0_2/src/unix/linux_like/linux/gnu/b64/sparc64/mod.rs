@@ -1,7 +1,11 @@
 //! SPARC64-specific definitions for 64-bit linux-like values
 
 use crate::prelude::*;
-use crate::{off64_t, off_t, pthread_mutex_t};
+use crate::{
+    off64_t,
+    off_t,
+    pthread_mutex_t,
+};
 
 pub type wchar_t = i32;
 pub type nlink_t = u32;
@@ -17,7 +21,7 @@ s! {
         pub sa_sigaction: crate::sighandler_t,
         pub sa_mask: crate::sigset_t,
         #[cfg(target_arch = "sparc64")]
-        __reserved0: c_int,
+        __reserved0: Padding<c_int>,
         pub sa_flags: c_int,
         pub sa_restorer: Option<extern "C" fn()>,
     }
@@ -67,7 +71,7 @@ s! {
         pub l_start: off64_t,
         pub l_len: off64_t,
         pub l_pid: crate::pid_t,
-        __reserved: c_short,
+        __reserved: Padding<c_short>,
     }
 
     pub struct stack_t {
@@ -78,14 +82,14 @@ s! {
 
     pub struct stat {
         pub st_dev: crate::dev_t,
-        __pad0: u64,
+        __pad0: Padding<u64>,
         pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad1: u64,
+        __pad1: Padding<u64>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
@@ -95,19 +99,19 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_long; 2],
+        __unused: Padding<[c_long; 2]>,
     }
 
     pub struct stat64 {
         pub st_dev: crate::dev_t,
-        __pad0: u64,
+        __pad0: Padding<u64>,
         pub st_ino: crate::ino64_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
@@ -117,7 +121,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __reserved: [c_long; 2],
+        __reserved: Padding<[c_long; 2]>,
     }
 
     pub struct statfs64 {
@@ -176,10 +180,10 @@ s! {
         pub cuid: crate::uid_t,
         pub cgid: crate::gid_t,
         pub mode: crate::mode_t,
-        __pad0: u16,
+        __pad0: Padding<u16>,
         pub __seq: c_ushort,
-        __unused1: c_ulonglong,
-        __unused2: c_ulonglong,
+        __unused1: Padding<c_ulonglong>,
+        __unused2: Padding<c_ulonglong>,
     }
 
     pub struct shmid_ds {
@@ -191,8 +195,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __reserved1: c_ulong,
-        __reserved2: c_ulong,
+        __reserved1: Padding<c_ulong>,
+        __reserved2: Padding<c_ulong>,
     }
 }
 

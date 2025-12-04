@@ -1,7 +1,10 @@
 //! SPARC-specific definitions for 32-bit linux-like values
 
 use crate::prelude::*;
-use crate::{off64_t, off_t};
+use crate::{
+    off64_t,
+    off_t,
+};
 
 pub type wchar_t = i32;
 
@@ -36,7 +39,7 @@ s! {
         pub si_signo: c_int,
         pub si_errno: c_int,
         pub si_code: c_int,
-        _pad: [c_int; 29],
+        _pad: Padding<[c_int; 29]>,
         _align: [usize; 0],
     }
 
@@ -54,7 +57,7 @@ s! {
         pub l_start: off64_t,
         pub l_len: off64_t,
         pub l_pid: crate::pid_t,
-        __reserved: c_short,
+        __reserved: Padding<c_short>,
     }
 
     pub struct stack_t {
@@ -66,14 +69,14 @@ s! {
     pub struct stat {
         pub st_dev: crate::dev_t,
         #[cfg(not(gnu_file_offset_bits64))]
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub st_ino: crate::ino_t,
         pub st_mode: crate::mode_t,
         pub st_nlink: crate::nlink_t,
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt_t,
@@ -95,7 +98,7 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub st_size: off64_t,
         pub st_blksize: crate::blksize_t,
         pub st_blocks: crate::blkcnt64_t,
@@ -146,12 +149,12 @@ s! {
         pub gid: crate::gid_t,
         pub cuid: crate::uid_t,
         pub cgid: crate::gid_t,
-        __pad1: c_ushort,
+        __pad1: Padding<c_ushort>,
         pub mode: c_ushort,
-        __pad2: c_ushort,
+        __pad2: Padding<c_ushort>,
         pub __seq: c_ushort,
-        __unused1: c_ulonglong,
-        __unused2: c_ulonglong,
+        __unused1: Padding<c_ulonglong>,
+        __unused2: Padding<c_ulonglong>,
     }
 
     pub struct shmid_ds {
@@ -159,33 +162,33 @@ s! {
         #[cfg(gnu_time_bits64)]
         pub shm_segsz: size_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad1: c_uint,
+        __pad1: Padding<c_uint>,
         pub shm_atime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad2: c_uint,
+        __pad2: Padding<c_uint>,
         pub shm_dtime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad3: c_uint,
+        __pad3: Padding<c_uint>,
         pub shm_ctime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
         pub shm_segsz: size_t,
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __reserved1: c_ulong,
-        __reserved2: c_ulong,
+        __reserved1: Padding<c_ulong>,
+        __reserved2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
         #[cfg(not(gnu_time_bits64))]
-        __pad1: c_uint,
+        __pad1: Padding<c_uint>,
         pub msg_stime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad2: c_uint,
+        __pad2: Padding<c_uint>,
         pub msg_rtime: crate::time_t,
         #[cfg(not(gnu_time_bits64))]
-        __pad3: c_uint,
+        __pad3: Padding<c_uint>,
         pub msg_ctime: crate::time_t,
         pub __msg_cbytes: c_ulong,
         pub msg_qnum: crate::msgqnum_t,

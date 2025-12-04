@@ -1,5 +1,9 @@
 use crate::prelude::*;
-use crate::{off64_t, off_t, pthread_mutex_t};
+use crate::{
+    off64_t,
+    off_t,
+    pthread_mutex_t,
+};
 
 pub type wchar_t = i32;
 
@@ -18,10 +22,10 @@ s! {
         pub st_uid: crate::uid_t,
         pub st_gid: crate::gid_t,
         pub st_rdev: crate::dev_t,
-        __pad1: crate::dev_t,
+        __pad1: Padding<crate::dev_t>,
         pub st_size: off_t,
         pub st_blksize: crate::blksize_t,
-        __pad2: c_int,
+        __pad2: Padding<c_int>,
         pub st_blocks: crate::blkcnt_t,
         pub st_atime: crate::time_t,
         pub st_atime_nsec: c_long,
@@ -29,7 +33,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_int; 2],
+        __unused: Padding<[c_int; 2]>,
     }
 
     pub struct stat64 {
@@ -51,7 +55,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        __unused: [c_int; 2],
+        __unused: Padding<[c_int; 2]>,
     }
 
     pub struct statfs {
@@ -172,9 +176,9 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: c_uint,
         pub __seq: c_ushort,
-        __pad2: c_ushort,
-        __unused1: c_ulong,
-        __unused2: c_ulong,
+        __pad2: Padding<c_ushort>,
+        __unused1: Padding<c_ulong>,
+        __unused2: Padding<c_ulong>,
     }
 
     pub struct shmid_ds {
@@ -186,8 +190,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
+        __unused4: Padding<c_ulong>,
+        __unused5: Padding<c_ulong>,
     }
 
     pub struct user_regs_struct {

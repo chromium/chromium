@@ -1,8 +1,5 @@
 use crate::prelude::*;
 
-pub const L_tmpnam: c_uint = 260;
-pub const TMP_MAX: c_uint = 0x7fff_ffff;
-
 // POSIX Supplement (from errno.h)
 // This particular error code is only currently available in msvc toolchain
 pub const EOTHER: c_int = 131;

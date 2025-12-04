@@ -8,8 +8,7 @@ pub type timer_t = *mut c_void;
 pub type key_t = c_int;
 pub type id_t = c_uint;
 
-missing! {
-    #[derive(Debug)]
+extern_ty! {
     pub enum timezone {}
 }
 
@@ -205,6 +204,29 @@ s! {
         pub msg_hdr: crate::msghdr,
         pub msg_len: c_uint,
     }
+
+    pub struct sockaddr_un {
+        pub sun_family: sa_family_t,
+        pub sun_path: [c_char; 108],
+    }
+
+    pub struct sockaddr_storage {
+        pub ss_family: sa_family_t,
+        #[cfg(target_pointer_width = "32")]
+        __ss_pad2: [u8; 128 - 2 - 4],
+        #[cfg(target_pointer_width = "64")]
+        __ss_pad2: [u8; 128 - 2 - 8],
+        __ss_align: size_t,
+    }
+
+    pub struct utsname {
+        pub sysname: [c_char; 65],
+        pub nodename: [c_char; 65],
+        pub release: [c_char; 65],
+        pub version: [c_char; 65],
+        pub machine: [c_char; 65],
+        pub domainname: [c_char; 65],
+    }
 }
 
 cfg_if! {
@@ -248,7 +270,7 @@ cfg_if! {
                 pub stx_uid: crate::__u32,
                 pub stx_gid: crate::__u32,
                 pub stx_mode: crate::__u16,
-                __statx_pad1: [crate::__u16; 1],
+                __statx_pad1: Padding<[crate::__u16; 1]>,
                 pub stx_ino: crate::__u64,
                 pub stx_size: crate::__u64,
                 pub stx_blocks: crate::__u64,
@@ -264,13 +286,13 @@ cfg_if! {
                 pub stx_mnt_id: crate::__u64,
                 pub stx_dio_mem_align: crate::__u32,
                 pub stx_dio_offset_align: crate::__u32,
-                __statx_pad3: [crate::__u64; 12],
+                __statx_pad3: Padding<[crate::__u64; 12]>,
             }
 
             pub struct statx_timestamp {
                 pub tv_sec: crate::__s64,
                 pub tv_nsec: crate::__u32,
-                __statx_timestamp_pad1: [crate::__s32; 1],
+                __statx_timestamp_pad1: Padding<[crate::__s32; 1]>,
             }
         }
     }
@@ -286,29 +308,6 @@ s_no_extra_traits! {
         pub u64: u64,
     }
 
-    pub struct sockaddr_un {
-        pub sun_family: sa_family_t,
-        pub sun_path: [c_char; 108],
-    }
-
-    pub struct sockaddr_storage {
-        pub ss_family: sa_family_t,
-        #[cfg(target_pointer_width = "32")]
-        __ss_pad2: [u8; 128 - 2 - 4],
-        #[cfg(target_pointer_width = "64")]
-        __ss_pad2: [u8; 128 - 2 - 8],
-        __ss_align: size_t,
-    }
-
-    pub struct utsname {
-        pub sysname: [c_char; 65],
-        pub nodename: [c_char; 65],
-        pub release: [c_char; 65],
-        pub version: [c_char; 65],
-        pub machine: [c_char; 65],
-        pub domainname: [c_char; 65],
-    }
-
     pub struct sigevent {
         pub sigev_value: crate::sigval,
         pub sigev_signo: c_int,
@@ -317,9 +316,9 @@ s_no_extra_traits! {
         // the most useful member
         pub sigev_notify_thread_id: c_int,
         #[cfg(target_pointer_width = "64")]
-        __unused1: [c_int; 11],
+        __unused1: Padding<[c_int; 11]>,
         #[cfg(target_pointer_width = "32")]
-        __unused1: [c_int; 12],
+        __unused1: Padding<[c_int; 12]>,
     }
 }
 
@@ -337,91 +336,6 @@ cfg_if! {
                 let u64 = self.u64;
                 events.hash(state);
                 u64.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_un {}
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_family == other.ss_family
-                    && self
-                        .__ss_pad2
-                        .iter()
-                        .zip(other.__ss_pad2.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_storage {}
-
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_family.hash(state);
-                self.__ss_pad2.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .domainname
-                        .iter()
-                        .zip(other.domainname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utsname {}
-
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-                self.domainname.hash(state);
             }
         }
 
@@ -541,9 +455,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const SIGHUP: c_int = 1;
 pub const SIGINT: c_int = 2;
 pub const SIGQUIT: c_int = 3;
@@ -1932,17 +1843,6 @@ extern "C" {
 
     pub fn dirfd(dirp: *mut crate::DIR) -> c_int;
 
-    pub fn pthread_getattr_np(native: crate::pthread_t, attr: *mut crate::pthread_attr_t) -> c_int;
-    pub fn pthread_attr_getstack(
-        attr: *const crate::pthread_attr_t,
-        stackaddr: *mut *mut c_void,
-        stacksize: *mut size_t,
-    ) -> c_int;
-    pub fn pthread_attr_setstack(
-        attr: *mut crate::pthread_attr_t,
-        stackaddr: *mut c_void,
-        stacksize: size_t,
-    ) -> c_int;
     pub fn memalign(align: size_t, size: size_t) -> *mut c_void;
     pub fn setgroups(ngroups: size_t, ptr: *const crate::gid_t) -> c_int;
     pub fn pipe2(fds: *mut c_int, flags: c_int) -> c_int;
@@ -1967,21 +1867,7 @@ extern "C" {
     pub fn newlocale(mask: c_int, locale: *const c_char, base: crate::locale_t) -> crate::locale_t;
     pub fn uselocale(loc: crate::locale_t) -> crate::locale_t;
     pub fn mknodat(dirfd: c_int, pathname: *const c_char, mode: mode_t, dev: dev_t) -> c_int;
-    pub fn pthread_condattr_getclock(
-        attr: *const pthread_condattr_t,
-        clock_id: *mut clockid_t,
-    ) -> c_int;
-    pub fn pthread_condattr_setclock(
-        attr: *mut pthread_condattr_t,
-        clock_id: crate::clockid_t,
-    ) -> c_int;
-    pub fn pthread_condattr_setpshared(attr: *mut pthread_condattr_t, pshared: c_int) -> c_int;
-    pub fn pthread_mutexattr_setpshared(attr: *mut pthread_mutexattr_t, pshared: c_int) -> c_int;
-    pub fn pthread_rwlockattr_getpshared(
-        attr: *const pthread_rwlockattr_t,
-        val: *mut c_int,
-    ) -> c_int;
-    pub fn pthread_rwlockattr_setpshared(attr: *mut pthread_rwlockattr_t, val: c_int) -> c_int;
+
     pub fn ptsname_r(fd: c_int, buf: *mut c_char, buflen: size_t) -> c_int;
     pub fn clearenv() -> c_int;
     pub fn waitid(
@@ -2075,7 +1961,11 @@ extern "C" {
 // * musl and Emscripten has 64-bit versions only so aliases the LFS64 symbols to the standard ones
 // * ulibc doesn't have preadv64/pwritev64
 cfg_if! {
-    if #[cfg(not(any(target_env = "musl", target_os = "emscripten")))] {
+    if #[cfg(not(any(
+        target_env = "musl",
+        target_env = "ohos",
+        target_os = "emscripten",
+    )))] {
         extern "C" {
             pub fn fstatfs64(fd: c_int, buf: *mut statfs64) -> c_int;
             pub fn statvfs64(path: *const c_char, buf: *mut statvfs64) -> c_int;
@@ -2135,7 +2025,8 @@ cfg_if! {
     if #[cfg(not(any(
         target_env = "uclibc",
         target_env = "musl",
-        target_os = "emscripten"
+        target_env = "ohos",
+        target_os = "emscripten",
     )))] {
         extern "C" {
             pub fn preadv64(

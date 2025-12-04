@@ -28,20 +28,14 @@ pub type suseconds_t = c_int;
 pub type tcflag_t = u32;
 pub type time_t = c_longlong;
 pub type id_t = c_uint;
-pub type pid_t = usize;
 pub type uid_t = c_int;
 pub type gid_t = c_int;
 
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
 }
 
-s_no_extra_traits! {
+s! {
     #[repr(C)]
     pub struct utsname {
         pub sysname: [c_char; UTSLENGTH],
@@ -70,9 +64,7 @@ s_no_extra_traits! {
         __ss_padding: [u8; 128 - size_of::<sa_family_t>() - size_of::<c_ulong>()],
         __ss_align: c_ulong,
     }
-}
 
-s! {
     pub struct addrinfo {
         pub ai_flags: c_int,
         pub ai_family: c_int,
@@ -170,7 +162,7 @@ s! {
         pub si_signo: c_int,
         pub si_errno: c_int,
         pub si_code: c_int,
-        _pad: [c_int; 29],
+        _pad: Padding<[c_int; 29]>,
         _align: [usize; 0],
     }
 
@@ -211,7 +203,7 @@ s! {
         pub st_mtime_nsec: c_long,
         pub st_ctime: crate::time_t,
         pub st_ctime_nsec: c_long,
-        _pad: [c_char; 24],
+        _pad: Padding<[c_char; 24]>,
     }
 
     pub struct statvfs {
@@ -254,7 +246,7 @@ s! {
     }
 
     pub struct ucred {
-        pub pid: pid_t,
+        pub pid: crate::pid_t,
         pub uid: uid_t,
         pub gid: gid_t,
     }
@@ -1071,9 +1063,6 @@ pub const _IONBF: c_int = 2;
 pub const SEEK_SET: c_int = 0;
 pub const SEEK_CUR: c_int = 1;
 pub const SEEK_END: c_int = 2;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 
 pub const _PC_LINK_MAX: c_int = 0;
 pub const _PC_MAX_CANON: c_int = 1;
@@ -1186,6 +1175,18 @@ extern "C" {
     // unistd.h
     pub fn pipe2(fds: *mut c_int, flags: c_int) -> c_int;
     pub fn getdtablesize() -> c_int;
+    pub fn getresgid(
+        rgid: *mut crate::gid_t,
+        egid: *mut crate::gid_t,
+        sgid: *mut crate::gid_t,
+    ) -> c_int;
+    pub fn getresuid(
+        ruid: *mut crate::uid_t,
+        euid: *mut crate::uid_t,
+        suid: *mut crate::uid_t,
+    ) -> c_int;
+    pub fn setresgid(rgid: crate::gid_t, egid: crate::gid_t, sgid: crate::gid_t) -> c_int;
+    pub fn setresuid(ruid: crate::uid_t, euid: crate::uid_t, suid: crate::uid_t) -> c_int;
 
     // grp.h
     pub fn getgrent() -> *mut crate::group;
@@ -1374,123 +1375,4 @@ extern "C" {
 
     // utmp.h
     pub fn login_tty(fd: c_int) -> c_int;
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for dirent {}
-
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_un {}
-
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_family == other.ss_family
-                    && self.__ss_align == self.__ss_align
-                    && self
-                        .__ss_padding
-                        .iter()
-                        .zip(other.__ss_padding.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for sockaddr_storage {}
-
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_family.hash(state);
-                self.__ss_padding.hash(state);
-                self.__ss_align.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .domainname
-                        .iter()
-                        .zip(other.domainname.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-
-        impl Eq for utsname {}
-
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-                self.domainname.hash(state);
-            }
-        }
-    }
 }

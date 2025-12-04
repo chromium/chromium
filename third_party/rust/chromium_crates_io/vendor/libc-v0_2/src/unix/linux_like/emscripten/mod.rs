@@ -41,13 +41,8 @@ pub type statfs64 = crate::statfs;
 pub type statvfs64 = crate::statvfs;
 pub type dirent64 = crate::dirent;
 
-#[derive(Debug)]
-pub enum fpos64_t {} // FIXME(emscripten): fill this out with a struct
-impl Copy for fpos64_t {}
-impl Clone for fpos64_t {
-    fn clone(&self) -> fpos64_t {
-        *self
-    }
+extern_ty! {
+    pub enum fpos64_t {} // FIXME(emscripten): fill this out with a struct
 }
 
 s! {
@@ -57,11 +52,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct passwd {
@@ -120,11 +115,11 @@ s! {
         pub ssi_stime: u64,
         pub ssi_addr: u64,
         pub ssi_addr_lsb: u16,
-        _pad2: u16,
+        _pad2: Padding<u16>,
         pub ssi_syscall: i32,
         pub ssi_call_addr: u64,
         pub ssi_arch: u32,
-        _pad: [u8; 28],
+        _pad: Padding<[u8; 28]>,
     }
 
     pub struct fsid_t {
@@ -175,8 +170,8 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: mode_t,
         pub __seq: c_int,
-        __unused1: c_long,
-        __unused2: c_long,
+        __unused1: Padding<c_long>,
+        __unused2: Padding<c_long>,
     }
 
     pub struct termios {
@@ -265,8 +260,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
@@ -279,8 +274,8 @@ s! {
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct statfs {
@@ -339,9 +334,7 @@ s! {
     pub struct pthread_condattr_t {
         size: [u8; crate::__SIZEOF_PTHREAD_CONDATTR_T],
     }
-}
 
-s_no_extra_traits! {
     pub struct dirent {
         pub d_ino: crate::ino_t,
         pub d_off: off_t,
@@ -380,110 +373,12 @@ s_no_extra_traits! {
     pub struct pthread_cond_t {
         size: [u8; crate::__SIZEOF_PTHREAD_COND_T],
     }
+}
 
+s_no_extra_traits! {
     #[repr(align(8))]
     pub struct max_align_t {
         priv_: [f64; 3],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for sysinfo {
-            fn eq(&self, other: &sysinfo) -> bool {
-                self.uptime == other.uptime
-                    && self.loads == other.loads
-                    && self.totalram == other.totalram
-                    && self.freeram == other.freeram
-                    && self.sharedram == other.sharedram
-                    && self.bufferram == other.bufferram
-                    && self.totalswap == other.totalswap
-                    && self.freeswap == other.freeswap
-                    && self.procs == other.procs
-                    && self.pad == other.pad
-                    && self.totalhigh == other.totalhigh
-                    && self.freehigh == other.freehigh
-                    && self.mem_unit == other.mem_unit
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sysinfo {}
-        impl hash::Hash for sysinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uptime.hash(state);
-                self.loads.hash(state);
-                self.totalram.hash(state);
-                self.freeram.hash(state);
-                self.sharedram.hash(state);
-                self.bufferram.hash(state);
-                self.totalswap.hash(state);
-                self.freeswap.hash(state);
-                self.procs.hash(state);
-                self.pad.hash(state);
-                self.totalhigh.hash(state);
-                self.freehigh.hash(state);
-                self.mem_unit.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for mq_attr {
-            fn eq(&self, other: &mq_attr) -> bool {
-                self.mq_flags == other.mq_flags
-                    && self.mq_maxmsg == other.mq_maxmsg
-                    && self.mq_msgsize == other.mq_msgsize
-                    && self.mq_curmsgs == other.mq_curmsgs
-            }
-        }
-        impl Eq for mq_attr {}
-        impl hash::Hash for mq_attr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.mq_flags.hash(state);
-                self.mq_maxmsg.hash(state);
-                self.mq_msgsize.hash(state);
-                self.mq_curmsgs.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_cond_t {
-            fn eq(&self, other: &pthread_cond_t) -> bool {
-                self.size.iter().zip(other.size.iter()).all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_cond_t {}
-        impl hash::Hash for pthread_cond_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.size.hash(state);
-            }
-        }
     }
 }
 
@@ -1541,12 +1436,6 @@ extern "C" {
     pub fn ioctl(fd: c_int, request: c_int, ...) -> c_int;
     pub fn getpriority(which: c_int, who: crate::id_t) -> c_int;
     pub fn setpriority(which: c_int, who: crate::id_t, prio: c_int) -> c_int;
-    pub fn pthread_create(
-        native: *mut crate::pthread_t,
-        attr: *const crate::pthread_attr_t,
-        f: extern "C" fn(*mut c_void) -> *mut c_void,
-        value: *mut c_void,
-    ) -> c_int;
 
     pub fn getentropy(buf: *mut c_void, buflen: size_t) -> c_int;
 

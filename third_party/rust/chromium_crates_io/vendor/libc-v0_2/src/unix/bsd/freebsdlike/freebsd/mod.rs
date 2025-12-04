@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use crate::{cmsghdr, off_t};
+use crate::{
+    cmsghdr,
+    off_t,
+};
 
 pub type fflags_t = u32;
 
@@ -317,8 +320,8 @@ s! {
 
     pub struct msqid_ds {
         pub msg_perm: crate::ipc_perm,
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
         pub msg_cbytes: crate::msglen_t,
         pub msg_qnum: crate::msgqnum_t,
         pub msg_qbytes: crate::msglen_t,
@@ -1116,7 +1119,7 @@ s! {
     pub struct shm_largepage_conf {
         pub psind: c_int,
         pub alloc_policy: c_int,
-        __pad: [c_int; 10],
+        __pad: Padding<[c_int; 10]>,
     }
 
     pub struct memory_type {
@@ -1415,9 +1418,7 @@ s! {
         pub sp_max: off_t,
         pub sp_idle: crate::timeval,
     }
-}
 
-s_no_extra_traits! {
     pub struct utmpx {
         pub ut_type: c_short,
         pub ut_tv: crate::timeval,
@@ -1427,11 +1428,6 @@ s_no_extra_traits! {
         pub ut_line: [c_char; 16],
         pub ut_host: [c_char; 128],
         pub __ut_spare: [c_char; 64],
-    }
-
-    pub union __c_anonymous_cr_pid {
-        __cr_unused: *mut c_void,
-        pub cr_pid: crate::pid_t,
     }
 
     pub struct xucred {
@@ -1458,19 +1454,7 @@ s_no_extra_traits! {
         pub mq_maxmsg: c_long,
         pub mq_msgsize: c_long,
         pub mq_curmsgs: c_long,
-        __reserved: [c_long; 4],
-    }
-
-    pub struct sigevent {
-        pub sigev_notify: c_int,
-        pub sigev_signo: c_int,
-        pub sigev_value: crate::sigval,
-        //The rest of the structure is actually a union.  We expose only
-        //sigev_notify_thread_id because it's the most useful union member.
-        pub sigev_notify_thread_id: crate::lwpid_t,
-        #[cfg(target_pointer_width = "64")]
-        __unused1: c_int,
-        __unused2: [c_long; 7],
+        __reserved: Padding<[c_long; 4]>,
     }
 
     pub struct ptsstat {
@@ -1481,23 +1465,15 @@ s_no_extra_traits! {
         pub devname: [c_char; SPECNAMELEN as usize + 1],
     }
 
-    pub union __c_anonymous_elf32_auxv_union {
-        pub a_val: c_int,
-    }
-
     pub struct Elf32_Auxinfo {
         pub a_type: c_int,
         pub a_un: __c_anonymous_elf32_auxv_union,
     }
 
-    pub union __c_anonymous_ifi_epoch {
-        pub tt: crate::time_t,
-        pub ph: u64,
-    }
-
-    pub union __c_anonymous_ifi_lastchange {
-        pub tv: crate::timeval,
-        pub ph: __c_anonymous_ph,
+    pub struct ifreq {
+        /// if name, e.g. "en0"
+        pub ifr_name: [c_char; crate::IFNAMSIZ],
+        pub ifr_ifru: __c_anonymous_ifr_ifru,
     }
 
     pub struct if_data {
@@ -1551,35 +1527,6 @@ s_no_extra_traits! {
         pub __ifi_epoch: __c_anonymous_ifi_epoch,
         /// time of last administrative change
         pub __ifi_lastchange: __c_anonymous_ifi_lastchange,
-    }
-
-    pub union __c_anonymous_ifr_ifru {
-        pub ifru_addr: crate::sockaddr,
-        pub ifru_dstaddr: crate::sockaddr,
-        pub ifru_broadaddr: crate::sockaddr,
-        pub ifru_buffer: ifreq_buffer,
-        pub ifru_flags: [c_short; 2],
-        pub ifru_index: c_short,
-        pub ifru_jid: c_int,
-        pub ifru_metric: c_int,
-        pub ifru_mtu: c_int,
-        pub ifru_phys: c_int,
-        pub ifru_media: c_int,
-        pub ifru_data: crate::caddr_t,
-        pub ifru_cap: [c_int; 2],
-        pub ifru_fib: c_uint,
-        pub ifru_vlan_pcp: c_uchar,
-    }
-
-    pub struct ifreq {
-        /// if name, e.g. "en0"
-        pub ifr_name: [c_char; crate::IFNAMSIZ],
-        pub ifr_ifru: __c_anonymous_ifr_ifru,
-    }
-
-    pub union __c_anonymous_ifc_ifcu {
-        pub ifcu_buf: crate::caddr_t,
-        pub ifcu_req: *mut ifreq,
     }
 
     pub struct ifstat {
@@ -1643,7 +1590,7 @@ s_no_extra_traits! {
     pub struct sctp_error_invalid_stream {
         pub cause: sctp_error_cause,
         pub stream_id: u16,
-        __reserved: u16,
+        __reserved: Padding<u16>,
     }
 
     #[repr(packed)]
@@ -1693,15 +1640,71 @@ s_no_extra_traits! {
         pub kf_fd: c_int,
         pub kf_ref_count: c_int,
         pub kf_flags: c_int,
-        _kf_pad0: c_int,
+        _kf_pad0: Padding<c_int>,
         pub kf_offset: i64,
         _priv: [u8; 304], // FIXME(freebsd): this is really a giant union
         pub kf_status: u16,
-        _kf_pad1: u16,
+        _kf_pad1: Padding<u16>,
         _kf_ispare0: c_int,
         pub kf_cap_rights: crate::cap_rights_t,
         _kf_cap_spare: u64,
         pub kf_path: [c_char; crate::PATH_MAX as usize],
+    }
+}
+
+s_no_extra_traits! {
+    pub union __c_anonymous_cr_pid {
+        __cr_unused: *mut c_void,
+        pub cr_pid: crate::pid_t,
+    }
+
+    pub struct sigevent {
+        pub sigev_notify: c_int,
+        pub sigev_signo: c_int,
+        pub sigev_value: crate::sigval,
+        //The rest of the structure is actually a union.  We expose only
+        //sigev_notify_thread_id because it's the most useful union member.
+        pub sigev_notify_thread_id: crate::lwpid_t,
+        #[cfg(target_pointer_width = "64")]
+        __unused1: c_int,
+        __unused2: [c_long; 7],
+    }
+
+    pub union __c_anonymous_elf32_auxv_union {
+        pub a_val: c_int,
+    }
+
+    pub union __c_anonymous_ifi_epoch {
+        pub tt: crate::time_t,
+        pub ph: u64,
+    }
+
+    pub union __c_anonymous_ifi_lastchange {
+        pub tv: crate::timeval,
+        pub ph: __c_anonymous_ph,
+    }
+
+    pub union __c_anonymous_ifr_ifru {
+        pub ifru_addr: crate::sockaddr,
+        pub ifru_dstaddr: crate::sockaddr,
+        pub ifru_broadaddr: crate::sockaddr,
+        pub ifru_buffer: ifreq_buffer,
+        pub ifru_flags: [c_short; 2],
+        pub ifru_index: c_short,
+        pub ifru_jid: c_int,
+        pub ifru_metric: c_int,
+        pub ifru_mtu: c_int,
+        pub ifru_phys: c_int,
+        pub ifru_media: c_int,
+        pub ifru_data: crate::caddr_t,
+        pub ifru_cap: [c_int; 2],
+        pub ifru_fib: c_uint,
+        pub ifru_vlan_pcp: c_uchar,
+    }
+
+    pub union __c_anonymous_ifc_ifcu {
+        pub ifcu_buf: crate::caddr_t,
+        pub ifcu_req: *mut ifreq,
     }
 
     pub struct ucontext_t {
@@ -1785,40 +1788,6 @@ s_no_extra_traits! {
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for utmpx {
-            fn eq(&self, other: &utmpx) -> bool {
-                self.ut_type == other.ut_type
-                    && self.ut_tv == other.ut_tv
-                    && self.ut_id == other.ut_id
-                    && self.ut_pid == other.ut_pid
-                    && self.ut_user == other.ut_user
-                    && self.ut_line == other.ut_line
-                    && self
-                        .ut_host
-                        .iter()
-                        .zip(other.ut_host.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .__ut_spare
-                        .iter()
-                        .zip(other.__ut_spare.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for utmpx {}
-        impl hash::Hash for utmpx {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ut_type.hash(state);
-                self.ut_tv.hash(state);
-                self.ut_id.hash(state);
-                self.ut_pid.hash(state);
-                self.ut_user.hash(state);
-                self.ut_line.hash(state);
-                self.ut_host.hash(state);
-                self.__ut_spare.hash(state);
-            }
-        }
-
         impl PartialEq for __c_anonymous_cr_pid {
             fn eq(&self, other: &__c_anonymous_cr_pid) -> bool {
                 unsafe { self.cr_pid == other.cr_pid }
@@ -1828,74 +1797,6 @@ cfg_if! {
         impl hash::Hash for __c_anonymous_cr_pid {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 unsafe { self.cr_pid.hash(state) };
-            }
-        }
-
-        impl PartialEq for xucred {
-            fn eq(&self, other: &xucred) -> bool {
-                self.cr_version == other.cr_version
-                    && self.cr_uid == other.cr_uid
-                    && self.cr_ngroups == other.cr_ngroups
-                    && self.cr_groups == other.cr_groups
-                    && self.cr_pid__c_anonymous_union == other.cr_pid__c_anonymous_union
-            }
-        }
-        impl Eq for xucred {}
-        impl hash::Hash for xucred {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.cr_version.hash(state);
-                self.cr_uid.hash(state);
-                self.cr_ngroups.hash(state);
-                self.cr_groups.hash(state);
-                self.cr_pid__c_anonymous_union.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_dl {
-            fn eq(&self, other: &sockaddr_dl) -> bool {
-                self.sdl_len == other.sdl_len
-                    && self.sdl_family == other.sdl_family
-                    && self.sdl_index == other.sdl_index
-                    && self.sdl_type == other.sdl_type
-                    && self.sdl_nlen == other.sdl_nlen
-                    && self.sdl_alen == other.sdl_alen
-                    && self.sdl_slen == other.sdl_slen
-                    && self
-                        .sdl_data
-                        .iter()
-                        .zip(other.sdl_data.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_dl {}
-        impl hash::Hash for sockaddr_dl {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sdl_len.hash(state);
-                self.sdl_family.hash(state);
-                self.sdl_index.hash(state);
-                self.sdl_type.hash(state);
-                self.sdl_nlen.hash(state);
-                self.sdl_alen.hash(state);
-                self.sdl_slen.hash(state);
-                self.sdl_data.hash(state);
-            }
-        }
-
-        impl PartialEq for mq_attr {
-            fn eq(&self, other: &mq_attr) -> bool {
-                self.mq_flags == other.mq_flags
-                    && self.mq_maxmsg == other.mq_maxmsg
-                    && self.mq_msgsize == other.mq_msgsize
-                    && self.mq_curmsgs == other.mq_curmsgs
-            }
-        }
-        impl Eq for mq_attr {}
-        impl hash::Hash for mq_attr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.mq_flags.hash(state);
-                self.mq_maxmsg.hash(state);
-                self.mq_msgsize.hash(state);
-                self.mq_curmsgs.hash(state);
             }
         }
 
@@ -1917,36 +1818,17 @@ cfg_if! {
             }
         }
 
-        impl PartialEq for ptsstat {
-            fn eq(&self, other: &ptsstat) -> bool {
-                let self_devname: &[c_char] = &self.devname;
-                let other_devname: &[c_char] = &other.devname;
-
-                self.dev == other.dev && self_devname == other_devname
-            }
-        }
-        impl Eq for ptsstat {}
-        impl hash::Hash for ptsstat {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                let self_devname: &[c_char] = &self.devname;
-
-                self.dev.hash(state);
-                self_devname.hash(state);
-            }
-        }
-
         impl PartialEq for __c_anonymous_elf32_auxv_union {
             fn eq(&self, other: &__c_anonymous_elf32_auxv_union) -> bool {
                 unsafe { self.a_val == other.a_val }
             }
         }
         impl Eq for __c_anonymous_elf32_auxv_union {}
-        impl PartialEq for Elf32_Auxinfo {
-            fn eq(&self, other: &Elf32_Auxinfo) -> bool {
-                self.a_type == other.a_type && self.a_un == other.a_un
+        impl hash::Hash for __c_anonymous_elf32_auxv_union {
+            fn hash<H: hash::Hasher>(&self, _state: &mut H) {
+                unimplemented!("traits");
             }
         }
-        impl Eq for Elf32_Auxinfo {}
 
         impl PartialEq for __c_anonymous_ifr_ifru {
             fn eq(&self, other: &__c_anonymous_ifr_ifru) -> bool {
@@ -1990,91 +1872,16 @@ cfg_if! {
             }
         }
 
-        impl PartialEq for ifreq {
-            fn eq(&self, other: &ifreq) -> bool {
-                self.ifr_name == other.ifr_name && self.ifr_ifru == other.ifr_ifru
-            }
-        }
-        impl Eq for ifreq {}
-        impl hash::Hash for ifreq {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifr_name.hash(state);
-                self.ifr_ifru.hash(state);
-            }
-        }
-
-        impl Eq for __c_anonymous_ifc_ifcu {}
-
         impl PartialEq for __c_anonymous_ifc_ifcu {
             fn eq(&self, other: &__c_anonymous_ifc_ifcu) -> bool {
                 unsafe { self.ifcu_buf == other.ifcu_buf && self.ifcu_req == other.ifcu_req }
             }
         }
-
+        impl Eq for __c_anonymous_ifc_ifcu {}
         impl hash::Hash for __c_anonymous_ifc_ifcu {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 unsafe { self.ifcu_buf.hash(state) };
                 unsafe { self.ifcu_req.hash(state) };
-            }
-        }
-
-        impl PartialEq for ifstat {
-            fn eq(&self, other: &ifstat) -> bool {
-                let self_ascii: &[c_char] = &self.ascii;
-                let other_ascii: &[c_char] = &other.ascii;
-
-                self.ifs_name == other.ifs_name && self_ascii == other_ascii
-            }
-        }
-        impl Eq for ifstat {}
-        impl hash::Hash for ifstat {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifs_name.hash(state);
-                self.ascii.hash(state);
-            }
-        }
-
-        impl PartialEq for ifrsskey {
-            fn eq(&self, other: &ifrsskey) -> bool {
-                let self_ifrk_key: &[u8] = &self.ifrk_key;
-                let other_ifrk_key: &[u8] = &other.ifrk_key;
-
-                self.ifrk_name == other.ifrk_name
-                    && self.ifrk_func == other.ifrk_func
-                    && self.ifrk_spare0 == other.ifrk_spare0
-                    && self.ifrk_keylen == other.ifrk_keylen
-                    && self_ifrk_key == other_ifrk_key
-            }
-        }
-        impl Eq for ifrsskey {}
-        impl hash::Hash for ifrsskey {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifrk_name.hash(state);
-                self.ifrk_func.hash(state);
-                self.ifrk_spare0.hash(state);
-                self.ifrk_keylen.hash(state);
-                self.ifrk_key.hash(state);
-            }
-        }
-
-        impl PartialEq for ifdownreason {
-            fn eq(&self, other: &ifdownreason) -> bool {
-                let self_ifdr_msg: &[c_char] = &self.ifdr_msg;
-                let other_ifdr_msg: &[c_char] = &other.ifdr_msg;
-
-                self.ifdr_name == other.ifdr_name
-                    && self.ifdr_reason == other.ifdr_reason
-                    && self.ifdr_vendor == other.ifdr_vendor
-                    && self_ifdr_msg == other_ifdr_msg
-            }
-        }
-        impl Eq for ifdownreason {}
-        impl hash::Hash for ifdownreason {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifdr_name.hash(state);
-                self.ifdr_reason.hash(state);
-                self.ifdr_vendor.hash(state);
-                self.ifdr_msg.hash(state);
             }
         }
 
@@ -2105,291 +1912,6 @@ cfg_if! {
                     self.tv.hash(state);
                     self.ph.hash(state);
                 }
-            }
-        }
-
-        impl PartialEq for if_data {
-            fn eq(&self, other: &if_data) -> bool {
-                self.ifi_type == other.ifi_type
-                    && self.ifi_physical == other.ifi_physical
-                    && self.ifi_addrlen == other.ifi_addrlen
-                    && self.ifi_hdrlen == other.ifi_hdrlen
-                    && self.ifi_link_state == other.ifi_link_state
-                    && self.ifi_vhid == other.ifi_vhid
-                    && self.ifi_datalen == other.ifi_datalen
-                    && self.ifi_mtu == other.ifi_mtu
-                    && self.ifi_metric == other.ifi_metric
-                    && self.ifi_baudrate == other.ifi_baudrate
-                    && self.ifi_ipackets == other.ifi_ipackets
-                    && self.ifi_ierrors == other.ifi_ierrors
-                    && self.ifi_opackets == other.ifi_opackets
-                    && self.ifi_oerrors == other.ifi_oerrors
-                    && self.ifi_collisions == other.ifi_collisions
-                    && self.ifi_ibytes == other.ifi_ibytes
-                    && self.ifi_obytes == other.ifi_obytes
-                    && self.ifi_imcasts == other.ifi_imcasts
-                    && self.ifi_omcasts == other.ifi_omcasts
-                    && self.ifi_iqdrops == other.ifi_iqdrops
-                    && self.ifi_oqdrops == other.ifi_oqdrops
-                    && self.ifi_noproto == other.ifi_noproto
-                    && self.ifi_hwassist == other.ifi_hwassist
-                    && self.__ifi_epoch == other.__ifi_epoch
-                    && self.__ifi_lastchange == other.__ifi_lastchange
-            }
-        }
-        impl Eq for if_data {}
-        impl hash::Hash for if_data {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ifi_type.hash(state);
-                self.ifi_physical.hash(state);
-                self.ifi_addrlen.hash(state);
-                self.ifi_hdrlen.hash(state);
-                self.ifi_link_state.hash(state);
-                self.ifi_vhid.hash(state);
-                self.ifi_datalen.hash(state);
-                self.ifi_mtu.hash(state);
-                self.ifi_metric.hash(state);
-                self.ifi_baudrate.hash(state);
-                self.ifi_ipackets.hash(state);
-                self.ifi_ierrors.hash(state);
-                self.ifi_opackets.hash(state);
-                self.ifi_oerrors.hash(state);
-                self.ifi_collisions.hash(state);
-                self.ifi_ibytes.hash(state);
-                self.ifi_obytes.hash(state);
-                self.ifi_imcasts.hash(state);
-                self.ifi_omcasts.hash(state);
-                self.ifi_iqdrops.hash(state);
-                self.ifi_oqdrops.hash(state);
-                self.ifi_noproto.hash(state);
-                self.ifi_hwassist.hash(state);
-                self.__ifi_epoch.hash(state);
-                self.__ifi_lastchange.hash(state);
-            }
-        }
-
-        impl PartialEq for sctphdr {
-            fn eq(&self, other: &sctphdr) -> bool {
-                return { self.src_port } == { other.src_port }
-                    && { self.dest_port } == { other.dest_port }
-                    && { self.v_tag } == { other.v_tag }
-                    && { self.checksum } == { other.checksum };
-            }
-        }
-        impl Eq for sctphdr {}
-        impl hash::Hash for sctphdr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.src_port }.hash(state);
-                { self.dest_port }.hash(state);
-                { self.v_tag }.hash(state);
-                { self.checksum }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_chunkhdr {
-            fn eq(&self, other: &sctp_chunkhdr) -> bool {
-                return { self.chunk_type } == { other.chunk_type }
-                    && { self.chunk_flags } == { other.chunk_flags }
-                    && { self.chunk_length } == { other.chunk_length };
-            }
-        }
-        impl Eq for sctp_chunkhdr {}
-        impl hash::Hash for sctp_chunkhdr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.chunk_type }.hash(state);
-                { self.chunk_flags }.hash(state);
-                { self.chunk_length }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_paramhdr {
-            fn eq(&self, other: &sctp_paramhdr) -> bool {
-                return { self.param_type } == { other.param_type } && { self.param_length } == {
-                    other.param_length
-                };
-            }
-        }
-        impl Eq for sctp_paramhdr {}
-        impl hash::Hash for sctp_paramhdr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.param_type }.hash(state);
-                { self.param_length }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_gen_error_cause {
-            fn eq(&self, other: &sctp_gen_error_cause) -> bool {
-                return { self.code } == { other.code } && { self.length } == { other.length } && {
-                    self.info
-                }
-                .iter()
-                .zip({ other.info }.iter())
-                .all(|(a, b)| a == b);
-            }
-        }
-        impl Eq for sctp_gen_error_cause {}
-        impl hash::Hash for sctp_gen_error_cause {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.code }.hash(state);
-                { self.length }.hash(state);
-                { self.info }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_cause {
-            fn eq(&self, other: &sctp_error_cause) -> bool {
-                return { self.code } == { other.code } && { self.length } == { other.length };
-            }
-        }
-        impl Eq for sctp_error_cause {}
-        impl hash::Hash for sctp_error_cause {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.code }.hash(state);
-                { self.length }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_invalid_stream {
-            fn eq(&self, other: &sctp_error_invalid_stream) -> bool {
-                return { self.cause } == { other.cause } && { self.stream_id } == {
-                    other.stream_id
-                };
-            }
-        }
-        impl Eq for sctp_error_invalid_stream {}
-        impl hash::Hash for sctp_error_invalid_stream {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.stream_id }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_missing_param {
-            fn eq(&self, other: &sctp_error_missing_param) -> bool {
-                return { self.cause } == { other.cause }
-                    && { self.num_missing_params } == { other.num_missing_params }
-                    && { self.tpe }
-                        .iter()
-                        .zip({ other.tpe }.iter())
-                        .all(|(a, b)| a == b);
-            }
-        }
-        impl Eq for sctp_error_missing_param {}
-        impl hash::Hash for sctp_error_missing_param {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.num_missing_params }.hash(state);
-                { self.tpe }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_stale_cookie {
-            fn eq(&self, other: &sctp_error_stale_cookie) -> bool {
-                return { self.cause } == { other.cause } && { self.stale_time } == {
-                    other.stale_time
-                };
-            }
-        }
-        impl Eq for sctp_error_stale_cookie {}
-        impl hash::Hash for sctp_error_stale_cookie {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.stale_time }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_out_of_resource {
-            fn eq(&self, other: &sctp_error_out_of_resource) -> bool {
-                return { self.cause } == { other.cause };
-            }
-        }
-        impl Eq for sctp_error_out_of_resource {}
-        impl hash::Hash for sctp_error_out_of_resource {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_unresolv_addr {
-            fn eq(&self, other: &sctp_error_unresolv_addr) -> bool {
-                return { self.cause } == { other.cause };
-            }
-        }
-        impl Eq for sctp_error_unresolv_addr {}
-        impl hash::Hash for sctp_error_unresolv_addr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_unrecognized_chunk {
-            fn eq(&self, other: &sctp_error_unrecognized_chunk) -> bool {
-                return { self.cause } == { other.cause } && { self.ch } == { other.ch };
-            }
-        }
-        impl Eq for sctp_error_unrecognized_chunk {}
-        impl hash::Hash for sctp_error_unrecognized_chunk {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.ch }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_no_user_data {
-            fn eq(&self, other: &sctp_error_no_user_data) -> bool {
-                return { self.cause } == { other.cause } && { self.tsn } == { other.tsn };
-            }
-        }
-        impl Eq for sctp_error_no_user_data {}
-        impl hash::Hash for sctp_error_no_user_data {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.tsn }.hash(state);
-            }
-        }
-
-        impl PartialEq for sctp_error_auth_invalid_hmac {
-            fn eq(&self, other: &sctp_error_auth_invalid_hmac) -> bool {
-                return { self.cause } == { other.cause } && { self.hmac_id } == { other.hmac_id };
-            }
-        }
-        impl Eq for sctp_error_auth_invalid_hmac {}
-        impl hash::Hash for sctp_error_auth_invalid_hmac {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                { self.cause }.hash(state);
-                { self.hmac_id }.hash(state);
-            }
-        }
-
-        impl PartialEq for kinfo_file {
-            fn eq(&self, other: &kinfo_file) -> bool {
-                self.kf_structsize == other.kf_structsize
-                    && self.kf_type == other.kf_type
-                    && self.kf_fd == other.kf_fd
-                    && self.kf_ref_count == other.kf_ref_count
-                    && self.kf_flags == other.kf_flags
-                    && self.kf_offset == other.kf_offset
-                    && self.kf_status == other.kf_status
-                    && self.kf_cap_rights == other.kf_cap_rights
-                    && self
-                        .kf_path
-                        .iter()
-                        .zip(other.kf_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for kinfo_file {}
-        impl hash::Hash for kinfo_file {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.kf_structsize.hash(state);
-                self.kf_type.hash(state);
-                self.kf_fd.hash(state);
-                self.kf_ref_count.hash(state);
-                self.kf_flags.hash(state);
-                self.kf_offset.hash(state);
-                self.kf_status.hash(state);
-                self.kf_cap_rights.hash(state);
-                self.kf_path.hash(state);
             }
         }
     }
@@ -3807,6 +3329,8 @@ pub const AT_HWCAP: c_int = 25;
 pub const AT_HWCAP2: c_int = 26;
 pub const AT_USRSTACKBASE: c_int = 35;
 pub const AT_USRSTACKLIM: c_int = 36;
+pub const AT_HWCAP3: c_int = 38;
+pub const AT_HWCAP4: c_int = 39;
 
 pub const TABDLY: crate::tcflag_t = 0x00000004;
 pub const TAB0: crate::tcflag_t = 0x00000000;
@@ -5271,7 +4795,7 @@ extern "C" {
     pub fn memfd_create(name: *const c_char, flags: c_uint) -> c_int;
     pub fn setaudit(auditinfo: *const auditinfo_t) -> c_int;
 
-    pub fn eventfd(init: c_uint, flags: c_int) -> c_int;
+    pub fn eventfd(initval: c_uint, flags: c_int) -> c_int;
     pub fn eventfd_read(fd: c_int, value: *mut eventfd_t) -> c_int;
     pub fn eventfd_write(fd: c_int, value: eventfd_t) -> c_int;
 

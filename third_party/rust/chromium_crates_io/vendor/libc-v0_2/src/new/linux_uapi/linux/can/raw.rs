@@ -1,4 +1,4 @@
-//! `linux/can/raw.h`
+//! Header: `linux/can/raw.h`
 
 pub use crate::linux::can::*;
 

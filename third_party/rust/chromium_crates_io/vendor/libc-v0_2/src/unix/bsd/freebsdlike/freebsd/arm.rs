@@ -8,38 +8,12 @@ pub type register_t = i32;
 pub type __greg_t = c_uint;
 pub type __gregset_t = [crate::__greg_t; 17];
 
-s_no_extra_traits! {
+s! {
     pub struct mcontext_t {
         pub __gregs: crate::__gregset_t,
         pub mc_vfp_size: usize,
         pub mc_vfp_ptr: *mut c_void,
         pub mc_spare: [c_uint; 33],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for mcontext_t {
-            fn eq(&self, other: &mcontext_t) -> bool {
-                self.__gregs == other.__gregs
-                    && self.mc_vfp_size == other.mc_vfp_size
-                    && self.mc_vfp_ptr == other.mc_vfp_ptr
-                    && self
-                        .mc_spare
-                        .iter()
-                        .zip(other.mc_spare.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for mcontext_t {}
-        impl hash::Hash for mcontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.__gregs.hash(state);
-                self.mc_vfp_size.hash(state);
-                self.mc_vfp_ptr.hash(state);
-                self.mc_spare.hash(state);
-            }
-        }
     }
 }
 

@@ -1,5 +1,8 @@
 use crate::prelude::*;
-use crate::{off64_t, off_t};
+use crate::{
+    off64_t,
+    off_t,
+};
 
 pub type wchar_t = i32;
 
@@ -11,7 +14,7 @@ s! {
         pub st_dev: crate::dev_t,
 
         #[cfg(not(gnu_time_bits64))]
-        st_pad1: [c_long; 3],
+        st_pad1: Padding<[c_long; 3]>,
 
         pub st_ino: crate::ino_t,
 
@@ -26,14 +29,14 @@ s! {
         pub st_rdev: crate::dev_t,
 
         #[cfg(not(gnu_file_offset_bits64))]
-        st_pad2: [c_long; 2],
+        st_pad2: Padding<[c_long; 2]>,
         #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
-        st_pad2: [c_long; 3],
+        st_pad2: Padding<[c_long; 3]>,
 
         pub st_size: off_t,
 
         #[cfg(not(gnu_file_offset_bits64))]
-        st_pad3: c_long,
+        st_pad3: Padding<c_long>,
 
         #[cfg(gnu_time_bits64)]
         pub st_blksize: crate::blksize_t,
@@ -56,11 +59,11 @@ s! {
         #[cfg(not(gnu_time_bits64))]
         pub st_blksize: crate::blksize_t,
         #[cfg(all(not(gnu_time_bits64), gnu_file_offset_bits64))]
-        st_pad4: c_long,
+        st_pad4: Padding<c_long>,
         #[cfg(not(gnu_time_bits64))]
         pub st_blocks: crate::blkcnt_t,
         #[cfg(not(gnu_time_bits64))]
-        st_pad5: [c_long; 14],
+        st_pad5: Padding<[c_long; 14]>,
     }
 
     pub struct stat64 {
@@ -70,7 +73,7 @@ s! {
         pub st_dev: crate::dev_t,
 
         #[cfg(not(gnu_time_bits64))]
-        st_pad1: [c_long; 3],
+        st_pad1: Padding<[c_long; 3]>,
 
         pub st_ino: crate::ino64_t,
         pub st_mode: crate::mode_t,
@@ -84,7 +87,7 @@ s! {
         pub st_rdev: crate::dev_t,
 
         #[cfg(not(gnu_time_bits64))]
-        st_pad2: [c_long; 3],
+        st_pad2: Padding<[c_long; 3]>,
 
         pub st_size: off64_t,
 
@@ -109,11 +112,11 @@ s! {
         #[cfg(not(gnu_time_bits64))]
         pub st_blksize: crate::blksize_t,
         #[cfg(not(gnu_time_bits64))]
-        st_pad3: c_long,
+        st_pad3: Padding<c_long>,
         #[cfg(not(gnu_time_bits64))]
         pub st_blocks: crate::blkcnt64_t,
         #[cfg(not(gnu_time_bits64))]
-        st_pad5: [c_long; 14],
+        st_pad5: Padding<[c_long; 14]>,
     }
 
     pub struct statfs {
@@ -194,9 +197,9 @@ s! {
         pub cgid: crate::gid_t,
         pub mode: c_uint,
         pub __seq: c_ushort,
-        __pad1: c_ushort,
-        __unused1: c_ulong,
-        __unused2: c_ulong,
+        __pad1: Padding<c_ushort>,
+        __unused1: Padding<c_ulong>,
+        __unused2: Padding<c_ulong>,
     }
 
     pub struct shmid_ds {
@@ -208,8 +211,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: crate::shmatt_t,
-        __unused4: c_ulong,
-        __unused5: c_ulong,
+        __unused4: Padding<c_ulong>,
+        __unused5: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {

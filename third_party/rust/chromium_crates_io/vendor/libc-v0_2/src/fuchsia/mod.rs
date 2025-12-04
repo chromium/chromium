@@ -78,32 +78,10 @@ pub type fsblkcnt_t = c_ulonglong;
 pub type fsfilcnt_t = c_ulonglong;
 pub type rlim_t = c_ulonglong;
 
-// FIXME(fuchsia): why are these uninhabited types? that seems... wrong?
-// Presumably these should be `()` or an `extern type` (when that stabilizes).
-#[derive(Debug)]
-pub enum timezone {}
-impl Copy for timezone {}
-impl Clone for timezone {
-    fn clone(&self) -> timezone {
-        *self
-    }
-}
-#[derive(Debug)]
-pub enum DIR {}
-impl Copy for DIR {}
-impl Clone for DIR {
-    fn clone(&self) -> DIR {
-        *self
-    }
-}
-
-#[derive(Debug)]
-pub enum fpos64_t {} // FIXME(fuchsia): fill this out with a struct
-impl Copy for fpos64_t {}
-impl Clone for fpos64_t {
-    fn clone(&self) -> fpos64_t {
-        *self
-    }
+extern_ty! {
+    pub enum timezone {}
+    pub enum DIR {}
+    pub enum fpos64_t {} // FIXME(fuchsia): fill this out with a struct
 }
 
 // PUB_STRUCT
@@ -143,46 +121,46 @@ s! {
         pub ru_stime: timeval,
         pub ru_maxrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad1: u32,
+        __pad1: Padding<u32>,
         pub ru_ixrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad2: u32,
+        __pad2: Padding<u32>,
         pub ru_idrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad3: u32,
+        __pad3: Padding<u32>,
         pub ru_isrss: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad4: u32,
+        __pad4: Padding<u32>,
         pub ru_minflt: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad5: u32,
+        __pad5: Padding<u32>,
         pub ru_majflt: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad6: u32,
+        __pad6: Padding<u32>,
         pub ru_nswap: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad7: u32,
+        __pad7: Padding<u32>,
         pub ru_inblock: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad8: u32,
+        __pad8: Padding<u32>,
         pub ru_oublock: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad9: u32,
+        __pad9: Padding<u32>,
         pub ru_msgsnd: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad10: u32,
+        __pad10: Padding<u32>,
         pub ru_msgrcv: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad11: u32,
+        __pad11: Padding<u32>,
         pub ru_nsignals: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad12: u32,
+        __pad12: Padding<u32>,
         pub ru_nvcsw: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad13: u32,
+        __pad13: Padding<u32>,
         pub ru_nivcsw: c_long,
         #[cfg(all(target_arch = "x86_64", target_pointer_width = "32"))]
-        __pad14: u32,
+        __pad14: Padding<u32>,
     }
 
     pub struct in_addr {
@@ -454,11 +432,11 @@ s! {
         pub gl_offs: size_t,
         pub gl_flags: c_int,
 
-        __unused1: *mut c_void,
-        __unused2: *mut c_void,
-        __unused3: *mut c_void,
-        __unused4: *mut c_void,
-        __unused5: *mut c_void,
+        __unused1: Padding<*mut c_void>,
+        __unused2: Padding<*mut c_void>,
+        __unused3: Padding<*mut c_void>,
+        __unused4: Padding<*mut c_void>,
+        __unused5: Padding<*mut c_void>,
     }
 
     pub struct ifaddrs {
@@ -543,7 +521,7 @@ s! {
         pub ssi_stime: u64,
         pub ssi_addr: u64,
         pub ssi_addr_lsb: u16,
-        _pad2: u16,
+        _pad2: Padding<u16>,
         pub ssi_syscall: i32,
         pub ssi_call_addr: u64,
         pub ssi_arch: u32,
@@ -800,8 +778,8 @@ s! {
         pub shm_cpid: crate::pid_t,
         pub shm_lpid: crate::pid_t,
         pub shm_nattch: c_ulong,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct msqid_ds {
@@ -814,8 +792,8 @@ s! {
         pub msg_qbytes: crate::msglen_t,
         pub msg_lspid: crate::pid_t,
         pub msg_lrpid: crate::pid_t,
-        __pad1: c_ulong,
-        __pad2: c_ulong,
+        __pad1: Padding<c_ulong>,
+        __pad2: Padding<c_ulong>,
     }
 
     pub struct statfs {
@@ -838,10 +816,10 @@ s! {
         pub msg_namelen: crate::socklen_t,
         pub msg_iov: *mut crate::iovec,
         pub msg_iovlen: c_int,
-        __pad1: c_int,
+        __pad1: Padding<c_int>,
         pub msg_control: *mut c_void,
         pub msg_controllen: crate::socklen_t,
-        __pad2: crate::socklen_t,
+        __pad2: Padding<crate::socklen_t>,
         pub msg_flags: c_int,
     }
 
@@ -902,9 +880,7 @@ s! {
     pub struct pthread_condattr_t {
         size: [u8; crate::__SIZEOF_PTHREAD_CONDATTR_T],
     }
-}
 
-s_no_extra_traits! {
     pub struct sysinfo {
         pub uptime: c_ulong,
         pub loads: [c_ulong; 3],
@@ -929,7 +905,7 @@ s_no_extra_traits! {
 
     pub struct sockaddr_storage {
         pub ss_family: sa_family_t,
-        __ss_pad2: [u8; 128 - 2 - 8],
+        __ss_pad2: Padding<[u8; 128 - 2 - 8]>,
         __ss_align: size_t,
     }
 
@@ -986,11 +962,13 @@ s_no_extra_traits! {
 
     pub struct sockaddr_nl {
         pub nl_family: crate::sa_family_t,
-        nl_pad: c_ushort,
+        nl_pad: Padding<c_ushort>,
         pub nl_pid: u32,
         pub nl_groups: u32,
     }
 
+    // FIXME(msrv): suggested method was added in 1.85
+    #[allow(unpredictable_function_pointer_comparisons)]
     pub struct sigevent {
         pub sigev_value: crate::sigval,
         pub sigev_signo: c_int,
@@ -1042,269 +1020,6 @@ s_no_extra_traits! {
     #[cfg_attr(not(target_arch = "x86"), repr(align(8)))]
     pub struct pthread_cond_t {
         size: [u8; crate::__SIZEOF_PTHREAD_COND_T],
-    }
-}
-
-cfg_if! {
-    if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for sysinfo {
-            fn eq(&self, other: &sysinfo) -> bool {
-                self.uptime == other.uptime
-                    && self.loads == other.loads
-                    && self.totalram == other.totalram
-                    && self.freeram == other.freeram
-                    && self.sharedram == other.sharedram
-                    && self.bufferram == other.bufferram
-                    && self.totalswap == other.totalswap
-                    && self.freeswap == other.freeswap
-                    && self.procs == other.procs
-                    && self.pad == other.pad
-                    && self.totalhigh == other.totalhigh
-                    && self.freehigh == other.freehigh
-                    && self.mem_unit == other.mem_unit
-                    && self
-                        .__reserved
-                        .iter()
-                        .zip(other.__reserved.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sysinfo {}
-        impl hash::Hash for sysinfo {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uptime.hash(state);
-                self.loads.hash(state);
-                self.totalram.hash(state);
-                self.freeram.hash(state);
-                self.sharedram.hash(state);
-                self.bufferram.hash(state);
-                self.totalswap.hash(state);
-                self.freeswap.hash(state);
-                self.procs.hash(state);
-                self.pad.hash(state);
-                self.totalhigh.hash(state);
-                self.freehigh.hash(state);
-                self.mem_unit.hash(state);
-                self.__reserved.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_un {
-            fn eq(&self, other: &sockaddr_un) -> bool {
-                self.sun_family == other.sun_family
-                    && self
-                        .sun_path
-                        .iter()
-                        .zip(other.sun_path.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_un {}
-        impl hash::Hash for sockaddr_un {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sun_family.hash(state);
-                self.sun_path.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_storage {
-            fn eq(&self, other: &sockaddr_storage) -> bool {
-                self.ss_family == other.ss_family
-                    && self.__ss_align == other.__ss_align
-                    && self
-                        .__ss_pad2
-                        .iter()
-                        .zip(other.__ss_pad2.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for sockaddr_storage {}
-        impl hash::Hash for sockaddr_storage {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.ss_family.hash(state);
-                self.__ss_align.hash(state);
-                self.__ss_pad2.hash(state);
-            }
-        }
-
-        impl PartialEq for utsname {
-            fn eq(&self, other: &utsname) -> bool {
-                self.sysname
-                    .iter()
-                    .zip(other.sysname.iter())
-                    .all(|(a, b)| a == b)
-                    && self
-                        .nodename
-                        .iter()
-                        .zip(other.nodename.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .release
-                        .iter()
-                        .zip(other.release.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .version
-                        .iter()
-                        .zip(other.version.iter())
-                        .all(|(a, b)| a == b)
-                    && self
-                        .machine
-                        .iter()
-                        .zip(other.machine.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for utsname {}
-        impl hash::Hash for utsname {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sysname.hash(state);
-                self.nodename.hash(state);
-                self.release.hash(state);
-                self.version.hash(state);
-                self.machine.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent {
-            fn eq(&self, other: &dirent) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent {}
-        impl hash::Hash for dirent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for dirent64 {
-            fn eq(&self, other: &dirent64) -> bool {
-                self.d_ino == other.d_ino
-                    && self.d_off == other.d_off
-                    && self.d_reclen == other.d_reclen
-                    && self.d_type == other.d_type
-                    && self
-                        .d_name
-                        .iter()
-                        .zip(other.d_name.iter())
-                        .all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for dirent64 {}
-        impl hash::Hash for dirent64 {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.d_ino.hash(state);
-                self.d_off.hash(state);
-                self.d_reclen.hash(state);
-                self.d_type.hash(state);
-                self.d_name.hash(state);
-            }
-        }
-
-        impl PartialEq for mq_attr {
-            fn eq(&self, other: &mq_attr) -> bool {
-                self.mq_flags == other.mq_flags
-                    && self.mq_maxmsg == other.mq_maxmsg
-                    && self.mq_msgsize == other.mq_msgsize
-                    && self.mq_curmsgs == other.mq_curmsgs
-            }
-        }
-        impl Eq for mq_attr {}
-        impl hash::Hash for mq_attr {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.mq_flags.hash(state);
-                self.mq_maxmsg.hash(state);
-                self.mq_msgsize.hash(state);
-                self.mq_curmsgs.hash(state);
-            }
-        }
-
-        impl PartialEq for sockaddr_nl {
-            fn eq(&self, other: &sockaddr_nl) -> bool {
-                self.nl_family == other.nl_family
-                    && self.nl_pid == other.nl_pid
-                    && self.nl_groups == other.nl_groups
-            }
-        }
-        impl Eq for sockaddr_nl {}
-        impl hash::Hash for sockaddr_nl {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.nl_family.hash(state);
-                self.nl_pid.hash(state);
-                self.nl_groups.hash(state);
-            }
-        }
-
-        // FIXME(msrv): suggested method was added in 1.85
-        #[allow(unpredictable_function_pointer_comparisons)]
-        impl PartialEq for sigevent {
-            fn eq(&self, other: &sigevent) -> bool {
-                self.sigev_value == other.sigev_value
-                    && self.sigev_signo == other.sigev_signo
-                    && self.sigev_notify == other.sigev_notify
-                    && self.sigev_notify_function == other.sigev_notify_function
-                    && self.sigev_notify_attributes == other.sigev_notify_attributes
-            }
-        }
-        impl Eq for sigevent {}
-        impl hash::Hash for sigevent {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.sigev_value.hash(state);
-                self.sigev_signo.hash(state);
-                self.sigev_notify.hash(state);
-                self.sigev_notify_function.hash(state);
-                self.sigev_notify_attributes.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_cond_t {
-            fn eq(&self, other: &pthread_cond_t) -> bool {
-                self.size.iter().zip(other.size.iter()).all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_cond_t {}
-        impl hash::Hash for pthread_cond_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.size.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_mutex_t {
-            fn eq(&self, other: &pthread_mutex_t) -> bool {
-                self.size.iter().zip(other.size.iter()).all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_mutex_t {}
-        impl hash::Hash for pthread_mutex_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.size.hash(state);
-            }
-        }
-
-        impl PartialEq for pthread_rwlock_t {
-            fn eq(&self, other: &pthread_rwlock_t) -> bool {
-                self.size.iter().zip(other.size.iter()).all(|(a, b)| a == b)
-            }
-        }
-        impl Eq for pthread_rwlock_t {}
-        impl hash::Hash for pthread_rwlock_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.size.hash(state);
-            }
-        }
     }
 }
 
@@ -1490,9 +1205,6 @@ pub const F_OK: c_int = 0;
 pub const R_OK: c_int = 4;
 pub const W_OK: c_int = 2;
 pub const X_OK: c_int = 1;
-pub const STDIN_FILENO: c_int = 0;
-pub const STDOUT_FILENO: c_int = 1;
-pub const STDERR_FILENO: c_int = 2;
 pub const SIGHUP: c_int = 1;
 pub const SIGINT: c_int = 2;
 pub const SIGQUIT: c_int = 3;
@@ -3421,21 +3133,9 @@ fn __MHDR_END(mhdr: *const msghdr) -> *mut c_uchar {
 #[link(name = "fdio")]
 extern "C" {}
 
-#[derive(Debug)]
-pub enum FILE {}
-impl Copy for FILE {}
-impl Clone for FILE {
-    fn clone(&self) -> FILE {
-        *self
-    }
-}
-#[derive(Debug)]
-pub enum fpos_t {} // FIXME(fuchsia): fill this out with a struct
-impl Copy for fpos_t {}
-impl Clone for fpos_t {
-    fn clone(&self) -> fpos_t {
-        *self
-    }
+extern_ty! {
+    pub enum FILE {}
+    pub enum fpos_t {} // FIXME(fuchsia): fill this out with a struct
 }
 
 extern "C" {
@@ -4173,7 +3873,7 @@ extern "C" {
         len: size_t,
         flags: c_uint,
     ) -> ssize_t;
-    pub fn eventfd(init: c_uint, flags: c_int) -> c_int;
+    pub fn eventfd(initval: c_uint, flags: c_int) -> c_int;
     pub fn sched_rr_get_interval(pid: crate::pid_t, tp: *mut crate::timespec) -> c_int;
     pub fn sem_timedwait(sem: *mut sem_t, abstime: *const crate::timespec) -> c_int;
     pub fn sem_getvalue(sem: *mut sem_t, sval: *mut c_int) -> c_int;

@@ -27,18 +27,11 @@ s! {
         pub oldmask: c_ulong,
         pub cr2: c_ulong,
     }
-}
 
-s_no_extra_traits! {
     pub struct __c_anonymous_uc_sigmask_with_padding {
         pub uc_sigmask: crate::sigset_t,
         /* Android has a wrong (smaller) sigset_t on x86. */
         __padding_rt_sigset: u32,
-    }
-
-    pub union __c_anonymous_uc_sigmask {
-        uc_sigmask: __c_anonymous_uc_sigmask_with_padding,
-        uc_sigmask64: crate::sigset64_t,
     }
 
     pub struct ucontext_t {
@@ -50,6 +43,13 @@ s_no_extra_traits! {
         __padding_rt_sigset: u32,
         __fpregs_mem: _libc_fpstate,
     }
+}
+
+s_no_extra_traits! {
+    pub union __c_anonymous_uc_sigmask {
+        uc_sigmask: __c_anonymous_uc_sigmask_with_padding,
+        uc_sigmask64: crate::sigset64_t,
+    }
 
     #[repr(align(8))]
     pub struct max_align_t {
@@ -59,20 +59,6 @@ s_no_extra_traits! {
 
 cfg_if! {
     if #[cfg(feature = "extra_traits")] {
-        impl PartialEq for __c_anonymous_uc_sigmask_with_padding {
-            fn eq(&self, other: &__c_anonymous_uc_sigmask_with_padding) -> bool {
-                self.uc_sigmask == other.uc_sigmask
-                // Ignore padding
-            }
-        }
-        impl Eq for __c_anonymous_uc_sigmask_with_padding {}
-        impl hash::Hash for __c_anonymous_uc_sigmask_with_padding {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uc_sigmask.hash(state)
-                // Ignore padding
-            }
-        }
-
         impl PartialEq for __c_anonymous_uc_sigmask {
             fn eq(&self, other: &__c_anonymous_uc_sigmask) -> bool {
                 unsafe { self.uc_sigmask == other.uc_sigmask }
@@ -82,28 +68,6 @@ cfg_if! {
         impl hash::Hash for __c_anonymous_uc_sigmask {
             fn hash<H: hash::Hasher>(&self, state: &mut H) {
                 unsafe { self.uc_sigmask.hash(state) }
-            }
-        }
-
-        impl PartialEq for ucontext_t {
-            fn eq(&self, other: &Self) -> bool {
-                self.uc_flags == other.uc_flags
-                    && self.uc_link == other.uc_link
-                    && self.uc_stack == other.uc_stack
-                    && self.uc_mcontext == other.uc_mcontext
-                    && self.uc_sigmask__c_anonymous_union == other.uc_sigmask__c_anonymous_union
-                // Ignore padding field
-            }
-        }
-        impl Eq for ucontext_t {}
-        impl hash::Hash for ucontext_t {
-            fn hash<H: hash::Hasher>(&self, state: &mut H) {
-                self.uc_flags.hash(state);
-                self.uc_link.hash(state);
-                self.uc_stack.hash(state);
-                self.uc_mcontext.hash(state);
-                self.uc_sigmask__c_anonymous_union.hash(state);
-                // Ignore padding field
             }
         }
     }

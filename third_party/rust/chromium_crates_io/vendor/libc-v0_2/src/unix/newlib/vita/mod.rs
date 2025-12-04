@@ -82,7 +82,7 @@ s! {
     pub struct dirent {
         __offset: [u8; 88],
         pub d_name: [c_char; 256usize],
-        __pad: [u8; 8],
+        __pad: Padding<[u8; 8]>,
     }
 }
 

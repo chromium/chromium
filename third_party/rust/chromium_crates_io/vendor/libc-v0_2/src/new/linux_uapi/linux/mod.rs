@@ -1,4 +1,6 @@
-//! The `linux` directory within `include/uapi` in the Linux source tree.
+//! Directory: `linux/`
+//!
+//! <https://github.com/torvalds/linux/tree/master/include/uapi/linux>
 
 pub(crate) mod can;
-pub use can::*;
+pub(crate) mod keyctl;

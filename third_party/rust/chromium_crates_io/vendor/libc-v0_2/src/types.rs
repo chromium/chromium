@@ -1,5 +1,7 @@
 //! Platform-agnostic support types.
 
+#[cfg(feature = "extra_traits")]
+use core::hash::Hash;
 use core::mem::MaybeUninit;
 
 use crate::prelude::*;
@@ -29,6 +31,24 @@ impl<T: Copy> fmt::Debug for Padding<T> {
         f.pad(&full_name[prefix_len..])
     }
 }
+
+/// Do nothing when hashing to ignore the existence of padding fields.
+#[cfg(feature = "extra_traits")]
+impl<T: Copy> Hash for Padding<T> {
+    fn hash<H: hash::Hasher>(&self, _state: &mut H) {}
+}
+
+/// Padding fields are all equal, regardless of what is inside them, so they do not affect anything.
+#[cfg(feature = "extra_traits")]
+impl<T: Copy> PartialEq for Padding<T> {
+    fn eq(&self, _other: &Self) -> bool {
+        true
+    }
+}
+
+/// Mark that `Padding` implements `Eq` so that it can be used in types that implement it.
+#[cfg(feature = "extra_traits")]
+impl<T: Copy> Eq for Padding<T> {}
 
 /// The default repr type used for C style enums in Rust.
 #[cfg(target_env = "msvc")]
