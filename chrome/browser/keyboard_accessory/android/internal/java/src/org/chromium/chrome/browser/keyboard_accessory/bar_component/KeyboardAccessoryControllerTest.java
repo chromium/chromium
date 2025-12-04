@@ -45,11 +45,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -556,6 +556,14 @@ public class KeyboardAccessoryControllerTest {
 
     @Test
     public void testRecordsAgainIfExistingItemsChange() {
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecordTimes(
+                                ManualFillingMetricsRecorder
+                                        .UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION,
+                                AccessoryAction.GENERATE_PASSWORD_AUTOMATIC,
+                                2)
+                        .build();
         // Add a tab and show, so the accessory is permanently visible.
         setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
         mCoordinator.show();
@@ -573,7 +581,6 @@ public class KeyboardAccessoryControllerTest {
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     1)
                         });
-        assertThat(getGenerationImpressionCount(), is(1));
 
         // Adding another action leaves bar impressions unchanged but affects the actions bucket.
         mModel.get(BAR_ITEMS)
@@ -588,7 +595,7 @@ public class KeyboardAccessoryControllerTest {
                                     new Action(GENERATE_PASSWORD_AUTOMATIC, null),
                                     1)
                         });
-        assertThat(getGenerationImpressionCount(), is(2));
+        histogramWatcher.assertExpected();
     }
 
     @Test
@@ -907,12 +914,6 @@ public class KeyboardAccessoryControllerTest {
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(AutofillBarItem.class));
         assertThat(mModel.get(BAR_ITEMS).get(1), instanceOf(AutofillBarItem.class));
         assertThat(mModel.get(BAR_ITEMS).get(2), instanceOf(AutofillBarItem.class));
-    }
-
-    private int getGenerationImpressionCount() {
-        return RecordHistogram.getHistogramValueCountForTesting(
-                ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_ACTION_IMPRESSION,
-                AccessoryAction.GENERATE_PASSWORD_AUTOMATIC);
     }
 
     private void setTabs(KeyboardAccessoryData.Tab[] tabs) {
