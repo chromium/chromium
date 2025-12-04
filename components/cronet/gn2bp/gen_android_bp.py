@@ -682,34 +682,6 @@ def write_blueprint_key_value(output,
            for line in (value if isinstance(value, list) else [value]))))
 
 
-def sorted_cflags(cflags_object: Iterable[str]) -> list[str]:
-  """Sorts cflags.
-
-  Some cflags are order-dependent (critically, `-U` flags and `-D` flags must
-  have their relative order maintained if they reference the same macro name).
-  This version of `sorted` respects that.
-  """
-
-  # Key creation here is a bit subtle.
-  #
-  # Basically, all `-D` and `-U` macros are trimmed to their macro names (plus
-  # a leading `-D`, regardless of the original prefix). This relies on
-  # Python's `sorted` function keeping a stable order, so an original `-UFOO
-  # -DFOO=1 -UFOO` remains in that same relative order in the output.
-  def flag_to_key(cflag: str) -> str:
-    key = cflag
-    if key.startswith("-U"):
-      key = f"-D{key[2:]}"
-
-    if key.startswith("-D"):
-      # Remove any value this is set to, so that doesn't mess with
-      # ordering.
-      key = key.split("=", 1)[0]
-    return key
-
-  return sorted(cflags_object, key=flag_to_key)
-
-
 class Module:
   """A single module (e.g., cc_binary, cc_test) in a blueprint."""
 
@@ -725,11 +697,11 @@ class Module:
       self.header_libs = set()
       self.cflags = list()
       self.stl = None
-      self.cppflags = set()
+      self.cppflags = list()
       self.include_dirs = set()
       self.generated_headers = set()
       self.export_generated_headers = set()
-      self.ldflags = set()
+      self.ldflags = list()
       self.compile_multilib = None
       self.stem = ""
       self.edition = ""
@@ -746,13 +718,20 @@ class Module:
       self._output_field(nested_out, 'static_libs')
       self._output_field(nested_out, 'whole_static_libs')
       self._output_field(nested_out, 'header_libs')
-      self._output_field(nested_out, 'cflags', is_cflags_like=True)
+      # While sorting is a requirement for a deterministic output, sorting these flags correctly is
+      # challenging. Sorting requires knowing the boundaries of each flag, but we cannot simply
+      # assume flags are defined by whitespace, a leading - character, or something else.
+      # With that in mind, we choose instead not to sort and instead we rely on GN's ordering of
+      # these flags (and we assume that that ordering is deterministic).
+      self._output_field(nested_out, 'cflags', sort=False)
       self._output_field(nested_out, 'stl')
-      self._output_field(nested_out, 'cppflags', is_cflags_like=True)
+      # The reasoning for disabling sort is the same as cflags.
+      self._output_field(nested_out, 'cppflags', sort=False)
       self._output_field(nested_out, 'include_dirs')
       self._output_field(nested_out, 'generated_headers')
       self._output_field(nested_out, 'export_generated_headers')
-      self._output_field(nested_out, 'ldflags', is_cflags_like=True)
+      # The reasoning for disabling sort is the same as cflags.
+      self._output_field(nested_out, 'ldflags', sort=False)
       self._output_field(nested_out, 'compile_multilib')
       self._output_field(nested_out, 'stem')
       self._output_field(nested_out, "edition")
@@ -772,16 +751,11 @@ class Module:
                       output,
                       name,
                       sort=True,
-                      list_to_multiline_string=False,
-                      is_cflags_like=False):
-      value = getattr(self, name)
-      if sort and is_cflags_like:
-        value = sorted_cflags(value)
-        sort = False
+                      list_to_multiline_string=False):
       return write_blueprint_key_value(
           output,
           name,
-          value,
+          getattr(self, name),
           sort=sort,
           list_to_multiline_string=list_to_multiline_string)
 
@@ -831,7 +805,7 @@ class Module:
     self.min_sdk_version = None
     self.proto = dict()
     self.linker_scripts = set()
-    self.ldflags = set()
+    self.ldflags = list()
     # The genrule_XXX below are properties that must to be propagated back
     # on the module(s) that depend on the genrule.
     self.genrule_headers = set()
@@ -841,7 +815,7 @@ class Module:
     self.version_script = None
     self.test_suites = set()
     self.test_config = None
-    self.cppflags = set()
+    self.cppflags = list()
     self.rtti = False
     # Name of the output. Used for setting .so file name for libcronet
     self.libs = set()
@@ -915,7 +889,12 @@ class Module:
     self._output_field(output, 'export_static_lib_headers')
     self._output_field(output, 'export_header_lib_headers')
     self._output_field(output, 'defaults')
-    self._output_field(output, 'cflags', is_cflags_like=True)
+    # While sorting is a requirement for a deterministic output, sorting these flags correctly is
+    # challenging. Sorting requires knowing the boundaries of each flag, but we cannot simply
+    # assume flags are defined by whitespace, a leading - character, or something else.
+    # With that in mind, we choose instead not to sort and instead we rely on GN's ordering of
+    # these flags (and we assume that that ordering is deterministic).
+    self._output_field(output, 'cflags', sort=False)
     self._output_field(output, 'include_dirs')
     self._output_field(output, 'local_include_dirs')
     self._output_field(output, 'header_libs')
@@ -931,8 +910,10 @@ class Module:
     self._output_field(output, 'test_config')
     self._output_field(output, 'proto')
     self._output_field(output, 'linker_scripts')
-    self._output_field(output, 'ldflags', is_cflags_like=True)
-    self._output_field(output, 'cppflags', is_cflags_like=True)
+    # The reasoning for disabling sort is the same as cflags.
+    self._output_field(output, 'ldflags', sort=False)
+    # The reasoning for disabling sort is the same as cflags.
+    self._output_field(output, 'cppflags', sort=False)
     self._output_field(output, 'unstable')
     self._output_field(output, 'path')
     self._output_field(output, 'libs')
@@ -1005,16 +986,11 @@ class Module:
                     output,
                     name,
                     sort=True,
-                    list_to_multiline_string=False,
-                    is_cflags_like=False):
-    value = getattr(self, name)
-    if sort and is_cflags_like:
-      value = sorted_cflags(value)
-      sort = False
+                    list_to_multiline_string=False):
     return write_blueprint_key_value(
         output,
         name,
-        value,
+        getattr(self, name),
         sort=sort,
         list_to_multiline_string=list_to_multiline_string)
 
@@ -2633,7 +2609,8 @@ def _get_cflags(cflags, defines):
 def _set_linker_script(module, libs):
   for lib in libs:
     if lib.endswith(".lds"):
-      module.ldflags.add(get_linker_script_ldflag(gn_utils.label_to_path(lib)))
+      module.ldflags.append(
+          get_linker_script_ldflag(gn_utils.label_to_path(lib)))
 
 
 def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
@@ -2649,7 +2626,7 @@ def _get_cpp_std(cflags: List[str]) -> Union[str, None]:
 
 
 def _extract_linker_script(ldflags):
-  new_ldflags = set()
+  new_ldflags = []
   linker_script = None
   for flag in ldflags:
     if flag.startswith("-Wl,--version-script="):
@@ -2658,7 +2635,7 @@ def _extract_linker_script(ldflags):
       assert linker_script is None, f"Found two different linker script for a single target! First script: {linker_script}, Second script: {linker_path}"
       linker_script = linker_path
     else:
-      new_ldflags.add(flag)
+      new_ldflags.append(flag)
   return new_ldflags, linker_script
 
 
@@ -2709,7 +2686,7 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
                         blueprint):
   module.cflags.extend(_get_cflags(cflags, defines))
   ldflags, linker_script = _extract_linker_script(ldflags)
-  module.ldflags.update({flag for flag in ldflags if _is_allowed_ldflag(flag)})
+  module.ldflags.extend({flag for flag in ldflags if _is_allowed_ldflag(flag)})
   if linker_script:
     # Unfortunately, Soong does not allow accessing linker scripts from parent
     # path. So create a filegroup at the top-level Android.bp and reference it instead.
@@ -2728,7 +2705,7 @@ def configure_cc_module(module, cflags, defines, ldflags, libs, main_module,
   # TODO: implement proper cflag parsing.
   for flag in cflags:
     if '-fexceptions' in flag:
-      module.cppflags.add('-fexceptions')
+      module.cppflags.append('-fexceptions')
   cpp_std = _get_cpp_std(cflags)
   if cpp_std:
     assert main_module.cpp_std is None or main_module.cpp_std == cpp_std, f"Found different CPP version across different architectures!, target name: {main_module.name}, first cpp version: {main_module.cpp_std}, current cpp version: {cpp_std}"

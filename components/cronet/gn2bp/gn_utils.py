@@ -139,8 +139,7 @@ class GnParser:
         self.include_dirs = set()
         self.deps = set()
         self.transitive_static_libs_deps = set()
-        self.ldflags = set()
-
+        self.ldflags = []
         # These are valid only for type == 'action'
         self.inputs = set()
         self.outputs = set()
@@ -288,6 +287,10 @@ class GnParser:
     @property
     def ldflags(self):
       return self.arch['common'].ldflags
+
+    @ldflags.setter
+    def ldflags(self, val):
+      self.arch['common'].ldflags = val
 
     def host_supported(self):
       return 'host' in self.arch
@@ -663,7 +666,7 @@ class GnParser:
     target.arch[arch].cflags.extend(
         desc.get('cflags', []) + desc.get('cflags_cc', []))
     target.arch[arch].libs.update(desc.get('libs', []))
-    target.arch[arch].ldflags.update(desc.get('ldflags', []))
+    target.arch[arch].ldflags.extend(desc.get('ldflags', []))
     target.arch[arch].defines.update(_filter_defines(desc.get('defines', [])))
     target.arch[arch].include_dirs.update(desc.get('include_dirs', []))
     target.output_name = desc.get('output_name', None)
