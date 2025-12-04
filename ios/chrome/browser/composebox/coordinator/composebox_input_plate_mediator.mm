@@ -543,6 +543,7 @@ CreateInputDataFromAnnotatedPageContent(
       [_webStateDeferredExecutor webState:webState
                         executeOnceLoaded:^(BOOL success) {
                           if (!success) {
+                            [weakSelf handleFailedAttachment:identifier];
                             return;
                           }
                           [weakSelf attachWebStateContent:webState
@@ -616,6 +617,8 @@ CreateInputDataFromAnnotatedPageContent(
             [weakSelf handlePageContextResponse:std::move(context.value())
                                        webState:weakWebState.get()
                                      identifier:identifier];
+          } else {
+            [weakSelf handleFailedAttachment:identifier];
           }
         }));
     return;
@@ -629,6 +632,8 @@ CreateInputDataFromAnnotatedPageContent(
           [weakSelf handlePageContextResponse:std::move(response.value())
                                      webState:weakWebState.get()
                                    identifier:identifier];
+        } else {
+          [weakSelf handleFailedAttachment:identifier];
         }
       })];
 
@@ -794,9 +799,7 @@ CreateInputDataFromAnnotatedPageContent(
     case contextual_search::FileUploadStatus::kUploadFailed:
     case contextual_search::FileUploadStatus::kValidationFailed:
     case contextual_search::FileUploadStatus::kUploadExpired:
-      item.state = ComposeboxInputItemState::kError;
-      [self.delegate showSnackbarForItemUploadDidFail];
-      [self removeItem:item];
+      [self handleFailedAttachment:item.identifier];
       break;
     case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
       [self reloadSuggestions];
@@ -1170,6 +1173,11 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private helpers
+
+- (void)handleFailedAttachment:(base::UnguessableToken)identifier {
+  [self.delegate showSnackbarForItemUploadDidFail];
+  [self removeItem:[self itemForIdentifier:identifier]];
+}
 
 - (void)updateButtonsVisibility {
   BOOL compactMode = [self compactModeRequired];
