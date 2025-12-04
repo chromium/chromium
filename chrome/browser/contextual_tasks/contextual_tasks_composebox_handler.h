@@ -41,10 +41,6 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
                    bool shift_key) override;
   void HandleLensButtonClick() override;
 
-  // Called by ContextualTasksPageHandler when a message is received from the
-  // webview.
-  void HandleWebviewMessage(const std::vector<uint8_t>& message);
-
   void CreateAndSendQueryMessage(const std::string& query);
 
  private:
