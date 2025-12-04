@@ -64,7 +64,6 @@ enum MediaPictureInPictureState {
 enum MediaAudioVideoState {
   // Unused as of version 10, see |audio_video_states|.
   kDeprecatedUnknown,
-
   kAudioOnly,
   kAudioVideo,
   [MinVersion=10] kVideoOnly,
@@ -134,14 +133,14 @@ struct MediaPosition {
 
 [Stable, Extensible]
 enum MicrophoneState {
-  kUnknown,
+  [Default] kUnknown,
   kMuted,
   kUnmuted,
 };
 
 [Stable, Extensible]
 enum CameraState {
-  kUnknown,
+  [Default] kUnknown,
   kTurnedOn,
   kTurnedOff,
 };
