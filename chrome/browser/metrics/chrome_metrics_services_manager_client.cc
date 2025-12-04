@@ -47,8 +47,6 @@
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
-#else
-#include "chrome/browser/ui/browser_list.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -367,9 +365,7 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 
   return false;
 #else
-  // Depending directly on BrowserList, since that is the implementation
-  // that we get correct notifications for.
-  return BrowserList::IsOffTheRecordBrowserActive();
+  return ::IsOffTheRecordSessionActive();
 #endif
 }
 

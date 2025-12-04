@@ -25,9 +25,11 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_otr_state.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/metrics/metrics_pref_names.h"
@@ -169,7 +171,7 @@ void SetSessionState(base::Value::Dict dict) {
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        ExistingIncognitoSessionBlockingTraceStart) {
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_TRUE(IsOffTheRecordSessionActive());
   EXPECT_FALSE(
       StartScenario(content::BackgroundTracingManager::ANONYMIZE_DATA));
 }
@@ -180,9 +182,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
 IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
                        FinishedIncognitoSessionBlockingTraceStart) {
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_TRUE(IsOffTheRecordSessionActive());
   CloseBrowserSynchronously(incognito_browser);
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_FALSE(IsOffTheRecordSessionActive());
 }
 
 // If we need a PII-stripped trace, any new OTR session during tracing should
@@ -194,7 +196,7 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   background_tracing_helper.WaitForScenarioActive();
 
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_NEW_INCOGNITO_WINDOW));
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_TRUE(IsOffTheRecordSessionActive());
 
   TriggerPreemptiveScenario();
   background_tracing_helper.WaitForScenarioIdle();
@@ -207,9 +209,9 @@ IN_PROC_BROWSER_TEST_F(ChromeTracingDelegateBrowserTest,
   EXPECT_TRUE(StartScenario(content::BackgroundTracingManager::ANONYMIZE_DATA));
 
   Browser* incognito_browser = CreateIncognitoBrowser(browser()->profile());
-  EXPECT_TRUE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_TRUE(IsOffTheRecordSessionActive());
   CloseBrowserSynchronously(incognito_browser);
-  EXPECT_FALSE(BrowserList::IsOffTheRecordBrowserActive());
+  EXPECT_FALSE(IsOffTheRecordSessionActive());
 
   TestBackgroundTracingHelper background_tracing_helper;
   TriggerPreemptiveScenario();
