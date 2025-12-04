@@ -643,6 +643,10 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
 
   private recordFileValidationMetric_(
       enumValue: ComposeboxFileValidationError) {
+    // In rare cases chrome.metricsPrivate is not available.
+    if (!chrome.metricsPrivate) {
+      return;
+    }
     chrome.metricsPrivate.recordEnumerationValue(
         'ContextualSearch.File.WebUI.UploadAttemptFailure.' +
             this.composeboxSource_,
