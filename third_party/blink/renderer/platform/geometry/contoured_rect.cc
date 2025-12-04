@@ -93,9 +93,6 @@ bool ContouredRect::IntersectsQuad(const gfx::QuadF& quad) const {
 void ContouredRect::OutsetWithCornerCorrection(const gfx::OutsetsF& outsets) {
   if (RuntimeEnabledFeatures::BorderRadiusCorrectionCoverageFactorEnabled()) {
     rect_.OutsetWithCornerCorrection(outsets);
-    if (origin_rect_) {
-      origin_rect_->OutsetWithCornerCorrection(outsets);
-    }
     return;
   }
 

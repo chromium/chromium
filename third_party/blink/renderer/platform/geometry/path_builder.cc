@@ -273,77 +273,56 @@ PathBuilder& PathBuilder::AddContouredRect(
   // This would include the outer border of the rect, as well as shadow and
   // margin.
   if (target_rect.Rect().Contains(origin_rect.Rect())) {
-    const gfx::RectF& outer_rect = target_rect.Rect();
+    auto miter = [&](const Corner& corner, const gfx::LineF& edge,
+                     const gfx::PointF& ref_point) {
+      return edge
+          .IntersectionWith(gfx::LineF(corner.IsEmpty()
+                                           ? (ref_point + edge.Normal())
+                                           : corner.QuadraticControlPoint(),
+                                       ref_point))
+          .value_or(ref_point);
+    };
+
+    auto miter_start = [&](const Corner& corner, const gfx::LineF& edge) {
+      return miter(corner, edge, corner.Start());
+    };
+    auto miter_end = [&](const Corner& corner, const gfx::LineF& edge) {
+      return miter(corner, edge, corner.End());
+    };
+
     const Corner top_right_corner = contoured_rect.TopRightCorner();
     const Corner bottom_right_corner = contoured_rect.BottomRightCorner();
     const Corner bottom_left_corner = contoured_rect.BottomLeftCorner();
     const Corner top_left_corner = contoured_rect.TopLeftCorner();
-    MoveTo(top_right_corner.Start());
+
+    const gfx::LineF top_line(target_rect.Rect().origin(),
+                              target_rect.Rect().top_right());
+    const gfx::LineF bottom_line(target_rect.Rect().bottom_left(),
+                                 target_rect.Rect().bottom_right());
+    const gfx::LineF left_line(target_rect.Rect().origin(),
+                               target_rect.Rect().bottom_left());
+    const gfx::LineF right_line(target_rect.Rect().top_right(),
+                                target_rect.Rect().bottom_right());
+
+    MoveTo(miter_start(top_right_corner, top_line));
     AddCorner(top_right_corner);
-    if (!top_right_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.top_right(), outer_rect.bottom_right())
-                 .IntersectionWith({top_right_corner.QuadraticControlPoint(),
-                                    top_right_corner.End()})
-                 .value_or(
-                     gfx::PointF(outer_rect.right(), origin_rect.Rect().y())));
-    }
+    LineTo(miter_end(top_right_corner, right_line));
 
-    if (!bottom_right_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.top_right(), outer_rect.bottom_right())
-                 .IntersectionWith({bottom_right_corner.QuadraticControlPoint(),
-                                    bottom_right_corner.Start()})
-                 .value_or(gfx::PointF(outer_rect.right(),
-                                       origin_rect.Rect().bottom())));
-    }
-
+    LineTo(miter_start(bottom_right_corner, right_line));
     AddCorner(bottom_right_corner);
+    LineTo(miter_end(bottom_right_corner, bottom_line));
 
-    if (!bottom_right_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.bottom_left(), outer_rect.bottom_right())
-                 .IntersectionWith({bottom_right_corner.QuadraticControlPoint(),
-                                    bottom_right_corner.End()})
-                 .value_or(gfx::PointF(origin_rect.Rect().right(),
-                                       outer_rect.bottom())));
-    }
-    if (!bottom_left_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.bottom_left(), outer_rect.bottom_right())
-                 .IntersectionWith({bottom_left_corner.QuadraticControlPoint(),
-                                    bottom_left_corner.Start()})
-                 .value_or(
-                     gfx::PointF(origin_rect.Rect().x(), outer_rect.bottom())));
-    }
+    LineTo(miter_start(bottom_left_corner, bottom_line));
     AddCorner(bottom_left_corner);
-    if (!bottom_left_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.bottom_left(), outer_rect.origin())
-                 .IntersectionWith({bottom_left_corner.QuadraticControlPoint(),
-                                    bottom_left_corner.End()})
-                 .value_or(
-                     gfx::PointF(outer_rect.x(), origin_rect.Rect().bottom())));
-    }
-    if (!top_left_corner.IsHyperellipse()) {
-      LineTo(
-          gfx::LineF(outer_rect.bottom_left(), outer_rect.origin())
-              .IntersectionWith({top_left_corner.QuadraticControlPoint(),
-                                 top_left_corner.Start()})
-              .value_or(gfx::PointF(outer_rect.x(), origin_rect.Rect().y())));
-    }
+    LineTo(miter_end(bottom_left_corner, left_line));
+
+    LineTo(miter_start(top_left_corner, left_line));
     AddCorner(top_left_corner);
-    if (!top_left_corner.IsHyperellipse()) {
-      LineTo(
-          gfx::LineF(outer_rect.top_right(), outer_rect.origin())
-              .IntersectionWith({top_left_corner.QuadraticControlPoint(),
-                                 top_left_corner.End()})
-              .value_or(gfx::PointF(origin_rect.Rect().x(), outer_rect.y())));
-    }
-    if (!top_right_corner.IsHyperellipse()) {
-      LineTo(gfx::LineF(outer_rect.top_right(), outer_rect.origin())
-                 .IntersectionWith({top_right_corner.QuadraticControlPoint(),
-                                    top_right_corner.Start()})
-                 .value_or(
-                     gfx::PointF(origin_rect.Rect().right(), outer_rect.y())));
-    }
+    LineTo(miter_end(top_left_corner, top_line));
+
     Close();
     ClearCachedData();
+
     return *this;
   }
 
