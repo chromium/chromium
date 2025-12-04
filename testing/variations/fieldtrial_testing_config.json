@@ -3132,6 +3132,21 @@
             ]
         }
     ],
+    "AutofillReintroduceHybridPasskeyDropdownItem": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillReintroduceHybridPasskeyDropdownItem"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillServerExperimentalSignatures": [
         {
             "platforms": [
