@@ -1438,9 +1438,9 @@ void InlineNode::ShapeText(InlineItemsData* data,
                            const InlineItems* previous_items,
                            const Font* override_font) const {
   const String& text_content = data->text_content;
-  InlineItems* items = &data->items;
+  InlineItems& items = data->items;
 #if EXPENSIVE_DCHECKS_ARE_ON()
-  InlineItem::CheckIndex(*items);
+  InlineItem::CheckIndex(items);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 
   ShapeResultSpacing spacing(
@@ -1451,7 +1451,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
   TextAutoSpace auto_space(*data);
 
   const bool allow_shape_cache =
-      IsNGShapeCacheAllowed(text_content, override_font, *items, spacing) &&
+      IsNGShapeCacheAllowed(text_content, override_font, items, spacing) &&
       !auto_space.MayApply();
 
   // Provide full context of the entire node to the shaper.
@@ -1461,8 +1461,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());
 
-  for (unsigned index = 0; index < items->size();) {
-    InlineItem& start_item = *(*items)[index];
+  for (unsigned index = 0; index < items.size();) {
+    InlineItem& start_item = *items[index];
     if (start_item.Type() != InlineItem::kText || !start_item.Length()) {
       index++;
       if (!start_item.IsOpaqueForTextProcessing()) {
@@ -1517,8 +1517,8 @@ void InlineNode::ShapeText(InlineItemsData* data,
     // break. This ensures that adjacent text items are shaped together whenever
     // possible as this is required for accurate cross-element shaping.
     unsigned num_text_items = 1;
-    for (; end_index < items->size(); end_index++) {
-      const InlineItem& item = *(*items)[end_index];
+    for (; end_index < items.size(); end_index++) {
+      const InlineItem& item = *items[end_index];
 
       if (item.Type() == InlineItem::kControl) {
         // Do not shape across control characters (line breaks, zero width
@@ -1574,7 +1574,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
     if (previous_text) {
       bool has_valid_shape_results = true;
       for (unsigned item_index = index; item_index < end_index; item_index++) {
-        if (NeedsShaping(*(*items)[item_index])) {
+        if (NeedsShaping(*items[item_index])) {
           has_valid_shape_results = false;
           break;
         }
@@ -1633,7 +1633,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
       shape_result->EnsurePositionData();
     }
     for (; index < end_index; index++) {
-      InlineItem& item = *(*items)[index];
+      InlineItem& item = *items[index];
       if (item.Type() != InlineItem::kText || !item.Length()) {
         continue;
       }
@@ -1664,7 +1664,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
   auto_space.ApplyIfNeeded(*this, *data);
 
 #if DCHECK_IS_ON()
-  for (const Member<InlineItem>& item_ptr : *items) {
+  for (const Member<InlineItem>& item_ptr : items) {
     const InlineItem& item = *item_ptr;
     if (item.Type() == InlineItem::kText && item.Length()) {
       DCHECK(item.TextShapeResult());
