@@ -75,6 +75,10 @@ class GlicE2ETest : public InteractiveBrowserTestMixin<signin::test::LiveTest> {
   bool run_low_bandwidth_tests() { return enable_low_bandwidth_tests_; }
   bool run_actor_tests() const { return running_actor_tests_; }
 
+ protected:
+  // Opt-in flag for using WPR for some requests in real_backend mode.
+  bool use_wpr_for_real_backend_ = false;
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   bool enable_low_bandwidth_tests_ = false;

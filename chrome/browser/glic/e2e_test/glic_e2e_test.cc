@@ -116,10 +116,14 @@ void GlicE2ETest::SetUp() {
     FAIL() << "Incorrect test mode input: %s" << test_mode_value;
   }
 
-  if (test_mode_ == kRecord || test_mode_ == kReplay) {
+  // Initialize WPR if we are in record/replay mode, or if opted-in to use WPR
+  // for some requests in real_backend mode.
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     web_page_replay_server_wrapper_ =
-        std::make_unique<captured_sites_test_utils::WebPageReplayServerWrapper>(
-            test_mode_ == kReplay, 8080, 8081, kWprArguments);
+        std::make_unique<WebPageReplayServerWrapper>(
+            test_mode_ == kReplay || test_mode_ == kRealBackend, 8080, 8081,
+            kWprArguments);
   }
 
   // Always disable animation for stability.
@@ -135,6 +139,10 @@ void GlicE2ETest::SetUpCommandLine(base::CommandLine* command_line) {
     // The following arguments make browser work with WPR proxy.
     command_line->AppendSwitchASCII(network::switches::kHostResolverRules,
                                     kHostResolverRulesValue);
+  }
+
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     command_line->AppendSwitchASCII(
         network::switches::kIgnoreCertificateErrorsSPKIList,
         kIgnoreCertificateErrorsSPKIListValue);
@@ -202,7 +210,8 @@ void GlicE2ETest::TearDownOnMainThread() {
     client.second->DetachProtocolClient();
   }
   devtools_clients_.clear();
-  if (test_mode_ == kRecord || test_mode_ == kReplay) {
+  if (test_mode_ == kRecord || test_mode_ == kReplay ||
+      (test_mode_ == kRealBackend && use_wpr_for_real_backend_)) {
     // Ensure enough time for WPR to write archive at recording mode
     // by putting this in main thread.
     EXPECT_TRUE(web_page_replay_server_wrapper_->Stop())
@@ -252,7 +261,7 @@ GlicE2ETest::WaitForAndInstrumentGlic() {
 
 void GlicE2ETest::MaybeStartWebPageReplayForRecordingPath(
     const std::string recording_filename) {
-  if (test_mode_ == kRealBackend) {
+  if (test_mode_ == kRealBackend && !use_wpr_for_real_backend_) {
     return;
   }
   base::FilePath root_path;
