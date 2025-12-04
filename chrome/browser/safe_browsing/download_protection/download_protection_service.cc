@@ -76,8 +76,6 @@
 #endif
 
 using content::BrowserThread;
-using ReportThreatDetailsResult =
-    safe_browsing::PingManager::ReportThreatDetailsResult;
 
 namespace safe_browsing {
 

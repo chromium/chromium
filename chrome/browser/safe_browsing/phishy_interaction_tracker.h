@@ -7,13 +7,12 @@
 
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "components/safe_browsing/content/browser/ui_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "content/public/browser/navigation_entry.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
 
 namespace safe_browsing {
+
+class SafeBrowsingUIManager;
 
 struct PhishyPageInteractionDetails {
   PhishyPageInteractionDetails(int occurrence_count,

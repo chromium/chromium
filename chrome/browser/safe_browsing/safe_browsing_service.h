@@ -19,32 +19,32 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/task/sequenced_task_runner_helpers.h"
 #include "build/build_config.h"
-#include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
-#include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
-#include "chrome/browser/safe_browsing/safe_browsing_pref_change_handler.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/db/util.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/network_context.mojom-forward.h"
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/incident_reporting/delayed_analysis_callback.h"
+#include "chrome/browser/safe_browsing/phishy_interaction_tracker.h"
 #endif
 
 class PrefChangeRegistrar;
 class PrefService;
+class ProxyConfigMonitor;
 
 namespace content {
 class DownloadManager;
+class RenderFrameHost;
 }
 
 namespace download {
@@ -72,12 +72,13 @@ namespace safe_browsing {
 #if BUILDFLAG(SAFE_BROWSING_DOWNLOAD_PROTECTION)
 class DownloadProtectionService;
 #endif
+class HashRealTimeService;
 class PasswordProtectionService;
 class SafeBrowsingDatabaseManager;
+class SafeBrowsingPrefChangeHandler;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
 class TriggerManager;
-class HashRealTimeService;
 
 // Construction needs to happen on the main thread.
 // The SafeBrowsingServiceImpl owns both the UI and Database managers which do

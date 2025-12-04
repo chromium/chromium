@@ -19,6 +19,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/input/native_web_keyboard_event.h"
 #include "components/safe_browsing/content/browser/content_unsafe_resource_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
