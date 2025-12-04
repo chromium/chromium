@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/viz/service/display_embedder/software_output_device_mac.h"
 
 #include <memory>
 #include <utility>
 
 #include "base/apple/foundation_util.h"
+#include "base/compiler_specific.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -96,8 +92,8 @@ void SoftwareOutputDeviceMac::UpdateAndCopyBufferDamage(
     const SkIRect& rect = it.rect();
     current_paint_canvas_->writePixels(
         SkImageInfo::MakeN32Premul(rect.width(), rect.height()),
-        pixels + bytes_per_element * rect.x() + stride * rect.y(), stride,
-        rect.x(), rect.y());
+        UNSAFE_TODO(pixels + bytes_per_element * rect.x() + stride * rect.y()),
+        stride, rect.x(), rect.y());
   }
 
   {

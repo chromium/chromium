@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/chromeos_camera/mjpeg_decode_accelerator.h"
 
 #include <stddef.h>
@@ -23,6 +18,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -357,7 +353,7 @@ MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufVideoFrame(
   }
   for (size_t i = 0; i < num_planes; i++) {
     gfx::NativePixmapPlane& plane = native_pixmap_handle.planes[i];
-    memset(buffer->memory(i), 0, plane.size);
+    UNSAFE_TODO(memset(buffer->memory(i), 0, plane.size));
   }
   buffer->Unmap();
 
@@ -459,7 +455,7 @@ base::ScopedFD MjpegDecodeAcceleratorTestEnvironment::CreateDmaBufFd(
     LOG(ERROR) << "Failed to map buffer";
     return base::ScopedFD();
   }
-  memcpy(buffer->memory(0), data, size);
+  UNSAFE_TODO(memcpy(buffer->memory(0), data, size));
   buffer->Unmap();
 
   return std::move(native_pixmap_handle.planes[0].fd);
@@ -728,8 +724,8 @@ void JpegClient::PrepareMemory(int32_t task_id) {
     ASSERT_TRUE(in_shm_.IsValid());
     in_shm_mapping_ = in_shm_.Map();
     ASSERT_TRUE(in_shm_mapping_.IsValid());
-    memcpy(in_shm_mapping_.memory(), task.image->data_str.data(),
-           task.image->data_str.size());
+    UNSAFE_TODO(memcpy(in_shm_mapping_.memory(), task.image->data_str.data(),
+                       task.image->data_str.size()));
 
     // Only I420 output buffer is used in the shared memory path.
     hw_out_frame_ = g_env->CreateMemoryVideoFrame(
@@ -818,9 +814,10 @@ double JpegClient::GetMeanAbsoluteDifference() {
     const int sw_stride = sw_out_frame_->stride(plane);
     for (size_t row = 0; row < rows; ++row) {
       for (size_t col = 0; col < columns; ++col)
-        mean_abs_difference += std::abs(hw_data[col] - sw_data[col]);
-      hw_data += hw_stride;
-      sw_data += sw_stride;
+        mean_abs_difference +=
+            std::abs(UNSAFE_TODO(hw_data[col]) - UNSAFE_TODO(sw_data[col]));
+      UNSAFE_TODO(hw_data += hw_stride);
+      UNSAFE_TODO(sw_data += sw_stride);
     }
     num_samples += rows * columns;
   }
@@ -890,19 +887,22 @@ bool JpegClient::GetSoftwareDecodeResult(int32_t task_id) {
       return false;
     }
     if (libyuv::I420Scale(
-            sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kY) +
+            UNSAFE_TODO(
+                sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kY) +
                 crop.y() * sw_tmp_frame_->stride(media::VideoFrame::Plane::kY) +
-                crop.x(),
+                crop.x()),
             sw_tmp_frame_->stride(media::VideoFrame::Plane::kY),
-            sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kU) +
+            UNSAFE_TODO(
+                sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kU) +
                 crop.y() / 2 *
                     sw_tmp_frame_->stride(media::VideoFrame::Plane::kU) +
-                crop.x() / 2,
+                crop.x() / 2),
             sw_tmp_frame_->stride(media::VideoFrame::Plane::kU),
-            sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kV) +
+            UNSAFE_TODO(
+                sw_tmp_frame_->visible_data(media::VideoFrame::Plane::kV) +
                 crop.y() / 2 *
                     sw_tmp_frame_->stride(media::VideoFrame::Plane::kV) +
-                crop.x() / 2,
+                crop.x() / 2),
             sw_tmp_frame_->stride(media::VideoFrame::Plane::kV), crop.width(),
             crop.height(),
             sw_out_frame_->GetWritableVisibleData(media::VideoFrame::Plane::kY),
@@ -1109,17 +1109,17 @@ scoped_refptr<media::VideoFrame> GetTestDecodedData() {
   int v_stride = frame->stride(media::VideoFrame::Plane::kV);
 
   // Data for the Y plane.
-  memcpy(&y_data[0 * y_stride], "\x01\x02\x03", 3);
-  memcpy(&y_data[1 * y_stride], "\x04\x05\x06", 3);
-  memcpy(&y_data[2 * y_stride], "\x07\x08\x09", 3);
+  UNSAFE_TODO(memcpy(&y_data[0 * y_stride], "\x01\x02\x03", 3));
+  UNSAFE_TODO(memcpy(&y_data[1 * y_stride], "\x04\x05\x06", 3));
+  UNSAFE_TODO(memcpy(&y_data[2 * y_stride], "\x07\x08\x09", 3));
 
   // Data for the U plane.
-  memcpy(&u_data[0 * u_stride], "\x0A\x0B", 2);
-  memcpy(&u_data[1 * u_stride], "\x0C\x0D", 2);
+  UNSAFE_TODO(memcpy(&u_data[0 * u_stride], "\x0A\x0B", 2));
+  UNSAFE_TODO(memcpy(&u_data[1 * u_stride], "\x0C\x0D", 2));
 
   // Data for the V plane.
-  memcpy(&v_data[0 * v_stride], "\x0E\x0F", 2);
-  memcpy(&v_data[1 * v_stride], "\x10\x11", 2);
+  UNSAFE_TODO(memcpy(&v_data[0 * v_stride], "\x0E\x0F", 2));
+  UNSAFE_TODO(memcpy(&v_data[1 * v_stride], "\x10\x11", 2));
 
   return frame;
 }
@@ -1146,11 +1146,11 @@ TEST(JpegClientTest, GetMeanAbsoluteDifference) {
   double expected_abs_mean_diff = 0;
   y_data[0] = 0xF0;  // Previously 0x01.
   expected_abs_mean_diff += 0xF0 - 0x01;
-  y_data[y_stride + 1] = 0x8A;  // Previously 0x05.
+  UNSAFE_TODO(y_data[y_stride + 1]) = 0x8A;  // Previously 0x05.
   expected_abs_mean_diff += 0x8A - 0x05;
-  u_data[u_stride] = 0x02;  // Previously 0x0C.
+  UNSAFE_TODO(u_data[u_stride]) = 0x02;  // Previously 0x0C.
   expected_abs_mean_diff += 0x0C - 0x02;
-  v_data[v_stride + 1] = 0x54;  // Previously 0x11.
+  UNSAFE_TODO(v_data[v_stride + 1]) = 0x54;  // Previously 0x11.
   expected_abs_mean_diff += 0x54 - 0x11;
   expected_abs_mean_diff /= 3 * 3 + 2 * 2 * 2;
 
@@ -1160,7 +1160,7 @@ TEST(JpegClientTest, GetMeanAbsoluteDifference) {
 
   // Change some non-visible data in the software decoding result, i.e., part of
   // the stride padding. This should not affect the absolute mean difference.
-  y_data[3] = 0xAB;
+  UNSAFE_TODO(y_data[3]) = 0xAB;
   EXPECT_NEAR(expected_abs_mean_diff, client.GetMeanAbsoluteDifference(),
               kMaxAllowedDifference);
 }

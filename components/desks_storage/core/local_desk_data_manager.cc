@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/desks_storage/core/local_desk_data_manager.h"
 
 #include <utility>
 
 #include "ash/public/cpp/desk_template.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/dir_reader_posix.h"
@@ -95,7 +91,8 @@ bool EndsWith(const char* input, const char* suffix) {
   size_t input_length = strlen(input);
   size_t suffix_length = strlen(suffix);
   if (suffix_length <= input_length) {
-    return strcmp(input + input_length - suffix_length, suffix) == 0;
+    return UNSAFE_TODO(strcmp(input + input_length - suffix_length, suffix)) ==
+           0;
   }
   return false;
 }

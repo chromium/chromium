@@ -58,10 +58,12 @@ extern const base::FeatureParam<bool> kTaskScopedSidePanel;
 extern bool GetIsContextualTasksNextboxContextMenuEnabled();
 
 // The file types that can be attached to a Nextbox as images.
-extern const base::FeatureParam<std::string> kContextualTasksNextboxImageFileTypes;
+extern const base::FeatureParam<std::string>
+    kContextualTasksNextboxImageFileTypes;
 
 // The file types that can be attached to a Nextbox as attachments.
-extern const base::FeatureParam<std::string> kContextualTasksNextboxAttachmentFileTypes;
+extern const base::FeatureParam<std::string>
+    kContextualTasksNextboxAttachmentFileTypes;
 
 // The maximum size of a file that can be attached to a Nextbox.
 extern const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize;

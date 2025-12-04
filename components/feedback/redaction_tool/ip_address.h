@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // This is a copy of net/base/ip_address.h circa 2023. It should be used only by
 // components/feedback/redaction_tool/.
 // We need a copy because the components/feedback/redaction_tool source code is
@@ -25,6 +20,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/values.h"
 
 namespace redaction_internal {
@@ -64,8 +60,8 @@ class IPAddressBytes {
   uint8_t* begin() { return data(); }
 
   // Returns a pointer past the last element.
-  const uint8_t* end() const { return data() + size_; }
-  uint8_t* end() { return data() + size_; }
+  const uint8_t* end() const { return UNSAFE_TODO(data() + size_); }
+  uint8_t* end() { return UNSAFE_TODO(data() + size_); }
 
   // Returns a reference to the last element.
   uint8_t& back() {
@@ -271,7 +267,7 @@ bool IPAddressStartsWith(const IPAddress& address, const uint8_t (&prefix)[N]) {
   if (address.size() < N) {
     return false;
   }
-  return std::equal(prefix, prefix + N, address.bytes().begin());
+  return std::equal(prefix, UNSAFE_TODO(prefix + N), address.bytes().begin());
 }
 
 // According to RFC6052 Section 2.2 IPv4-Embedded IPv6 Address Format.

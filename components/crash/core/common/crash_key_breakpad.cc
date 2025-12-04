@@ -5,11 +5,6 @@
 // NOTE: This file is only compiled when Crashpad is not used as the crash
 // reproter.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string_view>
 
 #include "base/check_op.h"

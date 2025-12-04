@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/paint_preview/player/android/javatests/paint_preview_test_service.h"
 
 #include <memory>
@@ -16,6 +11,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
@@ -162,7 +158,7 @@ PaintPreviewTestService::CreateSingleSkp(
   } else {
     constexpr SkColor colors[4] = {SK_ColorRED, SK_ColorBLUE, SK_ColorGREEN,
                                    SK_ColorMAGENTA};
-    color = colors[id % 4];
+    color = UNSAFE_TODO(colors[id % 4]);
   }
   CreateBackground(canvas, color, width, height);
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/crash/core/app/crashpad.h"
 
 #include <dlfcn.h>
@@ -26,6 +21,7 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/path_utils.h"
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -236,7 +232,8 @@ class SandboxedHandler {
     cmsg->cmsg_level = SOL_SOCKET;
     cmsg->cmsg_type = SCM_RIGHTS;
     cmsg->cmsg_len = CMSG_LEN(sizeof(int));
-    *reinterpret_cast<int*>(CMSG_DATA(cmsg)) = handlers_socket.get();
+    *reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg))) =
+        handlers_socket.get();
 
     if (HANDLE_EINTR(sendmsg(server_fd_, &msg, MSG_NOSIGNAL)) < 0) {
       return errno;
@@ -415,11 +412,13 @@ bool BuildEnvironmentWithApk(bool use_64_bit,
 
   result->push_back("CLASSPATH=" + classpath);
   result->push_back("LD_LIBRARY_PATH=" + library_path);
-  for (char** envp = environ; *envp != nullptr; ++envp) {
-    if ((strncmp(*envp, kClasspathVar, strlen(kClasspathVar)) == 0 &&
-         (*envp)[strlen(kClasspathVar)] == '=') ||
-        (strncmp(*envp, kLdLibraryPathVar, strlen(kLdLibraryPathVar)) == 0 &&
-         (*envp)[strlen(kLdLibraryPathVar)] == '=')) {
+  for (char** envp = environ; *envp != nullptr; UNSAFE_TODO(++envp)) {
+    if ((UNSAFE_TODO(strncmp(*envp, kClasspathVar, strlen(kClasspathVar))) ==
+             0 &&
+         UNSAFE_TODO((*envp)[strlen(kClasspathVar)]) == '=') ||
+        (UNSAFE_TODO(strncmp(*envp, kLdLibraryPathVar,
+                             strlen(kLdLibraryPathVar))) == 0 &&
+         UNSAFE_TODO((*envp)[strlen(kLdLibraryPathVar)]) == '=')) {
       continue;
     }
     result->push_back(*envp);

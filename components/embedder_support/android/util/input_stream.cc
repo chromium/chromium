@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/embedder_support/android/util/input_stream.h"
 
 #include "base/android/jni_android.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
@@ -137,7 +133,7 @@ bool InputStream::Read(net::IOBuffer* dest, int length, int* bytes_read) {
       return false;
 
     remaining_length -= transfer_length;
-    dest_write_ptr += transfer_length;
+    UNSAFE_TODO(dest_write_ptr += transfer_length);
   }
   // bytes_read can be strictly less than the req. length if EOF is encountered.
   DCHECK_GE(remaining_length, 0);

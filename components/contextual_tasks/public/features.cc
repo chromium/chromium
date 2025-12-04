@@ -108,9 +108,11 @@ const base::FeatureParam<std::string> kContextualTasksNextboxImageFileTypes{
     &kContextualTasksContextMenu, "ContextualTasksNextboxImageFileTypes",
     "image/jpeg,image/png"};
 
-const base::FeatureParam<std::string> kContextualTasksNextboxAttachmentFileTypes{
-    &kContextualTasksContextMenu, "ContextualTasksNextboxAttachmentFileTypes",
-    "text/plain,application/pdf"};
+const base::FeatureParam<std::string>
+    kContextualTasksNextboxAttachmentFileTypes{
+        &kContextualTasksContextMenu,
+        "ContextualTasksNextboxAttachmentFileTypes",
+        "text/plain,application/pdf"};
 
 const base::FeatureParam<int> kContextualTasksNextboxMaxFileSize{
     &kContextualTasksContextMenu, "ContextualTasksNextboxMaxFileSize",
