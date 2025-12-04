@@ -16,7 +16,9 @@
 class PrefService;
 
 namespace content {
+class Page;
 class WebContents;
+enum class Visibility;
 }  // namespace content
 
 namespace page_actions {
@@ -56,6 +58,10 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
                          bool starred) override;
 
  private:
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
   // tabs::ContentsObservingTabFeature
   void OnDiscardContents(tabs::TabInterface* tab,
                          content::WebContents* old_contents,
@@ -64,6 +70,7 @@ class BookmarkPageActionController : public BookmarkTabHelperObserver,
   void ObserveBookmarkTabHelper(content::WebContents* contents);
 
   void UpdatePageActionVisibility();
+  bool ShouldShowPageAction() const;
   void SetStarred(bool starred);
 
   const raw_ref<page_actions::PageActionController> page_action_controller_;
