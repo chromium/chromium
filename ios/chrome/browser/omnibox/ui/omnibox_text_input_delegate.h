@@ -20,6 +20,11 @@
 // Reports that the text has changed.
 - (void)textInputDidChange:(id<OmniboxTextInput>)textInput;
 
+// Reports that the text has changed, only the UI should be updated,
+// autocomplete should not be triggered. This is called when the text is changed
+// by the user or by the setting it.
+- (void)textInputDidUpdateUIForText:(id<OmniboxTextInput>)textInput;
+
 // Reports the return action should be accepted.
 - (BOOL)textInputShouldReturn:(id<OmniboxTextInput>)textInput;
 
