@@ -12,6 +12,7 @@ import androidx.test.filters.MediumTest;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,6 +48,9 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
 
 /** Tests for {@link IncognitoNtpOmniboxAutofocusManager}. */
+@Ignore(
+        "crbug.com/465164165: Test class is flaky - disabling one test causes the next test to"
+                + " flake")
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
@@ -149,8 +153,6 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    // TODO(crbug.com/439491767): Disabled due to flakiness.
-    @DisabledTest(message = "Disabled for flakiness.")
     public void whenLaunchAsNotNtpFirst_autofocusFails_tabletOrDesktopNonAuto() {
         // Open a non-NTP incognito tab.
         IncognitoNewTabPageStation ntpPage = mInitialPage.openNewIncognitoTabOrWindowFast();
@@ -234,8 +236,6 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP + ":not_first_tab/true")
     @Restriction({DeviceFormFactor.TABLET_OR_DESKTOP, DeviceRestriction.RESTRICTION_TYPE_NON_AUTO})
-    // TODO(crbug.com/439491767): Disabled due to flakiness.
-    @DisabledTest(message = "Disabled for flakiness.")
     public void
             whenVeryFirstTabOpened_andNotFirstTabEnabled_autofocusFails_tabletOrDesktopNonAuto() {
         // With the not_first_tab feature enabled, autofocus should be skipped on the first
@@ -437,8 +437,6 @@ public class IncognitoNtpOmniboxAutofocusManagerTest {
     @MediumTest
     @EnableFeatures(ChromeFeatureList.OMNIBOX_AUTOFOCUS_ON_INCOGNITO_NTP)
     @Restriction(DeviceFormFactor.PHONE)
-    // TODO(crbug.com/439491767): Disabled due to flakiness.
-    @DisabledTest(message = "Disabled for flakiness.")
     public void whenAutofocusManagerInitializedWithExistingTab_autofocusSucceeds_phone() {
         // Autofocus works on a new launched Incognito tab.
         final Tab incognitoNtpTab = mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
