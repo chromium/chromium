@@ -8,9 +8,15 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/action_chips.mojom-forward.h"
+#include "chrome/browser/ui/webui/new_tab_page/action_chips/remote_suggestions_service_simple.h"
 #include "chrome/browser/ui/webui/new_tab_page/action_chips/tab_id_generator.h"
+#include "components/omnibox/browser/aim_eligibility_service.h"
+#include "components/omnibox/browser/autocomplete_provider_client.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 class OptimizationGuideKeyedService;
 
@@ -29,12 +35,19 @@ class ActionChipsGenerator {
 // An implementation of the interface above.
 class ActionChipsGeneratorImpl : public ActionChipsGenerator {
  public:
-  ActionChipsGeneratorImpl(
+  // ctor for production
+  explicit ActionChipsGeneratorImpl(Profile* profile);
+  // ctor for testing
+  explicit ActionChipsGeneratorImpl(
       const TabIdGenerator* tab_id_generator,
-      OptimizationGuideKeyedService* optimization_guide_decider);
+      OptimizationGuideKeyedService* optimization_guide_decider,
+      const AimEligibilityService* aim_eligibility_service,
+      std::unique_ptr<AutocompleteProviderClient> client,
+      std::unique_ptr<action_chips::RemoteSuggestionsServiceSimple>
+          remote_suggestions_service_simple);
   ~ActionChipsGeneratorImpl() override;
 
-  // Not copiable
+  // Not copyable nor movable.
   ActionChipsGeneratorImpl(const ActionChipsGeneratorImpl&) = delete;
   ActionChipsGeneratorImpl& operator=(const ActionChipsGeneratorImpl&) = delete;
 
@@ -44,8 +57,21 @@ class ActionChipsGeneratorImpl : public ActionChipsGenerator {
           callback) override;
 
  private:
+  void GenerateDeepDiveChipsFromRemoteResponse(
+      action_chips::mojom::TabInfoPtr tab,
+      base::OnceCallback<void(std::vector<action_chips::mojom::ActionChipPtr>)>
+          callback,
+      action_chips::RemoteSuggestionsServiceSimple::
+          ActionChipSuggestionsResult&& result);
+
   raw_ptr<const TabIdGenerator> tab_id_generator_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_decider_;
+  raw_ptr<const AimEligibilityService> aim_eligibility_service_;
+  std::unique_ptr<AutocompleteProviderClient> client_;
+  std::unique_ptr<action_chips::RemoteSuggestionsServiceSimple>
+      remote_suggestions_service_simple_;
+  std::unique_ptr<network::SimpleURLLoader> loader_;
+  base::WeakPtrFactory<ActionChipsGeneratorImpl> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_ACTION_CHIPS_ACTION_CHIPS_GENERATOR_H_
