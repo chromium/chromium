@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
@@ -301,7 +301,7 @@ bool TabScrubber::FinishScrub(bool activate) {
 
     browser_view->GetWidget()->ReleaseCapture();
 
-    TabStripViewInterface* tab_strip_view = browser_view->tab_strip_view();
+    TabStripRegionView* tab_strip_view = browser_view->tab_strip_view();
     if (activate && highlighted_tab_ != -1) {
       Tab* tab = tab_strip_view->GetTabAnchorViewAt(highlighted_tab_);
       tab->tab_style_views()->HideHover(TabStyle::HideHoverStyle::kImmediate);

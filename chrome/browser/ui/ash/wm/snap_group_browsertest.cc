@@ -35,7 +35,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "chrome/common/webui_url_constants.h"
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
   ASSERT_TRUE(
       ash::SnapGroupController::Get()->AreWindowsInSnapGroup(window1, window2));
 
-  TabStripViewInterface* tab_strip_view =
+  TabStripRegionView* tab_strip_view =
       BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const auto start_point =
       tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
 
   ASSERT_EQ(2u, chrome::GetTotalBrowserCount());
 
-  TabStripViewInterface* tab_strip_view =
+  TabStripRegionView* tab_strip_view =
       BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view();
   const gfx::Point start_point =
       tab_strip_view->GetTabAnchorViewAt(1)->GetBoundsInScreen().CenterPoint();

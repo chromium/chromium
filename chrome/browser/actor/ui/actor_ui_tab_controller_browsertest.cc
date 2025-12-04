@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/common/actor.mojom-forward.h"
@@ -68,7 +68,7 @@ class FutureTabStripModelObserver : public TabStripModelObserver {
 class BaseActorUiTabControllerTest : public InProcessBrowserTest {
  protected:
   views::AnimatedImageView* GetSpinner() {
-    TabStripViewInterface* tab_strip_view =
+    TabStripRegionView* tab_strip_view =
         browser()->window()->AsBrowserView()->tab_strip_view();
     Tab* tab_specific = tab_strip_view->GetTabAnchorViewAt(
         browser()->tab_strip_model()->active_index());

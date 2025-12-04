@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/multi_contents_drop_target_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/test/split_view_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
@@ -92,7 +92,7 @@ void Poll(base::RepeatingCallback<bool()> condition,
 // This should be created before drag loop is started.
 class QuitTabDraggingObserver {
  public:
-  explicit QuitTabDraggingObserver(TabStripViewInterface* tab_strip_view) {
+  explicit QuitTabDraggingObserver(TabStripRegionView* tab_strip_view) {
     tab_strip_view->GetDragContext()->SetDragControllerCallbackForTesting(
         base::BindOnce(&QuitTabDraggingObserver::OnDragControllerSet,
                        weak_ptr_factory_.GetWeakPtr()));

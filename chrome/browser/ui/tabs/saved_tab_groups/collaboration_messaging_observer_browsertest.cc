@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/toasts/toast_view.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_group_header.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
@@ -176,7 +176,7 @@ class CollaborationMessagingObserverBrowserTest
         browser()->profile());
   }
 
-  TabStripViewInterface* GetTabStripView(Browser* target_browser) {
+  TabStripRegionView* GetTabStripView(Browser* target_browser) {
     return BrowserView::GetBrowserViewForBrowser(target_browser)
         ->tab_strip_view();
   }

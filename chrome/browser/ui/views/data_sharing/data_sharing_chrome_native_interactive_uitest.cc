@@ -22,7 +22,7 @@
 #include "chrome/browser/ui/views/data_sharing/data_sharing_bubble_controller.h"
 #include "chrome/browser/ui/views/data_sharing/data_sharing_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/interaction/interaction_test_util_browser.h"

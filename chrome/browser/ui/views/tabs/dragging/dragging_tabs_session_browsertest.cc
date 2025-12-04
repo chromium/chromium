@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/drag_session_data.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -70,7 +70,7 @@ class DraggingTabsSessionBrowserTest : public InProcessBrowserTest {
   }
 
   raw_ptr<TabStripModel> model_;
-  raw_ptr<TabStripViewInterface> view_;
+  raw_ptr<TabStripRegionView> view_;
 };
 
 // Flaky. http://crbug.com/417465013

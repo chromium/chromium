@@ -52,7 +52,7 @@
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_native_widget_factory.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller.h"
 #include "chrome/browser/ui/views/tabs/dragging/tab_drag_controller_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -4433,8 +4433,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTest,
 
 namespace {
 
-TabStripViewInterface* GetAttachedTabstripView() {
-  TabStripViewInterface* result = nullptr;
+TabStripRegionView* GetAttachedTabstripView() {
+  TabStripRegionView* result = nullptr;
   ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
       [&result](BrowserWindowInterface* browser) {
         BrowserView* const browser_view =
@@ -4473,7 +4473,7 @@ void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
         // makes sure the window is positioned correctly.
         ASSERT_TRUE(test->DragInputToNotifyWhenDone(
             second_move, base::BindLambdaForTesting([&]() {
-              TabStripViewInterface* attached = GetAttachedTabstripView();
+              TabStripRegionView* attached = GetAttachedTabstripView();
               // Same computation for drag offset. This operation drags a single
               // tab, so the target tab index should be always 0.
               gfx::Vector2d drag_offset(

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_VIEW_INTERFACE_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_VIEW_INTERFACE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
 #include <optional>
 
@@ -17,13 +17,9 @@ class TabStripObserver;
 // This class serves as the single point of interaction for all consumers of
 // tabstrip-related functionality. This should only be owned by BrowserView and
 // backed by the View container responsible for managing the tabstrip.
-//
-// TODO(crbug.com/440630422): Rename TabStripViewInterface to
-// HorizontalTabStripRegionView to make it easier to understand what this class
-// represents.
-class TabStripViewInterface : public views::AccessiblePaneView {
+class TabStripRegionView : public views::AccessiblePaneView {
  public:
-  ~TabStripViewInterface() override = default;
+  ~TabStripRegionView() override = default;
 
   // -- View State Queries --
   virtual bool IsTabStripEditable() const = 0;
@@ -46,4 +42,4 @@ class TabStripViewInterface : public views::AccessiblePaneView {
   virtual void SetTabStripObserver(TabStripObserver* observer) = 0;
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_VIEW_INTERFACE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_

@@ -86,7 +86,7 @@ class SidePanel;
 class TabDragDelegate;
 class TabSearchBubbleHost;
 class TabStrip;
-class TabStripViewInterface;
+class TabStripRegionView;
 class ToolbarButtonProvider;
 class ToolbarView;
 class TopContainerLoadingBar;
@@ -268,7 +268,7 @@ class BrowserView : public BrowserWindow,
 
   MultiContentsView* multi_contents_view() { return multi_contents_view_; }
 
-  TabStripViewInterface* tab_strip_view() const {
+  TabStripRegionView* tab_strip_view() const {
     return tab_strip_region_view_.get();
   }
 

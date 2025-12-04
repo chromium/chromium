@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -28,7 +28,7 @@ class TabSearchPositionMetricsLogger;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
-class HorizontalTabStripRegionView final : public TabStripViewInterface {
+class HorizontalTabStripRegionView final : public TabStripRegionView {
   METADATA_HEADER(HorizontalTabStripRegionView, views::AccessiblePaneView)
 
  public:
@@ -102,7 +102,7 @@ class HorizontalTabStripRegionView final : public TabStripViewInterface {
 
   TabStrip* tab_strip() { return tab_strip_; }
 
-  // TabStripViewInterface:
+  // TabStripRegionView:
   gfx::Size GetMinimumSize() const override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
