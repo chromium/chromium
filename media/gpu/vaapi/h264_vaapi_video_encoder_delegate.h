@@ -135,7 +135,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   bool SubmitPackedHeaders(const H26xAnnexBBitstreamBuilder& packed_sps,
                            const H26xAnnexBBitstreamBuilder& packed_pps);
-
+  bool SubmitPackedPrefixNALU(const H264Picture& pic);
   bool SubmitFrameParameters(
       EncodeJob& job,
       const H264VaapiVideoEncoderDelegate::EncodeParams& encode_params,
@@ -158,6 +158,7 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
   H264PPS current_pps_;
   std::optional<H26xAnnexBBitstreamBuilder> packed_pps_;
   bool submit_packed_headers_;
+  bool submit_packed_prefix_nalu_;
 
   // Current encoding parameters being used.
   EncodeParams curr_params_;

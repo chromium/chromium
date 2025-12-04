@@ -210,10 +210,12 @@ class MockVaapiWrapper : public VaapiWrapper {
   bool GetSupportedPackedHeaders(VideoCodecProfile profile,
                                  bool& packed_sps,
                                  bool& packed_pps,
-                                 bool& packed_slice) override {
+                                 bool& packed_slice,
+                                 bool& packed_raw) override {
     packed_sps = true;
     packed_pps = true;
     packed_slice = true;
+    packed_raw = true;
     return true;
   }
 

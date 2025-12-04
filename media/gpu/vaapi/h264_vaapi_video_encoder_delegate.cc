@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/notimplemented.h"
 #include "base/numerics/checked_math.h"
+#include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
@@ -73,6 +74,17 @@ constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
 // Maximum number of temporal layers supported by software bitrate controller.
 constexpr uint8_t kMaxSupportedH264TemporalLayersBySWBRC = 2;
+
+bool ShouldInsertPrefixNALU() {
+  // Insert Prefix NALU for temporal layer encoding in ChromeOS selphie.
+  // TODO(b/465812584): Enable this on all ChromeOS x86 devices.
+#if BUILDFLAG(IS_CHROMEOS)
+  static bool isSelphie = base::SysInfo::GetLsbReleaseBoard() == "selphie";
+  return isSelphie;
+#else
+  return false;
+#endif  // BUILDFLAG(IS_CHROMEOS)
+}
 
 template <typename VAEncMiscParam>
 VAEncMiscParam& AllocateMiscParameterBuffer(
@@ -259,6 +271,21 @@ std::optional<H264RateControlConfigRTC> CreateRateControlConfig(
   }
   return std::make_optional<H264RateControlConfigRTC>(rc_cfg);
 }
+
+std::pair<int, H264NALU::Type> GetSliceNALHeaderInfo(const H264Picture& pic) {
+  // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
+  int nal_ref_idc = 0;
+  H264NALU::Type nalu_type = H264NALU::Type::kUnspecified;
+  if (pic.type == H264SliceHeader::kISlice) {
+    nal_ref_idc = pic.idr ? 3 : 2;
+    nalu_type = pic.idr ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
+  } else {
+    // B frames is not used, so this is P frame.
+    nal_ref_idc = pic.ref;
+    nalu_type = H264NALU::kNonIDRSlice;
+  }
+  return {nal_ref_idc, nalu_type};
+}
 }  // namespace
 
 std::unique_ptr<H264RateControlWrapper> H264RateControlWrapper::Create(
@@ -413,9 +440,10 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   bool submit_packed_sps = false;
   bool submit_packed_pps = false;
   bool submit_packed_slice = false;
+  bool support_packed_raw = false;
   if (!vaapi_wrapper_->GetSupportedPackedHeaders(
           config.output_profile, submit_packed_sps, submit_packed_pps,
-          submit_packed_slice)) {
+          submit_packed_slice, support_packed_raw)) {
     DVLOGF(1) << "Failed getting supported packed headers";
     return false;
   }
@@ -429,6 +457,17 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
     packed_pps_.emplace();
   } else {
     DVLOGF(2) << "Packed headers are not submitted to a driver";
+  }
+
+  // Prefix NALU is generated in temporal layer encoding so the decoder side can
+  // know the temporal layer index from the NALU. This is only enabled when
+  // ShouldInsertPrefixNALU() is enabled. See the comment in the function.
+  submit_packed_prefix_nalu_ =
+      num_temporal_layers_ > 1 && ShouldInsertPrefixNALU();
+  if (submit_packed_prefix_nalu_ && !support_packed_raw) {
+    DVLOGF(1) << "The driver doesn't support Packed Header Raw data, it's "
+                 "necessary to support prefix NALU";
+    return false;
   }
 
   UpdateSPS();
@@ -604,6 +643,15 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     }
   }
 
+  if (num_temporal_layers_ > 1 && submit_packed_prefix_nalu_) {
+    // It's necessary to submit packed prefix NALU header here so it's shown
+    // before the slice NALU in the stream.
+    if (!SubmitPackedPrefixNALU(*pic)) {
+      DVLOGF(1) << "Failed submitting prefix NALU";
+      return PrepareEncodeJobResult::kFail;
+    }
+  }
+
   // Store the picture on the list of reference pictures and keep the list
   // below maximum size, dropping oldest references.
   if (pic->ref) {
@@ -615,6 +663,27 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   num_encoded_frames_++;
   num_encoded_frames_ %= kIDRPeriod;
   return PrepareEncodeJobResult::kSuccess;
+}
+
+bool H264VaapiVideoEncoderDelegate::SubmitPackedPrefixNALU(
+    const H264Picture& pic) {
+  CHECK_GT(num_temporal_layers_, 1);
+  CHECK(pic.metadata_for_encoding);
+  uint8_t temporal_id = pic.metadata_for_encoding->temporal_idx;
+  const auto [nal_ref_idc, nalu_type] = GetSliceNALHeaderInfo(pic);
+  std::vector<uint8_t> prefix_nalu =
+      BuildPrefixNALU(nal_ref_idc, nalu_type, temporal_id);
+
+  VAEncPackedHeaderParameterBuffer packed_prefix_nalu;
+  packed_prefix_nalu.type = VAEncPackedHeaderRawData;
+  packed_prefix_nalu.bit_length = prefix_nalu.size() * CHAR_BIT;
+  packed_prefix_nalu.has_emulation_bytes = 0;
+
+  return vaapi_wrapper_->SubmitBuffers(
+      {{VAEncPackedHeaderParameterBufferType, sizeof(packed_prefix_nalu),
+        &packed_prefix_nalu},
+       {VAEncPackedHeaderDataBufferType, prefix_nalu.size(),
+        prefix_nalu.data()}});
 }
 
 bool H264VaapiVideoEncoderDelegate::UpdateRates(
@@ -834,20 +903,9 @@ void H264VaapiVideoEncoderDelegate::GeneratePackedSliceHeader(
     const VAEncSliceParameterBufferH264& slice_param,
     const H264Picture& pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   const bool is_idr = !!pic_param.pic_fields.bits.idr_pic_flag;
-  const bool is_ref = !!pic_param.pic_fields.bits.reference_pic_flag;
-  // IDR:3, Non-IDR I slice:2, P slice:1, non ref frame: 0.
-  size_t nal_ref_idc = 0;
-  H264NALU::Type nalu_type = H264NALU::Type::kUnspecified;
-  if (slice_param.slice_type == H264SliceHeader::kISlice) {
-    nal_ref_idc = is_idr ? 3 : 2;
-    nalu_type = is_idr ? H264NALU::kIDRSlice : H264NALU::kNonIDRSlice;
-  } else {
-    // B frames is not used, so this is P frame.
-    nal_ref_idc = is_ref;
-    nalu_type = H264NALU::kNonIDRSlice;
-  }
+
+  const auto [nal_ref_idc, nalu_type] = GetSliceNALHeaderInfo(pic);
   packed_slice_header.BeginNALU(nalu_type, nal_ref_idc);
 
   packed_slice_header.AppendUE(

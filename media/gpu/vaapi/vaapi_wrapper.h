@@ -558,14 +558,15 @@ class MEDIA_GPU_EXPORT VaapiWrapper
       size_t* max_ref_frames);
 
   // Gets packed headers are supported for encoding. This is called for
-  // H264 encoding. |packed_sps|, |packed_pps| and |packed_slice| stands for
-  // whether packed slice parameter set, packed picture parameter set and packed
-  // slice header is supported, respectively.
+  // H264 encoding. |packed_sps|, |packed_pps|, |packed_slice| and |packed_raw|
+  // stands for whether packed slice parameter set, packed picture parameter
+  // set, packed slice header and packed raw data is supported, respectively.
   [[nodiscard]] virtual bool GetSupportedPackedHeaders(
       VideoCodecProfile profile,
       bool& packed_sps,
       bool& packed_pps,
-      bool& packed_slice);
+      bool& packed_slice,
+      bool& packed_raw);
 
   // Gets the minimum segment block size supported for AV1 encoding.
   [[nodiscard]] bool GetMinAV1SegmentSize(VideoCodecProfile profile,

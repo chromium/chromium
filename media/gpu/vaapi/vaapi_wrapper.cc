@@ -3029,7 +3029,8 @@ bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
 bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
                                              bool& packed_sps,
                                              bool& packed_pps,
-                                             bool& packed_slice) {
+                                             bool& packed_slice,
+                                             bool& packed_raw) {
   VAAPI_CHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const VAProfile va_profile = ProfileToVAProfile(profile);
   VAConfigAttrib attrib{};
@@ -3041,6 +3042,7 @@ bool VaapiWrapper::GetSupportedPackedHeaders(VideoCodecProfile profile,
   packed_sps = attrib.value & VA_ENC_PACKED_HEADER_SEQUENCE;
   packed_pps = attrib.value & VA_ENC_PACKED_HEADER_PICTURE;
   packed_slice = attrib.value & VA_ENC_PACKED_HEADER_SLICE;
+  packed_raw = attrib.value & VA_ENC_PACKED_HEADER_RAW_DATA;
 
   return true;
 }
