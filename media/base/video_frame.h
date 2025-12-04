@@ -122,7 +122,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // ClientSharedImage::ScopedMapping and remove this.
   class MEDIA_EXPORT ScopedMapping {
    public:
-    ScopedMapping(
+    explicit ScopedMapping(
         std::unique_ptr<gpu::ClientSharedImage::ScopedMapping> scoped_mapping);
     ~ScopedMapping();
 
