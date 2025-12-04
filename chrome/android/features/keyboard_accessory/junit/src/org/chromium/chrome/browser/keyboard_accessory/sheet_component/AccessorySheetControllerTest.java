@@ -36,9 +36,9 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetTrigger;
 import org.chromium.chrome.browser.keyboard_accessory.AccessorySheetVisualStateProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
@@ -194,23 +194,21 @@ public class AccessorySheetControllerTest {
 
     @Test
     public void testRecordsSheetClosure() {
-        HistogramWatcher histogramWatcher =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecordTimes(
-                                ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED,
-                                AccessorySheetTrigger.ANY_CLOSE,
-                                2)
-                        .build();
+        assertThat(
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED),
+                is(0));
 
         // Although sheets must be opened manually as of now, don't assume that every opened sheet
         // in the future will be manually opened. Closing is the only thing to be tested here.
         mCoordinator.show();
         mCoordinator.hide();
+        assertThat(getTriggerMetricsCount(AccessorySheetTrigger.ANY_CLOSE), is(1));
 
         // Log closing every time it happens.
         mCoordinator.show();
         mCoordinator.hide();
-        histogramWatcher.assertExpected();
+        assertThat(getTriggerMetricsCount(AccessorySheetTrigger.ANY_CLOSE), is(2));
     }
 
     @Test
@@ -230,5 +228,10 @@ public class AccessorySheetControllerTest {
 
         keyboardCallback.run();
         verify(mSheetVisibilityDelegate, times(1)).onCloseAccessorySheet();
+    }
+
+    private int getTriggerMetricsCount(@AccessorySheetTrigger int bucket) {
+        return RecordHistogram.getHistogramValueCountForTesting(
+                ManualFillingMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_TRIGGERED, bucket);
     }
 }

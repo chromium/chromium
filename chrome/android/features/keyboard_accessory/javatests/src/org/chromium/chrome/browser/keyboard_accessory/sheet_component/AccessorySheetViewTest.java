@@ -30,8 +30,6 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.app.Activity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,8 +44,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -57,42 +53,44 @@ import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 /** View tests for the keyboard accessory sheet component. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
 public class AccessorySheetViewTest {
+    private WebPageStation mPage;
     private PropertyModel mModel;
     private BlockingQueue<AccessorySheetView> mViewPager;
 
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        mActivityTestRule.launchActivity(null);
+        mPage = mActivityTestRule.startOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    final Activity activity = mActivityTestRule.getActivity();
-                    activity.setContentView(
-                            LayoutInflater.from(activity).inflate(R.layout.test_main, null));
                     AsyncViewStub viewStub =
-                            activity.findViewById(R.id.keyboard_accessory_sheet_stub);
+                            mActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.keyboard_accessory_sheet_stub);
                     int height =
-                            activity.getResources()
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getResources()
                                     .getDimensionPixelSize(R.dimen.keyboard_accessory_sheet_height);
                     mModel =
                             AccessorySheetProperties.defaultPropertyModel()
@@ -267,7 +265,6 @@ public class AccessorySheetViewTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID})
     public void testHeader() {
         Runnable runnable = mock(Runnable.class);
 
@@ -322,17 +319,11 @@ public class AccessorySheetViewTest {
 
         // Any clicks should be ignored when the sheet view is fully of partially obscured.
         onViewWaiting(withId(R.id.show_keyboard))
-                .perform(
-                        createClickActionWithFlags(
-                                MotionEvent.FLAG_WINDOW_IS_OBSCURED,
-                                /* expectClickToSucceed= */ false));
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
         verify(runnable, times(0)).run();
 
         onViewWaiting(withId(R.id.show_keyboard))
-                .perform(
-                        createClickActionWithFlags(
-                                MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED,
-                                /* expectClickToSucceed= */ false));
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
         verify(runnable, times(0)).run();
     }
 

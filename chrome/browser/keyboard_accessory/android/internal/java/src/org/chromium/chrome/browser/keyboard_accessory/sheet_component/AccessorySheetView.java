@@ -53,7 +53,7 @@ class AccessorySheetView extends LinearLayout {
                 (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED) != 0
                         || (event.getFlags() & MotionEvent.FLAG_WINDOW_IS_OBSCURED) != 0;
         if (isObscured) {
-            return true; // This probably means to override `onTouchEvent` and do nothing.
+            return true;
         }
         return super.onInterceptTouchEvent(event);
     }

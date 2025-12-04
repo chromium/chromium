@@ -90,8 +90,9 @@ android_library("java") {
     "//url:url_java",
   ]
   visibility = [
+    ":*",
     "//chrome/android/features/keyboard_accessory/*",
-    "//chrome/browser/keyboard_accessory/android/*",
+    "//chrome/browser/keyboard_accessory/android/test/*",
   ]
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 }
@@ -146,10 +147,6 @@ android_library("test_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetIntegrationTest.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetRenderTest.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetViewTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipViewRenderTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryTestHelper.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryViewTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetViewTest.java",
   ]
 
   deps = [
@@ -159,11 +156,8 @@ android_library("test_java") {
     "//base:base_java_test_support",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/autofill/test:test_support_java",
-    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/keyboard_accessory/android/test:java",
-    "//chrome/browser/keyboard_accessory/android/test:test_resources",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/night_mode:night_mode_java_test_support",
     "//chrome/test/android:chrome_java_transit",
@@ -174,8 +168,6 @@ android_library("test_java") {
     "//components/browser_ui/bottomsheet/android/test:java",
     "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
-    "//components/feature_engagement/public:public_java",
-    "//content/public/android:content_full_java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
@@ -189,11 +181,10 @@ android_library("test_java") {
     "//ui/android:ui_full_java",
     "//ui/android:ui_java_test_support",
     "//ui/android:ui_utils_java",
-    "//url:url_java",
   ]
   visibility = [
+    ":*",
     "//chrome/android/features/keyboard_accessory/*",
-    "//chrome/browser/keyboard_accessory/android/*",
   ]
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 }
@@ -202,43 +193,22 @@ android_library("test_java") {
 robolectric_library("junit_tests") {
   testonly = true
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetControllerTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryChipGroupTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/bar_component/KeyboardAccessoryControllerTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/button_group_component/KeyboardAccessoryButtonGroupControllerTest.java",
-    "java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_component/AccessorySheetControllerTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetControllerTest.java" ]
 
   deps = [
     ":java",
-    ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
     "//base:base_junit_test_support",
-    "//chrome/browser/autofill/android:java",
     "//chrome/browser/flags:java",
-    "//chrome/browser/keyboard_accessory/android/java",
     "//chrome/browser/keyboard_accessory/android/test:java",
-    "//chrome/browser/keyboard_accessory/android/test:test_resources",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/ui/android/edge_to_edge:java",
-    "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:java",
-    "//components/browser_ui/styles/android:java",
-    "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
-    "//components/feature_engagement/public:public_java",
     "//third_party/android_deps:org_mockito_mockito_core_java",
-    "//third_party/android_deps:robolectric_all_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_test_espresso_espresso_core_java",
     "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
-    "//ui/android:ui_java_test_support",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 }

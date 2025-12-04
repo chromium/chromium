@@ -19,19 +19,9 @@ android_library("java") {
     "//ui/android:ui_utils_java",
   ]
   visibility = [
+    ":*",
     "//chrome/android/features/keyboard_accessory/*",
     "//chrome/browser/keyboard_accessory/android/*",
   ]
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
-}
-
-android_resources("test_resources") {
-  testonly = true
-
-  sources = [ "java/res/layout/test_main.xml" ]
-
-  visibility = [
-    "//chrome/android/features/keyboard_accessory/*",
-    "//chrome/browser/keyboard_accessory/android/*",
-  ]
 }

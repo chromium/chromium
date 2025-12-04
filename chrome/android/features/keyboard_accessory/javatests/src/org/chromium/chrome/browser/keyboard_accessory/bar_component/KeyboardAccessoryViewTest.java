@@ -26,7 +26,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -45,14 +44,13 @@ import static org.chromium.ui.test.util.ViewUtils.VIEW_INVISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.content.res.Configuration;
+import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -65,6 +63,7 @@ import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -75,11 +74,10 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.BaseActivityTestRule;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -99,10 +97,10 @@ import org.chromium.chrome.browser.keyboard_accessory.button_group_component.Key
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.Action;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.ActivityTestUtils;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.autofill.AutofillSuggestion;
-import org.chromium.components.autofill.FillingProduct;
-import org.chromium.components.autofill.FillingProductBridgeJni;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.EventConstants;
@@ -110,12 +108,12 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.feature_engagement.TriggerState;
+import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
 import org.chromium.ui.ViewProvider;
 import org.chromium.ui.modelutil.LazyConstructionPropertyMcp;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.ui.widget.ChromeImageView;
 import org.chromium.url.GURL;
@@ -123,18 +121,14 @@ import org.chromium.url.GURL;
 import java.util.ArrayList;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** View tests for the keyboard accessory component. */
-@Batch(Batch.UNIT_TESTS)
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @SuppressWarnings("DoNotMock") // Mocks GURL
-@EnableFeatures({
-    ChromeFeatureList.ANDROID_ELEGANT_TEXT_HEIGHT,
-    ChromeFeatureList.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID
-})
 @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_KEYBOARD_ACCESSORY_CHIP_REDESIGN})
 public class KeyboardAccessoryViewTest {
     private static final String CUSTOM_ICON_URL = "https://www.example.com/image.png";
@@ -142,26 +136,20 @@ public class KeyboardAccessoryViewTest {
             Bitmap.createBitmap(100, 200, Bitmap.Config.ARGB_8888);
     private PropertyModel mModel;
     private BlockingQueue<KeyboardAccessoryView> mKeyboardAccessoryView;
-    private TestTracker mTracker = new TestTracker();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
-    public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
-            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
-    @Mock private FillingProductBridgeJni mMockFillingProductBridgeJni;
     @Mock AutofillImageFetcher mMockImageFetcher;
     @Mock Profile mMockProfile;
+    private WebPageStation mPage;
 
     private static class TestTracker implements Tracker {
         private boolean mWasDismissed;
         private @Nullable String mEmittedEvent;
-        private @TriggerState int mTriggerState = TriggerState.HAS_BEEN_DISPLAYED;
-
-        void setTriggerState(@TriggerState int triggerState) {
-            mTriggerState = triggerState;
-        }
 
         @Override
         public void notifyEvent(String event) {
@@ -194,7 +182,7 @@ public class KeyboardAccessoryViewTest {
 
         @Override
         public int getTriggerState(String feature) {
-            return mTriggerState;
+            return TriggerState.HAS_NOT_BEEN_DISPLAYED;
         }
 
         @Override
@@ -243,13 +231,14 @@ public class KeyboardAccessoryViewTest {
         }
     }
 
+    @After
+    public void tearDown() {
+        mActivityTestRule.skipWindowAndTabStateCleanup();
+    }
+
     @Before
     public void setUp() throws InterruptedException {
-        FillingProductBridgeJni.setInstanceForTesting(mMockFillingProductBridgeJni);
-        when(mMockFillingProductBridgeJni.getFillingProductFromSuggestionType(anyInt()))
-                .thenReturn(FillingProduct.NONE);
-        TrackerFactory.setTrackerForTests(mTracker);
-        mActivityTestRule.launchActivity(null);
+        mPage = mActivityTestRule.startOnBlankPage();
         AutofillImageFetcherFactory.setInstanceForTesting(mMockImageFetcher);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -271,11 +260,6 @@ public class KeyboardAccessoryViewTest {
                                     .with(SHOW_SWIPING_IPH, false)
                                     .with(HAS_STICKY_LAST_ITEM, true)
                                     .build();
-                    mActivityTestRule
-                            .getActivity()
-                            .setContentView(
-                                    LayoutInflater.from(mActivityTestRule.getActivity())
-                                            .inflate(R.layout.test_main, null));
                     AsyncViewStub viewStub =
                             mActivityTestRule
                                     .getActivity()
@@ -284,20 +268,18 @@ public class KeyboardAccessoryViewTest {
                     mKeyboardAccessoryView = new ArrayBlockingQueue<>(1);
                     ViewProvider<KeyboardAccessoryView> provider =
                             AsyncViewProvider.of(viewStub, R.id.keyboard_accessory);
+                    LazyConstructionPropertyMcp.create(
+                            mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
                     provider.whenLoaded(
                             (view) -> {
-                                mKeyboardAccessoryView.add(view);
-                                view.setFeatureEngagementTracker(
-                                        TrackerFactory.getTrackerForProfile(mMockProfile));
                                 KeyboardAccessoryViewBinder.UiConfiguration uiConfiguration =
                                         KeyboardAccessoryCoordinator.createUiConfiguration(
                                                 mActivityTestRule.getActivity(), mMockImageFetcher);
                                 view.setBarItemsAdapter(
                                         KeyboardAccessoryCoordinator.createBarItemsAdapter(
                                                 mModel.get(BAR_ITEMS), view, uiConfiguration));
+                                mKeyboardAccessoryView.add(view);
                             });
-                    LazyConstructionPropertyMcp.create(
-                            mModel, VISIBLE, provider, KeyboardAccessoryViewBinder::bind);
                 });
     }
 
@@ -538,15 +520,15 @@ public class KeyboardAccessoryViewTest {
                 () -> view.mBarItemsView.isShown() && view.mBarItemsView.getChildAt(1) != null);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_LANDSCAPE);
+        rotateActivityToLandscape();
 
         CriteriaHelper.pollUiThread(view.mBarItemsView::isShown);
         CriteriaHelper.pollUiThread(viewsAreRightAligned(view, view.mBarItemsView.getChildAt(1)));
 
         // Reset device orientation.
-        ActivityTestUtils.rotateActivityToOrientation(
-                mActivityTestRule.getActivity(), Configuration.ORIENTATION_PORTRAIT);
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
 
     @Test
@@ -568,7 +550,8 @@ public class KeyboardAccessoryViewTest {
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -582,9 +565,9 @@ public class KeyboardAccessoryViewTest {
         onView(withChild(withText("Card Info Retrieval"))).check(matches(isSelected()));
         onView(withText("Card Info Retrieval")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_CARD_INFO_RETRIEVAL_AUTOFILLED));
         onView(withChild(withText("Card Info Retrieval"))).check(matches(not(isSelected())));
     }
@@ -606,7 +589,8 @@ public class KeyboardAccessoryViewTest {
         itemWithIph.setFeatureForIph(
                 FeatureConstants.KEYBOARD_ACCESSORY_HOME_WORK_PROFILE_SUGGESTION_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -619,9 +603,9 @@ public class KeyboardAccessoryViewTest {
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_HOME_AND_WORK_ADDRESS_AUTOFILLED));
     }
 
@@ -641,7 +625,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -655,9 +640,9 @@ public class KeyboardAccessoryViewTest {
         onView(withChild(withText("Johnathan"))).check(matches(isSelected()));
         onView(withText("Johnathan")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED));
         onView(withChild(withText("Johnathan"))).check(matches(not(isSelected())));
     }
@@ -678,7 +663,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -691,9 +677,9 @@ public class KeyboardAccessoryViewTest {
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED));
     }
 
@@ -713,7 +699,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -726,9 +713,9 @@ public class KeyboardAccessoryViewTest {
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
     }
 
@@ -736,7 +723,7 @@ public class KeyboardAccessoryViewTest {
     @MediumTest
     @DisableIf.Build(sdk_equals = Build.VERSION_CODES.S_V2, message = "crbug.com/40263973")
     public void testDismissesSwipingEducationBubbleOnTap() throws InterruptedException {
-        mTracker =
+        TestTracker tracker =
                 new TestTracker() {
                     @Override
                     public int getTriggerState(String feature) {
@@ -748,7 +735,7 @@ public class KeyboardAccessoryViewTest {
                                 : TriggerState.HAS_NOT_BEEN_DISPLAYED;
                     }
                 };
-        TrackerFactory.setTrackerForTests(mTracker);
+        TrackerFactory.setTrackerForTests(tracker);
 
         // Render a keyboard accessory bar and wait for completion.
         ThreadUtils.runOnUiThreadBlocking(
@@ -766,7 +753,7 @@ public class KeyboardAccessoryViewTest {
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         waitForHelpBubble(withText(R.string.iph_keyboard_accessory_swipe_for_more))
                 .perform(click());
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
     }
 
     @Test
@@ -786,7 +773,8 @@ public class KeyboardAccessoryViewTest {
                         mMockProfile);
         itemWithIph.setFeatureForIph(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);
 
-        mTracker.setTriggerState(TriggerState.HAS_NOT_BEEN_DISPLAYED);
+        TestTracker tracker = new TestTracker();
+        TrackerFactory.setTrackerForTests(tracker);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -798,9 +786,9 @@ public class KeyboardAccessoryViewTest {
         assertThat(mKeyboardAccessoryView.take().areClicksAllowedWhenObscured(), is(true));
         onView(withText("Johnathan")).perform(click());
 
-        assertThat(mTracker.wasDismissed(), is(true));
+        assertThat(tracker.wasDismissed(), is(true));
         assertThat(
-                mTracker.getLastEmittedEvent(),
+                tracker.getLastEmittedEvent(),
                 is(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED));
     }
 
@@ -1086,6 +1074,24 @@ public class KeyboardAccessoryViewTest {
         return onView(isRoot())
                 .inRoot(RootMatchers.withDecorView(not(is(mainDecorView))))
                 .check(ViewUtils.isEventuallyVisible(matcher));
+    }
+
+    private void rotateActivityToLandscape() {
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String result =
+                                JavaScriptUtils.executeJavaScriptAndWaitForResult(
+                                        mActivityTestRule.getWebContents(),
+                                        "screen.orientation.type.split('-')[0]");
+                        Criteria.checkThat(result, is("\"landscape\""));
+                    } catch (TimeoutException ex) {
+                        throw new CriteriaNotSatisfiedException(ex);
+                    }
+                });
     }
 
     private Runnable viewsAreRightAligned(View staticView, View changingView) {
