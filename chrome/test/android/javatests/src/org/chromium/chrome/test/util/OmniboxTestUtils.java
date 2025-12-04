@@ -184,7 +184,9 @@ public class OmniboxTestUtils {
      * @param active Whether the Omnibox is expected to have focus or not.
      */
     public void checkFocus(boolean active) {
-        noopTo().waitFor(new UrlBarHasFocusCondition(mUrlBar, active));
+        noopTo().waitFor(
+                        new UrlBarHasFocusCondition(mUrlBar, active),
+                        new InputMethodManagerIsActiveCondition(mUrlBar, active));
     }
 
     /**
@@ -719,34 +721,54 @@ public class OmniboxTestUtils {
 
     public static class UrlBarHasFocusCondition extends UiThreadCondition {
         private final UrlBar mUrlBar;
-        private final boolean mActive;
+        private final boolean mExpectHasFocus;
 
         public UrlBarHasFocusCondition(UrlBar urlBar) {
-            this(urlBar, /* active= */ true);
+            this(urlBar, /* expectHasFocus= */ true);
         }
 
-        public UrlBarHasFocusCondition(UrlBar urlBar, boolean active) {
+        public UrlBarHasFocusCondition(UrlBar urlBar, boolean expectHasFocus) {
             mUrlBar = urlBar;
-            mActive = active;
+            mExpectHasFocus = expectHasFocus;
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            if (mUrlBar.hasFocus() != mActive) {
-                return notFulfilled("urlBar.getFocus() is %b", !mActive);
-            }
-            InputMethodManager imm =
-                    (InputMethodManager)
-                            mUrlBar.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-            if (imm.isActive(mUrlBar) != mActive) {
-                return notFulfilled("InputMethodManager.isActive() is %b", !mActive);
-            }
-            return fulfilled();
+            return whether(mUrlBar.hasFocus() == mExpectHasFocus);
         }
 
         @Override
         public String buildDescription() {
-            return mActive ? "UrlBar has focus" : "UrlBar does not have focus";
+            return mExpectHasFocus ? "UrlBar has focus" : "UrlBar does not have focus";
+        }
+    }
+
+    public static class InputMethodManagerIsActiveCondition extends UiThreadCondition {
+        private final View mView;
+        private final boolean mExpectActive;
+
+        public InputMethodManagerIsActiveCondition(View view) {
+            this(view, /* expectActive= */ true);
+        }
+
+        public InputMethodManagerIsActiveCondition(View view, boolean expectActive) {
+            mView = view;
+            mExpectActive = expectActive;
+        }
+
+        @Override
+        protected ConditionStatus checkWithSuppliers() {
+            InputMethodManager imm =
+                    (InputMethodManager)
+                            mView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            return whether(imm.isActive(mView) == mExpectActive);
+        }
+
+        @Override
+        public String buildDescription() {
+            return mExpectActive
+                    ? "InputMethodManager is active"
+                    : "InputMethodManager is not active";
         }
     }
 }

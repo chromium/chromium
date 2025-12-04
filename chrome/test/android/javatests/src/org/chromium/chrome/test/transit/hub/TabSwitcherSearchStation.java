@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionView;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.chrome.test.util.OmniboxTestUtils.InputMethodManagerIsActiveCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsNotShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionsShownCondition;
 import org.chromium.chrome.test.util.OmniboxTestUtils.UrlBarHasFocusCondition;
@@ -86,7 +87,9 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
     }
 
     public void typeInOmnibox(String query) {
-        noopTo().waitFor(new UrlBarHasFocusCondition(urlBarElement.value()));
+        noopTo().waitFor(
+                        new UrlBarHasFocusCondition(urlBarElement.value()),
+                        new InputMethodManagerIsActiveCondition(urlBarElement.value()));
         urlBarElement
                 .typeTextTo(query)
                 .withPossiblyAlreadyFulfilled()
@@ -180,7 +183,9 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
 
         public WebPageStation openPagePressingEnter() {
             UrlBar urlBar = urlBarElement.value();
-            noopTo().waitFor(new UrlBarHasFocusCondition(urlBar, /* active= */ true));
+            noopTo().waitFor(
+                            new UrlBarHasFocusCondition(urlBar),
+                            new InputMethodManagerIsActiveCondition(urlBar));
             return urlBarElement
                     .performViewActionTo(ViewActions.pressKey(KeyEvent.KEYCODE_ENTER))
                     .arriveAt(buildDestinationPageStation());
