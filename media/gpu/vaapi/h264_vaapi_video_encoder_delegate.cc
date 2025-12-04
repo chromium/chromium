@@ -137,13 +137,27 @@ static void InitVAPictureH264(VAPictureH264* va_pic) {
   va_pic->flags = VA_PICTURE_H264_INVALID;
 }
 
-// Updates |frame_num| as spec section 7.4.3 and sets it to |pic.frame_num|.
-void UpdateAndSetFrameNum(H264Picture& pic, unsigned int& frame_num) {
-  if (pic.idr)
+// Updates |prev_ref_frame_num| as spec section 7.4.3 and sets frame_num to
+// |pic.frame_num|.
+void UpdatePrevRefFrameNumAndSetFrameNum(H264Picture& pic,
+                                         unsigned int& prev_ref_frame_num) {
+  unsigned int frame_num = 0;
+  if (pic.idr) {
+    prev_ref_frame_num = 0;
     frame_num = 0;
-  else if (pic.ref)
-    frame_num++;
-  DCHECK_LT(frame_num, kIDRPeriod);
+  } else {
+    frame_num = prev_ref_frame_num + 1;
+    if (pic.ref) {
+      prev_ref_frame_num = frame_num;
+    }
+  }
+  if (frame_num == kIDRPeriod) {
+    frame_num = 0;
+  }
+  if (prev_ref_frame_num == kIDRPeriod) {
+    prev_ref_frame_num = 0;
+  }
+
   pic.frame_num = frame_num;
 }
 
@@ -154,7 +168,7 @@ void UpdateAndSetFrameNum(H264Picture& pic, unsigned int& frame_num) {
 void UpdatePictureForTemporalLayerEncoding(
     const size_t num_layers,
     H264Picture& pic,
-    unsigned int& frame_num,
+    unsigned int& prev_ref_frame_num,
     std::optional<size_t>& ref_frame_idx,
     const unsigned int num_encoded_frames,
     const base::circular_deque<scoped_refptr<H264Picture>>& ref_pic_list0) {
@@ -182,7 +196,7 @@ void UpdatePictureForTemporalLayerEncoding(
   std::tie(pic.metadata_for_encoding.emplace(), pic.ref) =
       kFrameMetadata[num_layers - 2][num_encoded_frames % kTemporalLayerCycle];
 
-  UpdateAndSetFrameNum(pic, frame_num);
+  UpdatePrevRefFrameNumAndSetFrameNum(pic, prev_ref_frame_num);
 
   if (pic.idr)
     return;
@@ -592,11 +606,11 @@ H264VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
   std::optional<size_t> ref_frame_index;
   if (num_temporal_layers_ > 1u) {
     UpdatePictureForTemporalLayerEncoding(num_temporal_layers_, *pic,
-                                          frame_num_, ref_frame_index,
+                                          prev_ref_frame_num_, ref_frame_index,
                                           num_encoded_frames_, ref_pic_list0_);
   } else {
     pic->ref = true;
-    UpdateAndSetFrameNum(*pic, frame_num_);
+    UpdatePrevRefFrameNumAndSetFrameNum(*pic, prev_ref_frame_num_);
   }
 
   pic->pic_order_cnt = num_encoded_frames_ * 2;

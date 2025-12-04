@@ -179,8 +179,8 @@ class H264VaapiVideoEncoderDelegate : public VaapiVideoEncoderDelegate {
 
   // The number of encoded frames. Resets to 0 on IDR frame.
   unsigned int num_encoded_frames_ = 0;
-  // frame_num (spec section 7.4.3).
-  unsigned int frame_num_ = 0;
+  // PrevRefFrameNum (spec section 7.4.3).
+  unsigned int prev_ref_frame_num_ = 0;
 
   // idr_pic_id (spec section 7.4.3) to be used for the next frame.
   unsigned int idr_pic_id_ = 0;
