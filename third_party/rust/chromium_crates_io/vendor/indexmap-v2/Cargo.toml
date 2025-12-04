@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.82"
 name = "indexmap"
-version = "2.12.0"
+version = "2.12.1"
 build = false
 autolib = false
 autobins = false
@@ -106,7 +106,7 @@ version = "1.0"
 default-features = false
 
 [dependencies.hashbrown]
-version = "0.16"
+version = "0.16.1"
 default-features = false
 
 [dependencies.quickcheck]

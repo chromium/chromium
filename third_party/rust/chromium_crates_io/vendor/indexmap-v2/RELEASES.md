@@ -1,5 +1,9 @@
 # Releases
 
+## 2.12.1 (2025-11-20)
+
+- Simplified a lot of internals using `hashbrown`'s new bucket API.
+
 ## 2.12.0 (2025-10-17)
 
 - **MSRV**: Rust 1.82.0 or later is now required.

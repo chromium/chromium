@@ -736,7 +736,7 @@ where
     /// Computes in **O(1)** time (amortized average).
     pub fn entry(&mut self, key: K) -> Entry<'_, K, V> {
         let hash = self.hash(&key);
-        self.core.entry(hash, key)
+        Entry::new(&mut self.core, hash, key)
     }
 
     /// Creates a splicing iterator that replaces the specified range in the map
@@ -1452,10 +1452,7 @@ impl<K, V, S> IndexMap<K, V, S> {
     ///
     /// Computes in **O(1)** time.
     pub fn get_index_entry(&mut self, index: usize) -> Option<IndexedEntry<'_, K, V>> {
-        if index >= self.len() {
-            return None;
-        }
-        Some(IndexedEntry::new(&mut self.core, index))
+        IndexedEntry::new(&mut self.core, index)
     }
 
     /// Get an array of `N` key-value pairs by `N` indices

@@ -132,7 +132,7 @@ impl<K, V> MutableEntryKey for Entry<'_, K, V> {
 impl<K, V> MutableEntryKey for OccupiedEntry<'_, K, V> {
     type Key = K;
     fn key_mut(&mut self) -> &mut Self::Key {
-        self.key_mut()
+        &mut self.get_bucket_mut().key
     }
 }
 
