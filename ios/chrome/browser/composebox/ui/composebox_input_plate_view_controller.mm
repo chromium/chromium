@@ -66,9 +66,7 @@ const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
 const CGFloat kInputPlateStackViewLeadingPadding = 10.0f;
 /// The trailing padding for the input plate stack view.
-const CGFloat kInputPlateStackViewTrailingPadding = 2.0f;
-/// The trailing padding for the buttons stack view.
-const CGFloat kButtonStackViewTrailingPadding = 10.0f;
+const CGFloat kInputPlateStackViewTrailingPadding = 12.0f;
 /// The font size for the AIM mode button title.
 const CGFloat kAIMButtonFontSize = 14.0f;
 /// The point size for the symbols in the AIM mode button.
@@ -1163,7 +1161,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 - (void)setupInputPlateContainerView {
   _inputPlateContainerView = [[UIView alloc] init];
   _inputPlateContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-  _inputPlateContainerView.clipsToBounds = YES;
   _inputPlateContainerView.backgroundColor = _theme.inputPlateBackgroundColor;
   _inputPlateContainerView.layer.cornerRadius = kInputPlateCornerRadius;
 
@@ -1203,31 +1200,14 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                  afterView:_plusButton];
     [_inputPlateStackView setCustomSpacing:kShortcutsSpacing
                                  afterView:_micButton];
-    _inputPlateStackView.layoutMarginsRelativeArrangement = YES;
-
-    // Ensure that the `_lensButton` retains padding; note that the
-    // `_inputPlateStackView` generally has minimal padding so that attachments
-    // when not in compact mode use the full space.
-    _inputPlateStackView.layoutMargins =
-        UIEdgeInsetsMake(0, 0, 0, kButtonStackViewTrailingPadding);
     _bottomPaddingConstraint.constant =
         -kInputPlateStackViewVerticalCompactPadding;
     _inputPlateContainerView.layer.cornerRadius =
         kInputPlateCornerRadiusCompact;
-
   } else {
-    // Ensure that extra margins are not in place, as are required by compact
-    // mode. Note that compact mode expands once attachments are added, so both
-    // states must be handled.
-    _inputPlateStackView.layoutMargins = UIEdgeInsetsMake(0, 0, 0, 0);
     UIView* toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
     [_inputPlateStackView addArrangedSubview:toolbarView];
-    [NSLayoutConstraint activateConstraints:@[
-      [toolbarView.trailingAnchor
-          constraintEqualToAnchor:_inputPlateStackView.trailingAnchor
-                         constant:-kButtonStackViewTrailingPadding]
-    ]];
     _inputPlateStackView.axis = UILayoutConstraintAxisVertical;
     _inputPlateStackView.spacing = kInputPlateStackViewSpacing;
 
