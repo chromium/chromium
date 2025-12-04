@@ -228,7 +228,12 @@ public class FuseboxMediator {
      */
     void setToolbarVisible(boolean visible) {
         mModel.set(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, visible);
-        setUseCompactUi(OmniboxFeatures.sCompactFusebox.getValue());
+        // The omnibox can become focused with the autocomplete request type immediately set
+        // to AI_MODE. We check the mode here to avoid erroneously staying in compact mode.
+        setUseCompactUi(
+                OmniboxFeatures.sCompactFusebox.getValue()
+                        && mAutocompleteRequestTypeSupplier.get()
+                                == AutocompleteRequestType.SEARCH);
     }
 
     public void setAutocompleteRequestTypeChangeable(boolean isChangeable) {

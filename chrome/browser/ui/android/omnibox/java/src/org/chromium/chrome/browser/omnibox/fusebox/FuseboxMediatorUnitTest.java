@@ -271,6 +271,15 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void onUrlFocusChange_startInAiMode() {
+        OmniboxFeatures.sCompactFusebox.setForTesting(true);
+        mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
+        mMediator.setToolbarVisible(true);
+        assertTrue(mModel.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE));
+        assertFalse(mModel.get(FuseboxProperties.COMPACT_UI));
+    }
+
+    @Test
     public void onUrlFocusChange_viewsHiddenWhenNotFocused() {
         // Show it first
         mMediator.setToolbarVisible(true);
