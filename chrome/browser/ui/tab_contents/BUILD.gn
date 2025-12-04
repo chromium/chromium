@@ -35,10 +35,6 @@ source_set("tab_contents") {
     "//ui/gfx/geometry",
     "//url",
   ]
-  if (!is_android) {
-    deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
-    public_deps += [ "//chrome/browser/ui:browser_list" ]
-  }
 }
 
 source_set("impl") {
@@ -85,8 +81,8 @@ source_set("impl") {
   if (!is_android) {
     deps += [
       "//chrome/browser/ui/browser_window",
-      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/ui/views/side_panel",
+      "//components/tabs:public",
     ]
   }
   if (enable_extensions) {
