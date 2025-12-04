@@ -14,6 +14,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/mac/privileged_helper/service_protocol.h"
 
+namespace updater {
+
 // Client that will create a connection between the browser and the privileged
 // helper for the Chromium updater. Helps with setting up the system-level
 // updater during promotion.
@@ -39,5 +41,7 @@ class BrowserUpdaterHelperClientMac
   void SetupSystemUpdaterDone(base::OnceCallback<void(int)> callback,
                               int result);
 };
+
+}  // namespace updater
 
 #endif  // CHROME_BROWSER_UPDATER_BROWSER_UPDATER_HELPER_CLIENT_MAC_H_

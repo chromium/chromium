@@ -15,6 +15,8 @@
 #include "chrome/updater/registration_data.h"
 #include "components/version_info/version_info.h"
 
+namespace updater {
+
 std::string BrowserUpdaterClient::GetAppId() {
   return base::SysWideToUTF8(
       std::wstring(install_static::InstallDetails::Get().app_guid()));
@@ -24,8 +26,8 @@ base::FilePath BrowserUpdaterClient::GetExpectedEcp() {
   return {};
 }
 
-updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
-  updater::RegistrationRequest req;
+RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
+  RegistrationRequest req;
   req.app_id = GetAppId();
   google_brand::GetBrand(&req.brand_code);
   req.version = version_info::GetVersionNumber();
@@ -34,7 +36,8 @@ updater::RegistrationRequest BrowserUpdaterClient::GetRegistrationRequest() {
   return req;
 }
 
-bool BrowserUpdaterClient::AppMatches(
-    const updater::UpdateService::AppState& app) {
+bool BrowserUpdaterClient::AppMatches(const UpdateService::AppState& app) {
   return base::EqualsCaseInsensitiveASCII(app.app_id, GetAppId());
 }
+
+}  // namespace updater
