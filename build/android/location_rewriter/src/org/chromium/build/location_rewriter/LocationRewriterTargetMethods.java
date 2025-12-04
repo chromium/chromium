@@ -73,6 +73,41 @@ public final class LocationRewriterTargetMethods {
                 "add",
                 "(ILjava/lang/Runnable;)V",
                 /* isInterface= */ false);
+        // org.chromium.base.ThreadUtils#runOnUiThreadBlocking(Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/ThreadUtils",
+                "runOnUiThreadBlocking",
+                "(Ljava/lang/Runnable;)V",
+                /* isInterface= */ false);
+        // org.chromium.base.ThreadUtils#runOnUiThreadBlocking(Callable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/ThreadUtils",
+                "runOnUiThreadBlocking",
+                "(Ljava/util/concurrent/Callable;)Ljava/lang/Object;",
+                /* isInterface= */ false);
+        // org.chromium.base.ThreadUtils#runOnUiThread(Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/ThreadUtils",
+                "runOnUiThread",
+                "(Ljava/lang/Runnable;)V",
+                /* isInterface= */ false);
+        // org.chromium.base.ThreadUtils#postOnUiThread(Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/ThreadUtils",
+                "postOnUiThread",
+                "(Ljava/lang/Runnable;)V",
+                /* isInterface= */ false);
+        // org.chromium.base.ThreadUtils#postOnUiThreadDelayed(Runnable, long)
+        addRewriterTarget(
+                Opcodes.INVOKESTATIC,
+                "org/chromium/base/ThreadUtils",
+                "postOnUiThreadDelayed",
+                "(Ljava/lang/Runnable;J)V",
+                /* isInterface= */ false);
         // org.chromium.base.task.AsyncTask#executeOnExecutor(LocationAwareExecutor)
         addRewriterTarget(
                 Opcodes.INVOKEVIRTUAL,

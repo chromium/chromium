@@ -144,7 +144,6 @@ public class PostTask {
      *
      * <p>Overload of {@link #postDelayedTask(int, Runnable, long)} for the Java location rewriter.
      */
-    @Deprecated
     public static void postDelayedTask(
             @TaskTraits int taskTraits, Runnable task, long delay, @Nullable Location location) {
         sTraitsToRunnerMap[taskTraits].postDelayedTask(task, delay, location);
