@@ -116,10 +116,8 @@ public class ContainmentItemControllerTest {
     @Test
     @SmallTest
     public void testTextMessagePreferenceStyle() {
-        ContainerStyle textMessagePreferenceStyle = getPreferenceStyle("text_message_preference");
-        assertEquals(mDefaultRadius, textMessagePreferenceStyle.getTopRadius(), 0);
-        assertEquals(mDefaultRadius, textMessagePreferenceStyle.getBottomRadius(), 0);
-        assertEquals(TRANSPARENT_BACKGROUND_COLOR, textMessagePreferenceStyle.getBackgroundColor());
+        ContainerStyle textMessagePreferencestyle = getPreferenceStyle("text_message_preference");
+        assertSame(ContainerStyle.EMPTY, textMessagePreferencestyle);
     }
 
     @Test

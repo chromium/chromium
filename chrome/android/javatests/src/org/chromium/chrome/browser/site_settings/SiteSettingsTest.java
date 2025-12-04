@@ -182,7 +182,7 @@ import java.util.concurrent.TimeoutException;
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
-    private static final int RENDER_TEST_REVISION = 6;
+    private static final int RENDER_TEST_REVISION = 5;
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();

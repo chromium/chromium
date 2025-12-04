@@ -74,7 +74,7 @@ import java.io.IOException;
 public final class FledgeFragmentTest {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 2;
     private String mSeeAllSitesLabel;
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
