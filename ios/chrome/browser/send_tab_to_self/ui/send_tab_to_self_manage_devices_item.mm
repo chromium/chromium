@@ -104,25 +104,9 @@ const CGFloat kAvatarSize = 24;
 
 #pragma mark - UITextViewDelegate
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  // The built-in click handling opens the link in the default browser app. If
-  // that app isn't signed in to the Google Account, the user won't see the
-  // correct page. So use a custom handling in the delegate to ensure Chrome
-  // opens the page.
-  DCHECK(self.delegate) << "Delegate not set";
-  DCHECK(self.showManageDevicesLink);
-  [self.delegate openManageDevicesTab];
-  return NO;
-}
-#endif
-
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   DCHECK(self.delegate) << "Delegate not set";
   DCHECK(self.showManageDevicesLink);
   [self.delegate openManageDevicesTab];
