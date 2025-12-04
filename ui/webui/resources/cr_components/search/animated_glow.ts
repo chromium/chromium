@@ -17,6 +17,8 @@ import {GlowAnimationState} from './constants.js';
  * RequiresVoice, isCollapsible are optional. RequiresVoice is
  * false by default. And if it is true, then it renders the eclipse audio wave
  * element as well. IsCollapsible adds an animation for expand (see .css file).
+ * Transcript and receivedSpeech are optional. Allows for audio to simulate
+ * audio input without opening audio stream.
  */
 export class SearchAnimatedGlowElement extends CrLitElement {
   static get is() {
@@ -44,6 +46,8 @@ export class SearchAnimatedGlowElement extends CrLitElement {
         type: Boolean,
         reflect: true,
       },
+      transcript: {type: String},
+      receivedSpeech: {type: Boolean},
     };
   }
 
@@ -52,6 +56,8 @@ export class SearchAnimatedGlowElement extends CrLitElement {
       loadTimeData.getString('composeboxDragAndDropHint');
   accessor requiresVoice: boolean = false;
   accessor isCollapsible: boolean = false;
+  accessor transcript: string = '';
+  accessor receivedSpeech: boolean = false;
 }
 
 declare global {

@@ -31,7 +31,7 @@
 }
 
 :host([is-expanding_]) .eclipse-svg {
-  animation: open-eclipse 300ms 200ms var(--standard-curve) forwards;
+  animation: open-eclipse 175ms 125ms var(--standard-curve) forwards;
 }
 
 :host(:not([is-expanding_])) .eclipse-svg {
@@ -77,13 +77,13 @@
 .blurred-rects {
   transform-box: fill-box;
   transform-origin: center;
-  rotate: 135deg;
+  rotate: 80deg;
   animation: rotate-glow-rects 5s var(--expand-duration) linear infinite;
 }
 
 @keyframes rotate-glow-rects {
   from {
-    rotate: 165deg;
+    rotate: 80deg;
   }
   to {
     rotate: 495deg;

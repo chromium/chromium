@@ -21,7 +21,7 @@ build_webui("build") {
     "animated_glow.css",
     "audio_wave.css",
   ]
-
+  static_files = [ "images/eclipse_wave_blurred_rect.png" ]
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/search"
   ts_composite = true
   ts_deps = [

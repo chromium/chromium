@@ -686,7 +686,7 @@ contextual-entrypoint-and-carousel::part(voice-icon) {
 }
 
 :host([in-voice-search-mode_]) {
-  box-shadow: 2px 17px 18px -10px rgba(0, 0, 0, 0.03);
+  box-shadow: 2px 10px 18px -5px rgb(0, 0, 0, 0.1);
 }
 
 :host([in-voice-search-mode_]) #suggestionActivity {
