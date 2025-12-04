@@ -49,13 +49,28 @@ struct _xmlRMutex {
 };
 
 XML_HIDDEN void
-xmlInitMutex(xmlMutexPtr mutex);
+xmlInitMutex(xmlMutex *mutex);
 XML_HIDDEN void
-xmlCleanupMutex(xmlMutexPtr mutex);
+xmlCleanupMutex(xmlMutex *mutex);
 
 XML_HIDDEN void
-xmlInitRMutex(xmlRMutexPtr mutex);
+xmlInitRMutex(xmlRMutex *mutex);
 XML_HIDDEN void
-xmlCleanupRMutex(xmlRMutexPtr mutex);
+xmlCleanupRMutex(xmlRMutex *mutex);
+
+#ifdef LIBXML_SCHEMAS_ENABLED
+XML_HIDDEN void
+xmlInitSchemasTypesInternal(void);
+XML_HIDDEN void
+xmlCleanupSchemasTypesInternal(void);
+#endif
+
+#ifdef LIBXML_RELAXNG_ENABLED
+XML_HIDDEN void
+xmlInitRelaxNGInternal(void);
+XML_HIDDEN void
+xmlCleanupRelaxNGInternal(void);
+#endif
+
 
 #endif /* XML_THREADS_H_PRIVATE__ */

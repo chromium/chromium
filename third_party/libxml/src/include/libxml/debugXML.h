@@ -1,11 +1,14 @@
-/*
- * Summary: Tree debugging APIs
- * Description: Interfaces to a set of routines used for debugging the tree
+/**
+ * @file
+ * 
+ * @brief Tree debugging APIs
+ * 
+ * Interfaces to a set of routines used for debugging the tree
  *              produced by the XML parser.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __DEBUG_XML__
@@ -30,36 +33,36 @@ XMLPUBFUN void
 				 const xmlChar *str);
 XMLPUBFUN void
 	xmlDebugDumpAttr	(FILE *output,
-				 xmlAttrPtr attr,
+				 xmlAttr *attr,
 				 int depth);
 XMLPUBFUN void
 	xmlDebugDumpAttrList	(FILE *output,
-				 xmlAttrPtr attr,
+				 xmlAttr *attr,
 				 int depth);
 XMLPUBFUN void
 	xmlDebugDumpOneNode	(FILE *output,
-				 xmlNodePtr node,
+				 xmlNode *node,
 				 int depth);
 XMLPUBFUN void
 	xmlDebugDumpNode	(FILE *output,
-				 xmlNodePtr node,
+				 xmlNode *node,
 				 int depth);
 XMLPUBFUN void
 	xmlDebugDumpNodeList	(FILE *output,
-				 xmlNodePtr node,
+				 xmlNode *node,
 				 int depth);
 XMLPUBFUN void
 	xmlDebugDumpDocumentHead(FILE *output,
-				 xmlDocPtr doc);
+				 xmlDoc *doc);
 XMLPUBFUN void
 	xmlDebugDumpDocument	(FILE *output,
-				 xmlDocPtr doc);
+				 xmlDoc *doc);
 XMLPUBFUN void
 	xmlDebugDumpDTD		(FILE *output,
-				 xmlDtdPtr dtd);
+				 xmlDtd *dtd);
 XMLPUBFUN void
 	xmlDebugDumpEntities	(FILE *output,
-				 xmlDocPtr doc);
+				 xmlDoc *doc);
 
 /****************************************************************
  *								*
@@ -69,7 +72,7 @@ XMLPUBFUN void
 
 XMLPUBFUN int
 	xmlDebugCheckDocument	(FILE * output,
-				 xmlDocPtr doc);
+				 xmlDoc *doc);
 
 #ifdef __cplusplus
 }

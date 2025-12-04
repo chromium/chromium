@@ -1,11 +1,14 @@
-/*
- * Summary: lists interfaces
- * Description: this module implement the list support used in
+/**
+ * @file
+ * 
+ * @brief lists interfaces
+ * 
+ * this module implement the list support used in
  * various place in the library.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Gary Pennington <Gary.Pennington@uk.sun.com>
+ * @author Gary Pennington
  */
 
 #ifndef __XML_LINK_INCLUDE__
@@ -17,115 +20,120 @@
 extern "C" {
 #endif
 
+/**
+ * Linked list item
+ *
+ * @deprecated Don't use in new code.
+ */
 typedef struct _xmlLink xmlLink;
 typedef xmlLink *xmlLinkPtr;
 
+/**
+ * Linked list
+ *
+ * @deprecated Don't use in new code.
+ */
 typedef struct _xmlList xmlList;
 typedef xmlList *xmlListPtr;
 
 /**
- * xmlListDeallocator:
- * @lk:  the data to deallocate
- *
  * Callback function used to free data from a list.
- */
-typedef void (*xmlListDeallocator) (xmlLinkPtr lk);
-/**
- * xmlListDataCompare:
- * @data0: the first data
- * @data1: the second data
  *
+ * @param lk  the data to deallocate
+ */
+typedef void (*xmlListDeallocator) (xmlLink *lk);
+/**
  * Callback function used to compare 2 data.
  *
- * Returns 0 is equality, -1 or 1 otherwise depending on the ordering.
+ * @param data0  the first data
+ * @param data1  the second data
+ * @returns 0 is equality, -1 or 1 otherwise depending on the ordering.
  */
 typedef int  (*xmlListDataCompare) (const void *data0, const void *data1);
 /**
- * xmlListWalker:
- * @data: the data found in the list
- * @user: extra user provided data to the walker
+ * Callback function used when walking a list with #xmlListWalk.
  *
- * Callback function used when walking a list with xmlListWalk().
- *
- * Returns 0 to stop walking the list, 1 otherwise.
+ * @param data  the data found in the list
+ * @param user  extra user provided data to the walker
+ * @returns 0 to stop walking the list, 1 otherwise.
  */
 typedef int (*xmlListWalker) (const void *data, void *user);
 
 /* Creation/Deletion */
-XMLPUBFUN xmlListPtr
+XMLPUBFUN xmlList *
 		xmlListCreate		(xmlListDeallocator deallocator,
 	                                 xmlListDataCompare compare);
 XMLPUBFUN void
-		xmlListDelete		(xmlListPtr l);
+		xmlListDelete		(xmlList *l);
 
 /* Basic Operators */
 XMLPUBFUN void *
-		xmlListSearch		(xmlListPtr l,
+		xmlListSearch		(xmlList *l,
 					 void *data);
 XMLPUBFUN void *
-		xmlListReverseSearch	(xmlListPtr l,
+		xmlListReverseSearch	(xmlList *l,
 					 void *data);
 XMLPUBFUN int
-		xmlListInsert		(xmlListPtr l,
+		xmlListInsert		(xmlList *l,
 					 void *data) ;
 XMLPUBFUN int
-		xmlListAppend		(xmlListPtr l,
+		xmlListAppend		(xmlList *l,
 					 void *data) ;
 XMLPUBFUN int
-		xmlListRemoveFirst	(xmlListPtr l,
+		xmlListRemoveFirst	(xmlList *l,
 					 void *data);
 XMLPUBFUN int
-		xmlListRemoveLast	(xmlListPtr l,
+		xmlListRemoveLast	(xmlList *l,
 					 void *data);
 XMLPUBFUN int
-		xmlListRemoveAll	(xmlListPtr l,
+		xmlListRemoveAll	(xmlList *l,
 					 void *data);
 XMLPUBFUN void
-		xmlListClear		(xmlListPtr l);
+		xmlListClear		(xmlList *l);
 XMLPUBFUN int
-		xmlListEmpty		(xmlListPtr l);
-XMLPUBFUN xmlLinkPtr
-		xmlListFront		(xmlListPtr l);
-XMLPUBFUN xmlLinkPtr
-		xmlListEnd		(xmlListPtr l);
+		xmlListEmpty		(xmlList *l);
+XMLPUBFUN xmlLink *
+		xmlListFront		(xmlList *l);
+XMLPUBFUN xmlLink *
+		xmlListEnd		(xmlList *l);
 XMLPUBFUN int
-		xmlListSize		(xmlListPtr l);
+		xmlListSize		(xmlList *l);
 
 XMLPUBFUN void
-		xmlListPopFront		(xmlListPtr l);
+		xmlListPopFront		(xmlList *l);
 XMLPUBFUN void
-		xmlListPopBack		(xmlListPtr l);
+		xmlListPopBack		(xmlList *l);
 XMLPUBFUN int
-		xmlListPushFront	(xmlListPtr l,
+		xmlListPushFront	(xmlList *l,
 					 void *data);
 XMLPUBFUN int
-		xmlListPushBack		(xmlListPtr l,
+		xmlListPushBack		(xmlList *l,
 					 void *data);
 
 /* Advanced Operators */
 XMLPUBFUN void
-		xmlListReverse		(xmlListPtr l);
+		xmlListReverse		(xmlList *l);
 XMLPUBFUN void
-		xmlListSort		(xmlListPtr l);
+		xmlListSort		(xmlList *l);
 XMLPUBFUN void
-		xmlListWalk		(xmlListPtr l,
+		xmlListWalk		(xmlList *l,
 					 xmlListWalker walker,
 					 void *user);
 XMLPUBFUN void
-		xmlListReverseWalk	(xmlListPtr l,
+		xmlListReverseWalk	(xmlList *l,
 					 xmlListWalker walker,
 					 void *user);
 XMLPUBFUN void
-		xmlListMerge		(xmlListPtr l1,
-					 xmlListPtr l2);
-XMLPUBFUN xmlListPtr
-		xmlListDup		(xmlListPtr old);
+		xmlListMerge		(xmlList *l1,
+					 xmlList *l2);
+XMLPUBFUN xmlList *
+		xmlListDup		(xmlList *old);
 XMLPUBFUN int
-		xmlListCopy		(xmlListPtr cur,
-					 xmlListPtr old);
+		xmlListCopy		(xmlList *cur,
+					 xmlList *old);
 /* Link operators */
 XMLPUBFUN void *
-		xmlLinkGetData          (xmlLinkPtr lk);
+		xmlLinkGetData          (xmlLink *lk);
 
 /* xmlListUnique() */
 /* xmlListSwap */

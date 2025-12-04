@@ -1,5 +1,71 @@
 NEWS file for libxml2
 
+v2.15.0: Sep 15 2025
+
+### Major changes
+
+The API documentation is now generated with Doxygen. Building the
+documentation requires the new --with-docs configuration option as well
+as Doxygen, xsltproc and the DocBook 4 XSLT stylesheets.
+
+The Python bindings are disabled by default now. Building the bindings
+also requires Doxygen.
+
+Support for Schematron is now disabled by default.
+
+The parser option XML_PARSE_UNZIP is now required to read compressed data.
+
+HTML serialization and handling of character encodings is more in line
+with the HTML5 spec now.
+
+More accessors for xmlParserCtxt were added.
+
+### Deprecations
+
+More internal functions and struct members were deprecated.
+
+### Removals
+
+The built-in HTTP client and support for LZMA compression were removed.
+
+The custom Windows build system in `win32` was removed in favor of CMake.
+
+### Planned removals
+
+The Python bindings and support for Schematron validation are planned to
+be removed in the 2.16 release.
+
+The following features are considered for removal:
+
+- Modules API (xmlmodule.h)
+- Support for zlib compressed file I/O
+
+RELAX NG support is still in a bad state and a long-term removal
+candidate.
+
+### Thanks
+
+Thanks to the following contributors:
+
+- Alex Richardson
+- Benjamin Gilbert
+- Caolán McNamara
+- Collin Funk
+- Dag-Erling Smørgrav
+- Dan Yeaw
+- Daniel P. Berrangé
+- Francesco Pretto
+- Lovell Fuller
+- Maks Verver
+- Markus Rickert
+- Michael Mann
+- Omar Siam
+- Pavel Kopylov
+- Peter Kokot
+- Samuel Thibault
+- ThomasK
+
+
 v2.14.6: Sep 8 2025
 
 ### Regressions
@@ -167,19 +233,6 @@ Overflow checks before reallocations were hardenend.
 
 Some unprefixed symbols were renamed to avoid namespace pollution.
 
-### Other potentially incompatible changes
-
-Strings passed to the "characters" callback of the HTML SAX parser
-aren't null-terminated anymore, matching the behavior of the XML
-parser. Custom SAX parsers must use the "len" argument.
-
-xmlIOParseDTD doesn't allow null bytes at the end of the input anymore.
-
-Type and layout of conversion callbacks in struct xmlCharEncodingHandler
-were changed. Applications using libxml2's encoding conversion API
-should use functions xmlCharEncInFunc and xmlCharEncOutFunc instead of
-accessing the callbacks directly.
-
 ### New features
 
 Input callbacks can now be set on a parser context and an improved API
@@ -219,9 +272,6 @@ was removed. The rest of the XPointer implementation isn't affected.
 The xpointer() scheme now behaves like the xpath1() scheme.
 
 Several legacy symbols and the functions in xmlunicode.h were removed.
-
-Some unprefixed, internal macros like ATTRIBUTE_UNUSED were removed
-from public headers.
 
 ELF version information was removed.
 

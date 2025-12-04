@@ -3,7 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * daniel@veillard.com
+ * Author: Daniel Veillard
  */
 
 #include "libxml.h"
@@ -17,8 +17,9 @@
 #include <libxml/parserInternals.h>
 #include <libxml/tree.h>
 #include <libxml/uri.h>
+
 #if (defined(LIBXML_RELAXNG_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)) && \
-    defined(LIBXML_XPATH_ENABLED)
+    defined(LIBXML_XPATH_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
 #include <libxml/xmlreader.h>
 
 #include <libxml/xpath.h>
@@ -29,9 +30,10 @@
 #include <libxml/xmlschemastypes.h>
 
 #define LOGFILE "runsuite.log"
+#define EXPECTED_XMP_ERROR_COUNT 3
+
 static FILE *logfile = NULL;
 static int verbose = 0;
-
 
 /************************************************************************
  *									*
@@ -738,6 +740,191 @@ done:
 	xmlFreeDoc(doc);
     return(ret);
 }
+
+/* Returns 1 for success */
+static int tryValidateElement(xmlRelaxNGValidCtxtPtr ctx, xmlDocPtr doc, xmlNodePtr elem)
+{
+    int rc = xmlRelaxNGValidatePushElement(ctx, doc, elem);
+    if (rc == 0)
+    {
+        /* Streaming is not possible, validate full element instead */
+        rc = xmlRelaxNGValidateFullElement(ctx, doc, elem);
+        if (rc == 1)
+            return 1;
+
+    Fail:
+        xmlRelaxNGValidCtxtClearErrors(ctx);
+        xmlResetLastError();
+        return 0;
+    }
+    else if (rc == 1)
+    {
+        xmlNodePtr child;
+        int success = 1;
+        for (child = xmlFirstElementChild(elem); child != NULL; child = xmlNextElementSibling(child))
+        {
+            /* Validate children elements recursively.
+             * NOTE: There may be no children to validate,
+             * as for example for <rng:text/> defines */
+            success = tryValidateElement(ctx, doc, child);
+            if (!success)
+                break;
+        }
+
+        if (xmlRelaxNGValidatePopElement(ctx, doc, elem) == 0)
+            goto Fail;
+
+        return success;
+    }
+    else
+    {
+        goto Fail;
+    }
+}
+
+static int
+rngTestStreaming(void) {
+    int mem;
+    int rc;
+    int error_count = 0;
+    xmlDocPtr schema_doc;
+    xmlDocPtr xmp_packet_doc = NULL;
+    xmlRelaxNGParserCtxtPtr rng_parser_ctx;
+    xmlRelaxNGPtr schema = NULL;
+    xmlRelaxNGValidCtxtPtr validation_ctx = NULL;
+    xmlNodePtr xmpmeta;
+    xmlNodePtr rdf;
+    xmlNodePtr description;
+    xmlNodePtr child;
+    const xmlChar* error_arr[EXPECTED_XMP_ERROR_COUNT] = { NULL };
+    const char* schema_filepath = "test/relaxng/ISO19005-1-XMP_Packet.rng";
+    const char* xmp_packet_filepath = "test/relaxng/TestXMPInvalid1.xmp";
+
+    mem = xmlMemUsed();
+
+    schema_doc = xmlReadFile(schema_filepath, NULL, 0);
+    if (schema_doc == NULL) {
+        fprintf(stderr, "RNG Streaming: Failed to parse %s\n", schema_filepath);
+        return(-1);
+    }
+
+    rng_parser_ctx = xmlRelaxNGNewDocParserCtxt(schema_doc);
+    if (rng_parser_ctx == NULL) {
+        xmlFreeDoc(schema_doc);
+        fprintf(stderr, "RNG Streaming: Failed to create Relax NG parser context\n");
+        return(-1);
+    }
+
+    xmlFreeDoc(schema_doc);
+    schema = xmlRelaxNGParse(rng_parser_ctx);
+    if (rng_parser_ctx == NULL) {
+        xmlRelaxNGFreeParserCtxt(rng_parser_ctx);
+        fprintf(stderr, "RNG Streaming: Failed to parse Relax NG schema\n");
+        return(-1);
+    }
+
+    xmlRelaxNGFreeParserCtxt(rng_parser_ctx);
+    validation_ctx = xmlRelaxNGNewValidCtxt(schema);
+    if (rng_parser_ctx == NULL) {
+        xmlRelaxNGFree(schema);
+        fprintf(stderr, "RNG Streaming: Failed to create Relax NG validation context\n");
+        return(-1);
+    }
+
+    xmp_packet_doc = xmlReadFile(xmp_packet_filepath, NULL, 0);
+    if (xmp_packet_doc == NULL) {
+        xmlRelaxNGFreeValidCtxt(validation_ctx);
+        xmlRelaxNGFree(schema);
+        fprintf(stderr, "RNG Streaming: Failed to parse %s\n", xmp_packet_filepath);
+        return(-1);
+    }
+
+    xmpmeta = xmlDocGetRootElement(xmp_packet_doc);
+    if (xmpmeta == NULL || xmlStrcmp(BAD_CAST "xmpmeta", xmpmeta->name) != 0) {
+        fprintf(stderr, "RNG Streaming: Unable to find <x:xmpmeta> element\n");
+        rc = -1;
+        goto Exit;
+    }
+
+    rdf = xmlFirstElementChild(xmpmeta);
+    if (rdf == NULL || xmlStrcmp(BAD_CAST "RDF", rdf->name) != 0) {
+        fprintf(stderr, "RNG Streaming: Unable to find <rdf:RDF> element\n");
+        rc = -1;
+        goto Exit;
+    }
+
+    description = xmlFirstElementChild(rdf);
+    if (description == NULL || xmlStrcmp(BAD_CAST "Description", description->name) != 0) {
+        fprintf(stderr, "RNG Streaming: Unable to find <rdf:Description> element\n");
+        rc = -1;
+        goto Exit;
+    }
+
+    /* Push enclosing/preamble elements */
+    rc = xmlRelaxNGValidatePushElement(validation_ctx, xmp_packet_doc, xmpmeta);        /* <x:xmpmeta> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+    rc = xmlRelaxNGValidatePushElement(validation_ctx, xmp_packet_doc, rdf);            /* <rdf:RDF> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+    rc = xmlRelaxNGValidatePushElement(validation_ctx, xmp_packet_doc, description);    /* <rdf:Description> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+
+    for (child = xmlFirstElementChild(description); child != NULL; child = xmlNextElementSibling(child))
+    {
+        if (!tryValidateElement(validation_ctx, xmp_packet_doc, child))
+        {
+            error_count++;
+            if (error_count > EXPECTED_XMP_ERROR_COUNT) {
+                fprintf(stderr, "RNG Streaming: Unexpected error count\n");
+                rc = -1;
+                goto Exit;
+            }
+
+            error_arr[error_count - 1] = child->name;
+        }
+    }
+
+    rc = xmlRelaxNGValidatePopElement(validation_ctx, xmp_packet_doc, description);     /* </rdf:Description> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+    rc = xmlRelaxNGValidatePopElement(validation_ctx, xmp_packet_doc, rdf);             /* </rdf:RDF> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+    rc = xmlRelaxNGValidatePopElement(validation_ctx, xmp_packet_doc, xmpmeta);         /* </x:xmpmeta> */
+    if (rc != 1)
+        goto FailPushPopEnclosing;
+
+    if (error_count < EXPECTED_XMP_ERROR_COUNT
+            || xmlStrcmp(error_arr[0], BAD_CAST "MetadataDate") != 0
+            || xmlStrcmp(error_arr[1], BAD_CAST "Trapped") != 0
+            || xmlStrcmp(error_arr[2], BAD_CAST "Ignore") != 0) {
+        fprintf(stderr, "RNG Streaming: Invalid known errors\n");
+        rc = -1;
+        goto Exit;
+    }
+
+    rc = 0;
+    goto Exit;
+
+FailPushPopEnclosing:
+    fprintf(stderr, "RNG Streaming: Unable to push/pop packet enclosing elements\n");
+    rc = -1;
+
+Exit:
+    xmlRelaxNGFreeValidCtxt(validation_ctx);
+    xmlRelaxNGFree(schema);
+    xmlFreeDoc(xmp_packet_doc);
+
+    if (mem != xmlMemUsed()) {
+        fprintf(stderr, "RNG Streaming: Test leaked\n");
+        nb_leaks++;
+    }
+
+    return rc;
+}
+
 #endif /* LIBXML_RELAXNG_ENABLED */
 
 /************************************************************************
@@ -1034,6 +1221,9 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
         verbose = 1;
 
 #ifdef LIBXML_RELAXNG_ENABLED
+    if (rngTestStreaming() != 0)
+        nb_errors++;
+
     old_errors = nb_errors;
     old_tests = nb_tests;
     old_leaks = nb_leaks;

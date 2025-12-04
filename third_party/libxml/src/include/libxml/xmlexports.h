@@ -1,34 +1,32 @@
-/*
- * Summary: macros for marking symbols as exportable/importable.
- * Description: macros for marking symbols as exportable/importable.
+/**
+ * @file
+ * 
+ * @brief macros for marking symbols as exportable/importable.
+ * 
+ * macros for marking symbols as exportable/importable.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  */
 
 #ifndef __XML_EXPORTS_H__
 #define __XML_EXPORTS_H__
 
-/** DOC_DISABLE */
-
 /*
  * Symbol visibility
  */
 
-#if defined(_WIN32) || defined(__CYGWIN__)
-  #ifdef LIBXML_STATIC
-    #define XMLPUBLIC
-  #elif defined(IN_LIBXML)
-    #define XMLPUBLIC __declspec(dllexport)
+#if (defined(_WIN32) || defined(__CYGWIN__)) && !defined(LIBXML_STATIC)
+  #if defined(IN_LIBXML)
+    #define XMLPUBFUN __declspec(dllexport)
+    #define XMLPUBVAR __declspec(dllexport) extern
   #else
-    #define XMLPUBLIC __declspec(dllimport)
+    #define XMLPUBFUN __declspec(dllimport)
+    #define XMLPUBVAR __declspec(dllimport) extern
   #endif
 #else /* not Windows */
-  #define XMLPUBLIC
+  #define XMLPUBFUN
+  #define XMLPUBVAR extern
 #endif /* platform switch */
-
-#define XMLPUBFUN XMLPUBLIC
-
-#define XMLPUBVAR XMLPUBLIC extern
 
 /* Compatibility */
 #define XMLCALL
@@ -57,11 +55,15 @@
 #ifndef XML_DEPRECATED
   #if defined(IN_LIBXML)
     #define XML_DEPRECATED
+  #elif __GNUC__ * 100 + __GNUC_MINOR__ >= 405
+    /* GCC 4.5+ supports deprecated with message */
+    #define XML_DEPRECATED __attribute__((deprecated("See https://gnome.pages.gitlab.gnome.org/libxml2/html/deprecated.html")))
   #elif __GNUC__ * 100 + __GNUC_MINOR__ >= 301
+    /* GCC 3.1+ supports deprecated without message */
     #define XML_DEPRECATED __attribute__((deprecated))
   #elif defined(_MSC_VER) && _MSC_VER >= 1400
     /* Available since Visual Studio 2005 */
-    #define XML_DEPRECATED __declspec(deprecated)
+    #define XML_DEPRECATED __declspec(deprecated("See https://gnome.pages.gitlab.gnome.org/libxml2/html/deprecated.html"))
   #else
     #define XML_DEPRECATED
   #endif

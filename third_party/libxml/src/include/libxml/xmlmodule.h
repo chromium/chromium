@@ -1,11 +1,14 @@
-/*
- * Summary: dynamic module loading
- * Description: basic API for dynamic module loading, used by
- *              libexslt added in 2.6.17
+/**
+ * @file
  *
- * Copy: See Copyright for the status of this software.
+ * @brief Dynamic module loading
  *
- * Author: Joel W. Reed
+ * API for dynamic module loading. Only used by old libxslt versions
+ * and subject to removal.
+ *
+ * @copyright See Copyright for the status of this software.
+ *
+ * @author Joel W. Reed
  */
 
 #ifndef __XML_MODULE_H__
@@ -20,17 +23,13 @@ extern "C" {
 #endif
 
 /**
- * xmlModulePtr:
- *
  * A handle to a dynamically loaded module
  */
 typedef struct _xmlModule xmlModule;
 typedef xmlModule *xmlModulePtr;
 
 /**
- * xmlModuleOption:
- *
- * enumeration of options that can be passed down to xmlModuleOpen()
+ * enumeration of options that can be passed down to #xmlModuleOpen
  */
 typedef enum {
     XML_MODULE_LAZY = 1,	/* lazy binding */
@@ -38,19 +37,19 @@ typedef enum {
 } xmlModuleOption;
 
 XML_DEPRECATED
-XMLPUBFUN xmlModulePtr xmlModuleOpen	(const char *filename,
+XMLPUBFUN xmlModule *xmlModuleOpen	(const char *filename,
 						 int options);
 
 XML_DEPRECATED
-XMLPUBFUN int xmlModuleSymbol		(xmlModulePtr module,
+XMLPUBFUN int xmlModuleSymbol		(xmlModule *module,
 						 const char* name,
 						 void **result);
 
 XML_DEPRECATED
-XMLPUBFUN int xmlModuleClose		(xmlModulePtr module);
+XMLPUBFUN int xmlModuleClose		(xmlModule *module);
 
 XML_DEPRECATED
-XMLPUBFUN int xmlModuleFree		(xmlModulePtr module);
+XMLPUBFUN int xmlModuleFree		(xmlModule *module);
 
 #ifdef __cplusplus
 }

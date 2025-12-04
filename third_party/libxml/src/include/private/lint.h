@@ -10,6 +10,6 @@ xmllintMain(int argc, const char **argv, FILE *errStream,
             xmlResourceLoader loader);
 
 void
-xmllintShell(xmlDocPtr doc, const char *filename, FILE *output);
+xmllintShell(xmlDoc *doc, const char *filename, FILE *output);
 
 #endif /* XML_LINT_H_PRIVATE__ */

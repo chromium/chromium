@@ -9,12 +9,12 @@ diff --git a/include/libxml/tree.h b/include/libxml/tree.h
 index e5a8fb70..ff975230 100644
 --- a/include/libxml/tree.h
 +++ b/include/libxml/tree.h
-@@ -514,7 +514,7 @@ struct _xmlNode {
-     xmlNs           *nsDef;     /* namespace definitions on this node */
-     void            *psvi;	/* for type/PSVI information */
-     unsigned short   line;	/* line number */
--    unsigned short   extra;	/* extra data for XPath/XSLT */
-+    unsigned int     extra;	/* extra data for XPath/XSLT */
+@@ -752,7 +752,7 @@ struct _xmlNode {
+     /** Line number */
+     unsigned short   line;
+     /** Extra data for XPath/XSLT */
+-    unsigned short   extra;
++    unsigned int     extra;
  };
  
  /**

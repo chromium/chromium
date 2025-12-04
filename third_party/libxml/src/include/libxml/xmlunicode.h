@@ -1,6 +1,9 @@
-/*
- * Summary: Unicode character APIs
- * Description: API for the Unicode character APIs
+/**
+ * @file
+ * 
+ * @brief Unicode character APIs
+ * 
+ * API for the Unicode character APIs
  *
  * Deprecated, don't use.
  */

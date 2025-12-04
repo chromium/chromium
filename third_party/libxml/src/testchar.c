@@ -14,7 +14,7 @@
 #include <libxml/parser.h>
 #include <libxml/parserInternals.h>
 
-int lastError;
+static int lastError;
 
 static void errorHandler(void *unused, const xmlError *err) {
     if ((unused == NULL) && (err != NULL) && (lastError == 0)) {
@@ -22,8 +22,8 @@ static void errorHandler(void *unused, const xmlError *err) {
     }
 }
 
-char document1[100] = "<doc>XXXX</doc>";
-char document2[100] = "<doc foo='XXXX'/>";
+static char document1[100] = "<doc>XXXX</doc>";
+static char document2[100] = "<doc foo='XXXX'/>";
 
 static int testDocumentRangeByte1(xmlParserCtxtPtr ctxt, char *document,
                   int len,  char *data, int forbid1, int forbid2) {
@@ -153,8 +153,6 @@ static int testDocumentRangeByte2(xmlParserCtxtPtr ctxt, char *document,
 }
 
 /**
- * testDocumentRanges:
- *
  * Test the correct UTF8 character parsing in context of XML documents
  * Those are in-context injection tests checking the parser behaviour on
  * edge case values at different point in content, beginning and end of
@@ -624,8 +622,6 @@ static int testCharRangeByte4(xmlParserCtxtPtr ctxt) {
 }
 
 /**
- * testCharRanges:
- *
  * Test the correct UTF8 character parsing in isolation i.e.
  * not when parsing a full document, this is less expensive and we can
  * cover the full range of UTF-8 chars accepted by XML-1.0
@@ -978,6 +974,9 @@ testUTF16(void) {
                        utf8, sizeof(utf8) - 1,
                        utf16BE, sizeof(utf16BE) - 1) != 0)
         ret = -1;
+
+    xmlCharEncCloseFunc(handler16LE);
+    xmlCharEncCloseFunc(handler16BE);
 
     return(ret);
 }

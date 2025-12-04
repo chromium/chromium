@@ -3,7 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * Daniel Veillard <daniel@veillard.com>
+ * Author: Daniel Veillard
  */
 
 #include "libxml.h"
@@ -62,12 +62,10 @@ struct _xmllintShellCtxt {
 };
 
 /**
- * xmllintLsCountNode:
- * @node:  the node to count
+ * Count the children of `node`.
  *
- * Count the children of @node.
- *
- * Returns the number of children of @node.
+ * @param node  the node to count
+ * @returns the number of children of `node`.
  */
 static int
 xmllintLsCountNode(xmlNodePtr node) {
@@ -117,11 +115,10 @@ xmllintLsCountNode(xmlNodePtr node) {
 }
 
 /**
- * xmllintLsOneNode:
- * @output:  the FILE * for the output
- * @node:  the node to dump
+ * Dump to `output` the type and name of `node`.
  *
- * Dump to @output the type and name of @node.
+ * @param output  the FILE * for the output
+ * @param node  the node to dump
  */
 static void
 xmllintLsOneNode(FILE *output, xmlNodePtr node) {
@@ -252,16 +249,14 @@ xmllintLsOneNode(FILE *output, xmlNodePtr node) {
 }
 
 /**
- * xmllintShellList:
- * @ctxt:  the shell context
- * @arg:  unused
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "ls"
  * Does an Unix like listing of the given node (like a directory)
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellList(xmllintShellCtxtPtr ctxt,
@@ -295,16 +290,14 @@ xmllintShellList(xmllintShellCtxtPtr ctxt,
 }
 
 /**
- * xmllintShellBase:
- * @ctxt:  the shell context
- * @arg:  unused
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "base"
  * dumps the current XML base of the node
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellBase(xmllintShellCtxtPtr ctxt,
@@ -331,16 +324,14 @@ xmllintShellBase(xmllintShellCtxtPtr ctxt,
 }
 
 /**
- * xmllintShellSetBase:
- * @ctxt:  the shell context
- * @arg:  the new base
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "setbase"
  * change the current XML base of the node
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  the new base
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellSetBase(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
@@ -353,17 +344,15 @@ xmllintShellSetBase(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
 
 #ifdef LIBXML_XPATH_ENABLED
 /**
- * xmllintShellRegisterNamespace:
- * @ctxt:  the shell context
- * @arg:  a string in prefix=nsuri format
- * @node:  unused
- * @node2:  unused
- *
  * Implements the XML shell function "setns"
  * register/unregister a prefix=namespace pair
  * on the XPath context
  *
- * Returns 0 on success and a negative value otherwise.
+ * @param ctxt  the shell context
+ * @param arg  a string in prefix=nsuri format
+ * @param node  unused
+ * @param node2  unused
+ * @returns 0 on success and a negative value otherwise.
  */
 static int
 xmllintShellRegisterNamespace(xmllintShellCtxtPtr ctxt, char *arg,
@@ -410,16 +399,14 @@ xmllintShellRegisterNamespace(xmllintShellCtxtPtr ctxt, char *arg,
     return(0);
 }
 /**
- * xmllintShellRegisterRootNamespaces:
- * @ctxt:  the shell context
- * @arg:  unused
- * @node:  the root element
- * @node2:  unused
- *
  * Implements the XML shell function "setrootns"
  * which registers all namespaces declarations found on the root element.
  *
- * Returns 0 on success and a negative value otherwise.
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param root  the root element
+ * @param node2  unused
+ * @returns 0 on success and a negative value otherwise.
  */
 static int
 xmllintShellRegisterRootNamespaces(xmllintShellCtxtPtr ctxt, char *arg ATTRIBUTE_UNUSED,
@@ -443,16 +430,14 @@ xmllintShellRegisterRootNamespaces(xmllintShellCtxtPtr ctxt, char *arg ATTRIBUTE
 #endif
 
 /**
- * xmllintShellGrep:
- * @ctxt:  the shell context
- * @arg:  the string or regular expression to find
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "grep"
  * dumps information about the node (namespace, attributes, content).
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  the string or regular expression to find
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellGrep(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
@@ -519,16 +504,14 @@ xmllintShellGrep(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
 }
 
 /**
- * xmllintShellDir:
- * @ctxt:  the shell context
- * @arg:  unused
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "dir"
  * dumps information about the node (namespace, attributes, content).
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellDir(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
@@ -555,16 +538,14 @@ xmllintShellDir(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
 }
 
 /**
- * xmllintShellSetContent:
- * @ctxt:  the shell context
- * @value:  the content as a string
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "dir"
  * dumps information about the node (namespace, attributes, content).
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param value  the content as a string
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellSetContent(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED,
@@ -613,16 +594,14 @@ xmllintShellPrintf(void *ctx, const char *msg, ...) {
 
 #ifdef LIBXML_RELAXNG_ENABLED
 /**
- * xmllintShellRNGValidate:
- * @ctxt:  the shell context
- * @schemas:  the path to the Relax-NG schemas
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "relaxng"
  * validating the instance against a Relax-NG schemas
  *
- * Returns 0
+ * @param sctxt  the shell context
+ * @param schemas  the path to the Relax-NG schemas
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellRNGValidate(xmllintShellCtxtPtr sctxt, char *schemas,
@@ -663,16 +642,14 @@ xmllintShellRNGValidate(xmllintShellCtxtPtr sctxt, char *schemas,
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /**
- * xmllintShellCat:
- * @ctxt:  the shell context
- * @arg:  unused
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "cat"
  * dumps the serialization node content (XML or HTML).
  *
- * Returns 0
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0
  */
 static int
 xmllintShellCat(xmllintShellCtxtPtr ctxt, char *arg ATTRIBUTE_UNUSED,
@@ -708,16 +685,14 @@ xmllintShellCat(xmllintShellCtxtPtr ctxt, char *arg ATTRIBUTE_UNUSED,
 #endif /* LIBXML_OUTPUT_ENABLED */
 
 /**
- * xmllintShellLoad:
- * @ctxt:  the shell context
- * @filename:  the file name
- * @node:  unused
- * @node2:  unused
- *
  * Implements the XML shell function "load"
  * loads a new document specified by the filename
  *
- * Returns 0 or -1 if loading failed
+ * @param ctxt  the shell context
+ * @param filename  the file name
+ * @param node  unused
+ * @param node2  unused
+ * @returns 0 or -1 if loading failed
  */
 static int
 xmllintShellLoad(xmllintShellCtxtPtr ctxt, char *filename,
@@ -763,17 +738,15 @@ xmllintShellLoad(xmllintShellCtxtPtr ctxt, char *filename,
 
 #ifdef LIBXML_OUTPUT_ENABLED
 /**
- * xmllintShellWrite:
- * @ctxt:  the shell context
- * @filename:  the file name
- * @node:  a node in the tree
- * @node2:  unused
- *
  * Implements the XML shell function "write"
  * Write the current node to the filename, it saves the serialization
- * of the subtree under the @node specified
+ * of the subtree under the `node` specified
  *
- * Returns 0 or -1 in case of error
+ * @param ctxt  the shell context
+ * @param filename  the file name
+ * @param node  a node in the tree
+ * @param node2  unused
+ * @returns 0 or -1 in case of error
  */
 static int
 xmllintShellWrite(xmllintShellCtxtPtr ctxt, char *filename, xmlNodePtr node,
@@ -824,16 +797,14 @@ xmllintShellWrite(xmllintShellCtxtPtr ctxt, char *filename, xmlNodePtr node,
 }
 
 /**
- * xmllintShellSave:
- * @ctxt:  the shell context
- * @filename:  the file name (optional)
- * @node:  unused
- * @node2:  unused
- *
  * Implements the XML shell function "save"
  * Write the current document to the filename, or it's original name
  *
- * Returns 0 or -1 in case of error
+ * @param ctxt  the shell context
+ * @param filename  the file name (optional)
+ * @param node  unused
+ * @param node2  unused
+ * @returns 0 or -1 in case of error
  */
 static int
 xmllintShellSave(xmllintShellCtxtPtr ctxt, char *filename,
@@ -878,17 +849,15 @@ xmllintShellSave(xmllintShellCtxtPtr ctxt, char *filename,
 
 #ifdef LIBXML_VALID_ENABLED
 /**
- * xmllintShellValidate:
- * @ctxt:  the shell context
- * @dtd:  the DTD URI (optional)
- * @node:  unused
- * @node2:  unused
- *
  * Implements the XML shell function "validate"
  * Validate the document, if a DTD path is provided, then the validation
  * is done against the given DTD.
  *
- * Returns 0 or -1 in case of error
+ * @param ctxt  the shell context
+ * @param dtd  the DTD URI (optional)
+ * @param node  unused
+ * @param node2  unused
+ * @returns 0 or -1 in case of error
  */
 static int
 xmllintShellValidate(xmllintShellCtxtPtr ctxt, char *dtd,
@@ -921,17 +890,15 @@ xmllintShellValidate(xmllintShellCtxtPtr ctxt, char *dtd,
 #endif /* LIBXML_VALID_ENABLED */
 
 /**
- * xmllintShellDu:
- * @ctxt:  the shell context
- * @arg:  unused
- * @tree:  a node defining a subtree
- * @node2:  unused
- *
  * Implements the XML shell function "du"
- * show the structure of the subtree under node @tree
- * If @tree is null, the command works on the current node.
+ * show the structure of the subtree under node `tree`
+ * If `tree` is null, the command works on the current node.
  *
- * Returns 0 or -1 in case of error
+ * @param ctxt  the shell context
+ * @param arg  unused
+ * @param tree  a node defining a subtree
+ * @param node2  unused
+ * @returns 0 or -1 in case of error
  */
 static int
 xmllintShellDu(xmllintShellCtxtPtr ctxt,
@@ -1005,18 +972,16 @@ xmllintShellDu(xmllintShellCtxtPtr ctxt,
 }
 
 /**
- * xmllintShellPwd:
- * @ctxt:  the shell context
- * @buffer:  the output buffer
- * @node:  a node
- * @node2:  unused
- *
  * Implements the XML shell function "pwd"
  * Show the full path from the root to the node, if needed building
  * thumblers when similar elements exists at a given ancestor level.
  * The output is compatible with XPath commands.
  *
- * Returns 0 or -1 in case of error
+ * @param ctxt  the shell context
+ * @param buffer  the output buffer
+ * @param node  a node
+ * @param node2  unused
+ * @returns 0 or -1 in case of error
  */
 static int
 xmllintShellPwd(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED, char *buffer,
@@ -1051,12 +1016,10 @@ xmllintShellPwd(xmllintShellCtxtPtr ctxt ATTRIBUTE_UNUSED, char *buffer,
 #define MAX_COMMAND_SIZE    100
 
 /**
- * xmllintShellReadline:
- * @prompt:  the prompt value
- *
  * Read a string
  *
- * Returns a pointer to it or NULL on EOF the caller is expected to
+ * @param prompt  the prompt value
+ * @returns a pointer to it or NULL on EOF the caller is expected to
  *     free the returned string.
  */
 static char *
@@ -1097,17 +1060,16 @@ xmllintShellReadline(char *prompt) {
 }
 
 /**
- * xmllintShell:
- * @doc:  the initial document
- * @filename:  the output buffer
- * @output:  the output FILE*, defaults to stdout if NULL
- *
  * Implements the XML shell
  * This allow to load, validate, view, modify and save a document
  * using a environment similar to a UNIX commandline.
+ *
+ * @param doc  the initial document
+ * @param filename  the output buffer
+ * @param output  the output FILE*, defaults to stdout if NULL
  */
 void
-xmllintShell(xmlDocPtr doc, const char *filename, FILE * output)
+xmllintShell(xmlDoc *doc, const char *filename, FILE * output)
 {
     char prompt[MAX_PROMPT_SIZE] = "/ > ";
     char *cmdline = NULL, *cur;

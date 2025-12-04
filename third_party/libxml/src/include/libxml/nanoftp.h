@@ -1,9 +1,12 @@
-/*
- * Summary: Removed legacy symbols for an outdated FTP client
+/**
+ * @file
+ * 
+ * @brief Removed legacy symbols for an outdated FTP client
+ * 
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __NANO_FTP_H__

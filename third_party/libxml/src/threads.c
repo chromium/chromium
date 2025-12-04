@@ -3,8 +3,7 @@
  *
  * See Copyright for the status of this software.
  *
- * Gary Pennington <Gary.Pennington@uk.sun.com>
- * daniel@veillard.com
+ * Author: Gary Pennington, Daniel Veillard
  */
 
 #define IN_LIBXML
@@ -49,13 +48,12 @@
 static xmlRMutex xmlLibraryLock;
 
 /**
- * xmlInitMutex:
- * @mutex:  the mutex
- *
  * Initialize a mutex.
+ *
+ * @param mutex  the mutex
  */
 void
-xmlInitMutex(xmlMutexPtr mutex)
+xmlInitMutex(xmlMutex *mutex)
 {
 #ifdef HAVE_POSIX_THREADS
     pthread_mutex_init(&mutex->lock, NULL);
@@ -67,14 +65,12 @@ xmlInitMutex(xmlMutexPtr mutex)
 }
 
 /**
- * xmlNewMutex:
- *
- * xmlNewMutex() is used to allocate a libxml2 token struct for use in
+ * #xmlNewMutex is used to allocate a libxml2 token struct for use in
  * synchronizing access to data.
  *
- * Returns a new simple mutex pointer or NULL in case of error
+ * @returns a new simple mutex pointer or NULL in case of error
  */
-xmlMutexPtr
+xmlMutex *
 xmlNewMutex(void)
 {
     xmlMutexPtr tok;
@@ -87,13 +83,12 @@ xmlNewMutex(void)
 }
 
 /**
- * xmlCleanupMutex:
- * @mutex:  the simple mutex
- *
  * Reclaim resources associated with a mutex.
+ *
+ * @param mutex  the simple mutex
  */
 void
-xmlCleanupMutex(xmlMutexPtr mutex)
+xmlCleanupMutex(xmlMutex *mutex)
 {
 #ifdef HAVE_POSIX_THREADS
     pthread_mutex_destroy(&mutex->lock);
@@ -105,13 +100,12 @@ xmlCleanupMutex(xmlMutexPtr mutex)
 }
 
 /**
- * xmlFreeMutex:
- * @tok:  the simple mutex
- *
  * Free a mutex.
+ *
+ * @param tok  the simple mutex
  */
 void
-xmlFreeMutex(xmlMutexPtr tok)
+xmlFreeMutex(xmlMutex *tok)
 {
     if (tok == NULL)
         return;
@@ -121,13 +115,12 @@ xmlFreeMutex(xmlMutexPtr tok)
 }
 
 /**
- * xmlMutexLock:
- * @tok:  the simple mutex
+ * #xmlMutexLock is used to lock a libxml2 token.
  *
- * xmlMutexLock() is used to lock a libxml2 token.
+ * @param tok  the simple mutex
  */
 void
-xmlMutexLock(xmlMutexPtr tok)
+xmlMutexLock(xmlMutex *tok)
 {
     if (tok == NULL)
         return;
@@ -144,13 +137,12 @@ xmlMutexLock(xmlMutexPtr tok)
 }
 
 /**
- * xmlMutexUnlock:
- * @tok:  the simple mutex
+ * #xmlMutexUnlock is used to unlock a libxml2 token.
  *
- * xmlMutexUnlock() is used to unlock a libxml2 token.
+ * @param tok  the simple mutex
  */
 void
-xmlMutexUnlock(xmlMutexPtr tok)
+xmlMutexUnlock(xmlMutex *tok)
 {
     if (tok == NULL)
         return;
@@ -162,13 +154,12 @@ xmlMutexUnlock(xmlMutexPtr tok)
 }
 
 /**
- * xmlInitRMutex:
- * @tok:  mutex
- *
  * Initialize the mutex.
+ *
+ * @param tok  mutex
  */
 void
-xmlInitRMutex(xmlRMutexPtr tok) {
+xmlInitRMutex(xmlRMutex *tok) {
     (void) tok;
 
 #ifdef HAVE_POSIX_THREADS
@@ -182,16 +173,14 @@ xmlInitRMutex(xmlRMutexPtr tok) {
 }
 
 /**
- * xmlNewRMutex:
- *
- * xmlRNewMutex() is used to allocate a reentrant mutex for use in
+ * Used to allocate a reentrant mutex for use in
  * synchronizing access to data. token_r is a re-entrant lock and thus useful
  * for synchronizing access to data structures that may be manipulated in a
  * recursive fashion.
  *
- * Returns the new reentrant mutex pointer or NULL in case of error
+ * @returns the new reentrant mutex pointer or NULL in case of error
  */
-xmlRMutexPtr
+xmlRMutex *
 xmlNewRMutex(void)
 {
     xmlRMutexPtr tok;
@@ -204,13 +193,12 @@ xmlNewRMutex(void)
 }
 
 /**
- * xmlCleanupRMutex:
- * @tok:  mutex
- *
  * Cleanup the mutex.
+ *
+ * @param tok  mutex
  */
 void
-xmlCleanupRMutex(xmlRMutexPtr tok) {
+xmlCleanupRMutex(xmlRMutex *tok) {
     (void) tok;
 
 #ifdef HAVE_POSIX_THREADS
@@ -222,14 +210,13 @@ xmlCleanupRMutex(xmlRMutexPtr tok) {
 }
 
 /**
- * xmlFreeRMutex:
- * @tok:  the reentrant mutex
- *
- * xmlRFreeMutex() is used to reclaim resources associated with a
+ * Used to reclaim resources associated with a
  * reentrant mutex.
+ *
+ * @param tok  the reentrant mutex
  */
 void
-xmlFreeRMutex(xmlRMutexPtr tok)
+xmlFreeRMutex(xmlRMutex *tok)
 {
     if (tok == NULL)
         return;
@@ -238,13 +225,12 @@ xmlFreeRMutex(xmlRMutexPtr tok)
 }
 
 /**
- * xmlRMutexLock:
- * @tok:  the reentrant mutex
+ * #xmlRMutexLock is used to lock a libxml2 token_r.
  *
- * xmlRMutexLock() is used to lock a libxml2 token_r.
+ * @param tok  the reentrant mutex
  */
 void
-xmlRMutexLock(xmlRMutexPtr tok)
+xmlRMutexLock(xmlRMutex *tok)
 {
     if (tok == NULL)
         return;
@@ -271,13 +257,12 @@ xmlRMutexLock(xmlRMutexPtr tok)
 }
 
 /**
- * xmlRMutexUnlock:
- * @tok:  the reentrant mutex
+ * #xmlRMutexUnlock is used to unlock a libxml2 token_r.
  *
- * xmlRMutexUnlock() is used to unlock a libxml2 token_r.
+ * @param tok  the reentrant mutex
  */
 void
-xmlRMutexUnlock(xmlRMutexPtr tok ATTRIBUTE_UNUSED)
+xmlRMutexUnlock(xmlRMutex *tok ATTRIBUTE_UNUSED)
 {
     if (tok == NULL)
         return;
@@ -302,9 +287,7 @@ xmlRMutexUnlock(xmlRMutexPtr tok ATTRIBUTE_UNUSED)
  ************************************************************************/
 
 /**
- * xmlLockLibrary:
- *
- * xmlLockLibrary() is used to take out a re-entrant lock on the libxml2
+ * #xmlLockLibrary is used to take out a re-entrant lock on the libxml2
  * library.
  */
 void
@@ -314,9 +297,7 @@ xmlLockLibrary(void)
 }
 
 /**
- * xmlUnlockLibrary:
- *
- * xmlUnlockLibrary() is used to release a re-entrant lock on the libxml2
+ * #xmlUnlockLibrary is used to release a re-entrant lock on the libxml2
  * library.
  */
 void
@@ -326,9 +307,7 @@ xmlUnlockLibrary(void)
 }
 
 /**
- * xmlInitThreads:
- *
- * DEPRECATED: Alias for xmlInitParser.
+ * @deprecated Alias for #xmlInitParser.
  */
 void
 xmlInitThreads(void)
@@ -337,10 +316,8 @@ xmlInitThreads(void)
 }
 
 /**
- * xmlCleanupThreads:
- *
- * DEPRECATED: This function is a no-op. Call xmlCleanupParser
- * to free global state but see the warnings there. xmlCleanupParser
+ * @deprecated This function is a no-op. Call #xmlCleanupParser
+ * to free global state but see the warnings there. #xmlCleanupParser
  * should be only called once at program exit. In most cases, you don't
  * have call cleanup functions at all.
  */
@@ -393,6 +370,12 @@ xmlInitParserInternal(void) {
 #ifdef LIBXML_CATALOG_ENABLED
     xmlInitCatalogInternal();
 #endif
+#ifdef LIBXML_SCHEMAS_ENABLED
+    xmlInitSchemasTypesInternal();
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
+    xmlInitRelaxNGInternal();
+#endif
 
     xmlParserInitialized = 1;
 }
@@ -408,8 +391,6 @@ xmlInitParserWinWrapper(INIT_ONCE *initOnce ATTRIBUTE_UNUSED,
 #endif
 
 /**
- * xmlInitParser:
- *
  * Initialization function for the XML parser.
  *
  * For older versions, it's recommended to call this function once
@@ -434,20 +415,29 @@ xmlInitParser(void) {
 }
 
 /**
- * xmlCleanupParser:
+ * Free global memory allocations.
  *
  * This function is named somewhat misleadingly. It does not clean up
- * parser state but global memory allocated by the library itself.
+ * parser state but frees global memory allocated by various components
+ * of the library.
  *
- * Since 2.9.11, cleanup is performed automatically if a shared or
- * dynamic libxml2 library is unloaded. This function should only
- * be used to avoid false positives from memory leak checkers in
- * static builds.
+ * Since 2.9.11, cleanup is performed automatically on most platforms
+ * and there's no need at all for manual cleanup. This includes all
+ * compilers and platforms that support GCC-style destructor attributes
+ * as well as Windows DLLs.
  *
- * WARNING: xmlCleanupParser assumes that all other threads that called
- * libxml2 functions have terminated. No library calls must be made
- * after calling this function. In general, THIS FUNCTION SHOULD ONLY
- * BE CALLED RIGHT BEFORE THE WHOLE PROCESS EXITS.
+ * This function should only be used to avoid false positives from
+ * memory leak checkers if automatic cleanup isn't possible, for
+ * example with static builds on MSVC.
+ *
+ * WARNING: xmlCleanupParser is not thread-safe. If this function is
+ * called and any threads that could make calls into libxml2 are
+ * still running, memory corruption is likely to occur.
+ *
+ * No library calls must be made (from any thread) after calling this
+ * function. In general, *this function should only be called right
+ * before the whole process exits.* Calling this function too early
+ * will lead to memory corruption.
  */
 void
 xmlCleanupParser(void) {
@@ -470,6 +460,14 @@ xmlCleanupParser(void) {
 #endif
 #ifdef LIBXML_RELAXNG_ENABLED
     xmlRelaxNGCleanupTypes();
+#endif
+
+#ifdef LIBXML_SCHEMAS_ENABLED
+    /* Must be after xmlRelaxNGCleanupTypes */
+    xmlCleanupSchemasTypesInternal();
+#endif
+#ifdef LIBXML_RELAXNG_ENABLED
+    xmlCleanupRelaxNGInternal();
 #endif
 
     xmlCleanupDictInternal();

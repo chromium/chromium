@@ -1,11 +1,14 @@
-/*
- * Summary: Old SAX version 1 handler, deprecated
- * Description: DEPRECATED set of SAX version 1 interfaces used to
+/**
+ * @file
+ * 
+ * @brief Old SAX version 1 handler, deprecated
+ * 
+ * @deprecated set of SAX version 1 interfaces used to
  *              build the DOM tree.
  *
- * Copy: See Copyright for the status of this software.
+ * @copyright See Copyright for the status of this software.
  *
- * Author: Daniel Veillard
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_SAX_H__

@@ -22,9 +22,6 @@
 /* Define if readline library is there (-lreadline) */
 #cmakedefine HAVE_LIBREADLINE 1
 
-/* Define to 1 if you have the <poll.h> header file. */
-#cmakedefine HAVE_POLL_H 1
-
 /* Have shl_load based dso */
 #cmakedefine HAVE_SHLLOAD 1
 

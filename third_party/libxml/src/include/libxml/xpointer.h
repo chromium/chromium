@@ -1,17 +1,21 @@
-/*
- * Summary: API to handle XML Pointers
- * Description: API to handle XML Pointers
- * Base implementation was made accordingly to
- * W3C Candidate Recommendation 7 June 2000
- * http://www.w3.org/TR/2000/CR-xptr-20000607
+/**
+ * @file
  *
- * Added support for the element() scheme described in:
- * W3C Proposed Recommendation 13 November 2002
- * http://www.w3.org/TR/2002/PR-xptr-element-20021113/
+ * @brief XPointer framework and schemes
  *
- * Copy: See Copyright for the status of this software.
+ * API to evaluate XPointer expressions. The following schemes are
+ * supported:
  *
- * Author: Daniel Veillard
+ * - element()
+ * - xmlns()
+ * - xpath1()
+ *
+ * xpointer() is an alias for the xpath1() scheme. The point and
+ * range extensions are not supported.
+ *
+ * @copyright See Copyright for the status of this software.
+ *
+ * @author Daniel Veillard
  */
 
 #ifndef __XML_XPTR_H__
@@ -32,13 +36,13 @@ extern "C" {
  * Functions.
  */
 XML_DEPRECATED
-XMLPUBFUN xmlXPathContextPtr
-		    xmlXPtrNewContext		(xmlDocPtr doc,
-						 xmlNodePtr here,
-						 xmlNodePtr origin);
-XMLPUBFUN xmlXPathObjectPtr
+XMLPUBFUN xmlXPathContext *
+		    xmlXPtrNewContext		(xmlDoc *doc,
+						 xmlNode *here,
+						 xmlNode *origin);
+XMLPUBFUN xmlXPathObject *
 		    xmlXPtrEval			(const xmlChar *str,
-						 xmlXPathContextPtr ctx);
+						 xmlXPathContext *ctx);
 
 #ifdef __cplusplus
 }
