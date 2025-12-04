@@ -725,6 +725,9 @@ ci.thin_tester(
                     # running tests there.
                     "--disable-accelerated-subwindows-for-testing",
                 ],
+                swarming = targets.swarming(
+                    shards = 10,
+                ),
             ),
             "ozone_x11_unittests": targets.remove(
                 reason = "x11 tests don't make sense for wayland",
