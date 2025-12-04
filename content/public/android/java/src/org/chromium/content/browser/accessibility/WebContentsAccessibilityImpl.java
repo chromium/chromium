@@ -91,6 +91,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
@@ -2153,6 +2154,23 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     private void handleScrolledToAnchor(int id) {
         moveAccessibilityFocusToId(id);
+    }
+
+    @CalledByNative
+    protected void handleSortDirectionChanged(int id) {
+        AccessibilityEvent event =
+                buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        if (event == null) return;
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            // The delegate will attempt to add the specific content change type.
+            if (!delegate.setSortDirectionContentChangeType(event)) {
+                return;
+            }
+        }
+
+        requestSendAccessibilityEvent(event);
     }
 
     @CalledByNative

@@ -18,7 +18,10 @@ import android.view.Display;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.Window;
+import android.view.accessibility.AccessibilityEvent;
 import android.webkit.WebViewDelegate;
+
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -215,5 +218,27 @@ public interface AconfigFlaggedApiDelegate {
     default @Nullable SelectionActionMenuClientWrapper getSelectionActionMenuClient(
             WebViewDelegate delegate) {
         return null;
+    }
+
+    /**
+     * Sets the sort direction on the CollectionItemInfoCompat Builder. This may call
+     * setSortDirection on the CollectionItemInfoCompat builder if the API is available.
+     *
+     * @param builder The CollectionItemInfoCompat.Builder instance to modify.
+     * @param sortDirection An integer representing the sort direction.
+     */
+    default void setCollectionItemSortDirection(
+            AccessibilityNodeInfoCompat.CollectionItemInfoCompat.Builder builder,
+            int sortDirection) {}
+
+    /**
+     * Attempts to add the CONTENT_CHANGE_TYPE_SORT_DIRECTION to the given AccessibilityEvent.
+     *
+     * @param event The AccessibilityEvent object to modify.
+     * @return true if the event was modified to include the sort direction content change type,
+     *     false otherwise (e.g., API not available).
+     */
+    default boolean setSortDirectionContentChangeType(AccessibilityEvent event) {
+        return false;
     }
 }

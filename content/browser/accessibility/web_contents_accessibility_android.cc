@@ -893,6 +893,20 @@ void WebContentsAccessibilityAndroid::HandleScrollPositionChanged(
                                                                 unique_id);
 }
 
+void WebContentsAccessibilityAndroid::HandleSortDirectionChanged(
+    int32_t unique_id) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
+  if (obj.is_null()) {
+    return;
+  }
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  CHECK(node && node->IsTableHeader());
+
+  Java_WebContentsAccessibilityImpl_handleSortDirectionChanged(env, obj,
+                                                               unique_id);
+}
+
 void WebContentsAccessibilityAndroid::HandleScrolledToAnchor(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
@@ -1599,7 +1613,8 @@ void WebContentsAccessibilityAndroid::
         /* rowIndex= */ node->RowIndex(),
         /* rowSpan= */ node->RowSpan(),
         /* columnIndex= */ node->ColumnIndex(),
-        /* columnSpan= */ node->ColumnSpan());
+        /* columnSpan= */ node->ColumnSpan(),
+        /* sortDirection= */ node->GetSortDirection());
   }
 }
 

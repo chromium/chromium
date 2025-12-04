@@ -70,6 +70,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.ax.mojom.TextPosition;
 import org.chromium.ax.mojom.TextStyle;
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -659,13 +660,22 @@ public class AccessibilityNodeInfoBuilder {
             int rowIndex,
             int rowSpan,
             int columnIndex,
-            int columnSpan) {
-        // TODO(crbug.com/443079218): convert to CollectionItemInfo.Builder to remove need for
-        // setting
-        // heading param.
-        node.setCollectionItemInfo(
-                AccessibilityNodeInfoCompat.CollectionItemInfoCompat.obtain(
-                        rowIndex, rowSpan, columnIndex, columnSpan, /* heading= */ false));
+            int columnSpan,
+            int sortDirection) {
+        AccessibilityNodeInfoCompat.CollectionItemInfoCompat.Builder builder =
+                new AccessibilityNodeInfoCompat.CollectionItemInfoCompat.Builder();
+
+        builder.setRowIndex(rowIndex)
+                .setRowSpan(rowSpan)
+                .setColumnIndex(columnIndex)
+                .setColumnSpan(columnSpan);
+
+        AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
+        if (delegate != null) {
+            delegate.setCollectionItemSortDirection(builder, sortDirection);
+        }
+
+        node.setCollectionItemInfo(builder.build());
     }
 
     @CalledByNative

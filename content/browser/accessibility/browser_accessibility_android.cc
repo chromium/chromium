@@ -2091,6 +2091,30 @@ int BrowserAccessibilityAndroid::ColumnSpan() const {
   return ax_col_span;
 }
 
+BrowserAccessibilityAndroid::AndroidSortDirection
+BrowserAccessibilityAndroid::GetSortDirection() const {
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kSortDirection)) {
+    return ANDROID_SORT_DIRECTION_NONE;
+  }
+  CHECK(IsTableHeader());
+
+  auto sort_direction = static_cast<ax::mojom::SortDirection>(
+      GetIntAttribute(ax::mojom::IntAttribute::kSortDirection));
+
+  switch (sort_direction) {
+    case ax::mojom::SortDirection::kAscending:
+      return ANDROID_SORT_DIRECTION_ASCENDING;
+    case ax::mojom::SortDirection::kDescending:
+      return ANDROID_SORT_DIRECTION_DESCENDING;
+    case ax::mojom::SortDirection::kOther:
+      return ANDROID_SORT_DIRECTION_OTHER;
+    case ax::mojom::SortDirection::kNone:
+    case ax::mojom::SortDirection::kUnsorted:
+      NOTREACHED();
+  }
+  return ANDROID_SORT_DIRECTION_NONE;
+}
+
 float BrowserAccessibilityAndroid::RangeMin() const {
   return GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
 }

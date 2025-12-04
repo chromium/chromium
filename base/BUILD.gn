@@ -5415,6 +5415,7 @@ if (is_android) {
       ":promise_java",
       ":service_loader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_core_core_java",
     ]
     sources = [
       "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",

@@ -232,6 +232,22 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int ColumnIndex() const;
   int ColumnSpan() const;
 
+  // These are enums from
+  // android.view.accessibility.AccessibilityNodeInfo.CollectionItemInfo in
+  // Java:
+  enum AndroidSortDirection {
+    ANDROID_SORT_DIRECTION_NONE = 0,
+    ANDROID_SORT_DIRECTION_ASCENDING = 1,
+    ANDROID_SORT_DIRECTION_DESCENDING = 2,
+    ANDROID_SORT_DIRECTION_OTHER = 3
+  };
+
+  // This method converts from ax::mojom::IntAttribute::kSortDirection to
+  // android values. If this node is not a table header, it will return
+  // ANDROID_SORT_DIRECTION_NONE as Android only can set the sort direction on
+  // this kind of node.
+  AndroidSortDirection GetSortDirection() const;
+
   float RangeMin() const;
   float RangeMax() const;
   float RangeCurrentValue() const;

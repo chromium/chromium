@@ -342,6 +342,7 @@ public final class AccessibilityNodeInfoUtils {
         if (collectionItemInfo.getColumnSpan() != 1) {
             prefix += String.format("colSpan=%s, ", collectionItemInfo.getColumnSpan());
         }
+        // TODO(crbug.com/458146866): Print sort direction in AccessibilityNodeInfoUtils.
         return String.format(
                 "%srowIndex=%s, colIndex=%s]",
                 prefix, collectionItemInfo.getRowIndex(), collectionItemInfo.getColumnIndex());
