@@ -58,6 +58,11 @@ enum class WarningState {
 // `trailingImage` is provided or `indicatorHidden` is false.
 @property(nonatomic, assign, getter=isInfoButtonHidden) BOOL infoButtonHidden;
 
+// The properties to configure the infoButton action.
+@property(nonatomic, strong) id infoButtonTarget;
+@property(nonatomic, assign) SEL infoButtonSelector;
+@property(nonatomic, assign) NSInteger infoButtonTag;
+
 // Disabled cell are automatically drawn with dimmed text and without
 // `trailingImage` or `activityIndicator`.
 @property(nonatomic, assign, getter=isEnabled) BOOL enabled;

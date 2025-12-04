@@ -18,13 +18,6 @@
 // Determines if selection animation should be shown for `item`.
 - (BOOL)isItemClickable:(TableViewItem*)item;
 
-// Checks if `item` should have an error popover.
-- (BOOL)isItemWithErrorInfo:(TableViewItem*)item;
-
-// Notifies the mediator that an info button was tapped for `itemType`.
-- (void)infoButtonWasTapped:(UIButton*)buttonView
-              usingItemType:(NSInteger)itemType;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_SAFETY_CHECK_SAFETY_CHECK_SERVICE_DELEGATE_H_

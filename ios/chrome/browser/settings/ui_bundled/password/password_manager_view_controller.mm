@@ -37,7 +37,6 @@
 #import "ios/chrome/browser/passwords/model/password_checkup_metrics.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/create_password_manager_title_view.h"
@@ -758,6 +757,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   _passwordProblemsItem.detailText =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_CHECKUP_DESCRIPTION);
   _passwordProblemsItem.accessibilityTraits = UIAccessibilityTraitHeader;
+  _passwordProblemsItem.infoButtonTarget = self;
+  _passwordProblemsItem.infoButtonSelector =
+      @selector(didTapPasswordCheckInfoButton:);
   return _passwordProblemsItem;
 }
 
@@ -2249,15 +2251,8 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
           kWidgetPromoImageID;
       break;
     }
-    case ItemTypePasswordCheckStatus: {
-      SettingsCheckCell* passwordCheckCell =
-          base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
-      [passwordCheckCell.infoButton
-                 addTarget:self
-                    action:@selector(didTapPasswordCheckInfoButton:)
-          forControlEvents:UIControlEventTouchUpInside];
+    case ItemTypePasswordCheckStatus:
       break;
-    }
     case ItemTypeSavedPassword:
     case ItemTypeBlocked: {
       // Load the favicon from cache.

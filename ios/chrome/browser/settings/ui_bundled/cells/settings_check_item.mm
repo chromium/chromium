@@ -63,6 +63,12 @@ constexpr NSInteger kTrailingSymbolImagePointSize = 22;
   } else {
     cell.accessibilityLabel = self.text;
   }
+  if (self.infoButtonTarget) {
+    [cell.infoButton addTarget:self.infoButtonTarget
+                        action:self.infoButtonSelector
+              forControlEvents:UIControlEventTouchUpInside];
+    cell.infoButton.tag = self.infoButtonTag;
+  }
 }
 
 #pragma mark - Setters

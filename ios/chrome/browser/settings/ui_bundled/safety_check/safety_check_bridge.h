@@ -8,7 +8,6 @@
 // Bridging header between Swift and Obj-C. These types/imports need to be pure
 // Obj-C and have no C++ in them.
 
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_consumer.h"
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_service_delegate.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller.h"
