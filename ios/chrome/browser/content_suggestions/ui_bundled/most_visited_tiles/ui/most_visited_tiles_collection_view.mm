@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/most_visited_tiles/ui/most_visited_tiles_collection_view.h"
 
 #import "base/check.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_tile_layout_util.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
@@ -216,8 +217,12 @@ UICollectionViewCompositionalLayout* GetLayoutForMostVisitedTilesCollectionView(
   if (!item.attributes) {
     __weak MostVisitedTilesCollectionView* weakSelf = self;
     void (^completion)(FaviconAttributes*) = ^(FaviconAttributes* attributes) {
-      [weakSelf updateFaviconWithAttributes:attributes
-                      forItemWithIdentifier:identifier];
+      /// Execute block on the main queue.
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf updateFaviconWithAttributes:attributes
+                            forItemWithIdentifier:identifier];
+          }));
     };
     [_imageDataSource fetchFaviconForURL:item.URL completion:completion];
   }
