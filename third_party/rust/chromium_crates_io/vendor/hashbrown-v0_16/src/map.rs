@@ -1486,13 +1486,13 @@ where
     /// libraries.insert("Library of Congress".to_string(), 1800);
     ///
     /// // Get Athenæum and Bodleian Library
-    /// let [Some(a), Some(b)] = libraries.get_many_mut([
+    /// let [Some(a), Some(b)] = libraries.get_disjoint_mut([
     ///     "Athenæum",
     ///     "Bodleian Library",
     /// ]) else { panic!() };
     ///
     /// // Assert values of Athenæum and Library of Congress
-    /// let got = libraries.get_many_mut([
+    /// let got = libraries.get_disjoint_mut([
     ///     "Athenæum",
     ///     "Library of Congress",
     /// ]);
@@ -1505,7 +1505,7 @@ where
     /// );
     ///
     /// // Missing keys result in None
-    /// let got = libraries.get_many_mut([
+    /// let got = libraries.get_disjoint_mut([
     ///     "Athenæum",
     ///     "New York Public Library",
     /// ]);
@@ -1525,16 +1525,26 @@ where
     /// libraries.insert("Athenæum".to_string(), 1807);
     ///
     /// // Duplicate keys panic!
-    /// let got = libraries.get_many_mut([
+    /// let got = libraries.get_disjoint_mut([
     ///     "Athenæum",
     ///     "Athenæum",
     /// ]);
     /// ```
+    pub fn get_disjoint_mut<Q, const N: usize>(&mut self, ks: [&Q; N]) -> [Option<&'_ mut V>; N]
+    where
+        Q: Hash + Equivalent<K> + ?Sized,
+    {
+        self.get_disjoint_mut_inner(ks)
+            .map(|res| res.map(|(_, v)| v))
+    }
+
+    /// Attempts to get mutable references to `N` values in the map at once.
+    #[deprecated(note = "use `get_disjoint_mut` instead")]
     pub fn get_many_mut<Q, const N: usize>(&mut self, ks: [&Q; N]) -> [Option<&'_ mut V>; N]
     where
         Q: Hash + Equivalent<K> + ?Sized,
     {
-        self.get_many_mut_inner(ks).map(|res| res.map(|(_, v)| v))
+        self.get_disjoint_mut(ks)
     }
 
     /// Attempts to get mutable references to `N` values in the map at once, without validating that
@@ -1543,7 +1553,7 @@ where
     /// Returns an array of length `N` with the results of each query. `None` will be used if
     /// the key is missing.
     ///
-    /// For a safe alternative see [`get_many_mut`](`HashMap::get_many_mut`).
+    /// For a safe alternative see [`get_disjoint_mut`](`HashMap::get_disjoint_mut`).
     ///
     /// # Safety
     ///
@@ -1564,13 +1574,13 @@ where
     /// libraries.insert("Library of Congress".to_string(), 1800);
     ///
     /// // SAFETY: The keys do not overlap.
-    /// let [Some(a), Some(b)] = (unsafe { libraries.get_many_unchecked_mut([
+    /// let [Some(a), Some(b)] = (unsafe { libraries.get_disjoint_unchecked_mut([
     ///     "Athenæum",
     ///     "Bodleian Library",
     /// ]) }) else { panic!() };
     ///
     /// // SAFETY: The keys do not overlap.
-    /// let got = unsafe { libraries.get_many_unchecked_mut([
+    /// let got = unsafe { libraries.get_disjoint_unchecked_mut([
     ///     "Athenæum",
     ///     "Library of Congress",
     /// ]) };
@@ -1583,13 +1593,27 @@ where
     /// );
     ///
     /// // SAFETY: The keys do not overlap.
-    /// let got = unsafe { libraries.get_many_unchecked_mut([
+    /// let got = unsafe { libraries.get_disjoint_unchecked_mut([
     ///     "Athenæum",
     ///     "New York Public Library",
     /// ]) };
     /// // Missing keys result in None
     /// assert_eq!(got, [Some(&mut 1807), None]);
     /// ```
+    pub unsafe fn get_disjoint_unchecked_mut<Q, const N: usize>(
+        &mut self,
+        ks: [&Q; N],
+    ) -> [Option<&'_ mut V>; N]
+    where
+        Q: Hash + Equivalent<K> + ?Sized,
+    {
+        self.get_disjoint_unchecked_mut_inner(ks)
+            .map(|res| res.map(|(_, v)| v))
+    }
+
+    /// Attempts to get mutable references to `N` values in the map at once, without validating that
+    /// the values are unique.
+    #[deprecated(note = "use `get_disjoint_unchecked_mut` instead")]
     pub unsafe fn get_many_unchecked_mut<Q, const N: usize>(
         &mut self,
         ks: [&Q; N],
@@ -1597,8 +1621,7 @@ where
     where
         Q: Hash + Equivalent<K> + ?Sized,
     {
-        self.get_many_unchecked_mut_inner(ks)
-            .map(|res| res.map(|(_, v)| v))
+        self.get_disjoint_unchecked_mut(ks)
     }
 
     /// Attempts to get mutable references to `N` values in the map at once, with immutable
@@ -1622,7 +1645,7 @@ where
     /// libraries.insert("Herzogin-Anna-Amalia-Bibliothek".to_string(), 1691);
     /// libraries.insert("Library of Congress".to_string(), 1800);
     ///
-    /// let got = libraries.get_many_key_value_mut([
+    /// let got = libraries.get_disjoint_key_value_mut([
     ///     "Bodleian Library",
     ///     "Herzogin-Anna-Amalia-Bibliothek",
     /// ]);
@@ -1634,7 +1657,7 @@ where
     ///     ],
     /// );
     /// // Missing keys result in None
-    /// let got = libraries.get_many_key_value_mut([
+    /// let got = libraries.get_disjoint_key_value_mut([
     ///     "Bodleian Library",
     ///     "Gewandhaus",
     /// ]);
@@ -1649,12 +1672,26 @@ where
     /// libraries.insert("Herzogin-Anna-Amalia-Bibliothek".to_string(), 1691);
     ///
     /// // Duplicate keys result in panic!
-    /// let got = libraries.get_many_key_value_mut([
+    /// let got = libraries.get_disjoint_key_value_mut([
     ///     "Bodleian Library",
     ///     "Herzogin-Anna-Amalia-Bibliothek",
     ///     "Herzogin-Anna-Amalia-Bibliothek",
     /// ]);
     /// ```
+    pub fn get_disjoint_key_value_mut<Q, const N: usize>(
+        &mut self,
+        ks: [&Q; N],
+    ) -> [Option<(&'_ K, &'_ mut V)>; N]
+    where
+        Q: Hash + Equivalent<K> + ?Sized,
+    {
+        self.get_disjoint_mut_inner(ks)
+            .map(|res| res.map(|(k, v)| (&*k, v)))
+    }
+
+    /// Attempts to get mutable references to `N` values in the map at once, with immutable
+    /// references to the corresponding keys.
+    #[deprecated(note = "use `get_disjoint_key_value_mut` instead")]
     pub fn get_many_key_value_mut<Q, const N: usize>(
         &mut self,
         ks: [&Q; N],
@@ -1662,8 +1699,7 @@ where
     where
         Q: Hash + Equivalent<K> + ?Sized,
     {
-        self.get_many_mut_inner(ks)
-            .map(|res| res.map(|(k, v)| (&*k, v)))
+        self.get_disjoint_key_value_mut(ks)
     }
 
     /// Attempts to get mutable references to `N` values in the map at once, with immutable
@@ -1672,7 +1708,7 @@ where
     /// Returns an array of length `N` with the results of each query. `None` will be returned if
     /// any of the keys are missing.
     ///
-    /// For a safe alternative see [`get_many_key_value_mut`](`HashMap::get_many_key_value_mut`).
+    /// For a safe alternative see [`get_disjoint_key_value_mut`](`HashMap::get_disjoint_key_value_mut`).
     ///
     /// # Safety
     ///
@@ -1692,7 +1728,7 @@ where
     /// libraries.insert("Herzogin-Anna-Amalia-Bibliothek".to_string(), 1691);
     /// libraries.insert("Library of Congress".to_string(), 1800);
     ///
-    /// let got = libraries.get_many_key_value_mut([
+    /// let got = libraries.get_disjoint_key_value_mut([
     ///     "Bodleian Library",
     ///     "Herzogin-Anna-Amalia-Bibliothek",
     /// ]);
@@ -1704,7 +1740,7 @@ where
     ///     ],
     /// );
     /// // Missing keys result in None
-    /// let got = libraries.get_many_key_value_mut([
+    /// let got = libraries.get_disjoint_key_value_mut([
     ///     "Bodleian Library",
     ///     "Gewandhaus",
     /// ]);
@@ -1716,6 +1752,20 @@ where
     ///     ],
     /// );
     /// ```
+    pub unsafe fn get_disjoint_key_value_unchecked_mut<Q, const N: usize>(
+        &mut self,
+        ks: [&Q; N],
+    ) -> [Option<(&'_ K, &'_ mut V)>; N]
+    where
+        Q: Hash + Equivalent<K> + ?Sized,
+    {
+        self.get_disjoint_unchecked_mut_inner(ks)
+            .map(|res| res.map(|(k, v)| (&*k, v)))
+    }
+
+    /// Attempts to get mutable references to `N` values in the map at once, with immutable
+    /// references to the corresponding keys, without validating that the values are unique.
+    #[deprecated(note = "use `get_disjoint_key_value_unchecked_mut` instead")]
     pub unsafe fn get_many_key_value_unchecked_mut<Q, const N: usize>(
         &mut self,
         ks: [&Q; N],
@@ -1723,20 +1773,10 @@ where
     where
         Q: Hash + Equivalent<K> + ?Sized,
     {
-        self.get_many_unchecked_mut_inner(ks)
-            .map(|res| res.map(|(k, v)| (&*k, v)))
+        self.get_disjoint_key_value_unchecked_mut(ks)
     }
 
-    fn get_many_mut_inner<Q, const N: usize>(&mut self, ks: [&Q; N]) -> [Option<&'_ mut (K, V)>; N]
-    where
-        Q: Hash + Equivalent<K> + ?Sized,
-    {
-        let hashes = self.build_hashes_inner(ks);
-        self.table
-            .get_many_mut(hashes, |i, (k, _)| ks[i].equivalent(k))
-    }
-
-    unsafe fn get_many_unchecked_mut_inner<Q, const N: usize>(
+    fn get_disjoint_mut_inner<Q, const N: usize>(
         &mut self,
         ks: [&Q; N],
     ) -> [Option<&'_ mut (K, V)>; N]
@@ -1745,7 +1785,19 @@ where
     {
         let hashes = self.build_hashes_inner(ks);
         self.table
-            .get_many_unchecked_mut(hashes, |i, (k, _)| ks[i].equivalent(k))
+            .get_disjoint_mut(hashes, |i, (k, _)| ks[i].equivalent(k))
+    }
+
+    unsafe fn get_disjoint_unchecked_mut_inner<Q, const N: usize>(
+        &mut self,
+        ks: [&Q; N],
+    ) -> [Option<&'_ mut (K, V)>; N]
+    where
+        Q: Hash + Equivalent<K> + ?Sized,
+    {
+        let hashes = self.build_hashes_inner(ks);
+        self.table
+            .get_disjoint_unchecked_mut(hashes, |i, (k, _)| ks[i].equivalent(k))
     }
 
     fn build_hashes_inner<Q, const N: usize>(&self, ks: [&Q; N]) -> [u64; N]
@@ -1788,11 +1840,11 @@ where
     #[cfg_attr(feature = "inline-more", inline)]
     pub fn insert(&mut self, k: K, v: V) -> Option<V> {
         let hash = make_hash::<K, S>(&self.hash_builder, &k);
-        match self.find_or_find_insert_slot(hash, &k) {
+        match self.find_or_find_insert_index(hash, &k) {
             Ok(bucket) => Some(mem::replace(unsafe { &mut bucket.as_mut().1 }, v)),
-            Err(slot) => {
+            Err(index) => {
                 unsafe {
-                    self.table.insert_in_slot(hash, slot, (k, v));
+                    self.table.insert_at_index(hash, index, (k, v));
                 }
                 None
             }
@@ -1800,15 +1852,15 @@ where
     }
 
     #[cfg_attr(feature = "inline-more", inline)]
-    pub(crate) fn find_or_find_insert_slot<Q>(
+    pub(crate) fn find_or_find_insert_index<Q>(
         &mut self,
         hash: u64,
         key: &Q,
-    ) -> Result<Bucket<(K, V)>, crate::raw::InsertSlot>
+    ) -> Result<Bucket<(K, V)>, usize>
     where
         Q: Equivalent<K> + ?Sized,
     {
-        self.table.find_or_find_insert_slot(
+        self.table.find_or_find_insert_index(
             hash,
             equivalent_key(key),
             make_hasher(&self.hash_builder),
@@ -2982,10 +3034,10 @@ where
 /// }
 /// assert!(map["b"] == 20 && map.len() == 2);
 /// ```
-pub struct VacantEntryRef<'a, 'b, K, Q: ?Sized, V, S, A: Allocator = Global> {
+pub struct VacantEntryRef<'map, 'key, K, Q: ?Sized, V, S, A: Allocator = Global> {
     hash: u64,
-    key: &'b Q,
-    table: &'a mut HashMap<K, V, S, A>,
+    key: &'key Q,
+    table: &'map mut HashMap<K, V, S, A>,
 }
 
 impl<K, Q, V, S, A> Debug for VacantEntryRef<'_, '_, K, Q, V, S, A>
@@ -4396,7 +4448,7 @@ impl<'a, 'b, K, Q: ?Sized, V: Default, S, A: Allocator> EntryRef<'a, 'b, K, Q, V
     }
 }
 
-impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S, A> {
+impl<'map, 'key, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'map, 'key, K, Q, V, S, A> {
     /// Gets a reference to the key that would be used when inserting a value
     /// through the `VacantEntryRef`.
     ///
@@ -4410,7 +4462,7 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S
     /// assert_eq!(map.entry_ref(key).key(), "poneyland");
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
-    pub fn key(&self) -> &'b Q {
+    pub fn key(&self) -> &'key Q {
         self.key
     }
 
@@ -4432,16 +4484,65 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S
     /// assert_eq!(map["poneyland"], 37);
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
-    pub fn insert(self, value: V) -> &'a mut V
+    pub fn insert(self, value: V) -> &'map mut V
     where
         K: Hash,
-        &'b Q: Into<K>,
+        &'key Q: Into<K>,
         S: BuildHasher,
     {
         let table = &mut self.table.table;
         let entry = table.insert_entry(
             self.hash,
             (self.key.into(), value),
+            make_hasher::<_, V, S>(&self.table.hash_builder),
+        );
+        &mut entry.1
+    }
+
+    /// Sets the key and value of the entry and returns a mutable reference to
+    /// the inserted value.
+    ///
+    /// Unlike [`VacantEntryRef::insert`], this method allows the key to be
+    /// explicitly specified, which is useful for key types that don't implement
+    /// `K: From<&Q>`.
+    ///
+    /// # Panics
+    ///
+    /// This method panics if `key` is not equivalent to the key used to create
+    /// the `VacantEntryRef`.
+    ///
+    /// # Example
+    ///
+    /// ```
+    /// use hashbrown::hash_map::EntryRef;
+    /// use hashbrown::HashMap;
+    ///
+    /// let mut map = HashMap::<(String, String), char>::new();
+    /// let k = ("c".to_string(), "C".to_string());
+    /// let v =  match map.entry_ref(&k) {
+    ///   // Insert cannot be used here because tuples do not implement From.
+    ///   // However this works because we can manually clone instead.
+    ///   EntryRef::Vacant(r) => r.insert_with_key(k.clone(), 'c'),
+    ///   // In this branch we avoid the clone.
+    ///   EntryRef::Occupied(r) => r.into_mut(),
+    /// };
+    /// assert_eq!(*v, 'c');
+    /// ```
+    #[cfg_attr(feature = "inline-more", inline)]
+    pub fn insert_with_key(self, key: K, value: V) -> &'map mut V
+    where
+        K: Hash,
+        Q: Equivalent<K>,
+        S: BuildHasher,
+    {
+        let table = &mut self.table.table;
+        assert!(
+            (self.key).equivalent(&key),
+            "key used for Entry creation is not equivalent to the one used for insertion"
+        );
+        let entry = table.insert_entry(
+            self.hash,
+            (key, value),
             make_hasher::<_, V, S>(&self.table.hash_builder),
         );
         &mut entry.1
@@ -4464,10 +4565,10 @@ impl<'a, 'b, K, Q: ?Sized, V, S, A: Allocator> VacantEntryRef<'a, 'b, K, Q, V, S
     /// }
     /// ```
     #[cfg_attr(feature = "inline-more", inline)]
-    pub fn insert_entry(self, value: V) -> OccupiedEntry<'a, K, V, S, A>
+    pub fn insert_entry(self, value: V) -> OccupiedEntry<'map, K, V, S, A>
     where
         K: Hash,
-        &'b Q: Into<K>,
+        &'key Q: Into<K>,
         S: BuildHasher,
     {
         let elem = self.table.table.insert(
@@ -6056,20 +6157,20 @@ mod test_map {
     }
 
     #[test]
-    fn test_get_many_mut() {
+    fn test_get_disjoint_mut() {
         let mut map = HashMap::new();
         map.insert("foo".to_owned(), 0);
         map.insert("bar".to_owned(), 10);
         map.insert("baz".to_owned(), 20);
         map.insert("qux".to_owned(), 30);
 
-        let xs = map.get_many_mut(["foo", "qux"]);
+        let xs = map.get_disjoint_mut(["foo", "qux"]);
         assert_eq!(xs, [Some(&mut 0), Some(&mut 30)]);
 
-        let xs = map.get_many_mut(["foo", "dud"]);
+        let xs = map.get_disjoint_mut(["foo", "dud"]);
         assert_eq!(xs, [Some(&mut 0), None]);
 
-        let ys = map.get_many_key_value_mut(["bar", "baz"]);
+        let ys = map.get_disjoint_key_value_mut(["bar", "baz"]);
         assert_eq!(
             ys,
             [
@@ -6078,17 +6179,17 @@ mod test_map {
             ],
         );
 
-        let ys = map.get_many_key_value_mut(["bar", "dip"]);
+        let ys = map.get_disjoint_key_value_mut(["bar", "dip"]);
         assert_eq!(ys, [Some((&"bar".to_string(), &mut 10)), None]);
     }
 
     #[test]
     #[should_panic = "duplicate keys found"]
-    fn test_get_many_mut_duplicate() {
+    fn test_get_disjoint_mut_duplicate() {
         let mut map = HashMap::new();
         map.insert("foo".to_owned(), 0);
 
-        let _xs = map.get_many_mut(["foo", "foo"]);
+        let _xs = map.get_disjoint_mut(["foo", "foo"]);
     }
 
     #[test]
@@ -6576,6 +6677,139 @@ mod test_map {
         assert_eq!(HashMap::<u32, u32>::new().allocation_size(), 0);
         assert!(
             HashMap::<u32, u32>::with_capacity(1).allocation_size() > core::mem::size_of::<u32>()
+        );
+    }
+}
+
+#[cfg(all(test, unix, any(feature = "nightly", feature = "allocator-api2")))]
+mod test_map_with_mmap_allocations {
+    use super::HashMap;
+    use crate::raw::prev_pow2;
+    use core::alloc::Layout;
+    use core::ptr::{null_mut, NonNull};
+
+    #[cfg(feature = "nightly")]
+    use core::alloc::{AllocError, Allocator};
+
+    #[cfg(all(feature = "allocator-api2", not(feature = "nightly")))]
+    use allocator_api2::alloc::{AllocError, Allocator};
+
+    /// This is not a production quality allocator, just good enough for
+    /// some basic tests.
+    #[derive(Clone, Copy, Debug)]
+    struct MmapAllocator {
+        /// Guarantee this is a power of 2.
+        page_size: usize,
+    }
+
+    impl MmapAllocator {
+        fn new() -> Result<Self, AllocError> {
+            let result = unsafe { libc::sysconf(libc::_SC_PAGESIZE) };
+            if result < 1 {
+                return Err(AllocError);
+            }
+
+            let page_size = result as usize;
+            if !page_size.is_power_of_two() {
+                Err(AllocError)
+            } else {
+                Ok(Self { page_size })
+            }
+        }
+
+        fn fit_to_page_size(&self, n: usize) -> Result<usize, AllocError> {
+            // If n=0, give a single page (wasteful, I know).
+            let n = if n == 0 { self.page_size } else { n };
+
+            match n & (self.page_size - 1) {
+                0 => Ok(n),
+                rem => n.checked_add(self.page_size - rem).ok_or(AllocError),
+            }
+        }
+    }
+
+    unsafe impl Allocator for MmapAllocator {
+        fn allocate(&self, layout: Layout) -> Result<NonNull<[u8]>, AllocError> {
+            if layout.align() > self.page_size {
+                return Err(AllocError);
+            }
+
+            let null = null_mut();
+            let len = self.fit_to_page_size(layout.size())? as libc::size_t;
+            let prot = libc::PROT_READ | libc::PROT_WRITE;
+            let flags = libc::MAP_PRIVATE | libc::MAP_ANON;
+            let addr = unsafe { libc::mmap(null, len, prot, flags, -1, 0) };
+
+            // mmap returns MAP_FAILED on failure, not Null.
+            if addr == libc::MAP_FAILED {
+                return Err(AllocError);
+            }
+
+            match NonNull::new(addr.cast()) {
+                Some(data) => {
+                    // SAFETY: this is NonNull::slice_from_raw_parts.
+                    Ok(unsafe {
+                        NonNull::new_unchecked(core::ptr::slice_from_raw_parts_mut(
+                            data.as_ptr(),
+                            len,
+                        ))
+                    })
+                }
+
+                // This branch shouldn't be taken in practice, but since we
+                // cannot return null as a valid pointer in our type system,
+                // we attempt to handle it.
+                None => {
+                    _ = unsafe { libc::munmap(addr, len) };
+                    Err(AllocError)
+                }
+            }
+        }
+
+        unsafe fn deallocate(&self, ptr: NonNull<u8>, layout: Layout) {
+            // If they allocated it with this layout, it must round correctly.
+            let size = self.fit_to_page_size(layout.size()).unwrap();
+            let _result = libc::munmap(ptr.as_ptr().cast(), size);
+            debug_assert_eq!(0, _result)
+        }
+    }
+
+    #[test]
+    fn test_tiny_allocation_gets_rounded_to_page_size() {
+        let alloc = MmapAllocator::new().unwrap();
+        let mut map: HashMap<usize, (), _, _> = HashMap::with_capacity_in(1, alloc);
+
+        // Size of an element plus its control byte.
+        let rough_bucket_size = core::mem::size_of::<(usize, ())>() + 1;
+
+        // Accounting for some misc. padding that's likely in the allocation
+        // due to rounding to group width, etc.
+        let overhead = 3 * core::mem::size_of::<usize>();
+        let num_buckets = (alloc.page_size - overhead) / rough_bucket_size;
+        // Buckets are always powers of 2.
+        let min_elems = prev_pow2(num_buckets);
+        // Real load-factor is 7/8, but this is a lower estimation, so 1/2.
+        let min_capacity = min_elems >> 1;
+        let capacity = map.capacity();
+        assert!(
+            capacity >= min_capacity,
+            "failed: {capacity} >= {min_capacity}"
+        );
+
+        // Fill it up.
+        for i in 0..capacity {
+            map.insert(i, ());
+        }
+        // Capacity should not have changed and it should be full.
+        assert_eq!(capacity, map.len());
+        assert_eq!(capacity, map.capacity());
+
+        // Alright, make it grow.
+        map.insert(capacity, ());
+        assert!(
+            capacity < map.capacity(),
+            "failed: {capacity} < {}",
+            map.capacity()
         );
     }
 }

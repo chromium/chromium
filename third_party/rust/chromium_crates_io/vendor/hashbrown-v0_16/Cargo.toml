@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.65.0"
 name = "hashbrown"
-version = "0.16.0"
+version = "0.16.1"
 authors = ["Amanieu d'Antras <amanieu@gmail.com>"]
 build = false
 exclude = [
@@ -71,6 +71,10 @@ rustc-dep-of-std = [
     "rustc-internal-api",
 ]
 rustc-internal-api = []
+serde = [
+    "dep:serde_core",
+    "dep:serde",
+]
 
 [lib]
 name = "hashbrown"
@@ -108,6 +112,10 @@ path = "benches/insert_unique_unchecked.rs"
 name = "set_ops"
 path = "benches/set_ops.rs"
 
+[[bench]]
+name = "with_capacity"
+path = "benches/with_capacity.rs"
+
 [dependencies.alloc]
 version = "1.0.0"
 optional = true
@@ -135,20 +143,17 @@ optional = true
 default-features = false
 
 [dependencies.rayon]
-version = "1.2"
+version = "1.9.0"
 optional = true
 
-[dependencies.serde]
-version = "1.0.25"
+[dependencies.serde_core]
+version = "1.0.221"
 optional = true
 default-features = false
 
 [dev-dependencies.bumpalo]
 version = "3.13.0"
 features = ["allocator-api2"]
-
-[dev-dependencies.doc-comment]
-version = "0.3.1"
 
 [dev-dependencies.fnv]
 version = "1.0.7"
@@ -165,3 +170,11 @@ version = "1.2"
 
 [dev-dependencies.serde_test]
 version = "1.0"
+
+[target."cfg(any())".dependencies.serde]
+version = "1.0.220"
+optional = true
+default-features = false
+
+[target."cfg(unix)".dev-dependencies.libc]
+version = "0.2.155"

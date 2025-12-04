@@ -40,7 +40,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-hashbrown = "0.15"
+hashbrown = "0.16"
 ```
 
 Then:
@@ -51,6 +51,7 @@ use hashbrown::HashMap;
 let mut map = HashMap::new();
 map.insert(1, "one");
 ```
+
 ## Flags
 This crate has the following Cargo features:
 
