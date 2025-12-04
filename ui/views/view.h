@@ -2702,7 +2702,7 @@ class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
   raw_ptr<View> action_view_;
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, BaseView)
+BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, internal::BaseView)
 template <typename LayoutManager>
 BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
   auto setter = std::make_unique<::views::internal::PropertySetter<
