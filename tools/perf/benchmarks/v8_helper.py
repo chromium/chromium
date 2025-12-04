@@ -55,6 +55,7 @@ def AugmentOptionsForV8Metrics(options, enable_runtime_call_stats=True):
       'disabled-by-default-cppgc',
       'disabled-by-default-v8.gc',
       'v8',
+      'v8.memory',
       'v8.wasm',
       'v8.console',
       'webkit.console',
