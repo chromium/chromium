@@ -197,6 +197,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     return main_task_runner_;
   }
 
+  // Posts `task` to `scheduler_task_runner()`, passing it a reference to this
+  // context. This allows arbitrary logic to be safely executed on the context's
+  // task runner. The context is guaranteed to remain alive for the duration of
+  // the task.
+  using ScheduleTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
+  void ScheduleTaskWithThisContext(ScheduleTaskCallback task);
+
  protected:
   friend struct OnTaskRunnerDeleter;
 

@@ -275,22 +275,21 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
   WaitSyncToken(fence);
 
   // Must be a scheduled task since this depends on shared image creation task.
-  scheduler_task_runner()->PostTask(
-      FROM_HERE,
+  ScheduleTaskWithThisContext(
       base::BindOnce(
-          [](WebNNContextImpl* self, mojom::TensorInfoPtr tensor_info,
-             const gpu::Mailbox& mailbox, CreateTensorCallback callback) {
-            CHECK(self->shared_image_manager_);
+          [](mojom::TensorInfoPtr tensor_info, const gpu::Mailbox& mailbox,
+             CreateTensorCallback callback, WebNNContextImpl& self) {
+            CHECK(self.shared_image_manager_);
 
             constexpr char kWebNNCreateTensorErrorMessage[] =
                 "Failed to create tensor.";
 
             // Tensor will own the representation.
             WebNNTensorImpl::RepresentationPtr representation(
-                self->shared_image_manager_
-                    ->ProduceWebNNTensor(mailbox, &self->memory_type_tracker_)
+                self.shared_image_manager_
+                    ->ProduceWebNNTensor(mailbox, &self.memory_type_tracker_)
                     .release(),
-                OnTaskRunnerDeleter(self->main_task_runner()));
+                OnTaskRunnerDeleter(self.main_task_runner()));
             if (!representation) {
               std::move(callback).Run(ToError<mojom::CreateTensorResult>(
                   mojom::Error::Code::kUnknownError,
@@ -301,7 +300,7 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
             mojo::PendingAssociatedRemote<mojom::WebNNTensor> remote;
             auto receiver = remote.InitWithNewEndpointAndPassReceiver();
 
-            auto result = self->CreateTensorFromSharedImageImpl(
+            auto result = self.CreateTensorFromSharedImageImpl(
                 std::move(receiver), std::move(tensor_info),
                 std::move(representation));
             if (!result.has_value()) {
@@ -321,12 +320,9 @@ void WebNNContextImpl::CreateTensorFromMailbox(mojom::TensorInfoPtr tensor_info,
                 std::move(remote), result.value()->handle());
             std::move(callback).Run(
                 mojom::CreateTensorResult::NewSuccess(std::move(success)));
-            self->tensor_impls_.emplace(*std::move(result));
+            self.tensor_impls_.emplace(*std::move(result));
           },
-          // Safe to use base::Unretained because this context owns the sequence
-          // used by the task runner to run this task.
-          base::Unretained(this), std::move(tensor_info), mailbox,
-          std::move(callback)));
+          std::move(tensor_info), mailbox, std::move(callback)));
 }
 
 void WebNNContextImpl::RemoveWebNNTensorImpl(
@@ -348,17 +344,21 @@ void WebNNContextImpl::RemoveWebNNGraphImpl(
 }
 
 void WebNNContextImpl::OnLost(const std::string& reason) {
-  // Safe to use base::Unretained because `this` is sequence-bound to
-  // scheduler_task_runner_. Deletion occurs via Shutdown(), which drops all
-  // pending tasks - including this one - before the object is destroyed.
+  ScheduleTaskWithThisContext(base::BindOnce(
+      [](const std::string& reason, WebNNContextImpl& self) {
+        self.GetMojoReceiver().ResetWithReason(
+            /*custom_reason_code=*/0, reason);
+        self.OnDisconnect();
+      },
+      reason));
+}
+
+void WebNNContextImpl::ScheduleTaskWithThisContext(ScheduleTaskCallback task) {
+  // Safe to use std::ref because `this` owns scheduler_task_runner_ and
+  // its deletion occurs via Shutdown(), which drops all pending tasks before
+  // the context is destroyed.
   scheduler_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](WebNNContextImpl* self, const std::string& reason) {
-                       self->GetMojoReceiver().ResetWithReason(
-                           /*custom_reason=*/0, reason);
-                       self->OnDisconnect();
-                     },
-                     base::Unretained(this), reason));
+      FROM_HERE, base::BindOnce(std::move(task), std::ref(*this)));
 }
 
 scoped_refptr<WebNNTensorImpl> WebNNContextImpl::GetWebNNTensorImpl(

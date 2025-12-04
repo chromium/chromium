@@ -160,8 +160,7 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
   context_->scheduler_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](WebNNTensorImpl* self, WebNNContextImpl* context,
-             ExportTensorCallback callback,
+          [](WebNNTensorImpl* self, ExportTensorCallback callback,
              mojo::ReportBadMessageCallback bad_message_cb) {
             if (self->is_exported()) {
               LOG(ERROR)
@@ -174,10 +173,8 @@ void WebNNTensorImpl::ExportTensor(ExportTensorCallback callback) {
             self->ExportTensorImpl(std::move(self->representation_access_),
                                    std::move(callback));
           },
-          // Safe to use base::Unretained because this context owns the sequence
-          // used by the task runner to run this task.
-          base::RetainedRef(this), base::Unretained(context_.get()),
-          std::move(callback), GetMojoReceiver().GetBadMessageCallback()));
+          base::RetainedRef(this), std::move(callback),
+          GetMojoReceiver().GetBadMessageCallback()));
 }
 
 void WebNNTensorImpl::OnDisconnect() {
