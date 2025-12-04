@@ -824,14 +824,23 @@ TEST_P(ManagePasswordsUIControllerTest, BlocklistedElsewhere) {
 
 TEST_P(ManagePasswordsUIControllerTest, AutomaticPasswordSave) {
   std::vector<PasswordForm> best_matches;
-  auto test_form_manager =
+  std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
       CreateFormManagerWithBestMatches(best_matches, &submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillOnce(Return(password_manager::PasswordForm::Store::kAccountStore));
   controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
                                         /*is_update_confirmation=*/false);
   EXPECT_EQ(password_manager::ui::SAVE_CONFIRMATION_STATE,
             controller()->GetState());
 
+  // The form is saved in the account store so the `in_store` field should
+  // reflect that.
+  PasswordForm expected_form = submitted_form();
+  expected_form.in_store = password_manager::PasswordForm::Store::kAccountStore;
+  ASSERT_EQ(controller()->GetCurrentForms().size(), 1u);
+  EXPECT_EQ(*(controller()->GetCurrentForms()[0]), expected_form);
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
   controller()->OnBubbleHidden();
   ExpectIconAndControllerStateIs(password_manager::ui::MANAGE_STATE);
@@ -1143,6 +1152,11 @@ TEST_P(ManagePasswordsUIControllerTest, ConfirmationStatePasswordAutofilled) {
   std::unique_ptr<MockPasswordFormManagerForUI> test_form_manager =
       CreateFormManagerWithBestMatches(best_matches, &submitted_form());
   EXPECT_CALL(*controller(), OnUpdateBubbleAndIconVisibility());
+
+  // The exact store doesn't matter here.
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .WillOnce(Return(password_manager::PasswordForm::Store::kAccountStore));
   controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
                                         /*is_update_confirmation=*/false);
   ASSERT_EQ(controller()->GetState(),
@@ -1941,6 +1955,14 @@ TEST_P(ManagePasswordsUIControllerTest, UsernameAdded) {
   auto test_form_manager =
       CreateFormManagerWithBestMatches(best_matches, &submitted_form());
   MockPasswordFormManagerForUI* test_form_manager_raw = test_form_manager.get();
+  // The exact store doesn't matter here.
+  // This will be called twice, because both `OnAutomaticPasswordSave` and
+  // `OnAddUsernameSaveClicked` call `OnSubmittedGeneratedPassword`.
+  EXPECT_CALL(*test_form_manager,
+              GetPasswordStoreForSaving(Eq(submitted_form())))
+      .Times(2)
+      .WillRepeatedly(
+          Return(password_manager::PasswordForm::Store::kAccountStore));
   controller()->OnAutomaticPasswordSave(std::move(test_form_manager),
                                         /*is_update_confirmation=*/false);
 

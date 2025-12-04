@@ -11,6 +11,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/logging/log_router.h"
 #include "components/password_manager/core/browser/browser_save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -174,8 +175,11 @@ void ManagePasswordsState::OnSubmittedGeneratedPassword(
             *form, form_manager_->GetPendingCredentials());
       });
   if (it == local_credentials_forms_.end()) {
-    local_credentials_forms_.push_back(
-        std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials()));
+    auto generated_password_form =
+        std::make_unique<PasswordForm>(form_manager_->GetPendingCredentials());
+    generated_password_form->in_store =
+        form_manager_->GetPasswordStoreForSaving(*generated_password_form);
+    local_credentials_forms_.push_back(std::move(generated_password_form));
   }
 
   origin_ = url::Origin::Create(form_manager_->GetURL());
