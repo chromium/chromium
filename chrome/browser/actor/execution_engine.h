@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/id_type.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/site_policy.h"
@@ -239,9 +240,10 @@ class ExecutionEngine : public ToolDelegate {
   GatingDecision ShouldGateNavigationInternal(
       content::NavigationHandle& navigation_handle,
       NavigationDecisionCallback callback);
-  void LogNavigationGating(const std::optional<url::Origin>& initiator_origin,
-                           const GURL& navigation_url,
-                           bool applied_gate);
+  void LogNavigationGating(
+      base::optional_ref<const url::Origin> initiator_origin,
+      const GURL& navigation_url,
+      bool applied_gate);
 
   // Returns the highest-priority navigation gating decision. Prioritizes
   // blocking navigations over allowing (except on same origin navigations).
@@ -249,12 +251,12 @@ class ExecutionEngine : public ToolDelegate {
                                          const GURL& destination_url) const;
 
   void CheckNavigationBlocklist(
-      const std::optional<url::Origin>& initiator_origin,
+      base::optional_ref<const url::Origin> initiator_origin,
       const GURL& navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback);
   void OnNavigationBlocklistDecision(
-      const std::optional<url::Origin> initiator_origin,
+      base::optional_ref<const url::Origin> initiator_origin,
       const GURL navigation_url,
       bool skip_prompt,
       NavigationDecisionCallback callback,
