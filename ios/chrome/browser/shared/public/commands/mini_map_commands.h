@@ -17,9 +17,6 @@
 // Shows the minimap directions for text.
 - (void)presentMiniMapDirectionsForText:(NSString*)text;
 
-// Shows the minimap for `URL`.
-- (void)presentMiniMapForURL:(NSURL*)URL;
-
 // Hides the minimap.
 - (void)hideMiniMap;
 

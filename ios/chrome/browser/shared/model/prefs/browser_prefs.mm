@@ -864,9 +864,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kDetectAddressesEnabled, true);
   registry->RegisterBooleanPref(prefs::kDetectAddressesAccepted, false);
 
-  // Register MiniMap setting pref.
-  registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
-
   // Register prefs used by PromosManager.
   registry->RegisterListPref(prefs::kIosPromosManagerActivePromos);
   registry->RegisterListPref(prefs::kIosPromosManagerSingleDisplayActivePromos);
@@ -1182,6 +1179,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Deprecated 12/2025.
   registry->RegisterStringPref(kAutofillStatesDataDir, std::string());
+  registry->RegisterBooleanPref(prefs::kIosMiniMapShowNativeMap, true);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1387,6 +1385,7 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 12/2025.
   prefs->ClearPref(kAutofillStatesDataDir);
+  prefs->ClearPref(prefs::kIosMiniMapShowNativeMap);
 }
 
 void MigrateObsoleteUserDefault() {

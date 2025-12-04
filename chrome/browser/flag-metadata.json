@@ -6259,11 +6259,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "ios-mini-map-universal-links",
-    "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "ios-one-tap-mini-map-remove-section-breaks",
     "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 145

@@ -69,12 +69,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewMultiDetailTextItem* _openedInAnotherWindowItem;
   TableViewDetailIconItem* _defaultSiteMode;
   TableViewDetailIconItem* _webInspectorStateItem;
-
-  // PrefBackedBoolean for Mini Map show native setting state.
-  PrefBackedBoolean* _miniMapShowNativeEnabled;
-
-  // The item related to the switch for the "MiniMap native" setting.
-  TableViewSwitchItem* _miniMapShowNativeViewItem;
 }
 
 // PrefBackedBoolean for "Show Link Preview" setting state.
@@ -150,11 +144,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
                    prefName:prefs::kDetectAddressesEnabled];
     [_detectAddressesEnabled setObserver:self];
 
-    _miniMapShowNativeEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:prefService
-                   prefName:prefs::kIosMiniMapShowNativeMap];
-    [_miniMapShowNativeEnabled setObserver:self];
-
     _detectUnitsEnabled = [[PrefBackedBoolean alloc]
         initWithPrefService:prefService
                    prefName:prefs::kDetectUnitsEnabled];
@@ -225,9 +214,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [_detectAddressesEnabled stop];
   _detectAddressesEnabled.observer = nil;
   _detectAddressesEnabled = nil;
-  [_miniMapShowNativeEnabled stop];
-  _miniMapShowNativeEnabled.observer = nil;
-  _miniMapShowNativeEnabled = nil;
   [_detectUnitsEnabled stop];
   _detectUnitsEnabled.observer = nil;
   _detectUnitsEnabled = nil;
@@ -276,11 +262,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (IsAddressDetectionEnabled()) {
     [model addItem:[self detectAddressItem]
-        toSectionWithIdentifier:SectionIdentifierSettings];
-  }
-
-  if (base::FeatureList::IsEnabled(kIOSMiniMapUniversalLink)) {
-    [model addItem:[self miniMapShowNativeViewItem]
         toSectionWithIdentifier:SectionIdentifierSettings];
   }
 
@@ -409,23 +390,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _detectAddressesItem;
 }
 
-- (TableViewSwitchItem*)miniMapShowNativeViewItem {
-  if (!_miniMapShowNativeViewItem) {
-    _miniMapShowNativeViewItem = [[TableViewSwitchItem alloc]
-        initWithType:ItemTypeSettingsMiniMapShowNative];
-
-    _miniMapShowNativeViewItem.text =
-        l10n_util::GetNSString(IDS_IOS_MAPS_PREVIEWS_SETTING_TITLE);
-    _miniMapShowNativeViewItem.on = [_miniMapShowNativeEnabled value];
-    _miniMapShowNativeViewItem.target = self;
-    _miniMapShowNativeViewItem.selector =
-        @selector(detectMiniMapSwitchToggled:);
-    _miniMapShowNativeViewItem.accessibilityIdentifier =
-        kSettingsMimiMapNativeCellId;
-  }
-  return _miniMapShowNativeViewItem;
-}
-
 - (TableViewSwitchItem*)detectUnitItem {
   if (!_detectUnitsItem) {
     _detectUnitsItem =
@@ -531,9 +495,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   } else if (observableBoolean == self.detectAddressesEnabled) {
     self.detectAddressItem.on = [self.detectAddressesEnabled value];
     [self reconfigureCellsForItems:@[ self.detectAddressItem ]];
-  } else if (observableBoolean == _miniMapShowNativeEnabled) {
-    _miniMapShowNativeViewItem.on = [_miniMapShowNativeEnabled value];
-    [self reconfigureCellsForItems:@[ _miniMapShowNativeViewItem ]];
   } else if (observableBoolean == self.detectUnitsEnabled) {
     self.detectUnitsItem.on = [self.detectUnitsEnabled value];
     [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
@@ -554,12 +515,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BOOL newSwitchValue = sender.isOn;
   self.detectAddressesItem.on = newSwitchValue;
   [self.detectAddressesEnabled setValue:newSwitchValue];
-}
-
-- (void)detectMiniMapSwitchToggled:(UISwitch*)sender {
-  BOOL newSwitchValue = sender.isOn;
-  _miniMapShowNativeViewItem.on = newSwitchValue;
-  [_miniMapShowNativeEnabled setValue:newSwitchValue];
 }
 
 - (void)detectUnitsSwitchToggled:(UISwitch*)sender {
