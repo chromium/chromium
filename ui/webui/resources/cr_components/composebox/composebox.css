@@ -545,6 +545,10 @@ search-animated-glow {
   height: 44px;
 }
 
+:host([ntp-realbox-next-enabled]) #submitIcon {
+  --cr-icon-button-icon-size: 12px;
+}
+
 :host([ntp-realbox-next-enabled][searchbox-layout-mode="Compact"]) #context {
   margin-top: -48px;
 }
