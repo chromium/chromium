@@ -242,6 +242,11 @@ def initialize_globals(import_channel: str):
                                                              True)],
   }
 
+  additional_args = {
+      "{}{}".format(key, suffix): value
+      for key, value in additional_args.items()
+      for suffix in gn_utils.POSSIBLE_SUFFIXES
+  }
 
 # Shared libraries which are directly translated to Android system equivalents.
 shared_library_allowlist = [
@@ -557,10 +562,11 @@ _builtin_deps = {
     '//third_party/rust/rustversion/v1:lib__proc_macro':
     add_rustversion_deps,
 }
+
 builtin_deps = {
     "{}{}".format(key, suffix): value
     for key, value in _builtin_deps.items()
-    for suffix in ["", gn_utils.TESTING_SUFFIX]
+    for suffix in gn_utils.POSSIBLE_SUFFIXES
 }
 
 # Same as _builtin_deps but will only apply what is explicitly specified.
@@ -1197,7 +1203,8 @@ def get_protoc_module_name(gn):
   # not currently the case - libprotobuf-cpp-lite links against AOSP libc++,
   # while Cronet links against its own libc++ from Chromium. Therefore we cannot
   # use the AOSP protobuf library - we have to use the Chromium one.
-  protoc_gn_target_name = gn.get_target('//third_party/protobuf:protoc').name
+  protoc_gn_target_name = gn.get_target(
+      '//third_party/protobuf:protoc__toolchain_clang').name
   return label_to_module_name(protoc_gn_target_name)
 
 
@@ -1222,7 +1229,8 @@ def create_rust_cxx_modules(blueprint, gn, target, is_test_target):
   def _find_cxx_bridge_binary(deps: Set[str]) -> str:
     for dep in deps:
       if re.search(
-          r"^//third_party/rust/cxxbridge_cmd/v.*:cxxbridge(__testing)?$", dep):
+          r"^//third_party/rust/cxxbridge_cmd/v.*:cxxbridge__toolchain.*(__testing)?$",
+          dep):
         return dep
     raise Exception(
         f"Failed to find a dependency on cxxbridge host binary! Target name: {target.name}, deps: {deps}",
@@ -1732,7 +1740,7 @@ class GnRunBinarySanitizer(BaseActionSanitizer):
     super().__init__(target, arch)
     self.binary_to_target = {
         "clang_x64/transport_security_state_generator":
-        f"{MODULE_PREFIX}net_tools_transport_security_state_generator_transport_security_state_generator__testing",
+        f"{MODULE_PREFIX}net_tools_transport_security_state_generator_transport_security_state_generator__toolchain_clang__testing",
     }
     self.binary = self.binary_to_target[self.target.args[0]]
 
@@ -2502,6 +2510,7 @@ def create_generated_headers_export_module(blueprint: Blueprint,
   module.defaults = [cc_defaults_module]
   module.host_supported = cc_genrule_module.host_supported
   module.host_cross_supported = cc_genrule_module.host_cross_supported
+  module.device_supported = cc_genrule_module.device_supported
   blueprint.add_module(module)
   return module
 

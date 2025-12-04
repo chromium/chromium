@@ -18,12 +18,24 @@ REPOSITORY_ROOT = os.path.abspath(
 sys.path.insert(0, REPOSITORY_ROOT)
 import components.cronet.gn2bp.common as gn2bp_common  # pylint: disable=wrong-import-position
 
+TOOLCHAIN_SUFFIX = "__toolchain_"
+HOST_TOOLCHAIN_TO_SUFFIX = {
+    '//build/toolchain/linux:clang_x64': 'clang',
+    '//build/toolchain/linux:clang_x64_for_rust_host_build_tools':
+    'clang_for_rust',
+}
 LINKER_UNIT_TYPES = ('executable', 'shared_library', 'static_library',
                      'source_set')
 RESPONSE_FILE = '{{response_file_name}}'
 TESTING_SUFFIX = "__testing"
 AIDL_INCLUDE_DIRS_REGEX = r'--includes=\[(.*)\]'
 PROTO_IMPORT_DIRS_REGEX = r'--import-dir=(.*)'
+POSSIBLE_SUFFIXES = [
+    "{}{}".format(suffix_1, suffix_2) for suffix_1 in [""] + [
+        TOOLCHAIN_SUFFIX + toolchain_suffix
+        for toolchain_suffix in HOST_TOOLCHAIN_TO_SUFFIX.values()
+    ] for suffix_2 in ["", TESTING_SUFFIX]
+]
 
 
 def repo_root():
@@ -439,7 +451,9 @@ class GnParser:
       return 'android_arm64', 'arm64'
     if toolchain == '//build/toolchain/android:android_clang_riscv64':
       return 'android_riscv64', 'riscv64'
-    return 'host', 'host'
+    if toolchain in HOST_TOOLCHAIN_TO_SUFFIX.keys():
+      return 'host', 'host'
+    raise TypeError(f"Unknown toolchain found: {toolchain}")
 
   def get_target(self, gn_target_name):
     """Returns a Target object from the fully qualified GN target name.
@@ -470,6 +484,12 @@ class GnParser:
     type_ = desc['type']
     arch, chromium_arch = self._get_arch(desc['toolchain'])
     metadata = desc.get("metadata", {})
+
+    if arch == 'host':
+      # Add a custom suffix to the name. The goal here is to have host architecture
+      # as its own independent targets because there could be more than a single
+      # toolchain for the host.
+      target_name += f"{TOOLCHAIN_SUFFIX}{HOST_TOOLCHAIN_TO_SUFFIX[desc['toolchain']]}"
 
     if is_test_target:
       target_name += TESTING_SUFFIX
@@ -603,7 +623,7 @@ class GnParser:
           raise ValueError(
               f"Unexpected android_sdk_dep: {android_sdk_dep} for target {target.name}"
           )
-    elif target.script == "//build/rust/gni_impl/run_bindgen.py":
+    elif desc.get("script", "") == "//build/rust/gni_impl/run_bindgen.py":
       # rust_bindgen is a supported module in Soong but GN depend on actions
       # so we need to copy the action fields (sources, outputs and args) in
       # order to correctly generate the `rust_bindgen` module.
@@ -752,7 +772,16 @@ class GnParser:
         # to reuse transitive_static_libs_deps.
         target.arch[arch].transitive_static_libs_deps.add(dep.name)
 
-      if arch in dep.arch:
+      # rust_proc_macro must never propagate their dependency upward the tree. proc_macros are only used
+      # during compilations on host as they allow extending the compiler with custom macros, their dependency should
+      # be used to build the proc macro, then abandoned. Propagating it upward means that we'll be linking
+      # against code that is effectively dead, and can cause issues.
+      # Don't bubble up transitive dependencies of executables as they've already been linked.
+      # A dependency on the executable means that the output of the target (the executable) should
+      # be used, rather than its dependency.
+      if arch in dep.arch and dep.type not in [
+          'rust_proc_macro', 'rust_executable', 'executable'
+      ]:
         target.arch[arch].transitive_static_libs_deps.update(
             dep.arch[arch].transitive_static_libs_deps)
         target.arch[arch].deps.update(
