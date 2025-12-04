@@ -278,34 +278,6 @@ android_protobuf_src = 'external/protobuf/src'
 # put all args on a new line for better diffs.
 NEWLINE = ' " +\n         "'
 
-# Compiler flags which are passed through to the blueprint.
-cflag_allowlist = [
-    # needed for zlib:zlib
-    "-mpclmul",
-    # needed for zlib:zlib
-    "-mssse3",
-    # needed for zlib:zlib
-    "-msse3",
-    # needed for zlib:zlib
-    "-msse4.2",
-    # flags to reduce binary size
-    "-O1",
-    "-O2",
-    "-O3",
-    "-Oz",
-    "-g1",
-    "-g2",
-    "-fdata-sections",
-    "-ffunction-sections",
-    "-fvisibility=hidden",
-    "-fvisibility-inlines-hidden",
-    "-fstack-protector",
-    "-mno-outline",
-    "-mno-outline-atomics",
-    "-fno-asynchronous-unwind-tables",
-    "-fno-unwind-tables",
-]
-
 
 def get_linker_script_ldflag(script_path):
   return f'-Wl,--script,{tree_path}/{script_path}'
@@ -2589,8 +2561,47 @@ def create_jni_zero_proxy_only_module(jni_zero_generator_module):
   return proxy_only_module
 
 
+def _is_cflag_allowed(cflag):
+  if cflag.startswith("-Wno-"):
+    # Allow all -Wno- flags as those demote errors to warning.
+    return True
+  return all(not cflag.startswith(denied_prefix) for denied_prefix in [
+      # Soong handles this according to the module's attributes.
+      "--sysroot=",
+      # Soong handles this according to the architecture.
+      "--target=",
+      "--warning-suppression-mappings=",
+      # Remove all promotions of warning to errors. The code is developed in
+      # chromium, and the checks should be there.
+      "-W",
+      # Soong handles this according to the module's attributes.
+      "-isystem",
+      # Best handled by Soong according to the build configuration.
+      '-fcrash-diagnostics-dir=',
+      # Enabled by default in Soong.
+      '-flto',
+      # Enabled by default in Soong.
+      '-fsplit-lto-unit',
+      # Enabled by a special attribute instead.
+      '-fwhole-program-vtables',
+      # LLVM in AOSP fails when this is added. It's mostly used to warn
+      # against non-standard compiler extensions. It's forbidden by Soong as it's
+      # in the list of the IllegalFlags: http://ac/build/soong/cc/config/global.go?l=405-413
+      '-pedantic',
+      # Same as above.
+      '-w',
+      # This is used by a clang-plugin to show errors / warning for unsafe buffers during
+      # compilation. We don't care about static analysis errors / warnings as they're
+      # shown on the Chromium side. The reason why we're excluding this flag is because
+      # it introduces build breakages as clang's toolchain does not understand the
+      # pragma enabled by this define.
+      '-DUNSAFE_BUFFERS_BUILD',
+      '-Wunsafe-buffer-usage',
+      '-Wno-error=unsafe-buffer-usage',
+  ])
+
 def _get_cflags(cflags, defines):
-  cflags = [flag for flag in cflags if flag in cflag_allowlist]
+  cflags = [flag for flag in cflags if _is_cflag_allowed(flag)]
 
   # Android _may_ set a platform default for _LIBCPP_HARDENING_MODE. If that
   # conflicts with the level specified on this target, we'll get build errors.
