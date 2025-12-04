@@ -3608,7 +3608,7 @@
     },
     {
       name: "OriginAPI",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Originating elements are implicit anchors for pseudo elements.
