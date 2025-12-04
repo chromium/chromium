@@ -6655,13 +6655,6 @@ shown properly on the user-facing crash UI.
   <int value="6" label="(Obsolete) Closed ash browser with Lacros enabled"/>
 </enum>
 
-<enum name="KioskInternetAccessInfo">
-  <int value="0" label="Online and app requires Internet"/>
-  <int value="1" label="Online and app supports offline"/>
-  <int value="2" label="Offline and app requires Internet"/>
-  <int value="3" label="Offline and app supports offline"/>
-</enum>
-
 <enum name="KioskLaunchError">
   <int value="0" label="No error"/>
   <int value="1" label="Has pending launch"/>

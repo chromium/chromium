@@ -7,47 +7,26 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "components/prefs/pref_service.h"
 
 namespace ash {
 
 extern const char kKioskRamUsagePercentageHistogram[];
 extern const char kKioskSwapUsagePercentageHistogram[];
-extern const char kKioskDiskUsagePercentageHistogram[];
-extern const char kKioskChromeProcessCountHistogram[];
-extern const char kKioskSessionRestartInternetAccessHistogram[];
-extern const char kKioskInternetAccessInfo[];
 
 extern const base::TimeDelta kPeriodicMetricsInterval;
 extern const base::TimeDelta kFirstIdleTimeout;
 extern const base::TimeDelta kRegularIdleTimeout;
 
-// These values are used in UMA metrics. Entries should not be renumbered and
-// numeric values should never be reused. Keep in sync with respective enum in
-// tools/metrics/histograms/enums.xml
-enum class KioskInternetAccessInfo {
-  kOnlineAndAppRequiresInternet = 0,
-  kOnlineAndAppSupportsOffline = 1,
-  kOfflineAndAppRequiresInternet = 2,
-  kOfflineAndAppSupportsOffline = 3,
-  kMaxValue = kOfflineAndAppSupportsOffline,
-};
-
-
 // This class save and record kiosk UMA metrics every
 // `kPeriodicMetricsInterval`.
 class PeriodicMetricsService {
  public:
-  explicit PeriodicMetricsService(PrefService* prefs);
+  PeriodicMetricsService();
   PeriodicMetricsService(const PeriodicMetricsService&) = delete;
   PeriodicMetricsService& operator=(const PeriodicMetricsService&) = delete;
   ~PeriodicMetricsService();
 
-  // Record metrics about the previous kiosk session. Should be called in the
-  // beginning of the kiosk session and before `StartRecordingPeriodicMetrics`.
-  void RecordPreviousSessionMetrics() const;
-
-  void StartRecordingPeriodicMetrics(bool is_offline_enabled);
+  void StartRecordingPeriodicMetrics();
 
  private:
   void RecordPeriodicMetrics();
@@ -56,23 +35,9 @@ class PeriodicMetricsService {
 
   void RecordSwapUsage() const;
 
-  void RecordDiskSpaceUsage() const;
-
-
-  void RecordPreviousInternetAccessInfo() const;
-
-  // Save the Internet access info to record
-  // `kKioskSessionRestartInternetAccessHistogram` during the next kiosk session
-  // start.
-  void SaveInternetAccessInfo() const;
-
   // Invokes callback to record continuously monitored metrics. Starts when
   // the kiosk session is started.
   base::RepeatingTimer metrics_timer_;
-
-  bool is_offline_enabled_ = true;
-
-  raw_ptr<PrefService> prefs_;
 
   base::WeakPtrFactory<PeriodicMetricsService> weak_ptr_factory_{this};
 };

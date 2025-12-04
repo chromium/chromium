@@ -31,8 +31,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/common/manifest_handlers/offline_enabled_info.h"
 
 namespace ash {
 
@@ -45,20 +43,6 @@ void StartFloatingAccessibilityMenu() {
   if (accessibility_controller) {
     accessibility_controller->ShowFloatingMenuIfEnabled();
   }
-}
-
-bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  CHECK(extension_registry);
-
-  const extensions::Extension* primary_app =
-      extension_registry->GetInstalledExtension(app_id);
-  if (!primary_app) {
-    return false;
-  }
-
-  return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
 }
 
 }  // namespace
@@ -74,8 +58,7 @@ KioskSystemSession::KioskSystemSession(
       kiosk_app_id_(kiosk_app_id),
       network_metrics_service_(
           std::make_unique<NetworkConnectivityMetricsService>(local_state)),
-      periodic_metrics_service_(
-          std::make_unique<PeriodicMetricsService>(&local_state)),
+      periodic_metrics_service_(std::make_unique<PeriodicMetricsService>()),
       device_weekly_scheduled_suspend_controller_(
           std::make_unique<DeviceWeeklyScheduledSuspendController>(
               &local_state)),
@@ -105,26 +88,24 @@ void KioskSystemSession::InitForChromeAppKiosk() {
   browser_session_.InitForChromeAppKiosk(app_id);
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-  InitCommon(IsOfflineEnabledForApp(app_id, profile()));
+  InitCommon();
 }
 
 void KioskSystemSession::InitForWebKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
-  InitCommon(/*is_offline_enabled=*/true);
+  InitCommon();
 }
 
 void KioskSystemSession::InitForIwaKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForIwaKiosk(app_name);
-  InitCommon(/*is_offline_enabled=*/true);
+  InitCommon();
 }
 
-void KioskSystemSession::InitCommon(bool is_offline_enabled) {
+void KioskSystemSession::InitCommon() {
   StartFloatingAccessibilityMenu();
-
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(is_offline_enabled);
+  periodic_metrics_service_->StartRecordingPeriodicMetrics();
 }
 
 void KioskSystemSession::ShuttingDown() {
