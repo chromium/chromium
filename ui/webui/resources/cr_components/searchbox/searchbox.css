@@ -416,6 +416,7 @@ search-animated-glow {
 }
 
 :host([ntp-realbox-next-enabled]) contextual-entrypoint-and-carousel::part(tool-chips-container) {
+  --contextual-entrypoint-and-carousel-context-menu-container-margin-bottom: 6px;
   position: relative;
   z-index: 100;
 }
