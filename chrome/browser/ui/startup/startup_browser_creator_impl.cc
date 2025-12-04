@@ -458,6 +458,13 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
             : CHROME_VERSION_STRING;
     MaybeShowNonMilestoneUpdateToast(browser, current_version_string);
   }
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Check for DSE integrity if flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kDseIntegrity)) {
+    // TODO(466065123): The controller will instantiate the model, check the
+    // pref, and show the notification if needed.
+  }
+#endif
 }
 
 StartupBrowserCreatorImpl::DetermineStartupTabsResult::
