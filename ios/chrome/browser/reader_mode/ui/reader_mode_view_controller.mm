@@ -29,15 +29,13 @@
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
   self.view.accessibilityIdentifier = kReaderModeViewAccessibilityIdentifier;
 
-  if (@available(iOS 17.0, *)) {
-    __weak __typeof(self) weakSelf = self;
-    id handler = ^(id<UITraitEnvironment> traitEnvironment,
-                   UITraitCollection* previousCollection) {
-      [weakSelf updateTheme];
-    };
-    [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
-                      withHandler:handler];
-  }
+  __weak __typeof(self) weakSelf = self;
+  id handler = ^(id<UITraitEnvironment> traitEnvironment,
+                 UITraitCollection* previousCollection) {
+    [weakSelf updateTheme];
+  };
+  [self registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
+                    withHandler:handler];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -92,19 +90,6 @@
     [self didMoveToParentViewController:nil];
   }
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17.0, *)) {
-    return;
-  }
-  if (self.traitCollection.userInterfaceStyle !=
-      previousTraitCollection.userInterfaceStyle) {
-    [self updateTheme];
-  }
-}
-#endif
 
 #pragma mark - ReaderModeConsumer
 
