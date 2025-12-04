@@ -145,8 +145,9 @@ export class SplitNewTabPageAppElement extends CrLitElement {
     const hostWindow =
         profileData.windows.find(({isHostWindow}) => isHostWindow)!;
     this.allEligibleTabs_ =
-        hostWindow.tabs.filter(tab => !tab.visible && !tab.split)
-            .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB));
+        hostWindow?.tabs?.filter(tab => !tab.visible && !tab.split)
+            .map(tab => this.getTabData_(tab, true, TabItemType.OPEN_TAB)) ||
+        [];
     this.sortTabs_();
     this.updateComplete.then(() => {
       this.updateViewportHeight_(profileData);

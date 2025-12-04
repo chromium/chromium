@@ -300,4 +300,14 @@ suite('SplitNewTabPageTest', () => {
         await testApiProxy.whenCalled('replaceActiveSplitTab');
     assertEquals(tabSearchItemId, replacementTabId);
   });
+
+  test('Handles missing host window', async () => {
+    const windowData = createWindowData();
+    windowData[0]!['isHostWindow'] = false;
+    testApiProxy.setProfileData(createProfileData({windows: windowData}));
+    await splitNewTabPageSetup();
+    const initialTabSearchItems =
+        splitNewTabPage.shadowRoot.querySelectorAll('tab-search-item');
+    assertEquals(0, initialTabSearchItems.length);
+  });
 });
