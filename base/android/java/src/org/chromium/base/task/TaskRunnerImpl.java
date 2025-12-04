@@ -186,8 +186,8 @@ public class TaskRunnerImpl implements TaskRunner {
     }
 
     @Override
-    public final void execute(Runnable task) {
-        postDelayedTask(task, 0);
+    public final void execute(Runnable task, @Nullable Location location) {
+        postDelayedTask(task, 0, location);
     }
 
     @Override

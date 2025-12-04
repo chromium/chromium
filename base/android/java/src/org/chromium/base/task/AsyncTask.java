@@ -47,18 +47,22 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
             "Android.Jank.AsyncTaskGetOnUiThreadStatus";
 
     /**
-     * An {@link Executor} that can be used to execute tasks in parallel.
-     * We use the lowest task priority, and mayBlock = true since any user of this could
-     * block.
+     * An {@link Executor} that can be used to execute tasks in parallel. We use the lowest task
+     * priority, and mayBlock = true since any user of this could block.
      */
-    public static final Executor THREAD_POOL_EXECUTOR =
-            (Runnable r) -> PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, r);
+    public static final LocationAwareExecutor THREAD_POOL_EXECUTOR =
+            new LocationAwareExecutor() {
+                @Override
+                public void execute(Runnable r, @Nullable Location location) {
+                    PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK, r, location);
+                }
+            };
 
     /**
-     * An {@link Executor} that executes tasks one at a time in serial
-     * order.  This serialization is global to a particular process.
+     * An {@link Executor} that executes tasks one at a time in serial order. This serialization is
+     * global to a particular process.
      */
-    public static final Executor SERIAL_EXECUTOR = new SerialExecutor();
+    public static final LocationAwareExecutor SERIAL_EXECUTOR = new SerialExecutor();
 
     private static final StealRunnableHandler STEAL_RUNNABLE_HANDLER = new StealRunnableHandler();
 
@@ -431,6 +435,26 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
         return this;
     }
 
+    @MainThread
+    public final AsyncTask<Result> executeOnExecutor(LocationAwareExecutor exec) {
+        return executeOnExecutor(exec, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #executeOnExecutor(LocationAwareExecutor)} instead.
+     *
+     * <p>Overload of {@link #executeOnExecutor(LocationAwareExecutor)} for the Java location
+     * rewriter.
+     */
+    @MainThread
+    public final AsyncTask<Result> executeOnExecutor(
+            LocationAwareExecutor exec, @Nullable Location location) {
+        executionPreamble();
+        exec.execute(mFuture, location);
+        return this;
+    }
+
     /**
      * Executes an AsyncTask on the given TaskRunner.
      *
@@ -439,9 +463,19 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
      */
     @MainThread
     public final AsyncTask<Result> executeOnTaskRunner(TaskRunner taskRunner) {
-        executionPreamble();
-        taskRunner.execute(mFuture);
-        return this;
+        return executeOnTaskRunner(taskRunner, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #executeOnTaskRunner(TaskRunner)} instead.
+     *
+     * <p>Overload of {@link #executeOnTaskRunner(TaskRunner)} for the Java location rewriter.
+     */
+    @MainThread
+    public final AsyncTask<Result> executeOnTaskRunner(
+            TaskRunner taskRunner, @Nullable Location location) {
+        return executeOnExecutor(taskRunner, location);
     }
 
     /**
@@ -453,8 +487,20 @@ public abstract class AsyncTask<Result extends @Nullable Object> {
      */
     @MainThread
     public final AsyncTask<Result> executeWithTaskTraits(@TaskTraits int taskTraits) {
+        return executeWithTaskTraits(taskTraits, null);
+    }
+
+    /**
+     * Do not call this method directly unless forwarding a location object. Use {@link
+     * #executeWithTaskTraits(int)} instead.
+     *
+     * <p>Overload of {@link #executeWithTaskTraits(int)} for the Java location rewriter.
+     */
+    @MainThread
+    public final AsyncTask<Result> executeWithTaskTraits(
+            @TaskTraits int taskTraits, @Nullable Location location) {
         executionPreamble();
-        PostTask.postTask(taskTraits, mFuture);
+        PostTask.postTask(taskTraits, mFuture, location);
         return this;
     }
 

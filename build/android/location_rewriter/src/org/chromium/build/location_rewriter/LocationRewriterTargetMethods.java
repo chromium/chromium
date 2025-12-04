@@ -73,22 +73,71 @@ public final class LocationRewriterTargetMethods {
                 "add",
                 "(ILjava/lang/Runnable;)V",
                 /* isInterface= */ false);
+        // org.chromium.base.task.AsyncTask#executeOnExecutor(LocationAwareExecutor)
+        addRewriterTarget(
+                Opcodes.INVOKEVIRTUAL,
+                "org/chromium/base/task/AsyncTask",
+                "executeOnExecutor",
+                "(Lorg/chromium/base/task/LocationAwareExecutor;)Lorg/chromium/base/task/AsyncTask;",
+                /* isInterface= */ false);
+        // org.chromium.base.task.AsyncTask#executeOnTaskRunner(TaskRunner)
+        addRewriterTarget(
+                Opcodes.INVOKEVIRTUAL,
+                "org/chromium/base/task/AsyncTask",
+                "executeOnTaskRunner",
+                "(Lorg/chromium/base/task/TaskRunner;)Lorg/chromium/base/task/AsyncTask;",
+                /* isInterface= */ false);
+        // org.chromium.base.task.AsyncTask#executeWithTaskTraits(int)
+        addRewriterTarget(
+                Opcodes.INVOKEVIRTUAL,
+                "org/chromium/base/task/AsyncTask",
+                "executeWithTaskTraits",
+                "(I)Lorg/chromium/base/task/AsyncTask;",
+                /* isInterface= */ false);
+        // org.chromium.base.task.LocationAwareExecutor#execute(Runnable)
+        addRewriterTarget(
+                Opcodes.INVOKEINTERFACE,
+                "org/chromium/base/task/LocationAwareExecutor",
+                "execute",
+                "(Ljava/lang/Runnable;)V",
+                /* isInterface= */ true);
+    }
+
+    private static VisitableMethod getDefaultOverload(VisitableMethod method) {
+        return new VisitableMethod(
+                method.opcode,
+                method.owner,
+                method.name,
+                method.descriptor.replace(")", LocationClass.DESCRIPTOR + ")"),
+                method.isInterface);
     }
 
     private static void addRewriterTarget(
             int opcode, String owner, String name, String descriptor, boolean isInterface) {
         VisitableMethod target = new VisitableMethod(opcode, owner, name, descriptor, isInterface);
-        VisitableMethod overload =
-                new VisitableMethod(
-                        opcode,
-                        owner,
-                        name,
-                        descriptor.replace(")", LocationClass.DESCRIPTOR + ")"),
-                        isInterface);
-        OVERLOAD_MAP.put(target, overload);
+        OVERLOAD_MAP.put(target, getDefaultOverload(target));
+    }
+
+    private static boolean isExecuteOnLocationAwareExecutor(VisitableMethod method) {
+        return "executeOnExecutor".equals(method.name)
+                && "(Lorg/chromium/base/task/LocationAwareExecutor;)Lorg/chromium/base/task/AsyncTask;"
+                        .equals(method.descriptor);
     }
 
     public static VisitableMethod getOverload(VisitableMethod method) {
-        return OVERLOAD_MAP.getOrDefault(method, null);
+        VisitableMethod predefinedOverload = OVERLOAD_MAP.getOrDefault(method, null);
+        if (predefinedOverload != null) {
+            return predefinedOverload;
+        }
+
+        // TODO(anandrv): Dynamically generate the list of subclasses of AsyncTask once the rewriter
+        // is moved to a later stage in the build pipeline and runs once per APK or module. For now,
+        // there is only one method in the codebase that has this combination of method name and
+        // descriptor so we can be confident that the method owner is a subclass of AsyncTask.
+        if (isExecuteOnLocationAwareExecutor(method)) {
+            return getDefaultOverload(method);
+        }
+
+        return null;
     }
 }

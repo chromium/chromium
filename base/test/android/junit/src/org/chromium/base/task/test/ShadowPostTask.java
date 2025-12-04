@@ -11,8 +11,10 @@ import org.robolectric.shadow.api.Shadow;
 import org.robolectric.util.ReflectionHelpers.ClassParameter;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.task.Location;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.Nullable;
 
 /** Shadow implementation for {@link PostTask}. */
 @Implements(PostTask.class)
@@ -37,6 +39,12 @@ public class ShadowPostTask {
     }
 
     @Implementation
+    public static void postDelayedTask(
+            @TaskTraits int taskTraits, Runnable task, long delay, @Nullable Location location) {
+        postDelayedTask(taskTraits, task, delay);
+    }
+
+    @Implementation
     public static void postDelayedTask(@TaskTraits int taskTraits, Runnable task, long delay) {
         if (sTestImpl == null) {
             // Can use reflection to call into the real method that is being shadowed. This is the
@@ -46,7 +54,8 @@ public class ShadowPostTask {
                     "postDelayedTask",
                     ClassParameter.from(int.class, taskTraits),
                     ClassParameter.from(Runnable.class, task),
-                    ClassParameter.from(long.class, delay));
+                    ClassParameter.from(long.class, delay),
+                    ClassParameter.from(Location.class, null));
         } else {
             sTestImpl.postDelayedTask(taskTraits, task, delay);
         }

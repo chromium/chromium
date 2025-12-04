@@ -7,15 +7,13 @@ package org.chromium.base.task;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
-import java.util.concurrent.Executor;
-
 /**
  * A task queue that posts Java tasks onto the C++ browser scheduler, if loaded. Otherwise this will
  * be backed by an {@link android.os.Handler} or the java thread pool. The TaskQueue interface
  * provides no guarantee over the order or the thread on which the task will be executed.
  */
 @NullMarked
-public interface TaskRunner extends Executor {
+public interface TaskRunner extends LocationAwareExecutor {
 
     /**
      * Posts a task to run after a specified delay.

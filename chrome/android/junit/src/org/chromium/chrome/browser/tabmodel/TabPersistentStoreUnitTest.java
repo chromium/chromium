@@ -624,7 +624,7 @@ public class TabPersistentStoreUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab, TabSelectionType.FROM_USER, TabModel.INVALID_TAB_INDEX);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mTabModelObserverCaptor
@@ -634,7 +634,7 @@ public class TabPersistentStoreUnitTest {
                         TabLaunchType.FROM_RESTORE,
                         TabCreationState.FROZEN_ON_RESTORE,
                         /* markedForSelection= */ false);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
     }
 
@@ -662,7 +662,7 @@ public class TabPersistentStoreUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab, TabSelectionType.FROM_USER, TabModel.INVALID_TAB_INDEX);
-        verify(mSequencedTaskRunner, never()).execute(any());
+        verify(mSequencedTaskRunner, never()).execute(any(), any());
 
         mTabModelObserverCaptor
                 .getValue()
@@ -671,7 +671,7 @@ public class TabPersistentStoreUnitTest {
                         TabLaunchType.FROM_RESTORE,
                         TabCreationState.FROZEN_ON_RESTORE,
                         /* markedForSelection= */ false);
-        verify(mSequencedTaskRunner, never()).execute(any());
+        verify(mSequencedTaskRunner, never()).execute(any(), any());
 
         // Now they should all trigger saves.
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
@@ -679,7 +679,7 @@ public class TabPersistentStoreUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab, TabSelectionType.FROM_USER, TabModel.INVALID_TAB_INDEX);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mTabModelObserverCaptor
@@ -689,7 +689,7 @@ public class TabPersistentStoreUnitTest {
                         TabLaunchType.FROM_RESTORE,
                         TabCreationState.FROZEN_ON_RESTORE,
                         /* markedForSelection= */ false);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
     }
 
@@ -716,7 +716,7 @@ public class TabPersistentStoreUnitTest {
         mTabModelObserverCaptor
                 .getValue()
                 .didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mTabModelObserverCaptor
@@ -726,7 +726,7 @@ public class TabPersistentStoreUnitTest {
                         TabLaunchType.FROM_LINK,
                         TabCreationState.FROZEN_ON_RESTORE,
                         /* markedForSelection= */ false);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
     }
 
@@ -752,19 +752,19 @@ public class TabPersistentStoreUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mPersistentStore.pauseSaveTabList();
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner, never()).execute(any());
+        verify(mSequencedTaskRunner, never()).execute(any(), any());
 
         mPersistentStore.resumeSaveTabList(() -> {});
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
     }
 
@@ -790,27 +790,27 @@ public class TabPersistentStoreUnitTest {
         TabModelObserver observer = mTabModelObserverCaptor.getValue();
 
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mPersistentStore.pauseSaveTabList();
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner, never()).execute(any());
+        verify(mSequencedTaskRunner, never()).execute(any(), any());
 
         mPersistentStore.resumeSaveTabList(() -> {});
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
 
         mPersistentStore.pauseSaveTabList();
         mPersistentStore.resumeSaveTabList(() -> {});
-        verify(mSequencedTaskRunner, never()).execute(any());
+        verify(mSequencedTaskRunner, never()).execute(any(), any());
 
         observer.didSelectTab(mTab, TabSelectionType.FROM_USER, /* lastId= */ 0);
-        verify(mSequencedTaskRunner).execute(any());
+        verify(mSequencedTaskRunner).execute(any(), any());
         reset(mSequencedTaskRunner);
     }
 
