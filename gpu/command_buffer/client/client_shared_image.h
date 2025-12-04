@@ -86,6 +86,18 @@ struct SharedImageMetadata {
   SharedImageUsageSet usage;
 };
 
+class SharedImageExportResult {
+ public:
+  ~SharedImageExportResult() = default;
+
+ private:
+  friend class ClientSharedImage;
+
+  explicit SharedImageExportResult(const SyncToken& sync_token);
+
+  SyncToken sync_token_;
+};
+
 // Wrapper around Mailbox and metadata for efficient sharing between threads
 class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
     : public base::RefCountedThreadSafe<ClientSharedImage> {
@@ -313,6 +325,15 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       const wgpu::dawn::wire::client::BufferDescriptor& desc,
       uint64_t usage,
       webgpu::MailboxFlags mailbox_flags);
+
+  // Pack/unpack the SharedImageExportResult.
+  SharedImageExportResult EndImport(const SyncToken& sync_token) {
+    return SharedImageExportResult{sync_token};
+  }
+
+  SyncToken EndExport(SharedImageExportResult&& result) {
+    return result.sync_token_;
+  }
 
 #if BUILDFLAG(IS_WIN)
   // Allows client to indicate the |gpu_memory_buffer_| to pre map its shared

@@ -120,6 +120,9 @@ uint32_t ComputeTextureTargetForSharedImage(
 
 }  // namespace
 
+SharedImageExportResult::SharedImageExportResult(const SyncToken& sync_token)
+    : sync_token_(sync_token) {}
+
 ClientSharedImage::ScopedMapping::ScopedMapping(const gfx::Size& size,
                                                 viz::SharedImageFormat format)
     : size_(size), format_(format) {}
