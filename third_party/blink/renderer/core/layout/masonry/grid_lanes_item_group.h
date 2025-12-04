@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_ITEM_GROUP_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_ITEM_GROUP_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_
 
 #include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/style/grid_area.h"
@@ -12,24 +12,25 @@
 namespace blink {
 
 // From https://drafts.csswg.org/css-grid-3/#track-sizing-performance:
-//   "Separate all the masonry items into item groups, according to the
+//   "Separate all the grid-lanes items into item groups, according to the
 //   following properties: the span of the item, the placement of the item
 //   (i.e., which tracks it is allowed to be placed in), and the item’s
 //   baseline-sharing group."
 //
 // This class represents the properties that define an item group and will be
 // used as the key for grouping items within a hash table.
-class MasonryItemGroupProperties {
+class GridLanesItemGroupProperties {
   DISALLOW_NEW();
 
  public:
-  MasonryItemGroupProperties() = default;
-  MasonryItemGroupProperties(HashTableDeletedValueType) : is_deleted_(true) {}
+  explicit GridLanesItemGroupProperties() = default;
+  explicit GridLanesItemGroupProperties(HashTableDeletedValueType)
+      : is_deleted_(true) {}
 
-  explicit MasonryItemGroupProperties(const GridSpan& item_span)
+  explicit GridLanesItemGroupProperties(const GridSpan& item_span)
       : item_span_(item_span) {}
 
-  bool operator==(const MasonryItemGroupProperties& other) const {
+  bool operator==(const GridLanesItemGroupProperties& other) const {
     return is_deleted_ == other.is_deleted_ && item_span_ == other.item_span_;
   }
 
@@ -57,25 +58,25 @@ class MasonryItemGroupProperties {
   std::optional<GridSpan> item_span_;
 };
 
-struct MasonryItemGroup {
+struct GridLanesItemGroup {
   DISALLOW_NEW();
 
   void Trace(Visitor* visitor) const { visitor->Trace(items); }
 
   GridItems::GridItemDataVector items;
-  MasonryItemGroupProperties properties;
+  GridLanesItemGroupProperties properties;
 };
 
-using MasonryItemGroupMap =
-    HeapHashMap<MasonryItemGroupProperties, GridItems::GridItemDataVector>;
-using MasonryItemGroups = HeapVector<MasonryItemGroup, 16>;
+using GridLanesItemGroupMap =
+    HeapHashMap<GridLanesItemGroupProperties, GridItems::GridItemDataVector>;
+using GridLanesItemGroups = HeapVector<GridLanesItemGroup, 16>;
 
 template <>
-struct HashTraits<MasonryItemGroupProperties>
-    : SimpleClassHashTraits<MasonryItemGroupProperties> {};
+struct HashTraits<GridLanesItemGroupProperties>
+    : SimpleClassHashTraits<GridLanesItemGroupProperties> {};
 
 }  // namespace blink
 
-WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::MasonryItemGroup)
+WTF_ALLOW_MOVE_INIT_AND_COMPARE_WITH_MEM_FUNCTIONS(blink::GridLanesItemGroup)
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_MASONRY_ITEM_GROUP_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_MASONRY_GRID_LANES_ITEM_GROUP_H_

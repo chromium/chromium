@@ -266,7 +266,7 @@ TEST_F(MasonryLayoutAlgorithmTest, BuildFixedTrackSizes) {
                                               LayoutUnit(5), LayoutUnit(20)}));
 }
 
-TEST_F(MasonryLayoutAlgorithmTest, CollectMasonryItemGroups) {
+TEST_F(MasonryLayoutAlgorithmTest, CollectGridLanesItemGroups) {
   SetBodyInnerHTML(R"HTML(
     <div id="grid-lanes" style="display: grid-lanes">
       <div></div>

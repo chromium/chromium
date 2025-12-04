@@ -29,7 +29,7 @@ void AdjustGridLanesItemSpan(
 
 }  // namespace
 
-MasonryItemGroups GridLanesNode::CollectItemGroups(
+GridLanesItemGroups GridLanesNode::CollectItemGroups(
     const GridLineResolver& line_resolver,
     const GridItems& grid_lanes_items,
     wtf_size_t& max_end_line,
@@ -38,7 +38,7 @@ MasonryItemGroups GridLanesNode::CollectItemGroups(
   const auto grid_axis_direction = Style().GridLanesTrackSizingDirection();
 
   start_offset = 0;
-  MasonryItemGroupMap item_group_map;
+  GridLanesItemGroupMap item_group_map;
 
   for (wtf_size_t index = 0; index < grid_lanes_items.Size(); ++index) {
     const Member<GridItemData>& grid_lanes_item = grid_lanes_items[index];
@@ -49,7 +49,7 @@ MasonryItemGroups GridLanesNode::CollectItemGroups(
       continue;
     }
 
-    const auto item_properties = MasonryItemGroupProperties(
+    const auto item_properties = GridLanesItemGroupProperties(
         /*item_span=*/line_resolver.ResolveGridPositionsFromStyle(
             child.Style(), grid_axis_direction));
 
@@ -75,7 +75,7 @@ MasonryItemGroups GridLanesNode::CollectItemGroups(
     }
   }
 
-  MasonryItemGroups item_groups;
+  GridLanesItemGroups item_groups;
   item_groups.ReserveInitialCapacity(item_group_map.size());
   max_end_line =
       start_offset + line_resolver.ExplicitGridTrackCount(grid_axis_direction);
@@ -91,8 +91,8 @@ MasonryItemGroups GridLanesNode::CollectItemGroups(
       max_end_line = std::max(max_end_line, item_span.EndLine());
     }
 
-    item_groups.emplace_back(MasonryItemGroup{
-        std::move(group_items), MasonryItemGroupProperties(item_span)});
+    item_groups.emplace_back(GridLanesItemGroup{
+        std::move(group_items), GridLanesItemGroupProperties(item_span)});
   }
   return item_groups;
 }

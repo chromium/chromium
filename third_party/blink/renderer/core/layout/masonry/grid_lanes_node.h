@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
+#include "third_party/blink/renderer/core/layout/masonry/grid_lanes_item_group.h"
 #include "third_party/blink/renderer/core/layout/masonry/layout_grid_lanes.h"
-#include "third_party/blink/renderer/core/layout/masonry/masonry_item_group.h"
 
 namespace blink {
 
@@ -33,7 +33,7 @@ class CORE_EXPORT GridLanesNode final : public BlockNode {
   // of the first grid line in the implicit grid, which is used to translate
   // definite grid spans to a 0-indexed format. `unplaced_item_span_count` is
   // an ouput param that is the sum of all auto placed item span sizes.
-  MasonryItemGroups CollectItemGroups(
+  GridLanesItemGroups CollectItemGroups(
       const GridLineResolver& line_resolver,
       const GridItems& grid_lanes_items,
       wtf_size_t& max_end_line,
