@@ -479,10 +479,6 @@ TEST_F(BirchBarTest, RecordsHistogramForCoralChips) {
   BirchBarController::Get()->OnItemHiddenByUser(in_session_chips[0]->GetItem());
   ASSERT_EQ(in_session_chips.size(), 1u);
 
-  // One cluster hidden was recorded.
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden", BirchItemType::kCoral,
-                               1);
-
   // Clicking on the in-session chip to launch the group.
   LeftClickOn(in_session_chips[0]);
 

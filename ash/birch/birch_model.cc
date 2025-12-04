@@ -267,7 +267,6 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
   // freshness values after all calls to `StartDataFetchIfNeeded()`.
   MarkDataNotFresh();
 
-  is_post_login_fetch_ = is_post_login;
   fetch_start_time_ = GetNow();
 
   if (birch_client_) {
@@ -523,8 +522,6 @@ void BirchModel::RemoveItem(BirchItem* item) {
   if (!IsItemRemoverInitialized()) {
     return;
   }
-  // Record that the user hid a chip, with the type of the chip.
-  base::UmaHistogramEnumeration("Ash.Birch.Chip.Hidden", item->GetType());
 
   item_remover_->RemoveItem(item);
 
@@ -679,17 +676,6 @@ void BirchModel::HandleLostMediaUpdateRequest() {
 void BirchModel::MaybeRespondToDataFetchRequest() {
   if (!IsDataFresh() || !IsItemRemoverInitialized()) {
     return;
-  }
-
-  // Was this a real fetch being completed (rather than a provider supplying
-  // data outside of a fetch)?
-  bool was_model_fetch = !pending_requests_.empty();
-  if (was_model_fetch) {
-    // All data providers have replied, so compute total latency.
-    base::TimeDelta latency = GetNow() - fetch_start_time_;
-    if (!is_post_login_fetch_) {
-      base::UmaHistogramTimes("Ash.Birch.TotalLatency", latency);
-    }
   }
 
   std::vector<base::OnceClosure> callbacks;

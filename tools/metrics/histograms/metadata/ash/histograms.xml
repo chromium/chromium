@@ -1030,13 +1030,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Ash.Birch.Chip.Hidden" enum="BirchItemType"
-    expires_after="2026-01-12">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>Recorded when the user hides a suggestion.</summary>
-</histogram>
-
 <histogram name="Ash.Birch.Chip.Impression" enum="BirchItemType"
     expires_after="2026-05-03">
   <owner>jamescook@chromium.org</owner>
@@ -1151,15 +1144,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".Tab" summary="recent tab"/>
     <variant name=".Weather" summary="weather"/>
   </token>
-</histogram>
-
-<histogram name="Ash.Birch.TotalLatency" units="ms" expires_after="2026-01-12">
-  <owner>jamescook@chromium.org</owner>
-  <owner>chromeos-launcher@google.com</owner>
-  <summary>
-    The total latency to fetch all birch data via all data providers. Recorded
-    once per fetch (i.e. once per time the birch bar is shown).
-  </summary>
 </histogram>
 
 <histogram name="Ash.Boca.Babelorca.ReceivingStoppedReason"

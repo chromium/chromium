@@ -272,68 +272,6 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
 
-TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-  TestModelConsumer consumer;
-  EXPECT_TRUE(model);
-
-  // Make a data fetch request.
-  model->RequestBirchDataFetch(/*is_post_login=*/false,
-                               base::BindOnce(&TestModelConsumer::OnItemsReady,
-                                              base::Unretained(&consumer),
-                                              /*id=*/"0"));
-
-  // Simulate each data provider replying.
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetRecentTabItems({});
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems({});
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems({});
-  model->SetWeatherItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  // Callback is called.
-  EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
-
-  // Total latency was recorded.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
-
-  // Simulate a data provider replying outside of a fetch.
-  model->SetFileSuggestItems({});
-
-  // Histograms didn't change.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
-}
-
-TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-
-  // Make a data fetch request for non-post-login.
-  model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
-
-  // Simulate each data provider replying.
-  model->SetCalendarItems({});
-  model->SetAttachmentItems({});
-  model->SetRecentTabItems({});
-  model->SetLastActiveItems({});
-  model->SetMostVisitedItems({});
-  model->SetSelfShareItems({});
-  model->SetLostMediaItems({});
-  model->SetFileSuggestItems({});
-  model->SetWeatherItems({});
-  model->SetReleaseNotesItems({});
-  model->SetCoralItems({});
-
-  // Regular latency histogram was recorded.
-  histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
-}
-
 TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
@@ -1611,23 +1549,6 @@ TEST_F(BirchModelTest, SetClientObservation) {
   // Set the client and expect model observer to be notified.
   model->SetClientAndInit(&stub_birch_client_);
   EXPECT_TRUE(test_observer.birch_client_set());
-}
-
-TEST_F(BirchModelTest, RemoveItemRecordsHistogram) {
-  base::HistogramTester histograms;
-  BirchModel* model = Shell::Get()->birch_model();
-
-  // Add a calendar item to the model.
-  std::vector<BirchCalendarItem> calendar_item_list =
-      MakeCalendarItemList(/*event_count=*/1);
-  model->SetCalendarItems(calendar_item_list);
-
-  // Remove the calendar item, as if a user hid the suggestion chip.
-  model->RemoveItem(&calendar_item_list[0]);
-
-  // Histogram was recorded.
-  histograms.ExpectBucketCount("Ash.Birch.Chip.Hidden",
-                               BirchItemType::kCalendar, 1);
 }
 
 TEST_F(BirchModelTest, LastActiveItemShownByTime) {
