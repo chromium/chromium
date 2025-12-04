@@ -96,21 +96,15 @@ const CGFloat kCloseModeButtonMargin = 6;
 const CGFloat kCloseIndicatorSize = 10.0f;
 
 /// The image for the send button.
-UIImage* SendButtonImage(BOOL highlighted) {
+UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
   NSArray<UIColor*>* palette = @[
-    [UIColor colorNamed:kSolidWhiteColor], [UIColor colorNamed:kBlue500Color]
+    [theme sendButtonForegroundColorHighlighted:highlighted],
+    [theme sendButtonBackgroundColorHighlighted:highlighted]
   ];
-
-  if (highlighted) {
-    palette = @[
-      [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:0.6],
-      [[UIColor colorNamed:kBlue500Color] colorWithAlphaComponent:0.6]
-    ];
-  }
 
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:kSendButtonDimension
-                          weight:UIImageSymbolWeightRegular
+                          weight:UIImageSymbolWeightLight
                            scale:UIImageSymbolScaleMedium];
 
   return SymbolWithPalette(
@@ -841,16 +835,18 @@ UIImage* SendButtonImage(BOOL highlighted) {
 - (UIButton*)createSendButton {
   UIButtonConfiguration* buttonConfig =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfig.image = SendButtonImage(/*highlighted=*/NO);
+  buttonConfig.image = SendButtonImage(/*highlighted=*/NO, _theme);
   buttonConfig.contentInsets = NSDirectionalEdgeInsetsZero;
 
   UIButton* sendButton =
       [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
   sendButton.configuration = buttonConfig;
+
+  __weak ComposeboxTheme* theme = _theme;
   sendButton.configurationUpdateHandler = ^(UIButton* button) {
     UIButtonConfiguration* updatedConfig = button.configuration;
     BOOL isHighlighted = button.state == UIControlStateHighlighted;
-    updatedConfig.image = SendButtonImage(isHighlighted);
+    updatedConfig.image = SendButtonImage(isHighlighted, theme);
     button.configuration = updatedConfig;
     CGFloat scale = isHighlighted ? 0.95 : 1.0;
     [UIView animateWithDuration:0.1

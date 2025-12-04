@@ -88,4 +88,15 @@
   return [UIColor colorNamed:kTextPrimaryColor];
 }
 
+- (UIColor*)sendButtonForegroundColorHighlighted:(BOOL)highlighted {
+  CGFloat alpha = highlighted ? 0.6 : 1;
+  return [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:alpha];
+}
+
+// The background color for the send button.
+- (UIColor*)sendButtonBackgroundColorHighlighted:(BOOL)highlighted {
+  CGFloat alpha = highlighted ? 0.6 : 1;
+  return [[UIColor colorNamed:kBlue600Color] colorWithAlphaComponent:alpha];
+}
+
 @end
