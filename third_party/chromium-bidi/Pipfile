@@ -18,6 +18,7 @@ syrupy = "==4.5.0"
 websockets = "==11.0.3"
 pytest-shard = "==0.1.2"
 pytest-repeat = "==0.9.4"
+werkzeug = "==3.1.4"
 
 [dev-packages]
 pytest-flakefinder = "*"
