@@ -24,6 +24,7 @@ public class SettingsPromoCardPreference extends Preference {
     public SettingsPromoCardPreference(
             Context context, @Nullable AttributeSet attrs, Tracker tracker) {
         super(context, attrs);
+        setVisible(false);
         setLayoutResource(R.layout.settings_promo_card);
 
         mProvider =

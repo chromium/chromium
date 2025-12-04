@@ -866,7 +866,6 @@ public class MainSettingsFragmentTest {
         Preference preference = mMainSettings.findPreference(MainSettings.PREF_SETTINGS_PROMO_CARD);
         Assert.assertNotNull(
                 "Settings promo preference exist when feature flag is enabled", preference);
-        Assert.assertTrue("Settings promo card is not showing", preference.isVisible());
     }
 
     @Test
