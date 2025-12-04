@@ -72,11 +72,10 @@ class CONTENT_EXPORT PermissionOverrides {
                   base::optional_ref<const url::Origin> embedding_origin,
                   blink::PermissionType type);
 
-    // Constructor for a global key specific to a permission type. Delegates to
-    // the primary constructor, signaling a global scope.
-    explicit PermissionKey(blink::PermissionType);
+    // Creates a key which applies to any origins, with given a permission type.
+    static PermissionKey WildcardOrigins(blink::PermissionType);
 
-    PermissionKey();
+    PermissionKey() = delete;
     ~PermissionKey();
 
     PermissionKey(const PermissionKey&);

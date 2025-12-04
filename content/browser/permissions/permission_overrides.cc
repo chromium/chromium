@@ -27,8 +27,12 @@ PermissionOverrides::PermissionKey::PermissionKey(
     : scope_(MakeScopeData(requesting_origin, embedding_origin, type)),
       type_(type) {}
 
-PermissionOverrides::PermissionKey::PermissionKey(blink::PermissionType type)
-    : PermissionKey(std::nullopt, std::nullopt, type) {}
+// static
+PermissionOverrides::PermissionKey
+PermissionOverrides::PermissionKey::WildcardOrigins(
+    blink::PermissionType type) {
+  return PermissionKey(std::nullopt, std::nullopt, type);
+}
 
 PermissionOverrides::PermissionKey::PermissionScope
 PermissionOverrides::PermissionKey::MakeScopeData(
@@ -62,7 +66,6 @@ PermissionOverrides::PermissionKey::MakeScopeData(
   }
 }
 
-PermissionOverrides::PermissionKey::PermissionKey() = default;
 PermissionOverrides::PermissionKey::~PermissionKey() = default;
 PermissionOverrides::PermissionKey::PermissionKey(const PermissionKey&) =
     default;
@@ -109,7 +112,8 @@ std::optional<PermissionResult> PermissionOverrides::Get(
       overrides_,
       PermissionKey(requesting_origin, embedding_origin, permission));
   if (!status) {
-    status = base::FindOrNull(overrides_, PermissionKey(permission));
+    status = base::FindOrNull(overrides_,
+                              PermissionKey::WildcardOrigins(permission));
   }
 
   if (!status) {
