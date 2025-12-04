@@ -39,7 +39,6 @@ NSString* const kItemCellReuseIdentifier = @"ComposeboxInputItemCell";
 NSString* const kMainSectionIdentifier = @"MainSection";
 
 /// The corner radius for the input plate container.
-const CGFloat kInputPlateCornerRadiusCompact = 22.0f;
 const CGFloat kInputPlateCornerRadius = 30.0f;
 /// The shadow opacity for the input plate container.
 const float kInputPlateShadowOpacity = 0.2f;
@@ -61,7 +60,7 @@ const CGFloat kShortcutsSpacing = 16.0f;
 /// The spacing for the main vertical input plate stack view.
 const CGFloat kInputPlateStackViewSpacing = 10.0f;
 /// The vertical padding for the input plate stack view.
-const CGFloat kInputPlateStackViewVerticalCompactPadding = 6.0f;
+const CGFloat kInputPlateStackViewVerticalCompactPadding = 0.0f;
 const CGFloat kInputPlateStackViewVerticalPadding = 10.0f;
 /// The leading padding for the input plate stack view.
 const CGFloat kInputPlateStackViewLeadingPadding = 10.0f;
@@ -269,6 +268,10 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       _trailingCarouselFadeView.bounds;
   _leadingCarouselFadeView.layer.sublayers.firstObject.frame =
       _leadingCarouselFadeView.bounds;
+  if (self.compact) {
+    _inputPlateContainerView.layer.cornerRadius =
+        _inputPlateContainerView.frame.size.height / 2;
+  }
   [self updateCarouselFade];
 }
 
@@ -802,8 +805,9 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
 
   [button.widthAnchor constraintEqualToConstant:kGenericButtonWidth].active =
       YES;
-  [button.heightAnchor constraintEqualToConstant:kGenericButtonHeight].active =
-      YES;
+  [button.heightAnchor
+      constraintGreaterThanOrEqualToConstant:kGenericButtonHeight]
+      .active = YES;
   button.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   return button;
 }
@@ -816,12 +820,16 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
       setImage:DefaultSymbolWithPointSize(kPlusSymbol, kSymbolActionPointSize)
       forState:UIControlStateNormal];
   plusButton.translatesAutoresizingMaskIntoConstraints = NO;
+  plusButton.imageView.contentMode = UIViewContentModeScaleAspectFit;
   plusButton.tintColor = [UIColor colorNamed:kTextPrimaryColor];
   plusButton.accessibilityIdentifier =
       kComposeboxPlusButtonAccessibilityIdentifier;
 
-  AddSizeConstraints(plusButton,
-                     CGSizeMake(kAIMButtonHeight, kAIMButtonHeight));
+  [NSLayoutConstraint activateConstraints:@[
+    [plusButton.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kAIMButtonHeight],
+    [plusButton.widthAnchor constraintEqualToConstant:kAIMButtonHeight],
+  ]];
 
   [plusButton addTarget:self
                  action:@selector(plusButtonTouchDown)
@@ -1202,8 +1210,6 @@ UIImage* SendButtonImage(BOOL highlighted, ComposeboxTheme* theme) {
                                  afterView:_micButton];
     _bottomPaddingConstraint.constant =
         -kInputPlateStackViewVerticalCompactPadding;
-    _inputPlateContainerView.layer.cornerRadius =
-        kInputPlateCornerRadiusCompact;
   } else {
     UIView* toolbarView = [self createToolbarView];
     [_inputPlateStackView insertArrangedSubview:_carouselContainer atIndex:0];
