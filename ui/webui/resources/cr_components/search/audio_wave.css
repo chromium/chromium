@@ -15,8 +15,9 @@
 }
 
 .eclipse-svg-wrapper {
-  position: absolute;
+  height: 55px;
   inset: 0;
+  position: absolute;
   /* So it doesn't render on top of the text input. */
   z-index: 0;
 }

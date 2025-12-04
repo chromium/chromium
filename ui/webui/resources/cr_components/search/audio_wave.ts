@@ -16,7 +16,7 @@ const BEZIER_TENSION_RATIO: number = 0.35;
 
 // Wave height
 const MAX_AMPLITUDE: number = -25;
-const MIN_AMPLITUDE: number = 0;
+const MIN_AMPLITUDE: number = -0;
 
 // Vertical offset
 const MAX_VERTICAL_SHIFT: number = -10;
@@ -57,6 +57,7 @@ function mapToRange(
 export interface AudioWaveElement {
   $: {
     'eclipse-svg-wrapper': HTMLElement,
+    'eclipse-svg': SVGElement,
     'mask': SVGMaskElement,
     'thin-path': SVGPathElement,
     'lower-glow-path': SVGPathElement,
@@ -97,6 +98,7 @@ export class AudioWaveElement extends CrLitElement {
   private thinPathEl?: SVGPathElement;
   private lowerGlowPathEl?: SVGPathElement;
   private clipPathEl?: SVGPathElement;
+  private eclipseSvgEl?: SVGElement;
 
   private containerWidth: number = 0;
   private animationFrameId: number|null = null;
@@ -105,12 +107,26 @@ export class AudioWaveElement extends CrLitElement {
   private frame: number = 0;
   private lastUpdateTime: number = performance.now();
 
+  /* Observe width changes per element with a recent size change. */
+  private resizeObserver: ResizeObserver = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      this.containerWidth = entry.contentRect.width;
+    }
+  });
+
+  override connectedCallback() {
+    super.connectedCallback();
+    if (this.eclipseSvgEl) {
+      this.resizeObserver.observe(this.eclipseSvgEl);
+    }
+  }
   override firstUpdated() {
     this.eclipseSvgWrapperEl = this.$['eclipse-svg-wrapper'];
     this.maskEl = this.$['mask'];
     this.thinPathEl = this.$['thin-path'];
     this.lowerGlowPathEl = this.$['lower-glow-path'];
     this.clipPathEl = this.$['clip-path-shape'];
+    this.eclipseSvgEl = this.$['eclipse-svg'];
   }
 
   override updated(changedProperties: PropertyValues<this>) {
@@ -123,6 +139,7 @@ export class AudioWaveElement extends CrLitElement {
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.onStopListen();
+    this.resizeObserver.disconnect();
   }
 
   protected onStartListen() {
@@ -130,13 +147,12 @@ export class AudioWaveElement extends CrLitElement {
       return;
     }
 
-    this.containerWidth = this.eclipseSvgWrapperEl.offsetWidth;
-
     this.isExpanding_ = true;
 
     // If animation has not started; start it.
     if (this.animationFrameId === null) {
-      this.processFrame();
+      // Add to queue instead of adding to call stack; (now CPU efficient).
+      this.animationFrameId = requestAnimationFrame(this.processFrame);
     }
   }
 
@@ -286,10 +302,13 @@ export class AudioWaveElement extends CrLitElement {
     // Glow:
     this.lowerGlowPathEl.setAttribute(
         'd', buildBezierPath(STROKE_WIDTH, false));
+    const currentTransform = `translate(0, ${maskTranslateY})`;
+    this.maskEl.setAttribute('transform', currentTransform);
+    this.thinPathEl.setAttribute('transform', currentTransform);
+    this.lowerGlowPathEl.setAttribute('transform', currentTransform);
+    this.clipPathEl.setAttribute('transform', currentTransform);
 
-    this.maskEl.setAttribute('transform', `translate(0, ${maskTranslateY})`);
-
-    // Should be bigger than parent height
+    // Should be >= wrapper height.
     const bottomClipY = 1000;
     const topControlY = STROKE_WIDTH * -0.5 + controlPointY;
 

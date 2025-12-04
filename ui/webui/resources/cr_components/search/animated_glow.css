@@ -101,11 +101,12 @@
   /*
   * The actual gradient border and inner glow. In
   * its raw form without .background's effects, it's a
-  * colored pinwheel box. 2 gradients so the effect is brighter,
+  * colored pinwheel circle. 2 gradients so the effect is brighter,
   * but only for dragging animation (not needed for others).
   */
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 1 / 1; /* Square shape. */
   background: var(--search-animated-glow-brand-gradient);
+  /* 50% == circle, so it looks like it isn't moving when rotating. */
   border-radius: 50%;
   contain: paint;
   content: '';
@@ -117,15 +118,27 @@
   /*
   * Scale squashes the gradient vertically so its middle is not shown,
   * making it a glow, not a pinwheel. Too much, and it will be too
-  * tall of a glow. */
+  * tall of a glow.
+  */
   scale: 1 0.6;
   top: 50%;
   translate: -50% -50%;
   /*
-  * The gradient is 120% wide to ensure it fills
-  * passed the entire container.
+   * Hypotenuse rule - for rotating circle to be as wide as composebox
+   * (which is a rectangle) is at all points, its width and height must
+   *  be >= diagonal of composebox. Thus, use width of 145%
+   * (height set by aspect ratio) since sqrt(2) = ~141%.
+   * Take triangle half of rectangle composebox to find diagonal:
+   * a^2 + b^2 = c^2 -> c = sqrt(a^2 + b^2). Let x be max(a,b) via cqmax.
+   * sqrt(2x^2) -> 141% of max of container (x). Chose 145% for slight buffer.
+   * Take max of either height or width of parent (outer box). In this case,
+   * it must be width given all searchboxes are wider than tall. Therefore, let
+   * x = parent width in this case. Could try to use cqMax, but will fail debug
+   * check due to asking for element attributes that do not exist yet.
+   * ***IMPORTANT***: Swap height and width definitions in this class
+   * if your height is bigger than width in the searchbox.
   */
-  width: 120%;
+  width: 145%;
 }
 
 :host([entrypoint-name='Omnibox'][animation-state='expanding']) .double-gradient::before,
