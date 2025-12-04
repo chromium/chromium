@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #ifndef COMPONENTS_ZUCCHINI_BUFFER_SINK_H_
 #define COMPONENTS_ZUCCHINI_BUFFER_SINK_H_
 
@@ -17,6 +12,7 @@
 #include <iterator>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "components/zucchini/buffer_view.h"
 
 namespace zucchini {
@@ -44,7 +40,7 @@ class BufferSink : public MutableBufferView {
     DCHECK_NE(begin(), nullptr);
     if (Remaining() < sizeof(T))
       return false;
-    ::memcpy(begin(), &value, sizeof(T));
+    UNSAFE_TODO(::memcpy(begin(), &value, sizeof(T)));
     remove_prefix(sizeof(T));
     return true;
   }
