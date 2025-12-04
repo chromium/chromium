@@ -319,9 +319,64 @@ UnexportableKeyProviderMac::AsStatefulUnexportableKeyProvider() {
 
 std::optional<std::vector<std::unique_ptr<UnexportableSigningKey>>>
 UnexportableKeyProviderMac::GetAllSigningKeysSlowly() {
-  // TODO(crbug.com/455539044): Implement this.
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::WILL_BLOCK);
+
+  NSDictionary* query = @{
+    CFToNSPtrCast(kSecClass) : CFToNSPtrCast(kSecClassKey),
+    CFToNSPtrCast(kSecAttrKeyType) :
+        CFToNSPtrCast(kSecAttrKeyTypeECSECPrimeRandom),
+    CFToNSPtrCast(kSecAttrAccessGroup) : objc_storage_->keychain_access_group_,
+    CFToNSPtrCast(kSecAttrApplicationTag) : objc_storage_->application_tag_,
+    CFToNSPtrCast(kSecMatchLimit) : CFToNSPtrCast(kSecMatchLimitAll),
+    CFToNSPtrCast(kSecReturnAttributes) : @YES,
+    CFToNSPtrCast(kSecReturnRef) : @YES,
+  };
+
+  base::apple::ScopedCFTypeRef<CFTypeRef> result;
+  OSStatus status = crypto::apple::KeychainV2::GetInstance().ItemCopyMatching(
+      NSToCFPtrCast(query), result.InitializeInto());
+
+  if (status == errSecItemNotFound) {
+    return std::vector<std::unique_ptr<UnexportableSigningKey>>();
+  }
+
+  if (status != errSecSuccess) {
+    LOG(ERROR) << "Error querying keychain: " << status;
+    return std::nullopt;
+  }
+
+  CFArrayRef array = base::apple::CFCast<CFArrayRef>(result.get());
+  if (!array) {
+    return std::nullopt;
+  }
+
+  std::vector<std::unique_ptr<UnexportableSigningKey>> keys;
+  CFIndex count = CFArrayGetCount(array);
+  keys.reserve(count);
+  for (CFIndex i = 0; i < count; ++i) {
+    CFDictionaryRef dict =
+        base::apple::CFCast<CFDictionaryRef>(CFArrayGetValueAtIndex(array, i));
+    if (!dict) {
+      continue;
+    }
+
+    SecKeyRef key_ref =
+        base::apple::GetValueFromDictionary<SecKeyRef>(dict, kSecValueRef);
+    if (!key_ref) {
+      continue;
+    }
+
+    // ScopedCFTypeRef takes ownership, so we retain the key obtained from the
+    // array (which follows the Get Rule).
+    base::apple::ScopedCFTypeRef<SecKeyRef> scoped_key(
+        key_ref, base::scoped_policy::RETAIN);
+
+    keys.push_back(std::make_unique<UnexportableSigningKeyMac>(
+        std::move(scoped_key), dict));
+  }
+
+  return keys;
 }
 
 bool UnexportableKeyProviderMac::DeleteSigningKeySlowly(
