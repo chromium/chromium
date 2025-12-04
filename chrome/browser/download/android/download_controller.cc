@@ -397,6 +397,10 @@ void DownloadController::OnDownloadUpdated(DownloadItem* item) {
     if (item->GetDangerType() ==
         download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
       OnSensitiveDownload(item);
+    } else if (item->GetDangerType() ==
+               download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+      // The download contains sensitive content and should be blocked, do
+      // nothing here so the download will fail the completion check.
     } else if (ShouldShowSafeBrowsingAndroidDownloadWarnings()) {
       ShowDangerousDownloadWarning(model);
     } else {
