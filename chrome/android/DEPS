@@ -1,16 +1,16 @@
 include_rules = [
-  # Restricting uses of Chrome*Activity in favor of direct dependency aquisition. Code that lives
-  # under java/src/.../chrome/browser has a seperate exception under that same directory.
-  # Exceptions can be found under "specific_include_rules"below. Valid Chrome*Activity dependents
+  # Restricting uses of Chrome * Activity in favor of direct dependency acquisition.Code that lives
+  # under java / src /.../chrome/browser has a separate exception under that same directory.
+  # Exceptions can be found under "specific_include_rules"below.Valid Chrome * Activity dependents
   # should add an allow rule to a DEPS file in the relevant directory.
   "-chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   "-chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity2.java",
 
-  # Allow dependencies on chrome/browser modules
+  # Allow dependencies on chrome / browser modules
   "+chrome/browser",
 
-  # Restrict dependencies to xsurface by default (crbug.com/1115137)
+  # Restrict dependencies to xsurface by default (crbug.com / 1115137)
   "-chrome/browser/xsurface",
 
   "+cc/input/android/java",
@@ -85,59 +85,59 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Allow dependencies to xsurface from AppHooks only (crbug.com/1115137)
+  # Allow dependencies to xsurface from AppHooks only(crbug.com / 1115137)
   "chrome/android/java/src/org/chromium/chrome/browser/AppHooks.java": [
     "+chrome/browser/xsurface/android",
   ],
 
-  # Tests and test-oriented classes are allowed to rely on ChromeActivity for DEPS. When committing
+  # Tests and test- oriented classes are allowed to rely on ChromeActivity for DEPS.When committing
   # a file that doesn't conform to these patterns, add an allow rule to the DEPS file to the
   # testing directory.
   ".*Test\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-  ],
+  "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+  "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
+],
   ".*TestRule\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
   ],
-  ".*TestUtils\.java": [
+    ".*TestUtils\.java": [
       "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java",
-   ],
+    ],
 
-  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
-  # new code should rely on acceptable dependency aquisition patterns.
+  # Exceptions to the Chrome * Activity dependency restriction.These will all eventually be removed
+  # new code should rely on acceptable dependency acquisition patterns.
   "ContextualNotificationPermissionRequesterImpl\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
+  "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+],
   "ManualFillingMediator\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "VrShellDelegate\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
+    "VrShellDelegate\.java": [
+      "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
+    ],
 
-  # Exceptions to the Chrome*Activity dependency restriction. These will all eventually be removed
-  # new code should rely on acceptable dependency aquisition patterns.
+  # Exceptions to the Chrome * Activity dependency restriction.These will all eventually be removed
+  # new code should rely on acceptable dependency acquisition patterns.
   "MultiInstanceManagerImpl\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
+  "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+],
   "TabGroupUtils\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "TabGroupUiCoordinator\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
-  "TabSwitcherCoordinator\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
-  "VrDelegate\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
-  "VrShell\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
-  "VrShellDelegate\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-  ],
+    "TabGroupUiCoordinator\.java": [
+      "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+    ],
+      "TabSwitcherCoordinator\.java": [
+        "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+      ],
+        "VrDelegate\.java": [
+          "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+        ],
+          "VrShell\.java": [
+            "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+          ],
+            "VrShellDelegate\.java": [
+              "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
+            ],
 }

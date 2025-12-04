@@ -200,7 +200,7 @@ class MLInstallabilityPromoter
   // If populated, then an install is happening for the current web contents.
   base::WeakPtr<MlInstallOperationTracker> current_install_;
   // This is populated if the ML result has come back and no installation has
-  // occured. This is moved into the MlInstallOperationTracker on its creation.
+  // occurred. This is moved into the MlInstallOperationTracker on its creation.
   std::unique_ptr<MlInstallResultReporter> ml_result_reporter_;
 
   // - The following variables are not reset on page navigation. -
