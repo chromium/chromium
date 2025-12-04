@@ -708,6 +708,48 @@ void ServiceWorkerTaskQueue::RetryStartWorker(
   MaybeStartWorker(worker_state, context_id);
 }
 
+bool ServiceWorkerTaskQueue::IsRegistrationFailureRetryable(
+    blink::ServiceWorkerStatusCode status_code) const {
+  switch (status_code) {
+    // --- TRANSIENT FAILURES ---
+
+    // This could be transient if caused by I/O contention or temporary
+    // unavailability.
+    case blink::ServiceWorkerStatusCode::kErrorDiskCache:
+      return true;
+
+    // Generic failure.
+    case blink::ServiceWorkerStatusCode::kErrorFailed:
+      return true;
+
+    // The registration took too long.
+    case blink::ServiceWorkerStatusCode::kErrorTimeout:
+      return true;
+
+    // --- NON-TRANSIENT FAILURES ---
+    case blink::ServiceWorkerStatusCode::kOk:
+    case blink::ServiceWorkerStatusCode::kErrorAbort:
+    case blink::ServiceWorkerStatusCode::kErrorActivateWorkerFailed:
+    case blink::ServiceWorkerStatusCode::kErrorDisallowed:
+    case blink::ServiceWorkerStatusCode::kErrorEventWaitUntilRejected:
+    case blink::ServiceWorkerStatusCode::kErrorExists:
+    case blink::ServiceWorkerStatusCode::kErrorInstallWorkerFailed:
+    case blink::ServiceWorkerStatusCode::kErrorInvalidArguments:
+    case blink::ServiceWorkerStatusCode::kErrorIpcFailed:
+    case blink::ServiceWorkerStatusCode::kErrorNetwork:
+    case blink::ServiceWorkerStatusCode::kErrorNotFound:
+    case blink::ServiceWorkerStatusCode::kErrorProcessNotFound:
+    case blink::ServiceWorkerStatusCode::kErrorRedundant:
+    case blink::ServiceWorkerStatusCode::kErrorScriptEvaluateFailed:
+    case blink::ServiceWorkerStatusCode::kErrorSecurity:
+    case blink::ServiceWorkerStatusCode::kErrorStartWorkerFailed:
+    case blink::ServiceWorkerStatusCode::kErrorState:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDataCorrupted:
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+      return false;  // Do not retry.
+  }
+}
+
 bool ServiceWorkerTaskQueue::IsStartFailureRetryable(
     blink::ServiceWorkerStatusCode status_code) const {
   switch (status_code) {
@@ -856,13 +898,14 @@ void ServiceWorkerTaskQueue::DidRegisterServiceWorker(
     }
   }
 
-  // If the registration failed due to timeout then retry registration.
-  if (status_code == blink::ServiceWorkerStatusCode::kErrorTimeout &&
+  // If the registration failed due to a transient error, retry registration.
+  if (IsRegistrationFailureRetryable(status_code) &&
       ScheduleRetry(
           context_id.token, worker_registration_retries_,
-          base::BindOnce(&ServiceWorkerTaskQueue::RetryRegisterServiceWorker,
-                         weak_factory_.GetWeakPtr(), context_id,
-                         RegistrationReason::RE_REGISTER_ON_TIMEOUT))) {
+          base::BindOnce(
+              &ServiceWorkerTaskQueue::RetryRegisterServiceWorker,
+              weak_factory_.GetWeakPtr(), context_id,
+              RegistrationReason::RE_REGISTER_ON_TRANSIENT_FAILURE))) {
     return;
   }
 

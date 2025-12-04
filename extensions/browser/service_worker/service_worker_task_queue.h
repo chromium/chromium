@@ -338,7 +338,7 @@ class ServiceWorkerTaskQueue
   enum class RegistrationReason {
     REGISTER_ON_EXTENSION_LOAD,
     RE_REGISTER_ON_STATE_MISMATCH,
-    RE_REGISTER_ON_TIMEOUT,
+    RE_REGISTER_ON_TRANSIENT_FAILURE,
   };
 
   // Manages registration/start retry attempts with exponential backoff.
@@ -361,6 +361,11 @@ class ServiceWorkerTaskQueue
   // context. Requires the worker to be ready.
   void DispatchTasksImmediately(const SequencedContextId& context_id,
                                 base::span<PendingTask> tasks);
+
+  // Returns true if a service worker registration is transient and should be
+  // retried, false otherwise.
+  bool IsRegistrationFailureRetryable(
+      blink::ServiceWorkerStatusCode status_code) const;
 
   // Returns true if a service worker start failure is transient and should be
   // retried, false otherwise.
