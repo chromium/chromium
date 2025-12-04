@@ -16,7 +16,7 @@ BASE_FEATURE(kWebApkInstallFailureNotification,
 
 BASE_FEATURE(kAndroidMinimalUiLargeScreen, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAndroidWebAppMenuButton, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kAndroidWebAppMenuButton, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTWAOriginDisplay, base::FEATURE_DISABLED_BY_DEFAULT);
 

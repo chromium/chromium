@@ -355,8 +355,8 @@ public class TabbedAppMenuTest {
                 () -> {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
-                    Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
                 });
+        CriteriaHelper.pollUiThread(() -> mAppMenuHandler.isAppMenuShowing());
 
         pressKey(KeyEvent.KEYCODE_DPAD_DOWN);
 
