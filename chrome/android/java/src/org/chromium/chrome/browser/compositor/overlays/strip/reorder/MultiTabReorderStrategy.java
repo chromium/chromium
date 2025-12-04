@@ -326,6 +326,16 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
 
         gatherBlock(primaryTab, selectedTabs);
 
+        // Update stripTabs from stripViews, as the model update in gatherBlock invalidates the
+        // original array.
+        ArrayList<StripLayoutTab> filteredTabs = new ArrayList<>();
+        for (StripLayoutView view : stripViews) {
+            if (view instanceof StripLayoutTab tab) {
+                filteredTabs.add(tab);
+            }
+        }
+        stripTabs = filteredTabs.toArray(new StripLayoutTab[0]);
+
         // Fake a successful reorder in the target direction.
         float offset = MathUtils.flipSignIf(Float.MAX_VALUE, toLeft);
         List<StripLayoutTab> tabsToReorder =
