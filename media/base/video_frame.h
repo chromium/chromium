@@ -511,10 +511,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Synonym for HasMappableGpuBuffer().
-  // TODO(crbug.com/40263579): Eliminate this method.
-  bool IsMappableSharedImageEnabled() const;
-
   // Gets the ScopedMapping object which clients can use to access the CPU
   // visible memory and other metadata for the MappableSI backing this
   // VideoFrame.

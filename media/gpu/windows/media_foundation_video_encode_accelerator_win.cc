@@ -739,7 +739,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
 
   result.generate_sample_on_wait_sync_token =
       command_buffer_helper_ && !frame->HasNativeGpuMemoryBuffer() &&
-      !frame->IsMappableSharedImageEnabled() && frame->HasSharedImage();
+      !frame->HasMappableGpuBuffer() && frame->HasSharedImage();
   if (result.generate_sample_on_wait_sync_token) {
     TRACE_EVENT0("media",
                  "MediaFoundationVideoEncodeAccelerator::"
