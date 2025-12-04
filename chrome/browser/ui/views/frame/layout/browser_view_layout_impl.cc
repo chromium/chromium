@@ -36,6 +36,17 @@ BrowserViewLayoutImpl::ProposedLayout::AddChild(
   return emplace_result.first->second;
 }
 
+void BrowserViewLayoutImpl::ProposedLayout::HideViewIfNotPresent(
+    views::View* child) {
+  // See if the child view already exists in the layout.
+  if (GetLayoutFor(child)) {
+    return;
+  }
+
+  // If not, give it empty bounds and set it to invisible.
+  AddChild(child, gfx::Rect(), false);
+}
+
 const BrowserViewLayoutImpl::ProposedLayout*
 BrowserViewLayoutImpl::ProposedLayout::GetLayoutFor(
     const views::View* descendant) const {

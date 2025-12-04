@@ -230,19 +230,24 @@ BrowserLayoutParams BrowserFrameViewWin::GetBrowserLayoutParams() const {
   params.visual_client_area = client_view_bounds_;
   const int top = params.visual_client_area.y();
   const auto& caption = caption_button_container_->bounds();
-  if (CaptionButtonsOnLeadingEdge()) {
-    params.leading_exclusion.content =
-        gfx::SizeF(caption.right(), caption.bottom() - top);
-  } else {
-    params.trailing_exclusion.content =
-        gfx::SizeF(width() - caption.x(), caption.bottom() - top);
-    // In overlay mode, the icon is present but hidden.
-    if (window_icon_ && !browser_view()->IsWindowControlsOverlayEnabled()) {
-      const auto& icon = window_icon_->bounds();
+  // In some cases, the top of the client area is moved down, but slightly
+  // overlaps the bottom of the caption container. In that case, don't count
+  // the caption buttons in the exclusion area.
+  if (top < caption.bottom() - 2) {
+    if (CaptionButtonsOnLeadingEdge()) {
       params.leading_exclusion.content =
-          gfx::SizeF(icon.right(), icon.bottom() - top);
-      params.leading_exclusion.horizontal_padding = kIconTitleSpacing;
-      params.leading_exclusion.vertical_padding = icon.y() - top;
+          gfx::SizeF(caption.right(), caption.bottom() - top);
+    } else {
+      params.trailing_exclusion.content =
+          gfx::SizeF(width() - caption.x(), caption.bottom() - top);
+      // In overlay mode, the icon is present but hidden.
+      if (window_icon_ && !browser_view()->IsWindowControlsOverlayEnabled()) {
+        const auto& icon = window_icon_->bounds();
+        params.leading_exclusion.content =
+            gfx::SizeF(icon.right(), icon.bottom() - top);
+        params.leading_exclusion.horizontal_padding = kIconTitleSpacing;
+        params.leading_exclusion.vertical_padding = icon.y() - top;
+      }
     }
   }
   return params;

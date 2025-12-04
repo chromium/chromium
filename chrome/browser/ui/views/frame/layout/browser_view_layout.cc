@@ -134,12 +134,9 @@ std::unique_ptr<BrowserViewLayout> BrowserViewLayout::CreateLayout(
         base::FeatureList::IsEnabled(features::kTabbedBrowserUseNewLayout)) {
       return std::make_unique<BrowserViewTabbedLayoutImpl>(
           std::move(delegate), browser, std::move(views));
-    } else if (
-        // TODO(crbug.com/40639933): have to check both `is_type_app()` and
-        // `app_controller()` because "legacy" apps with no controllers lay out
-        // like app popups.
-        browser->is_type_app() && browser->app_controller() &&
-        base::FeatureList::IsEnabled(features::kAppBrowserUseNewLayout)) {
+    } else if ((browser->is_type_app() || browser->is_type_app_popup()) &&
+               base::FeatureList::IsEnabled(
+                   features::kAppBrowserUseNewLayout)) {
       return std::make_unique<BrowserViewAppLayoutImpl>(
           std::move(delegate), browser, std::move(views));
     } else if ((browser->is_type_popup() || browser->is_type_devtools()) &&

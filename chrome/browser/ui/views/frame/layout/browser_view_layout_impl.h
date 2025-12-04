@@ -71,6 +71,9 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
                              const gfx::Rect& bounds_,
                              std::optional<bool> visibility_ = std::nullopt);
 
+    // Hides `child` if it is not already present in this layout.
+    void HideViewIfNotPresent(views::View* child);
+
     // Searches the tree for `descendant` and returns its layout, otherwise,
     // returns null if not found.
     const ProposedLayout* GetLayoutFor(const views::View* descendant) const;
