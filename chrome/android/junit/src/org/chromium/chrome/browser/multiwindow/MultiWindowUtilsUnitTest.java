@@ -1152,6 +1152,6 @@ public class MultiWindowUtilsUnitTest {
         when(mIncognitoTabModel.getCount()).thenReturn(incognitoTabCount);
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
         MultiInstanceManagerApi31.writeTabCount(instanceId, mTabModelSelector);
-        MultiInstanceManagerApi31.updateTaskMap(instanceId, taskId);
+        MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
     }
 }

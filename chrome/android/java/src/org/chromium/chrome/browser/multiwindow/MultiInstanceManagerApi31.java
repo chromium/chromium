@@ -644,9 +644,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         for (int i : getPersistedInstanceIds(persistedInstanceType)) {
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
+            int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
             if (a != null) {
-                // The task for the activity must match the one found in our mapping.
-                int taskIdFromTaskMap = getTaskFromMap(i);
+                // The task for the activity must match the persisted task.
                 int activityTaskId = a.getTaskId();
                 String error =
                         "Invalid instance-task mapping for activity="
@@ -654,10 +654,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                                 + " with id="
                                 + i
                                 + ". Expected (stored) taskId="
-                                + taskIdFromTaskMap
+                                + persistedTaskId
                                 + ", activity's taskId="
                                 + activityTaskId;
-                assert taskIdFromTaskMap == activityTaskId : error;
+                assert persistedTaskId == activityTaskId : error;
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
                     currentItemPos = result.size();
@@ -665,7 +665,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     type = InstanceInfo.Type.ADJACENT;
                 }
             }
-            int taskId = getTaskFromMap(i);
+
             // It is generally assumed and expected that the last-accessed time for the current
             // activity is already updated to a "current" time when this method is called. However,
             // we will avoid closing the current instance explicitly to avoid an unexpected outcome
@@ -679,7 +679,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             result.add(
                     new InstanceInfo(
                             i,
-                            taskId,
+                            persistedTaskId,
                             type,
                             assumeNonNull(readUrl(i)),
                             assumeNonNull(readTitle(i)),
@@ -784,8 +784,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         boolean newInstanceIdAllocated = false;
         @InstanceAllocationType int allocationType = InstanceAllocationType.INVALID_INSTANCE;
         for (int i = 0; i < mMaxInstances; ++i) {
-            int taskIdFromMap = getTaskFromMap(i);
-            if (taskIdFromMap != INVALID_TASK_ID) {
+            int persistedTaskId = MultiInstancePersistentStore.readTaskId(i);
+            if (persistedTaskId != INVALID_TASK_ID) {
                 continue;
             }
             if (id == INVALID_WINDOW_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
@@ -874,8 +874,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         Set<Integer> activeInstanceIds = getPersistedInstanceIds(PersistedInstanceType.ACTIVE);
         // This method is called before instanceId allocation for the currently starting activity.
         // getPersistedInstanceIds() does not account for this activity since it does not have an
-        // associated task mapping yet. Increment |numTasksToFinish| by 1 to account for this
-        // activity in the total active instance count.
+        // associated persisted task state yet. Increment |numTasksToFinish| by 1 to account for
+        // this activity in the total active instance count.
         int numTasksToFinish = activeInstanceIds.size() - MultiWindowUtils.getMaxInstances() + 1;
         if (numTasksToFinish <= 0) return;
 
@@ -885,7 +885,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Get the instance ids of up to |numTasksToFinish| least recently used instances.
         TreeMap<Long, Integer> lruInstanceIds = new TreeMap<>();
         for (int i : activeInstanceIds) {
-            if (getTaskFromMap(i) == INVALID_TASK_ID) continue;
+            if (MultiInstancePersistentStore.readTaskId(i) == INVALID_TASK_ID) continue;
             long lastAccessedTime = readLastAccessedTime(i);
             lruInstanceIds.put(lastAccessedTime, i);
             if (lruInstanceIds.size() > numTasksToFinish) {
@@ -896,7 +896,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Determine the active tasks that need to be finished.
         Map<Integer, Integer> tasksToDelete = new HashMap<>();
         for (Integer i : lruInstanceIds.values()) {
-            tasksToDelete.put(getTaskFromMap(i), i);
+            tasksToDelete.put(MultiInstancePersistentStore.readTaskId(i), i);
         }
 
         // Finish AppTasks that are excess of what is required to stay within the instance limit.
@@ -909,7 +909,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (tasksToDelete.containsKey(taskInfo.taskId)) {
                 appTask.finishAndRemoveTask();
                 int instanceId = assertNonNull(tasksToDelete.get(taskInfo.taskId));
-                ChromeSharedPreferences.getInstance().removeKey(taskMapKey(instanceId));
+                MultiInstancePersistentStore.removeTaskId(instanceId);
             }
         }
     }
@@ -939,7 +939,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void initialize(int instanceId, int taskId, @SupportedProfileType int profileType) {
         mInstanceId = instanceId;
-        updateTaskMap(instanceId, taskId);
+        MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
         writeProfileType(instanceId, profileType);
         installTabModelObserver();
         recordInstanceCountHistogram();
@@ -1038,19 +1038,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 };
     }
 
-    static int getTaskFromMap(int index) {
-        return ChromeSharedPreferences.getInstance().readInt(taskMapKey(index), INVALID_TASK_ID);
-    }
-
-    private static String taskMapKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static void updateTaskMap(int instanceId, int taskId) {
-        ChromeSharedPreferences.getInstance().writeInt(taskMapKey(instanceId), taskId);
-    }
-
     /**
      * Gets instance ids filtered by one or more specified {@link PersistedInstanceType}s. To get
      * all persisted ids irrespective of type, use {@link PersistedInstanceType.ANY}.
@@ -1087,14 +1074,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 continue;
             }
 
-            int taskIdFromMap = getTaskFromMap(id);
+            int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
             int profileType = readProfileType(id);
             if (includeOtr && profileType != SupportedProfileType.OFF_THE_RECORD) continue;
             if (includeRegular && profileType != SupportedProfileType.REGULAR) continue;
-            if (includeActive && !activeTaskIds.contains(taskIdFromMap)) continue;
-            if (includeInactive && activeTaskIds.contains(taskIdFromMap)) continue;
+            if (includeActive && !activeTaskIds.contains(persistedTaskId)) continue;
+            if (includeInactive && activeTaskIds.contains(persistedTaskId)) continue;
 
             ids.add(id);
         }
@@ -1106,11 +1093,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     private void removeInvalidInstanceData(boolean cleanupApplicationStatus) {
-        // Remove tasks that do not exist any more from the task map.
+        // Update persisted task state based on current AppTasks.
         Set<Integer> appTaskIds = getAllAppTaskIds(mActivity);
-        Map<String, Integer> taskMap =
-                ChromeSharedPreferences.getInstance()
-                        .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+        Map<String, Integer> taskMap = MultiInstancePersistentStore.readTaskMap();
         List<String> tasksRemoved = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : taskMap.entrySet()) {
             if (!appTaskIds.contains(entry.getValue())) {
@@ -1192,7 +1177,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     private int getInstanceByTask(int taskId) {
         for (int i : getAllPersistedInstanceIds()) {
-            if (taskId == getTaskFromMap(i)) return i;
+            if (taskId == MultiInstancePersistentStore.readTaskId(i)) return i;
         }
         return INVALID_WINDOW_ID;
     }
@@ -1864,8 +1849,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         for (int i : getAllPersistedInstanceIds()) {
             Activity activityById = getActivityById(i);
             if (activityById != null) {
-                // The task for the activity must match the one found in our mapping.
-                assert getTaskFromMap(i) == activityById.getTaskId();
+                // The task for the activity must match the persisted task.
+                assert MultiInstancePersistentStore.readTaskId(i) == activityById.getTaskId();
                 if (activityById == activity) {
                     destinationWindowTaskId = activityById.getTaskId();
                     break;

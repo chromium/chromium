@@ -358,7 +358,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -3283,29 +3282,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
         if (mMultiInstanceManager != null) {
             int assignedIndex = TabWindowManagerSingleton.getInstance().getIdForWindow(this);
-            // The given index and the one computed by TabWindowManager should be one and the same.
             int taskId = ApplicationStatus.getTaskId(this);
-            Map<String, Integer> taskMap =
-                    ChromeSharedPreferences.getInstance()
-                            .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
-            String message =
-                    String.format(
-                            Locale.getDefault(),
-                            "Instance mismatch for assignedIndex: %d, mWindowId: %d with taskId:"
-                                    + " %s and taskMap: %s",
-                            assignedIndex,
-                            mWindowId,
-                            taskId,
-                            taskMap);
-
-            if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
-                boolean indicesMatch = assignedIndex == mWindowId;
-                assert indicesMatch : message;
-                if (!indicesMatch) {
-                    Log.i(TAG_MULTI_INSTANCE, message);
-                }
-            }
-
             mMultiInstanceManager.initialize(assignedIndex, taskId, mSupportedProfileType);
         }
 
@@ -3590,13 +3567,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Toast.makeText(this, text, Toast.LENGTH_LONG).show();
             recordMaxWindowLimitExceededHistogram(/* limitExceeded= */ true);
             return false;
-        } else {
-            Map<String, Integer> taskMap =
-                    ChromeSharedPreferences.getInstance()
-                            .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
-            Log.i(
-                    TAG_MULTI_INSTANCE,
-                    "Window ID allocated: " + mWindowId + ", instance-task map: " + taskMap);
         }
 
         assert mSupportedProfileType != SupportedProfileType.UNSET;

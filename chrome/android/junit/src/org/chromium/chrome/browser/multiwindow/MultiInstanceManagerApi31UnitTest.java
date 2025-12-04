@@ -494,8 +494,6 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mMenuOrKeyboardActionController,
                                 mDesktopWindowStateManagerSupplier));
         ApplicationStatus.setCachingEnabled(true);
-        ChromeSharedPreferences.getInstance()
-                .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
 
         mTabbedActivityPool =
                 new Activity[] {
@@ -520,12 +518,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance()
-                .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT);
+        MultiWindowTestUtils.resetInstanceInfo();
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
         ApplicationStatus.destroyForJUnitTests();
         mMultiInstanceManager.mTestBuildInstancesList = false;
@@ -1390,7 +1383,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         int instanceId = pair.first;
         mMultiInstanceManager.createInstance(instanceId, activity);
-        MultiInstanceManagerApi31.updateTaskMap(instanceId, activity.getTaskId());
+        MultiInstancePersistentStore.writeTaskId(instanceId, activity.getTaskId());
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
@@ -1402,7 +1395,7 @@ public class MultiInstanceManagerApi31UnitTest {
     // Assert that the given task is new, and not in the task map.
     private void assertIsNewTask(int taskId) {
         for (int i = 0; i < mMultiInstanceManager.mMaxInstances; ++i) {
-            assertNotEquals(taskId, MultiInstanceManagerApi31.getTaskFromMap(i));
+            assertNotEquals(taskId, MultiInstancePersistentStore.readTaskId(i));
         }
     }
 
@@ -2186,7 +2179,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Task map for LRU activity should be updated.",
                 -1,
-                MultiInstanceManagerApi31.getTaskFromMap(0));
+                MultiInstancePersistentStore.readTaskId(0));
         assertTrue(
                 "SharedPref for tracking downgrade should be updated.",
                 ChromeSharedPreferences.getInstance()
@@ -2231,7 +2224,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertNotEquals(
                 "Task map for LRU activity should not be updated.",
                 -1,
-                MultiInstanceManagerApi31.getTaskFromMap(0));
+                MultiInstancePersistentStore.readTaskId(0));
         assertFalse(
                 "SharedPref for tracking downgrade should not be updated.",
                 ChromeSharedPreferences.getInstance()

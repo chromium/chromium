@@ -24,16 +24,18 @@ public class MultiWindowTestUtils {
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.writeInt(MultiInstanceManagerApi31.tabCountKey(instanceId), tabCount);
-        MultiInstanceManagerApi31.updateTaskMap(instanceId, taskId);
+        MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
     }
 
-    /** Clears all the instance information */
+    /** Clears instance information. */
     public static void resetInstanceInfo() {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_URL);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
         prefs.removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
+        prefs.removeKey(ChromePreferenceKeys.MULTI_INSTANCE_INSTANCE_LIMIT_DOWNGRADE_TRIGGERED);
+        prefs.removeKey(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_LIMIT);
     }
 
     /** Enabled multi instance. */

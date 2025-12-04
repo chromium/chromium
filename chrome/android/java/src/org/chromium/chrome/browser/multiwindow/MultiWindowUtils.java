@@ -546,7 +546,7 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     static boolean isRestorableInstance(int index) {
         return MultiInstanceManagerApi31.readTabCount(index) != 0
-                || MultiInstanceManagerApi31.getTaskFromMap(index) != INVALID_TASK_ID;
+                || MultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
     }
 
     @Override
