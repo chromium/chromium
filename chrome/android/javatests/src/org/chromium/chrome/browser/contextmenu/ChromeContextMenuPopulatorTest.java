@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensIntentParams;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -1623,17 +1624,37 @@ public class ChromeContextMenuPopulatorTest {
     @Test
     @SmallTest
     @UiThreadTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOpenInNewWindow() {
-        checkOpenInNewWindowItems(/* isIncognitoWindowFeatureEnabled= */ false);
-    }
+        FirstRunStatus.setFirstRunFlowComplete(true);
+        ContextMenuParams params = getHttpLinkParams();
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
-    public void testOpenInNewWindow_incognitoWindowEnabled() {
-        checkOpenInNewWindowItems(/* isIncognitoWindowFeatureEnabled= */ true);
+        when(mItemDelegate.isIncognito()).thenReturn(false);
+        when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
+        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
+        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
+        doReturn(true).when(mPopulator).isTabletScreen();
+
+        List<Integer> expectedItems = new ArrayList<>();
+        expectedItems.add(R.id.contextmenu_open_in_new_tab);
+        expectedItems.add(R.id.contextmenu_open_in_new_tab_in_group);
+
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            expectedItems.add(R.id.contextmenu_open_in_new_window);
+            expectedItems.add(R.id.contextmenu_open_in_incognito_window);
+        } else {
+            expectedItems.add(R.id.contextmenu_open_in_incognito_tab);
+            expectedItems.add(R.id.contextmenu_open_in_new_window);
+        }
+
+        expectedItems.add(R.id.contextmenu_open_in_ephemeral_tab);
+        expectedItems.add(R.id.contextmenu_copy_link_address);
+        expectedItems.add(R.id.contextmenu_copy_link_text);
+        expectedItems.add(R.id.contextmenu_save_link_as);
+        expectedItems.add(R.id.contextmenu_read_later);
+        expectedItems.add(R.id.contextmenu_share_link);
+
+        int[] expectedItemsArray = expectedItems.stream().mapToInt(Integer::intValue).toArray();
+        checkMenuOptions(expectedItemsArray);
     }
 
     @Test
@@ -2618,38 +2639,5 @@ public class ChromeContextMenuPopulatorTest {
             }
         }
         return null;
-    }
-
-    private void checkOpenInNewWindowItems(boolean isIncognitoWindowFeatureEnabled) {
-        FirstRunStatus.setFirstRunFlowComplete(true);
-        ContextMenuParams params = getHttpLinkParams();
-
-        when(mItemDelegate.isIncognito()).thenReturn(false);
-        when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
-        when(mItemDelegate.canEnterMultiWindowMode()).thenReturn(true);
-        initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
-        doReturn(true).when(mPopulator).isTabletScreen();
-
-        List<Integer> expectedItems = new ArrayList<>();
-        expectedItems.add(R.id.contextmenu_open_in_new_tab);
-        expectedItems.add(R.id.contextmenu_open_in_new_tab_in_group);
-
-        if (isIncognitoWindowFeatureEnabled) {
-            expectedItems.add(R.id.contextmenu_open_in_new_window);
-            expectedItems.add(R.id.contextmenu_open_in_incognito_window);
-        } else {
-            expectedItems.add(R.id.contextmenu_open_in_incognito_tab);
-            expectedItems.add(R.id.contextmenu_open_in_new_window);
-        }
-
-        expectedItems.add(R.id.contextmenu_open_in_ephemeral_tab);
-        expectedItems.add(R.id.contextmenu_copy_link_address);
-        expectedItems.add(R.id.contextmenu_copy_link_text);
-        expectedItems.add(R.id.contextmenu_save_link_as);
-        expectedItems.add(R.id.contextmenu_read_later);
-        expectedItems.add(R.id.contextmenu_share_link);
-
-        int[] expectedItemsArray = expectedItems.stream().mapToInt(Integer::intValue).toArray();
-        checkMenuOptions(expectedItemsArray);
     }
 }

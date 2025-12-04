@@ -537,6 +537,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.S)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testNewIncognitoTab_NewWindow() {
         mActivityTestRule.getTestServer(); // Triggers the lazy initialization of the test server.
@@ -926,6 +927,7 @@ public class ChromeTabbedActivityTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(VERSION_CODES.VANILLA_ICE_CREAM)
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testLaunchIncognitoWindowWithExtras_NightModeDefaultEnabled() {
         // This is Android V+ because overriding night mode requires the intent to be stored

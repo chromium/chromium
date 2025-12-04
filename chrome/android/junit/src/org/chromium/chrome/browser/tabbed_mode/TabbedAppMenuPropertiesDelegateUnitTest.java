@@ -642,13 +642,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertMenuItemsAreEqual(modelList, expectedItems.toArray(new Integer[0]));
     }
 
-    private void testPageMenuItems_RegularPage(boolean shouldShowNewIncognitoTab) {
+    private void testPageMenuItems_RegularPage() {
         setUpMocksForPageMenu();
         setMenuOptions(
                 new MenuOptions()
                         .withShowTranslate()
                         .withShowAddToHomeScreen()
                         .withAutoDarkEnabled());
+        when(mTabModel.getCount()).thenReturn(1);
 
         assertEquals(MenuGroup.PAGE_MENU, mTabbedAppMenuPropertiesDelegate.getMenuGroup());
         MVCListAdapter.ModelList modelList = mTabbedAppMenuPropertiesDelegate.getMenuItems();
@@ -660,12 +661,10 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(0);
         expectedItems.add(R.id.new_tab_menu_id);
         expectedTitles.add(R.string.menu_new_tab);
-
-        if (shouldShowNewIncognitoTab) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(R.id.new_incognito_tab_menu_id);
             expectedTitles.add(R.string.menu_new_incognito_tab);
         }
-
         expectedItems.add(R.id.add_to_group_menu_id);
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
@@ -723,21 +722,20 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testPageMenuItems_Phone_RegularPage() {
-        testPageMenuItems_RegularPage(/* shouldShowNewIncognitoTab= */ true);
+        testPageMenuItems_RegularPage();
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
-    public void testPageMenuItems_Phone_RegularPage_incognitoWindowEnabled() {
-        testPageMenuItems_RegularPage(/* shouldShowNewIncognitoTab= */ false);
+    @Config(qualifiers = "sw600dp")
+    public void testPageMenuItems_Tablet_RegularPage() {
+        testPageMenuItems_RegularPage();
     }
 
-    private void testPageMenuItems_IncognitoPage(boolean isIncognitoWindow) {
+    private void testPageMenuItems_IncognitoPage() {
         setUpMocksForPageMenu();
         when(mTab.isIncognito()).thenReturn(true);
+        when(mIncognitoTabModel.getCount()).thenReturn(1);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mIncognitoTabModel);
         setMenuOptions(new MenuOptions().withShowTranslate().withAutoDarkEnabled());
 
@@ -750,7 +748,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedItems.add(R.id.icon_row_menu_id);
         expectedTitles.add(0);
 
-        if (!isIncognitoWindow) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(R.id.new_tab_menu_id);
             expectedTitles.add(R.string.menu_new_tab);
         }
@@ -761,7 +759,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         expectedTitles.add(R.string.menu_add_tab_to_new_group);
         expectedItems.add(R.id.divider_line_id);
         expectedTitles.add(0);
-        if (!isIncognitoWindow) {
+        if (!IncognitoUtils.shouldOpenIncognitoAsWindow()) {
             expectedItems.add(R.id.open_history_menu_id);
             expectedTitles.add(R.string.menu_history);
         }
@@ -808,16 +806,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     @Test
     @Config(qualifiers = "sw320dp")
-    @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testPageMenuItems_Phone_IncognitoPage() {
-        testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ false);
+        testPageMenuItems_IncognitoPage();
     }
 
     @Test
-    @Config(qualifiers = "sw320dp")
-    @EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
-    public void testPageMenuItems_Phone_IncognitoPage_incognitoWindowEnabled() {
-        testPageMenuItems_IncognitoPage(/* isIncognitoWindow= */ true);
+    @Config(qualifiers = "sw600dp")
+    public void testPageMenuItems_Tablet_IncognitoPage() {
+        testPageMenuItems_IncognitoPage();
     }
 
     @Test
@@ -1985,6 +1981,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testShouldShowNewMenu_isTabletSizedScreen_returnsTrue_withNewIncognitoWindow() {
         assertTrue(

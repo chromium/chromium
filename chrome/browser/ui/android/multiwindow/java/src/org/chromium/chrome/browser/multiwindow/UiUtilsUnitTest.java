@@ -33,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowDialog;
 
 import org.chromium.base.Callback;
@@ -229,6 +230,7 @@ public class UiUtilsUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testItemTitleWithIncognitoWindow() {
         testItemTitle(/* shouldOpenIncognitoAsWindow= */ true);
@@ -241,6 +243,7 @@ public class UiUtilsUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures({
         ChromeFeatureList.INSTANCE_SWITCHER_V2,
         ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW

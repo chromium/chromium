@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Token;
@@ -164,6 +165,7 @@ public class TabSwitcherActionMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_INCOGNITO_MIGRATION)
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testBuildMenuItems_NormalMode_NoIncognitoTabs_NoGroups_incognitoWindowEnabled() {

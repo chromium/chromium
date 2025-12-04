@@ -183,6 +183,7 @@ public class DragAndDropLauncherActivityUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @Features.EnableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
     public void testGetTabOrGroupIntent_sourceActivityHasIncognitoProfileType() {
         Tab tab = MockTab.createAndInitialize(1, mProfile);

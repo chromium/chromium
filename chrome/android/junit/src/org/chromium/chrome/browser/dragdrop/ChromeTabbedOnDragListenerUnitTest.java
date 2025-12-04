@@ -26,6 +26,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -509,18 +510,21 @@ public class ChromeTabbedOnDragListenerUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Fail_IncognitoAsNewWindow() {
         verifyDropToDifferentModelFailed(/* isGroupDrag= */ false, /* isMultiTabDrag= */ false);
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Fail_TabGroup_IncognitoAsNewWindow() {
         verifyDropToDifferentModelFailed(/* isGroupDrag= */ true, /* isMultiTabDrag= */ false);
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
     @EnableFeatures(ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW)
     public void testOnDrag_ActionDrop_DifferentModel_Fail_MultiTab_IncognitoAsNewWindow() {
         verifyDropToDifferentModelFailed(/* isGroupDrag= */ false, /* isMultiTabDrag= */ true);
