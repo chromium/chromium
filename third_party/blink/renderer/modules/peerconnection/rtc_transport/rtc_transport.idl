@@ -26,8 +26,7 @@ dictionary RtcSendPacketParameters {
   // information received in `RtcPacketSentInfo` and `RtcPacketFeedbackInfo`.
   long long id;
 
-  // TODO(crbug.com/443019066): Change to support BYOB.
-  required ArrayBuffer data;
+  required AllowSharedBufferSource data;
 
   DOMHighResTimeStamp desiredSendTime;
 };

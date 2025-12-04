@@ -24,6 +24,7 @@
 
 namespace blink {
 using testing::_;
+using AllowSharedBufferSource = RtcReceivedPacket::AllowSharedBufferSource;
 
 webrtc::Timestamp GetWebRTCTimeOrigin(LocalDOMWindow* window) {
   return webrtc::Timestamp::Micros(
@@ -59,6 +60,11 @@ RtcDtlsParameters* CreateRtcDtlsParameters() {
   fingerprint_data.Append("fingerprint", 11);
   params->setFingerprint(DOMArrayBuffer::Create(fingerprint_data));
   return params;
+}
+
+AllowSharedBufferSource* MakeArrayBufferSource(const Vector<uint8_t>& data) {
+  return MakeGarbageCollected<AllowSharedBufferSource>(
+      DOMArrayBuffer::Create(data));
 }
 
 class MockAsyncDatagramConnection : public AsyncDatagramConnection {
@@ -196,11 +202,11 @@ TEST_F(RtcTransportTest, SendPackets) {
   auto* params1 = RtcSendPacketParameters::Create();
   Vector<uint8_t> data1;
   data1.Append("packet1", 7);
-  params1->setData(DOMArrayBuffer::Create(data1));
+  params1->setData(MakeArrayBufferSource(data1));
   auto* params2 = RtcSendPacketParameters::Create();
   Vector<uint8_t> data2;
   data2.Append("packet2", 7);
-  params2->setData(DOMArrayBuffer::Create(data2));
+  params2->setData(MakeArrayBufferSource(data2));
 
   HeapVector<Member<RtcSendPacketParameters>> packets;
   packets.push_back(params1);
@@ -229,7 +235,16 @@ TEST_F(RtcTransportTest, GetReceivedPackets) {
   HeapVector<Member<RtcReceivedPacket>> packets =
       transport_->getReceivedPackets();
   EXPECT_EQ(packets.size(), 1u);
-  EXPECT_EQ(packets[0]->data()->ByteSpan(), String("packet").RawByteSpan());
+
+  auto* buffer =
+      DOMArrayBuffer::Create(/*num_elements=*/6, /*element_byte_size=*/1);
+  AllowSharedBufferSource* destination =
+      MakeGarbageCollected<AllowSharedBufferSource>(buffer);
+
+  DummyExceptionStateForTesting exception_state;
+  packets[0]->copyPayloadTo(destination, exception_state);
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(buffer->ByteSpan(), String("packet").RawByteSpan());
   // The precision for DOMHighResTimestamp is 0.1ms. Test equality by making
   // sure the difference between expected and received  is less than 0.2ms.
   EXPECT_LT(std::abs(packets[0]->receiveTime() - kReceiveTimeMillis), 0.2);
@@ -522,7 +537,7 @@ TEST_F(RtcTransportMultithreadedTest, SendPackets) {
     auto* params = RtcSendPacketParameters::Create();
     Vector<uint8_t> data;
     data.Append("packet", 6);
-    params->setData(DOMArrayBuffer::Create(data));
+    params->setData(MakeArrayBufferSource(data));
     packets.push_back(params);
   }
   transport->sendPackets(packets);

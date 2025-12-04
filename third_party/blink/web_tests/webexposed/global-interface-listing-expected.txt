@@ -8394,9 +8394,10 @@ interface RouteMap
     method get
 interface RtcReceivedPacket
     attribute @@toStringTag
-    getter data
+    getter payloadByteLength
     getter receiveTime
     method constructor
+    method copyPayloadTo
 interface RtcTransport
     attribute @@toStringTag
     getter fingerprint

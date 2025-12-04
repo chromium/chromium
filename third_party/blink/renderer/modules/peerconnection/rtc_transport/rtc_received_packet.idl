@@ -6,7 +6,7 @@
     Exposed=(Window,Worker),
     RuntimeEnabled=RTCRtpTransport
 ] interface RtcReceivedPacket {
-  // TODO(crbug.com/443019066): Change to support BYOB.
-  readonly attribute ArrayBuffer data;
+  readonly attribute unsigned long payloadByteLength;
+  [RaisesException] void copyPayloadTo(AllowSharedBufferSource destination);
   readonly attribute DOMHighResTimeStamp receiveTime;
 };

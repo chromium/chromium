@@ -139,6 +139,8 @@ blink_modules_sources("peerconnection") {
     "rtc_track_event.h",
     "rtc_transform_event.cc",
     "rtc_transform_event.h",
+    "rtc_transport/array_buffer_util.cc",
+    "rtc_transport/array_buffer_util.h",
     "rtc_transport/rtc_received_packet.cc",
     "rtc_transport/rtc_received_packet.h",
     "rtc_transport/rtc_transport.cc",
