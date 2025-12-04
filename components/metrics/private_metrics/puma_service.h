@@ -74,6 +74,8 @@ class PumaService {
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
+  regional_capabilities::CountryIdHolder GetCountryIdHolderForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(PumaServiceRcTest,
                            RcBuildReportAndStore_DoesCreateAndStoreReport);

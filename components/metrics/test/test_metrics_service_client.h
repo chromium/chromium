@@ -16,6 +16,7 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/metrics/test/test_metrics_log_uploader.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 
 namespace variations {
 class SyntheticTrialRegistry;
@@ -59,6 +60,8 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   std::string GetAppPackageNameIfLoggable() override;
   bool ShouldResetClientIdsOnClonedInstall() override;
   MetricsLogStore::StorageLimits GetStorageLimits() const override;
+  std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting() override;
 
   // Adds/removes |user_id| from the set of user ids that have metrics consent
   // as true.
@@ -99,6 +102,10 @@ class TestMetricsServiceClient : public MetricsServiceClient {
       variations::SyntheticTrialRegistry* registry) {
     synthetic_trial_registry_ = registry;
   }
+  void set_country_id_holder(
+      const regional_capabilities::CountryIdHolder& country_id_holder) {
+    country_id_holder_ = country_id_holder;
+  }
 
  private:
   std::string client_id_{"0a94430b-18e5-43c8-a657-580f7e855ce1"};
@@ -111,6 +118,8 @@ class TestMetricsServiceClient : public MetricsServiceClient {
   MetricsLogStore::StorageLimits storage_limits_ =
       MetricsServiceClient::GetStorageLimits();
   std::set<uint64_t> allowed_user_ids_;
+  std::optional<regional_capabilities::CountryIdHolder> country_id_holder_ =
+      MetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting();
 
   raw_ptr<variations::SyntheticTrialRegistry> synthetic_trial_registry_ =
       nullptr;

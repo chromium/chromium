@@ -58,6 +58,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -72,6 +73,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/country_codes/country_codes.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/metrics/call_stacks/call_stack_profile_metrics_provider.h"
@@ -112,6 +114,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
@@ -598,6 +602,17 @@ metrics::dwa::DwaService* ChromeMetricsServiceClient::GetDwaService() {
 metrics::private_metrics::PumaService*
 ChromeMetricsServiceClient::GetPumaService() {
   return puma_service_.get();
+}
+
+std::optional<regional_capabilities::CountryIdHolder>
+ChromeMetricsServiceClient::GetProfileCountryIdForPrivateMetricsReporting() {
+  auto* service =
+      regional_capabilities::RegionalCapabilitiesServiceFactory::GetForProfile(
+          cached_profile_.GetMetricsProfile());
+  if (service) {
+    return service->GetCountryId();
+  }
+  return std::nullopt;
 }
 
 void ChromeMetricsServiceClient::SetMetricsClientId(

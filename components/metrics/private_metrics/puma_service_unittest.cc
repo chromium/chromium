@@ -10,10 +10,12 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/country_codes/country_codes.h"
 #include "components/metrics/private_metrics/private_metrics_features.h"
 #include "components/metrics/private_metrics/private_metrics_pref_names.h"
 #include "components/metrics/test/test_metrics_service_client.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/regional_capabilities/regional_capabilities_country_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/private_metrics/system_profiles/coarse_system_profile.pb.h"
 #include "third_party/metrics_proto/private_metrics/system_profiles/rc_coarse_system_profile.pb.h"
@@ -37,6 +39,8 @@ class PumaServiceTest : public testing::Test {
     PumaService::RegisterPrefs(prefs_.registry());
     PrivateMetricsReportingService::RegisterPrefs(prefs_.registry());
 
+    client_.set_country_id_holder(
+        regional_capabilities::CountryIdHolder(country_codes::CountryId("BE")));
     puma_service_ = std::make_unique<PumaService>(&client_, &prefs_);
   }
 
@@ -132,8 +136,9 @@ TEST_F(PumaServiceRcTest, RcRecordCoarseSystemProfile) {
   EXPECT_TRUE(rc_profile.has_milestone());
   EXPECT_TRUE(rc_profile.has_platform());
 
-  // TODO(b:452034784) Implement profile_country_id mapping.
-  EXPECT_FALSE(rc_profile.has_profile_country_id());
+  EXPECT_TRUE(rc_profile.has_profile_country_id());
+  EXPECT_EQ(rc_profile.profile_country_id(),
+            country_codes::CountryId("BE").Serialize());
 }
 
 TEST_F(PumaServiceTest, RcClientId_IsNullWhenPumaRcIsDisabled) {

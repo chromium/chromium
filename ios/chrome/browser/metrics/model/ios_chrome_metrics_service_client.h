@@ -8,6 +8,7 @@
 #import <stdint.h>
 
 #import <memory>
+#import <optional>
 #import <set>
 #import <string>
 #import <string_view>
@@ -36,6 +37,10 @@ class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
 class ProfileIOS;
 class ProfileManagerIOS;
+
+namespace regional_capabilities {
+class CountryIdHolder;
+}
 
 namespace metrics {
 class MetricsService;
@@ -110,6 +115,8 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
   bool ShouldStartUpFast() const override;
+  std::optional<regional_capabilities::CountryIdHolder>
+  GetProfileCountryIdForPrivateMetricsReporting() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;

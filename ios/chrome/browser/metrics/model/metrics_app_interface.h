@@ -111,6 +111,9 @@ constexpr base::TimeDelta kSyncDWAOperationsTimeout = base::Seconds(60);
 // Purges DWA recorder.
 + (void)clearDWARecorder;
 
+// Returns the country id from the PUMA service for testing.
++ (NSString*)pumaCountryIdForTesting;
+
 // Creates a chrome_test_util::HistogramTester that will record every histogram
 // sent during test.
 + (NSError*)setupHistogramTester [[nodiscard]];
