@@ -52,6 +52,7 @@ source_set("controller_impl") {
     "//base",
     "//chrome/browser/actor",
     "//chrome/browser/actor/resources:grit",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/interaction",
