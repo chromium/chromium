@@ -123,9 +123,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     }
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   bool request_audio = false;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   std::vector<DesktopMediaList::Type> media_types;
   for (auto source_type : sources) {
     switch (source_type) {
@@ -145,9 +143,7 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         break;
       }
       case api::desktop_capture::DesktopCaptureSourceType::kAudio: {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
         request_audio = true;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
         break;
       }
     }
@@ -165,7 +161,6 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
         std::move(includable_web_contents_filter), web_contents);
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   DesktopMediaPickerController::DoneCallback callback = base::BindOnce(
       &DesktopCaptureChooseDesktopMediaFunctionBase::OnPickerDialogResults,
       this, origin, render_frame_host->GetGlobalId());
@@ -180,6 +175,8 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_params.exclude_system_audio = exclude_system_audio;
   picker_params.suppress_local_audio_playback =
       suppress_local_audio_playback_intended;
+  // TODO(crbug.com/405218400): Add Android-specific parameters here, like
+  // Params::exclude_self_browser_surface.
   picker_controller_ =
       std::make_unique<DesktopMediaPickerController>(g_picker_factory);
   picker_params.restricted_by_policy =
@@ -187,10 +184,6 @@ DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
   picker_controller_->Show(picker_params, std::move(media_types),
                            includable_web_contents_filter, std::move(callback));
   return RespondLater();
-#else
-  NOTIMPLEMENTED() << "Media picker not implemented on Android";
-  return RespondNow(Error("Media picker not implemented on Android"));
-#endif
 }
 
 std::string DesktopCaptureChooseDesktopMediaFunctionBase::GetCallerDisplayName()

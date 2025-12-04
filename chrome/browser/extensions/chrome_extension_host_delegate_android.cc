@@ -24,23 +24,4 @@ void ChromeExtensionHostDelegate::CreateTab(
   NOTIMPLEMENTED();
 }
 
-void ChromeExtensionHostDelegate::ProcessMediaAccessRequest(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    content::MediaResponseCallback callback,
-    const Extension* extension) {
-  // TODO(crbug.com/373434594): Support media access.
-  NOTIMPLEMENTED();
-}
-
-bool ChromeExtensionHostDelegate::CheckMediaAccessPermission(
-    content::RenderFrameHost* render_frame_host,
-    const url::Origin& security_origin,
-    blink::mojom::MediaStreamType type,
-    const Extension* extension) {
-  // TODO(crbug.com/373434594): Support media access.
-  NOTIMPLEMENTED();
-  return true;
-}
-
 }  // namespace extensions
