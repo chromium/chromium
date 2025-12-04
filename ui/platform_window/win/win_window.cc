@@ -309,6 +309,53 @@ void WinWindow::OnWindowPosChanged(WINDOWPOS* window_pos) {
   }
 }
 
+LRESULT WinWindow::OnSetCursor(UINT message, WPARAM w_param, LPARAM l_param) {
+  // `cursor_` must be a `ui::WinCursor`, so that custom image cursors are
+  // properly ref-counted. `cursor` below is only used for system cursors and
+  // doesn't replace the current cursor so an HCURSOR can be used directly.
+  wchar_t* cursor = IDC_ARROW;
+  // Reimplement the necessary default behavior here. Calling DefWindowProc can
+  // trigger weird non-client painting for non-glass windows with custom frames.
+  // Using a ScopedRedrawLock to prevent caption rendering artifacts may allow
+  // content behind this window to incorrectly paint in front of this window.
+  // Invalidating the window to paint over either set of artifacts is not ideal.
+  switch (LOWORD(l_param)) {
+    case HTSIZE:
+      cursor = IDC_SIZENWSE;
+      break;
+    case HTLEFT:
+    case HTRIGHT:
+      cursor = IDC_SIZEWE;
+      break;
+    case HTTOP:
+    case HTBOTTOM:
+      cursor = IDC_SIZENS;
+      break;
+    case HTTOPLEFT:
+    case HTBOTTOMRIGHT:
+      cursor = IDC_SIZENWSE;
+      break;
+    case HTTOPRIGHT:
+    case HTBOTTOMLEFT:
+      cursor = IDC_SIZENESW;
+      break;
+    case HTCLIENT:
+      if (cursor_) {
+        SetCursor(cursor_);
+        return 1;
+      }
+      break;
+    case LOWORD(HTERROR):  // Use HTERROR's LOWORD value for valid comparison.
+      SetMsgHandled(false);
+      break;
+    default:
+      // Use the default value, IDC_ARROW.
+      break;
+  }
+  ::SetCursor(::LoadCursor(nullptr, cursor));
+  return 1;
+}
+
 namespace test {
 
 // static
