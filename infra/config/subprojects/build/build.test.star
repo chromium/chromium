@@ -31,7 +31,6 @@ ci.defaults.set(
     priority = ci_constants.DEFAULT_FYI_PRIORITY,
     resultdb_enable = False,
     service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
-    siso_configs = ["builder", "remote-link"],
     siso_experiments = ["no-fallback"],
 )
 
@@ -43,8 +42,9 @@ consoles.console_view(
 def cq_build_perf_builder(**kwargs):
     # Use CQ RBE instance and high remote_jobs to simulate CQ builds.
     return ci.builder(
-        siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
         siso_project = siso.project.TEST_UNTRUSTED,
+        siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+        siso_remote_linking = True,
         use_clang_coverage = True,
         **kwargs
     )
@@ -52,8 +52,8 @@ def cq_build_perf_builder(**kwargs):
 def ci_build_perf_builder(**kwargs):
     # Use CI RBE instance to simulate CI builds.
     return ci.builder(
-        siso_remote_jobs = siso.remote_jobs.DEFAULT,
         siso_project = siso.project.TEST_TRUSTED,
+        siso_remote_jobs = siso.remote_jobs.DEFAULT,
         **kwargs
     )
 
@@ -116,6 +116,10 @@ cq_build_perf_builder(
         category = "untrusted",
         short_name = "win",
     ),
+    # Downloading with "minimum" strategy doesn't work
+    # well for the win builder because some steps are missing inputs.
+    # e.g. mini_installer.exe
+    siso_output_local_strategy = "greedy",
 )
 
 # Builders with rbe-chromium-trusted-test.
@@ -147,6 +151,7 @@ ci_build_perf_builder(
         category = "trusted",
         short_name = "lin",
     ),
+    siso_remote_linking = True,
 )
 
 ci_build_perf_builder(
@@ -177,6 +182,4 @@ ci_build_perf_builder(
         category = "trusted",
         short_name = "win",
     ),
-    # Disable remote-link.
-    siso_configs = ["builder"],
 )

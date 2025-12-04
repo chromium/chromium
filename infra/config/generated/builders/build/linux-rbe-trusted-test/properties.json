@@ -53,6 +53,7 @@
       "no-fallback"
     ],
     "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
     "project": "rbe-chromium-trusted-test",
     "remote_jobs": 250
   },
