@@ -30,6 +30,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
@@ -84,6 +86,32 @@ std::string DecryptRefreshToken(const std::string& cipher_text) {
   return refresh_token;
 }
 
+// Shows the history sync promo. Called after a browser window is available.
+void ShowHistorySyncPromo(const CoreAccountId& account_id,
+                          Profile* profile,
+                          Browser* browser) {
+  if (!browser) {
+    // Chrome failed to open a browser.
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+  CHECK_EQ(browser->profile(), profile);
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  HistorySyncOptinService* history_sync_optin_service =
+      HistorySyncOptinServiceFactory::GetForProfile(profile);
+  CHECK(history_sync_optin_service);
+
+  AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+
+  history_sync_optin_service->StartHistorySyncOptinFlow(
+      extended_account_info,
+      std::make_unique<HistorySyncOptinServiceDefaultDelegate>(),
+      kCredentialsProviderAccessPointWin);
+}
+
 // Finish the process of import credentials.  This is either called directly
 // from ImportCredentialsFromProvider() if a browser window for the profile is
 // already available or is delayed until a browser can first be opened.
@@ -111,6 +139,21 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
                          account_id,
                          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
                          /*is_sync_promo=*/false);
+  }
+}
+
+// Helper to run |callback| either immediately if a browser exists for
+// |profile|, or schedules it to run once a browser is added.
+void RunOnBrowserReady(Profile* profile,
+                       base::OnceCallback<void(Browser*)> callback) {
+  Browser* browser = chrome::FindLastActiveWithProfile(profile);
+  if (browser) {
+    std::move(callback).Run(browser);
+  } else {
+    // If no active browser exists yet, this profile is in the process of
+    // being created. Wait for the browser to be created.
+    // BrowserAddedForProfileObserver deletes itself when done.
+    new profiles::BrowserAddedForProfileObserver(profile, std::move(callback));
   }
 }
 
@@ -144,21 +187,24 @@ void ImportCredentialsFromProvider(Profile* profile,
         account_id, signin::ConsentLevel::kSignin,
         kCredentialsProviderAccessPointWin);
 
-    // TODO(crbug.com/419539610): Reconsider if we want to show the history sync
-    // promo instead of simply suppressing the sync promo here.
-    if (!base::FeatureList::IsEnabled(
-            syncer::kReplaceSyncPromosWithSignInPromos)) {
-      Browser* browser = chrome::FindLastActiveWithProfile(profile);
-      if (browser) {
-        FinishImportCredentialsFromProvider(account_id, profile, browser);
-      } else {
-        // If no active browser exists yet, this profile is in the process of
-        // being created.  Wait for the browser to be created before finishing
-        // the sign in.  This object deletes itself when done.
-        new profiles::BrowserAddedForProfileObserver(
-            profile, base::BindOnce(&FinishImportCredentialsFromProvider,
-                                    account_id, profile));
-      }
+    const bool kReplaceSyncPromos = base::FeatureList::IsEnabled(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+    const bool kUnoPhase2FollowUp =
+        base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
+
+    if (kReplaceSyncPromos && kUnoPhase2FollowUp) {
+      // UNO Phase 2 Follow Up enabled: Show the new History Sync promo.
+      RunOnBrowserReady(
+          profile, base::BindOnce(&ShowHistorySyncPromo, account_id, profile));
+    } else if (kReplaceSyncPromos && !kUnoPhase2FollowUp) {
+      // UNO enabled, but the Phase 2 Follow Up is not: Do nothing.
+      // No promo is shown in this configuration.
+    } else {  // !kReplaceSyncPromos
+      // Legacy behavior: Finish importing credentials, showing the old sync
+      // promo.
+      RunOnBrowserReady(profile,
+                        base::BindOnce(&FinishImportCredentialsFromProvider,
+                                       account_id, profile));
     }
   }
 
