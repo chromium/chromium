@@ -438,8 +438,7 @@ void SharedWorkerHost::Start(
       instance_.renderer_origin(),
       creator_policy_container_host_ &&
           creator_policy_container_host_->policies().is_web_secure_context,
-      GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
-          GetProcessHost()->GetBrowserContext()),
+      GetContentClient()->browser()->GetUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       devtools_handle_->pause_on_start(), devtools_handle_->dev_tools_token(),
       std::move(renderer_preferences), std::move(preference_watcher_receiver),

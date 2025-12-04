@@ -1885,8 +1885,7 @@ bool RenderProcessHostImpl::Init() {
   TRACE_EVENT("navigation", "RenderProcessHostImpl::Init",
               perfetto::Flow::Global(trace_id));
   GetRendererInterface()->InitializeRenderer(
-      GetContentClient()->browser()->GetUserAgentBasedOnPolicy(
-          browser_context_),
+      GetContentClient()->browser()->GetUserAgent(),
       GetContentClient()->browser()->GetUserAgentMetadata(),
       storage_partition_impl_->cors_exempt_header_list(),
       GetContentClient()->browser()->GetOriginTrialsSettings(),

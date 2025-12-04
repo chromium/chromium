@@ -60,11 +60,6 @@ std::string IOSContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
-std::string IOSContentBrowserClient::GetUserAgentBasedOnPolicy(
-    content::BrowserContext* context) {
-  return GetUserAgent();
-}
-
 blink::UserAgentMetadata IOSContentBrowserClient::GetUserAgentMetadata() {
   blink::UserAgentMetadata metadata;
 

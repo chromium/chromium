@@ -347,9 +347,7 @@ bool NeedsHTTPOrigin(net::HttpRequestHeaders* headers,
 // Computes the value that should be set for the User-Agent header, if
 // `user_agent_override` is non-empty, `user_agent_override` is returned as the
 // header value.
-std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
-                                  const std::string& user_agent_override,
-                                  content::BrowserContext* context) {
+std::string ComputeUserAgentValue(const std::string& user_agent_override) {
   if (!user_agent_override.empty()) {
     base::UmaHistogramEnumeration("Navigation.UserAgentStringType",
                                   UserAgentStringType::kOverriden);
@@ -363,7 +361,7 @@ std::string ComputeUserAgentValue(const net::HttpRequestHeaders& headers,
           ? UserAgentStringType::kReducedVersion
           : UserAgentStringType::kFullVersion);
 
-  return GetContentClient()->browser()->GetUserAgentBasedOnPolicy(context);
+  return GetContentClient()->browser()->GetUserAgent();
 }
 
 void AddAdditionalRequestHeaders(
@@ -396,7 +394,7 @@ void AddAdditionalRequestHeaders(
 
   headers->SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent,
-      ComputeUserAgentValue(*headers, user_agent_override, browser_context));
+      ComputeUserAgentValue(user_agent_override));
 
   if (!render_prefs.enable_referrers) {
     *referrer =
@@ -5921,8 +5919,7 @@ void NavigationRequest::OnRedirectChecksComplete(
     if (!devtools_user_agent_override_) {
       modified_headers.SetHeader(
           net::HttpRequestHeaders::kUserAgent,
-          ComputeUserAgentValue(modified_headers, GetUserAgentOverride(),
-                                browser_context));
+          ComputeUserAgentValue(GetUserAgentOverride()));
     }
   }
 
@@ -9671,9 +9668,8 @@ void NavigationRequest::SetIsOverridingUserAgent(bool override_ua) {
         is_overriding_user_agent(), frame_tree_node_, &headers,
         common_params_->url);
   }
-  headers.SetHeader(
-      net::HttpRequestHeaders::kUserAgent,
-      ComputeUserAgentValue(headers, GetUserAgentOverride(), browser_context));
+  headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                    ComputeUserAgentValue(GetUserAgentOverride()));
   begin_params_->headers = headers.ToString();
   // |request_headers_| comes from |begin_params_|. Clear |request_headers_| now
   // so that if |request_headers_| are needed, they will be updated.

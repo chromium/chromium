@@ -7308,13 +7308,6 @@ std::string ChromeContentBrowserClient::GetUserAgent() {
   return embedder_support::GetUserAgent();
 }
 
-// TODO(crbug.com/40843535): Remove this method along with its definition in the
-// interface.
-std::string ChromeContentBrowserClient::GetUserAgentBasedOnPolicy(
-    content::BrowserContext* _) {
-  return embedder_support::GetUserAgent();
-}
-
 blink::UserAgentMetadata ChromeContentBrowserClient::GetUserAgentMetadata() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return embedder_support::GetUserAgentMetadata();

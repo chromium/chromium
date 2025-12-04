@@ -2442,8 +2442,7 @@ void ServiceWorkerVersion::StartWorkerInternal() {
       outside_fetch_client_settings_object_.Clone();
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  params->user_agent = browser_client->GetUserAgentBasedOnPolicy(
-      context_->wrapper()->browser_context());
+  params->user_agent = browser_client->GetUserAgent();
   params->ua_metadata = browser_client->GetUserAgentMetadata();
   params->is_installed = IsInstalled(status_);
   params->script_url_to_skip_throttling = updated_script_url_;

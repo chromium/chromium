@@ -2626,11 +2626,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns the user agent. Content may cache this value.
   virtual std::string GetUserAgent();
 
-  // Returns the user agent, allowing for preferences (i.e. enterprise policy).
-  // Default to the non-context |GetUserAgent| above.
-  virtual std::string GetUserAgentBasedOnPolicy(
-      content::BrowserContext* context);
-
   // Returns user agent metadata. Content may cache this value.
   virtual blink::UserAgentMetadata GetUserAgentMetadata();
 
