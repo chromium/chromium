@@ -502,11 +502,6 @@ void AutofillKeyboardAccessoryControllerImpl::OnDeletionDialogClosed(
     case FillingProduct::kAutocomplete:
       AutofillMetrics::OnAutocompleteSuggestionDeleted(
           AutofillMetrics::SingleEntryRemovalMethod::kKeyboardAccessory);
-      if (view_) {
-        view_->AxAnnounce(l10n_util::GetStringFUTF16(
-            IDS_AUTOFILL_AUTOCOMPLETE_ENTRY_DELETED_A11Y_HINT,
-            suggestions_[index].main_text.value));
-      }
       break;
     case FillingProduct::kCreditCard:
       // TODO(crbug.com/41482065): Add metrics for credit cards.

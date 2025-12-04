@@ -379,8 +379,6 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest, RemoveAfterConfirmation) {
       .WillOnce(base::test::RunOnceCallback<4>(/*confirmed=*/true));
   EXPECT_CALL(manager().external_delegate(), RemoveSuggestion(suggestion))
       .WillOnce(Return(true));
-  EXPECT_CALL(*client().popup_view(),
-              AxAnnounce(Eq(u"Entry Autocomplete entry has been deleted")));
 
   EXPECT_TRUE(client().suggestion_controller(manager()).RemoveSuggestion(
       /*index=*/0,
