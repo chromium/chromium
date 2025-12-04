@@ -12900,6 +12900,7 @@ from previous Chrome versions.
   <int value="-473052940" label="ContextualSearchLegacyHttpPolicy:enabled"/>
   <int value="-472783446"
       label="BoundaryEventDispatchTracksNodeRemoval:disabled"/>
+  <int value="-472726214" label="GlicUnifiedFreScreen:disabled"/>
   <int value="-472477695" label="AutofillSaveCardImprovedUserConsent:enabled"/>
   <int value="-472014137" label="HomepageTile:disabled"/>
   <int value="-472013317" label="WebRTC-H264WithOpenH264FFmpeg:disabled"/>
@@ -12933,6 +12934,7 @@ from previous Chrome versions.
   <int value="-460081932" label="CustomFeedbackUi:disabled"/>
   <int value="-460062351" label="VariationsGoogleGroupFiltering:disabled"/>
   <int value="-459999278" label="OverviewScrollLayoutForClamshell:enabled"/>
+  <int value="-459926943" label="GlicUnifiedFreScreen:enabled"/>
   <int value="-459469509" label="SidePanelImprovedClobbering:enabled"/>
   <int value="-459318667" label="AccessiblePDFForm:enabled"/>
   <int value="-459050579" label="ComposeUpfrontInputModes:disabled"/>

@@ -5705,6 +5705,14 @@
     "owners": [ "estalin@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 150
   },
+  {
+    "name": "glic-unified-fre-screen",
+    "owners": [
+      "michelleabreo@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
   { "name": "glic-use-non-client",
     "owners": [
       "zoraiznaeem@chromium.org",
