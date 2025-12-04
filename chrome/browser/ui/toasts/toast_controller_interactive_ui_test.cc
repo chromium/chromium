@@ -255,8 +255,8 @@ IN_PROC_BROWSER_TEST_F(ToastControllerInteractiveTest, ReverseFocusTraversal) {
       CheckView(kToolbarAppMenuButtonElementId,
                 [](AppMenuButton* button) { return button->HasFocus(); })
 #else
-        CheckView(kBookmarkStarViewElementId,
-                [](StarView* star_view) { return star_view->HasFocus(); })
+      CheckView(kBookmarkStarViewElementId,
+                [](views::View* star_view) { return star_view->HasFocus(); })
 #endif
   );
 }

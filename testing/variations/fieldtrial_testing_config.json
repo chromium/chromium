@@ -17664,6 +17664,7 @@
                     "params": {
                         "ai_mode": "true",
                         "autofill_address": "true",
+                        "bookmark_star": "true",
                         "click_to_call": "true",
                         "collaboration_messaging": "true",
                         "cookie_controls": "true",
