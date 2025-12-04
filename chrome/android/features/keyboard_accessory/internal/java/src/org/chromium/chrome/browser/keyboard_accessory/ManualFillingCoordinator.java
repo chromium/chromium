@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.content.Context;
-import android.graphics.RectF;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -179,11 +178,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
     public void registerSheetUpdateDelegate(
             WebContents webContents, UpdateAccessorySheetDelegate delegate) {
         mMediator.registerSheetUpdateDelegate(webContents, delegate);
-    }
-
-    @Override
-    public void setFieldBounds(RectF bounds) {
-        mMediator.setFieldBounds(bounds);
     }
 
     @Override

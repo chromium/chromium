@@ -58,7 +58,6 @@ import android.widget.LinearLayout;
 
 import androidx.annotation.DimenRes;
 import androidx.annotation.Nullable;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.test.espresso.ViewInteraction;
 import androidx.test.espresso.matcher.RootMatchers;
 import androidx.test.filters.MediumTest;
@@ -1009,31 +1008,6 @@ public class KeyboardAccessoryViewTest {
                 "Second button's left margin is incorrect.", expectedMargin, params2.leftMargin);
         assertEquals(
                 "Second button's right margin is incorrect.", expectedMargin, params2.rightMargin);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)
-    public void testUndockedStyleWithDynamicPositioning() throws InterruptedException {
-        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
-        KeyboardAccessoryView view = mKeyboardAccessoryView.take();
-
-        int horizontalOffset = 10;
-        int verticalOffset = 20;
-        KeyboardAccessoryStyle style =
-                new KeyboardAccessoryStyle(
-                        /* isDocked= */ false,
-                        horizontalOffset,
-                        verticalOffset,
-                        /* maxWidth= */ 100);
-
-        ThreadUtils.runOnUiThreadBlocking(() -> view.setStyle(style));
-
-        CoordinatorLayout.LayoutParams params =
-                (CoordinatorLayout.LayoutParams) view.getLayoutParams();
-        assertEquals(android.view.Gravity.LEFT | android.view.Gravity.TOP, params.gravity);
-        assertEquals(horizontalOffset, params.leftMargin);
-        assertEquals(verticalOffset, params.topMargin);
     }
 
     /**

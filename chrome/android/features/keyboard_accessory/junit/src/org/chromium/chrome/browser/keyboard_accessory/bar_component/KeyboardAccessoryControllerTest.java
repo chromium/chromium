@@ -631,10 +631,7 @@ public class KeyboardAccessoryControllerTest {
     public void testStyle() {
         KeyboardAccessoryStyle style =
                 new KeyboardAccessoryStyle(
-                        /* isDocked= */ true,
-                        /* horizontalOffset= */ 1,
-                        /* verticalOffset= */ 1,
-                        /* maxWidth= */ 1);
+                        /* isDocked= */ true, /* offset= */ 1, /* maxWidth= */ 1);
         mCoordinator.setStyle(style);
         assertThat(mModel.get(STYLE), is(equalTo(style)));
     }
@@ -839,10 +836,7 @@ public class KeyboardAccessoryControllerTest {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(true);
         mCoordinator.setStyle(
                 new KeyboardAccessoryStyle(
-                        /* isDocked= */ false,
-                        /* horizontalOffset= */ 1,
-                        /* verticalOffset= */ 1,
-                        /* maxWidth= */ 1));
+                        /* isDocked= */ false, /* offset= */ 1, /* maxWidth= */ 1));
         // The suggestions should not be grouped because the style was changed to undocked.
         // TODO: crbug.com/431185714 - Mediator should remove the sheet opener when the style is
         // changed to undocked.
@@ -854,10 +848,7 @@ public class KeyboardAccessoryControllerTest {
         when(mMockIsLargeFormFactorSupplier.get()).thenReturn(false);
         mCoordinator.setStyle(
                 new KeyboardAccessoryStyle(
-                        /* isDocked= */ true,
-                        /* horizontalOffset= */ 1,
-                        /* verticalOffset= */ 1,
-                        /* maxWidth= */ 1));
+                        /* isDocked= */ true, /* offset= */ 1, /* maxWidth= */ 1));
         // The suggestions should be grouped again since the style was changed to docked.
         assertThat(mModel.get(BAR_ITEMS).size(), is(2));
         assertThat(mModel.get(BAR_ITEMS).get(0), instanceOf(GroupBarItem.class));

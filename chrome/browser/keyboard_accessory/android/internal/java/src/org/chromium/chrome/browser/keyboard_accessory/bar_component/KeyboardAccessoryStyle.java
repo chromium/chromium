@@ -22,15 +22,12 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public class KeyboardAccessoryStyle {
     private final boolean mIsDocked;
-    private final int mHorizontalOffset;
-    private final int mVerticalOffset;
+    private final int mOffset;
     private final int mMaxWidth;
 
-    public KeyboardAccessoryStyle(
-            boolean isDocked, @Px int horizontalOffset, @Px int verticalOffset, @Px int maxWidth) {
+    public KeyboardAccessoryStyle(boolean isDocked, @Px int offset, @Px int maxWidth) {
         this.mIsDocked = isDocked;
-        this.mHorizontalOffset = horizontalOffset;
-        this.mVerticalOffset = verticalOffset;
+        this.mOffset = offset;
         this.mMaxWidth = maxWidth;
     }
 
@@ -42,26 +39,18 @@ public class KeyboardAccessoryStyle {
     }
 
     /**
-     * @return The horizontal offset in pixels, used only as a left margin for dynamically
-     *     positioned, undocked-style keyboard accessory bars.
-     */
-    public @Px int getHorizontalOffset() {
-        return mHorizontalOffset;
-    }
-
-    /**
      * @return the vertical offset in pixels. For a docked style, this is the margin from the
      *     bottom. For an undocked style, this is the margin from the top.
      */
-    public @Px int getVerticalOffset() {
-        return mVerticalOffset;
+    public int getOffset() {
+        return mOffset;
     }
 
     /**
      * @return The maximum width in pixels. This is primarily relevant for undocked styles. Docked
      *     styles typically match parent width. 0 means that the width has no max value.
      */
-    public @Px int getMaxWidth() {
+    public int getMaxWidth() {
         return mMaxWidth;
     }
 }

@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
-import android.graphics.RectF;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -166,15 +165,6 @@ public interface ManualFillingComponent extends BackPressHandler {
      */
     void registerActionProvider(
             WebContents webContents, Provider<KeyboardAccessoryData.Action[]> actionProvider);
-
-    /**
-     * Sets the bounds of focused field in device-independent. This is used only for dynamically
-     * positioned bars on large-screen devices.
-     *
-     * @param bounds The bounds of the focused field in viewport coordinates given in
-     *     device-independent pixels.
-     */
-    void setFieldBounds(RectF bounds);
 
     /**
      * Sets the suggestions to be displayed in the accessory bar.

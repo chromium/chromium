@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.app.Activity;
-import android.graphics.RectF;
 import android.net.Uri;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -139,20 +138,12 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * Shows an Autofill view with specified suggestions.
      *
      * @param suggestions Autofill suggestions to be displayed.
-     * @param bounds Bounds of the focused field given in device-independent pixels.
      */
     @CalledByNative
-    private void show(@JniType("std::vector") List<AutofillSuggestion> suggestions, RectF bounds) {
+    private void show(@JniType("std::vector") List<AutofillSuggestion> suggestions) {
         if (mManualFillingComponent != null) {
-            mManualFillingComponent.setFieldBounds(bounds);
             mManualFillingComponent.setSuggestions(suggestions, this);
         }
-    }
-
-    /** Helper function used to create RectF object on the c++ side. */
-    @CalledByNative
-    private static RectF createFieldBounds(float left, float top, float right, float bottom) {
-        return new RectF(left, top, right, bottom);
     }
 
     /**
