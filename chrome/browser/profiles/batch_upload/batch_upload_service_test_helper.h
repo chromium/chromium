@@ -7,6 +7,7 @@
 
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/ui/profiles/batch_upload_ui_delegate.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/sync/service/local_data_description.h"
 #include "components/sync/test/mock_sync_service.h"
 
@@ -75,6 +76,7 @@ class BatchUploadServiceTestHelper {
   syncer::LocalDataDescription& GetReturnDescription(syncer::DataType type);
 
   syncer::MockSyncService* GetSyncServiceMock() { return &mock_sync_service_; }
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
  private:
   std::unique_ptr<KeyedService> CreateBatchUploadServiceInternal(
@@ -83,6 +85,7 @@ class BatchUploadServiceTestHelper {
       content::BrowserContext* browser_context);
 
   testing::NiceMock<syncer::MockSyncService> mock_sync_service_;
+  TestingPrefServiceSimple pref_service_;
   std::map<syncer::DataType, syncer::LocalDataDescription>
       returned_descriptions_;
 };

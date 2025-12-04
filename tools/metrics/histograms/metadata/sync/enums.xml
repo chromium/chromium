@@ -83,6 +83,15 @@ chromium-metrics-reviews@google.com.
   <int value="6"
       label="Profile menu primary button with Windows10 depreciation action"/>
   <int value="7" label="Account settings"/>
+  <int value="8"
+      label="Profile menu primary button action following Avatar button promo
+             click"/>
+  <int value="9"
+      label="Profile menu primary button with bookmarks action following
+             Avatar button promo click"/>
+  <int value="10"
+      label="Profile menu primary button with Windows10 depreciation action
+             following Avatar button promo click"/>
 </enum>
 
 <!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->

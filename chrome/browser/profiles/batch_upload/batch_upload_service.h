@@ -26,6 +26,8 @@ namespace syncer {
 class SyncService;
 }  // namespace syncer
 
+class PrefService;
+
 // Service that allows the management of the Batch Upload Dialog. Used to open
 // the dialog and manages its lifetime.
 // It communicates with the `syncer::SyncService` to get information of the
@@ -34,16 +36,13 @@ class BatchUploadService : public KeyedService {
  public:
   BatchUploadService(signin::IdentityManager* identity_manager,
                      syncer::SyncService* sync_service,
+                     PrefService* pref_service,
                      std::unique_ptr<BatchUploadDelegate> delegate);
   BatchUploadService(const BatchUploadService&) = delete;
   BatchUploadService& operator=(const BatchUploadService&) = delete;
   ~BatchUploadService() override;
 
   // Lists the different entry points to the Batch Upload Dialog.
-  // TODO(crbug.com/416219929): Currently all existing entry points are tied to
-  // a data type. In the future, neutral entry points may be added.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
   //
   // LINT.IfChange(EntryPoint)
   enum class EntryPoint {
@@ -55,8 +54,13 @@ class BatchUploadService : public KeyedService {
     kProfileMenuPrimaryButtonWithBookmarksAction = 5,
     kProfileMenuPrimaryButtonWithWindows10DepreciationAction = 6,
     kAccountSettingsPage = 7,
+    kProfileMenuPrimaryButtonActionFromAvatarPromo = 8,
+    kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo = 9,
+    kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo =
+        10,
 
-    kMaxValue = kAccountSettingsPage,
+    kMaxValue =
+        kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:BatchUploadEntryPoint)
 
@@ -157,6 +161,7 @@ class BatchUploadService : public KeyedService {
 
   raw_ref<signin::IdentityManager> identity_manager_;
   raw_ref<syncer::SyncService> sync_service_;
+  raw_ref<PrefService> prefs_;
   std::unique_ptr<BatchUploadDelegate> delegate_;
 
   // Full state of the flow from requesting opening the dialog to saving

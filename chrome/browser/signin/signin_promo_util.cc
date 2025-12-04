@@ -5,7 +5,9 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 
 #include "base/check_deref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -119,6 +121,26 @@ const char* GetAvatarButtonPromoUsedKey(
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
   }
+}
+
+// Returns the Shown/Used count pair for `promo_type`.
+std::pair<int, int> GetPromoUsageCounts(
+    SigninPrefs signin_prefs,
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type,
+    GaiaId gaia) {
+  if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
+    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+    return {signin_prefs.GetSyncPromoIdentityPillShownCount(gaia),
+            signin_prefs.GetSyncPromoIdentityPillUsedCount(gaia)};
+  }
+
+  base::DictValue& promo_counts =
+      signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia);
+
+  return {promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
+              .value_or(0),
+          promo_counts.FindInt(GetAvatarButtonPromoUsedKey(promo_type))
+              .value_or(0)};
 }
 
 bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
@@ -638,20 +660,46 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
   }
 }
 
-int GetShownCountOfAvatarButtonPromoType(
+void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
-    PrefService& prefs,
-    GaiaId gaia_id) {
-  SigninPrefs signin_prefs(prefs);
-  if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-    return signin_prefs.GetSyncPromoIdentityPillShownCount(gaia_id);
+    signin::IdentityManager* identity_manager,
+    PrefService& prefs) {
+  GaiaId primary_gaia =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
+  CHECK(!primary_gaia.empty());
+
+  constexpr char kAvatarPillPromoAcceptedAtShownCountBaseHistogram[] =
+      "Signin.AvatarPillPromo.AcceptedAtShownCount.";
+
+  std::string_view promo_type_suffix;
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+      promo_type_suffix = "Sync";
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      promo_type_suffix = "HistorySync";
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      promo_type_suffix = "BatchUpload";
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+      promo_type_suffix = "BatchUploadBookmarks";
+      break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+      promo_type_suffix = "BatchUploadWindows10Depreciation";
+      break;
   }
 
-  base::DictValue& promo_counts =
-      signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia_id);
-  return promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
-      .value_or(0);
+  int promo_shown_count =
+      GetPromoUsageCounts(SigninPrefs(prefs), promo_type, primary_gaia).first;
+  base::UmaHistogramExactLinear(
+      base::StrCat({kAvatarPillPromoAcceptedAtShownCountBaseHistogram,
+                    promo_type_suffix}),
+      promo_shown_count,
+      /*exclusive_max=*/user_education::features::GetNewBadgeShowCount() + 1);
 }
 
 void ComputeProfileMenuAvatarButtonPromoInfo(
@@ -721,27 +769,8 @@ bool SyncPromoIdentityPillManager::ShouldShowPromo(
   }
 
   CHECK(signin_prefs_);
-  int promo_shown_count = 0;
-  int promo_used_count = 0;
-  if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-    CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-    promo_shown_count =
-        signin_prefs_->GetSyncPromoIdentityPillShownCount(account.gaia);
-    promo_used_count =
-        signin_prefs_->GetSyncPromoIdentityPillUsedCount(account.gaia);
-  } else {
-    base::DictValue& promo_counts =
-        signin_prefs_->GetOrCreateAvatarButtonPromoCountDictionary(
-            account.gaia);
-
-    promo_shown_count =
-        promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
-            .value_or(0);
-    promo_used_count =
-        promo_counts.FindInt(GetAvatarButtonPromoUsedKey(promo_type))
-            .value_or(0);
-  }
-
+  auto [promo_shown_count, promo_used_count] =
+      GetPromoUsageCounts(*signin_prefs_.get(), promo_type, account.gaia);
   return promo_shown_count < max_shown_count_ &&
          promo_used_count < max_used_count_;
 }

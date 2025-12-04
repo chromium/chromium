@@ -38,9 +38,8 @@ ProfileMenuCoordinator::~ProfileMenuCoordinator() {
   }
 }
 
-void ProfileMenuCoordinator::Show(
-    bool is_source_accelerator,
-    std::optional<signin_metrics::AccessPoint> explicit_signin_access_point) {
+void ProfileMenuCoordinator::Show(bool is_source_accelerator,
+                                  bool from_avatar_promo) {
   // TODO(crbug.com/425953501): Update this code.
   Browser* const browser = browser_->GetBrowserForMigrationOnly();
   auto* avatar_toolbar_button =
@@ -60,12 +59,12 @@ void ProfileMenuCoordinator::Show(
         *GetProfile(),
         base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
                        weak_pointer_factory_.GetWeakPtr(),
-                       is_source_accelerator, explicit_signin_access_point));
+                       is_source_accelerator, from_avatar_promo));
     return;
   }
 #endif
 
-  ShowWithPromoResults(is_source_accelerator, explicit_signin_access_point
+  ShowWithPromoResults(is_source_accelerator, from_avatar_promo
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
                        ,
                        signin::ProfileMenuAvatarButtonPromoInfo()
@@ -75,7 +74,7 @@ void ProfileMenuCoordinator::Show(
 
 void ProfileMenuCoordinator::ShowWithPromoResults(
     bool is_source_accelerator,
-    std::optional<signin_metrics::AccessPoint> explicit_signin_access_point
+    bool from_avatar_promo
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     ,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info
@@ -108,8 +107,7 @@ void ProfileMenuCoordinator::ShowWithPromoResults(
     NOTREACHED() << "The profile menu is not implemented on Ash.";
 #else
     bubble = std::make_unique<ProfileMenuView>(avatar_toolbar_button, browser,
-                                               promo_info,
-                                               explicit_signin_access_point);
+                                               promo_info, from_avatar_promo);
 #endif  // BUILDFLAG(IS_CHROMEOS)
   }
   bubble->SetProperty(views::kElementIdentifierKey,

@@ -98,11 +98,18 @@ struct ProfileMenuAvatarButtonPromoInfo {
       default;
 };
 
-// Returns the total number of times `promo_type` was shown for `gaia_id`.
-int GetShownCountOfAvatarButtonPromoType(
+// Records the show count at which the AvatarButton was showing `promo_type`
+// that lead to the promo being accepted.
+void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
-    PrefService& prefs,
-    GaiaId gaia_id);
+    signin::IdentityManager* identity_manager,
+    PrefService& prefs);
+
+// Access point used to mark the source from the AvatarButton click event for
+// HistorySync promo.
+inline constexpr signin_metrics::AccessPoint
+    kHistoryOptinAvatarPromoAccessPoint =
+        signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
 
 // Based on the `profile` current state, compute the data to be shown for the
 // promos, if any, based on the promo priority and the profile state. The promo

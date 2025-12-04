@@ -52,6 +52,7 @@ source_set("test_support") {
   public_deps = [
     ":batch_upload",
     "//chrome/browser/ui/profiles",
+    "//components/prefs:test_support",
     "//components/sync:test_support",
     "//components/sync/service",
   ]
@@ -71,6 +72,7 @@ source_set("unit_tests") {
     ":batch_upload",
     ":test_support",
     "//base/test:test_support",
+    "//chrome/browser",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager:test_support",
