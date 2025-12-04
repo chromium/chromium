@@ -65,7 +65,7 @@ export function getHtml(this: MostVisitedElement) {
   </cr-button>
   <div>
     <cr-button id="showMore" tabindex="0" @click="${this.onShowMoreClick_}"
-        ?hidden="${!this.showShowMore_}"
+        ?hidden="${!this.showShowMore_}" @keydown="${this.onShowMoreKeyDown_}"
         aria-label="${this.i18n('showMore')}"
         title="${this.i18n('showMore')}" noink>
       <div class="tile-icon tile-icon-container">
@@ -76,7 +76,7 @@ export function getHtml(this: MostVisitedElement) {
       </div>
     </cr-button>
     <cr-button id="showLess" tabindex="0" @click="${this.onShowLessClick_}"
-        ?hidden="${!this.showShowLess_}"
+        ?hidden="${!this.showShowLess_}" @keydown="${this.onShowLessKeyDown_}"
         aria-label="${this.i18n('showLess')}"
         title="${this.i18n('showLess')}" noink>
       <div class="tile-icon tile-icon-container">
