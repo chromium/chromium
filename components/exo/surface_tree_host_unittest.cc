@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/surface_tree_host.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 
 #include "ash/display/display_configuration_controller.h"
 #include "ash/shell.h"
+#include "base/compiler_specific.h"
 #include "base/test/bind.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/sub_surface.h"
@@ -283,8 +279,8 @@ class InterceptingTestRasterInterface : public viz::TestRasterInterface {
     ResetSyncTokensCount();
     for (GLsizei i = 0; i < count; ++i) {
       gpu::SyncToken sync_token_data;
-      memcpy(sync_token_data.GetData(), sync_tokens[i],
-             sizeof(sync_token_data));
+      UNSAFE_TODO(memcpy(sync_token_data.GetData(), sync_tokens[i],
+                         sizeof(sync_token_data)));
       if (sync_token_data.verified_flush()) {
         verified_sync_tokens_++;
       } else {

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/data_source.h"
 
 #include <limits>
 #include <optional>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -63,7 +59,7 @@ std::optional<std::vector<uint8_t>> ReadDataOnWorkerThread(base::ScopedFD fd) {
     uint8_t chunk[kChunkSize];
     ssize_t bytes_read = HANDLE_EINTR(read(fd.get(), chunk, kChunkSize));
     if (bytes_read > 0) {
-      bytes.insert(bytes.end(), chunk, chunk + bytes_read);
+      bytes.insert(bytes.end(), chunk, UNSAFE_TODO(chunk + bytes_read));
       continue;
     }
     if (!bytes_read)
@@ -125,13 +121,15 @@ std::u16string CodepageToUTF16(const std::vector<uint8_t>& data,
   if (!ucnv_compareNames(charset, kUTF16Unspecified) &&
       data.size() >= kByteOrderMarkSize) {
     if (static_cast<uint8_t>(piece.data()[0]) == kByteOrderMark[0] &&
-        static_cast<uint8_t>(piece.data()[1]) == kByteOrderMark[1]) {
+        static_cast<uint8_t>(UNSAFE_TODO(piece.data()[1])) ==
+            kByteOrderMark[1]) {
       // BOM is in big endian format. Consume the BOM so it doesn't get
       // interpreted as a character.
       piece.remove_prefix(2);
       charset = kUTF16BigEndian;
     } else if (static_cast<uint8_t>(piece.data()[0]) == kByteOrderMark[1] &&
-               static_cast<uint8_t>(piece.data()[1]) == kByteOrderMark[0]) {
+               static_cast<uint8_t>(UNSAFE_TODO(piece.data()[1])) ==
+                   kByteOrderMark[0]) {
       // BOM is in little endian format. Consume the BOM so it doesn't get
       // interpreted as a character.
       piece.remove_prefix(2);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/shell_surface.h"
 
 #include <sstream>
@@ -26,6 +21,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "ash/wm/workspace_controller_test_api.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -523,7 +519,7 @@ TEST_F(ShellSurfaceTest, Minimize) {
          bool resizing, bool activated, const gfx::Vector2d& origin_offset,
          float raster_scale, aura::Window::OcclusionState occlusion_state,
          std::optional<chromeos::WindowStateType>) {
-        state_ptr[*serial_ptr] = state_type;
+        UNSAFE_TODO(state_ptr[*serial_ptr]) = state_type;
         CHECK(*serial_ptr < 2);
         return ++(*serial_ptr);
       },

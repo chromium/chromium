@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/gwp_asan/client/sampling_malloc_shims.h"
 
 #include <stdlib.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/page_size.h"
 #include "base/strings/string_number_conversions.h"
@@ -220,7 +216,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   CHECK_NE(alloc, nullptr);
 
   constexpr unsigned char kFillChar = 0xff;
-  memset(alloc, kFillChar, base::GetPageSize());
+  UNSAFE_TODO(memset(alloc, kFillChar, base::GetPageSize()));
 
   unsigned char* new_alloc =
       static_cast<unsigned char*>(realloc(alloc, base::GetPageSize() + 1));
@@ -228,7 +224,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
   CHECK_EQ(GetMallocGpaForTesting().PointerIsMine(new_alloc), false);
 
   for (size_t i = 0; i < base::GetPageSize(); i++)
-    CHECK_EQ(new_alloc[i], kFillChar);
+    UNSAFE_TODO(CHECK_EQ(new_alloc[i], kFillChar));
 
   free(new_alloc);
 
@@ -249,7 +245,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 
     if (GetMallocGpaForTesting().PointerIsMine(alloc)) {
       for (size_t j = 0; j < base::GetPageSize(); j++)
-        CHECK_EQ(alloc[j], 0U);
+        UNSAFE_TODO(CHECK_EQ(alloc[j], 0U));
       free(alloc);
       return kSuccess;
     }
@@ -338,8 +334,8 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
     SamplingMallocShimsTest::multiprocessTestSetup) {
   void* ptrs[kMaxMetadata + 1];
   for (size_t i = 0; i < kMaxMetadata; i++) {
-    ptrs[i] = GetMallocGpaForTesting().Allocate(16);
-    CHECK(ptrs[i]);
+    UNSAFE_TODO(ptrs[i]) = GetMallocGpaForTesting().Allocate(16);
+    UNSAFE_TODO(CHECK(ptrs[i]));
   }
   // Check that all GPA allocations were consumed.
   CHECK_EQ(GetMallocGpaForTesting().Allocate(16), nullptr);

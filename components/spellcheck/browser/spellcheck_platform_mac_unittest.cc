@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/browser/spellcheck_platform.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -70,7 +66,7 @@ TEST_F(SpellcheckPlatformMacTest, IgnoreWords_EN_US) {
   };
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string word(base::ASCIIToUTF16(kTestCases[i]));
+    const std::u16string word(base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i])));
     const int doc_tag = spellcheck_platform::GetDocumentTag();
 
     // The word should show up as misspelled.
@@ -368,7 +364,8 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
   };
 
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
-    const std::u16string word(base::ASCIIToUTF16(kTestCases[i].input));
+    const std::u16string word(
+        base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i]).input));
     EXPECT_FALSE(spellcheck_platform::CheckSpelling(word, 0)) << word;
 
     // Check if the suggested words occur.
@@ -376,7 +373,7 @@ TEST_F(SpellcheckPlatformMacTest, SpellCheckSuggestions_EN_US) {
     spellcheck_platform::FillSuggestionList(word, &suggestions);
     bool suggested_word_is_present = false;
     const std::u16string suggested_word(
-        base::ASCIIToUTF16(kTestCases[i].suggested_word));
+        base::ASCIIToUTF16(UNSAFE_TODO(kTestCases[i]).suggested_word));
     for (size_t j = 0; j < suggestions.size(); j++) {
       if (suggestions[j].compare(suggested_word) == 0) {
         suggested_word_is_present = true;

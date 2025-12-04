@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/tracing/common/graphics_memory_dump_provider_android.h"
 
 #include <fcntl.h>
@@ -20,6 +15,7 @@
 
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -67,9 +63,10 @@ bool GraphicsMemoryDumpProvider::OnMemoryDump(
   setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 
   // Connect to the UNIX abstract (i.e. no physical filesystem link) socket.
-  memset(&addr, 0, sizeof(addr));
+  UNSAFE_TODO(memset(&addr, 0, sizeof(addr)));
   addr.sun_family = AF_UNIX;
-  strncpy(&addr.sun_path[1], kAbstractSocketName, sizeof(addr.sun_path) - 2);
+  UNSAFE_TODO(strncpy(&addr.sun_path[1], kAbstractSocketName,
+                      sizeof(addr.sun_path) - 2));
 
   if (connect(sock, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr))) {
     LOG(WARNING) << "Could not connect to the memtrack_helper daemon. Please "
@@ -91,7 +88,8 @@ bool GraphicsMemoryDumpProvider::OnMemoryDump(
 
   // Send the trace(PID) request.
   char buf[4096];
-  const int buf_pid_len = snprintf(buf, sizeof(buf) - 1, "%d", getpid());
+  const int buf_pid_len =
+      UNSAFE_TODO(snprintf(buf, sizeof(buf) - 1, "%d", getpid()));
   if (HANDLE_EINTR(send(sock, buf, buf_pid_len + 1, 0)) <= 0)
     return false;
 
@@ -113,7 +111,8 @@ void GraphicsMemoryDumpProvider::ParseResponseAndAddToDump(
     const char* response,
     size_t length,
     base::trace_event::ProcessMemoryDump* pmd) {
-  base::CStringTokenizer tokenizer(response, response + length, " \n");
+  base::CStringTokenizer tokenizer(response, UNSAFE_TODO(response + length),
+                                   " \n");
   while (true) {
     if (!tokenizer.GetNext())
       break;

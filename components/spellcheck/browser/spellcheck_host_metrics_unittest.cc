@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <array>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -115,9 +111,10 @@ TEST_F(SpellcheckHostMetricsTest, RecordAcceptLanguageStats) {
   });
 
   for (size_t i = 0; i < std::size(histogram_names); ++i) {
-    histogram_tester.ExpectTotalCount(histogram_names[i], 1);
-    histogram_tester.ExpectBucketCount(histogram_names[i],
-                                       static_cast<int>(expected_counts[i]), 1);
+    histogram_tester.ExpectTotalCount(UNSAFE_TODO(histogram_names[i]), 1);
+    histogram_tester.ExpectBucketCount(
+        UNSAFE_TODO(histogram_names[i]),
+        static_cast<int>(UNSAFE_TODO(expected_counts[i])), 1);
   }
 }
 
@@ -137,9 +134,10 @@ TEST_F(SpellcheckHostMetricsTest, RecordSpellcheckLanguageStats) {
   });
 
   for (size_t i = 0; i < std::size(histogram_names); ++i) {
-    histogram_tester.ExpectTotalCount(histogram_names[i], 1);
-    histogram_tester.ExpectBucketCount(histogram_names[i],
-                                       static_cast<int>(expected_counts[i]), 1);
+    histogram_tester.ExpectTotalCount(UNSAFE_TODO(histogram_names[i]), 1);
+    histogram_tester.ExpectBucketCount(
+        UNSAFE_TODO(histogram_names[i]),
+        static_cast<int>(UNSAFE_TODO(expected_counts[i])), 1);
   }
 }
 #endif  // BUILDFLAG(IS_WIN)

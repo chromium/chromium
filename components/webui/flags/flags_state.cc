@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webui/flags/flags_state.h"
 
 #include <algorithm>
@@ -14,6 +9,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
@@ -636,11 +632,11 @@ std::vector<std::string> FlagsState::RegisterEnabledFeatureVariationParameters(
 
           for (int i = 0; i < variation->num_params; ++i) {
             auto insert_result = params_by_trial_name[trial_name].insert(
-                std::make_pair(variation->params[i].param_name,
-                               variation->params[i].param_value));
+                std::make_pair(UNSAFE_TODO(variation->params[i]).param_name,
+                               UNSAFE_TODO(variation->params[i]).param_value));
             DCHECK(insert_result.second)
                 << "Multiple values for the same parameter '"
-                << variation->params[i].param_name
+                << UNSAFE_TODO(variation->params[i]).param_name
                 << "' are specified in chrome://flags!";
           }
           if (variation->variation_id) {
@@ -1057,10 +1053,10 @@ void FlagsState::GenerateFlagsToSwitchesMapping(
             if (variation) {
               feature_name.append(":");
               for (int i = 0; i < variation->num_params; ++i) {
-                std::string param_name =
-                    variations::EscapeValue(variation->params[i].param_name);
-                std::string param_value =
-                    variations::EscapeValue(variation->params[i].param_value);
+                std::string param_name = variations::EscapeValue(
+                    UNSAFE_TODO(variation->params[i]).param_name);
+                std::string param_value = variations::EscapeValue(
+                    UNSAFE_TODO(variation->params[i]).param_value);
                 params_value.push_back(
                     param_name.append("/").append(param_value));
               }
@@ -1162,7 +1158,7 @@ void FlagsState::SetFlags(
         }
         for (int i = 0; i < feature_variations->num_params; i++) {
           FeatureEntry::FeatureParam feature_param =
-              feature_variations->params[i];
+              UNSAFE_TODO(feature_variations->params[i]);
           std::string param_name = std::string(feature_param.param_name);
           std::string param_value = std::string(feature_param.param_value);
           cur_feature_params[param_name] = param_value;

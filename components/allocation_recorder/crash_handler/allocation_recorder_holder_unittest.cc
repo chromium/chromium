@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/allocation_recorder/crash_handler/allocation_recorder_holder.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/debug/allocation_trace.h"
 #include "build/build_config.h"
 #include "components/allocation_recorder/internal/internal.h"
@@ -80,7 +76,7 @@ class AllocationTraceRecorderHolderTest : public ::testing::Test {
 std::vector<uint8_t> AllocationTraceRecorderHolderTest::GetAddressData(
     const void* ptr) const {
   return {reinterpret_cast<uint8_t*>(&ptr),
-          reinterpret_cast<uint8_t*>(&ptr) + sizeof(ptr)};
+          UNSAFE_TODO(reinterpret_cast<uint8_t*>(&ptr) + sizeof(ptr))};
 }
 
 std::vector<uint8_t>
@@ -172,7 +168,7 @@ TEST_F(AllocationTraceRecorderHolderTest, VerifyInitialize) {
 
   TestProcessMemory::CallbackType callback = base::BindRepeating(
       [](::crashpad::VMAddress address, size_t size, void* buffer) -> ssize_t {
-        memcpy(buffer, reinterpret_cast<void*>(address), size);
+        UNSAFE_TODO(memcpy(buffer, reinterpret_cast<void*>(address), size));
         return size;
       });
 
@@ -192,9 +188,10 @@ TEST_F(AllocationTraceRecorderHolderTest, VerifyInitialize) {
   Result result = holder.Initialize(test_process_snapshot);
 
   VerifyIsValidSuccess<false>(result);
-  EXPECT_EQ(memcmp(&allocation_trace_recorder, result.value(),
-                   sizeof(base::debug::tracer::AllocationTraceRecorder)),
-            0);
+  UNSAFE_TODO(
+      EXPECT_EQ(memcmp(&allocation_trace_recorder, result.value(),
+                       sizeof(base::debug::tracer::AllocationTraceRecorder)),
+                0));
 }
 
 TEST_F(AllocationTraceRecorderHolderTest, VerifyInitializeNoAnnotation) {

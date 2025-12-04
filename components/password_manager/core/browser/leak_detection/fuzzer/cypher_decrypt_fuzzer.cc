@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352295124 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "components/password_manager/core/browser/leak_detection/encryption_utils.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "third_party/private-join-and-compute/src/crypto/ec_commutative_cipher.h"
@@ -22,7 +18,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     return 0;
   }
   uint8_t key_size = data[0];
-  data++;
+  UNSAFE_TODO(data++);
   size--;
 
   if (size < key_size) {
@@ -30,7 +26,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   std::string key(reinterpret_cast<const char*>(data), key_size);
-  data += key_size;
+  UNSAFE_TODO(data += key_size);
   size -= key_size;
 
   // Check the key correctness. Otherwise, a crash happens.

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/data_offer.h"
 
 #include <fcntl.h>
@@ -17,6 +12,7 @@
 #include <variant>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
@@ -99,13 +95,13 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 bool ReadString(base::ScopedFD fd, std::string* out) {
   std::array<char, 1024> buffer;
   char* it = buffer.data();
-  char* end = it + buffer.size();
+  char* end = UNSAFE_TODO(it + buffer.size());
   while (it != end) {
     int result = read(fd.get(), it, end - it);
     PCHECK(-1 != result);
     if (result == 0)
       break;
-    it += result;
+    UNSAFE_TODO(it += result);
   }
   *out = std::string(reinterpret_cast<char*>(buffer.data()),
                      (it - buffer.data()) / sizeof(char));
@@ -115,15 +111,15 @@ bool ReadString(base::ScopedFD fd, std::string* out) {
 bool ReadString16(base::ScopedFD fd, std::u16string* out) {
   std::array<char, 1024> buffer;
   char* it = buffer.data();
-  char* end = it + buffer.size();
-  while (it != it + buffer.size()) {
+  char* end = UNSAFE_TODO(it + buffer.size());
+  while (it != UNSAFE_TODO(it + buffer.size())) {
     int result = read(fd.get(), it, end - it);
     PCHECK(-1 != result);
     if (result == 0)
       break;
-    it += result;
+    UNSAFE_TODO(it += result);
   }
-  *out = std::u16string(reinterpret_cast<char16_t*>(buffer.data()),
+  *out = std::u16string(UNSAFE_TODO(reinterpret_cast<char16_t*>(buffer.data())),
                         (it - buffer.data()) / sizeof(char16_t));
   return true;
 }
