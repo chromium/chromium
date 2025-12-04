@@ -76,7 +76,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
       static_cast<VerticalSplitTabView*>(split);
 
   auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2);
+  EXPECT_EQ(children.size(), 2u);
   auto child1 = children[0];
   auto child2 = children[1];
 
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
       static_cast<VerticalSplitTabView*>(split);
 
   auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2);
+  EXPECT_EQ(children.size(), 2u);
   auto child1 = children[0];
   auto child2 = children[1];
 
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
       static_cast<VerticalSplitTabView*>(split);
 
   auto children = split_tab_view->children();
-  EXPECT_EQ(children.size(), 2);
+  EXPECT_EQ(children.size(), 2u);
   auto child1 = children[0];
   auto child2 = children[1];
 
