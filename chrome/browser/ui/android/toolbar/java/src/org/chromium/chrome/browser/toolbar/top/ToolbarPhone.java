@@ -480,6 +480,7 @@ public class ToolbarPhone extends ToolbarLayout
 
         mLocationBarBackground.setHairlineBehavior(
                 type == AutocompleteRequestType.AI_MODE
+                                || type == AutocompleteRequestType.IMAGE_GENERATION
                         ? HairlineBehavior.RAINBOW
                         : HairlineBehavior.NONE);
     }
