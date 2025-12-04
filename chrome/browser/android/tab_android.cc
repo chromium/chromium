@@ -747,6 +747,11 @@ bool TabAndroid::IsPinned() const {
   return Java_TabImpl_getIsPinned(env, weak_java_tab_.get(env));
 }
 
+bool TabAndroid::IsBlocked() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 // Split tabs is currently desktop only.
 bool TabAndroid::IsSplit() const {
   NOTIMPLEMENTED();

@@ -135,7 +135,7 @@ TabRendererData TabRendererData::FromTabInModel(const TabStripModel* model,
   data.pinned = tab->IsPinned();
   data.show_icon =
       data.pinned || (browser && browser->ShouldDisplayFavicon(contents));
-  data.blocked = model->IsTabBlocked(index);
+  data.blocked = tab->IsBlocked();
   data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
   data.alert_state = tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
 

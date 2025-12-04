@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/frame/scrim_view.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
 
 ScrimViewController::ScrimViewController(BrowserView* browser_view)
@@ -46,10 +47,10 @@ void ScrimViewController::UpdateScrimViews() {
       continue;
     }
 
-    const int index = tab_strip_model_->GetIndexOfWebContents(web_contents);
-    if (tab_strip_model_->ContainsIndex(index)) {
+    if (const tabs::TabInterface* tab =
+            tabs::TabInterface::GetFromContents(web_contents)) {
       contents_container_view->contents_scrim_view()->SetVisible(
-          tab_strip_model_->IsTabBlocked(index));
+          tab->IsBlocked());
     }
   }
 }

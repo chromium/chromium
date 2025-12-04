@@ -874,7 +874,7 @@ TEST_P(TabStripModelTest, TestTabHandlesAcrossModels) {
   EXPECT_EQ(nullptr, owned_tab.get()->opener());
   EXPECT_EQ(false, owned_tab.get()->reset_opener_on_active_tab_change());
   EXPECT_EQ(false, handle.Get()->IsPinned());
-  EXPECT_EQ(false, owned_tab.get()->blocked());
+  EXPECT_EQ(false, owned_tab.get()->IsBlocked());
 
   // Add it back into the tabstrip()->
 

@@ -2621,7 +2621,7 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
   }
 #endif  // BUILDFLAG(IS_MAC)
 
-  if (model->IsTabBlocked(active_index)) {
+  if (model->GetActiveTab()->IsBlocked()) {
     return false;
   }
 #endif  // BUILDFLAG(USE_AURA)

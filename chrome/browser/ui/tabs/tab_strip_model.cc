@@ -1369,7 +1369,7 @@ void TabStripModel::TabNavigating(WebContents* contents,
 void TabStripModel::SetTabBlocked(int index, bool blocked) {
   CHECK(ContainsIndex(index));
   tabs::TabModel* tab_model = GetTabModelAtIndex(index);
-  if (tab_model->blocked() == blocked) {
+  if (tab_model->IsBlocked() == blocked) {
     return;
   }
   tab_model->set_blocked(blocked);
@@ -1415,7 +1415,7 @@ std::optional<split_tabs::SplitTabId> TabStripModel::GetSplitForTab(
 
 bool TabStripModel::IsTabBlocked(int index) const {
   CHECK(ContainsIndex(index)) << index;
-  return GetTabModelAtIndex(index)->blocked();
+  return GetTabAtIndex(index)->IsBlocked();
 }
 
 bool TabStripModel::IsTabInForeground(int index) const {

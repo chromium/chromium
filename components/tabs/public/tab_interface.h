@@ -248,6 +248,9 @@ class TabInterface : public SupportsTabHandles {
   // Return true if the tab is pinned in its tabstrip, or false otherwise.
   virtual bool IsPinned() const = 0;
 
+  // Whether the tab is blocked by a modal dialog.
+  virtual bool IsBlocked() const = 0;
+
   // Return true if the tab is part of a split view, or false otherwise.
   virtual bool IsSplit() const = 0;
 

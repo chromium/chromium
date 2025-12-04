@@ -306,6 +306,10 @@ bool TabModel::IsPinned() const {
   return pinned_;
 }
 
+bool TabModel::IsBlocked() const {
+  return blocked_;
+}
+
 bool TabModel::IsSplit() const {
   return split_.has_value();
 }
@@ -425,7 +429,7 @@ void TabModel::WriteIntoTrace(perfetto::TracedValue context) const {
   dict.Add("web_contents", GetContents());
   dict.Add("pinned", IsPinned());
   dict.Add("split", IsSplit());
-  dict.Add("blocked", blocked());
+  dict.Add("blocked", IsBlocked());
 }
 
 std::unique_ptr<content::WebContents> TabModel::DiscardContents(
