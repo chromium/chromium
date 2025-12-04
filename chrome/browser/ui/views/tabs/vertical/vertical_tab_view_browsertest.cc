@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -22,14 +23,12 @@
 #include "content/public/test/browser_test.h"
 #include "ui/views/controls/label.h"
 
-class VerticalTabViewTest : public InProcessBrowserTest {
+class VerticalTabViewTest
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
-  VerticalTabViewTest() = default;
-  ~VerticalTabViewTest() override = default;
-
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
-    InProcessBrowserTest::SetUp();
+    VerticalTabsBrowserTestMixin::SetUp();
   }
 
  private:
@@ -41,10 +40,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      tab_strip_service(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -76,10 +72,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
   // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      tab_strip_service(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
   views::Label* title =
@@ -101,10 +94,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, AlertIndicatorDataChanged) {
   // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      tab_strip_service(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -176,10 +166,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
   // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      tab_strip_service(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
