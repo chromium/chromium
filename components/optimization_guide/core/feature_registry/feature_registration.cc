@@ -112,7 +112,7 @@ void RegisterActorLogin() {
 }
 
 void RegisterCompose() {
-  const char* kComposeName = "Compose";
+  const char kComposeName[] = "Compose";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kComposeEnterprisePolicyAllowed);
@@ -132,7 +132,7 @@ void RegisterCompose() {
 }
 
 void RegisterTabOrganization() {
-  const char* kTabOrganizationName = "TabOrganization";
+  const char kTabOrganizationName[] = "TabOrganization";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kTabOrganizationEnterprisePolicyAllowed);
@@ -149,9 +149,7 @@ void RegisterTabOrganization() {
         if (quality.user_feedback()) {
           return quality.user_feedback();
         }
-        // TODO(b/331852814): Remove this else case along with the multi tab
-        // organization flag.
-        return quality.organizations()[0].user_feedback();
+        return proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
       });
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kTabOrganizationName,
@@ -166,7 +164,7 @@ void RegisterTabOrganization() {
 }
 
 void RegisterWallpaperSearch() {
-  const char* kWallpaperSearchName = "WallpaperSearch";
+  const char kWallpaperSearchName[] = "WallpaperSearch";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kWallpaperSearchEnterprisePolicyAllowed);
@@ -215,7 +213,7 @@ void RegisterHistorySearch() {
 }
 
 void RegisterPasswordChangeSubmission() {
-  const char* kPasswordChangeSubmissionName = "PasswordChangeSubmission";
+  const char kPasswordChangeSubmissionName[] = "PasswordChangeSubmission";
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
           prefs::kAutomatedPasswordChangeEnterprisePolicyAllowed);

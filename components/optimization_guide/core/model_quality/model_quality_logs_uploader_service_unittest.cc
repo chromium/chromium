@@ -138,11 +138,7 @@ class ModelQualityLogsUploaderServiceTest : public testing::Test {
             feedback);
         break;
       case UserVisibleFeatureKey::kTabOrganization:
-        log_entry->log_ai_data_request()
-            ->mutable_tab_organization()
-            ->mutable_quality()
-            ->add_organizations()
-            ->set_user_feedback(feedback);
+        // No longer used.
         break;
       case UserVisibleFeatureKey::kWallpaperSearch:
         log_entry->log_ai_data_request()
@@ -350,6 +346,8 @@ TEST_F(ModelQualityLogsUploaderServiceTest, WallpaperSearchUserFeedbackUMA) {
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
+  // Nothing gets recorded since the per-organization feedback logic has been
+  // removed.
   std::unique_ptr<ModelQualityLogEntry> log_entry_1 =
       GetModelQualityLogEntryAndSetFeedback(
           UserVisibleFeatureKey::kTabOrganization,
@@ -358,7 +356,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
 
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 1);
+      proto::USER_FEEDBACK_THUMBS_UP, 0);
 
   std::unique_ptr<ModelQualityLogEntry> log_entry_2 =
       GetModelQualityLogEntryAndSetFeedback(
@@ -367,7 +365,7 @@ TEST_F(ModelQualityLogsUploaderServiceTest, TabOrganizationUserFeedbackUMA) {
   UploadModelQualityLogsWithLogEntry(std::move(log_entry_2));
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_DOWN, 1);
+      proto::USER_FEEDBACK_THUMBS_DOWN, 0);
 }
 
 TEST_F(ModelQualityLogsUploaderServiceTest,
@@ -408,10 +406,11 @@ TEST_F(ModelQualityLogsUploaderServiceTest,
 
   UploadModelQualityLogsWithLogEntry(std::move(log_entry));
 
-  // We only record the first user feedback value.
+  // Nothing gets recorded since the per-organization feedback logic has been
+  // removed.
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
-      proto::USER_FEEDBACK_THUMBS_UP, 1);
+      proto::USER_FEEDBACK_THUMBS_UP, 0);
   histogram_tester_.ExpectBucketCount(
       "OptimizationGuide.ModelQuality.UserFeedback.TabOrganization",
       proto::USER_FEEDBACK_THUMBS_DOWN, 0);

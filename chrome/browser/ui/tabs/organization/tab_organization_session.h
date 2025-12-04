@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_request.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 
 class Browser;
 
