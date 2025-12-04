@@ -32,6 +32,7 @@ class NavigateAndroidBrowserTest : public AndroidBrowserTest {
          //
          // See MultiWindowUtils#getMaxInstances() for the reason:
          // https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtils.java;l=209;drc=0bcba72c5246a910240b311def40233f7d3f15af
+         chrome::android::kDisableInstanceLimit,
 
          // Enable incognito windows on Android.
          feed::kAndroidOpenIncognitoAsWindow},
