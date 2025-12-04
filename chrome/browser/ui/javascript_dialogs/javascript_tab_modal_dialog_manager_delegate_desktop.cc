@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
@@ -41,7 +41,8 @@ JavaScriptTabModalDialogManagerDelegateDesktop::
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
-  BrowserList::AddObserver(this);
+  browser_collection_observer_.Observe(ProfileBrowserCollection::GetForProfile(
+      Profile::FromBrowserContext(web_contents_->GetBrowserContext())));
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // SafeBrowsing Delayed Warnings experiment can delay some SafeBrowsing
@@ -58,7 +59,7 @@ void JavaScriptTabModalDialogManagerDelegateDesktop::WillRunDialog() {
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::DidCloseDialog() {
-  BrowserList::RemoveObserver(this);
+  browser_collection_observer_.Reset();
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::SetTabNeedsAttention(
@@ -110,8 +111,14 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::CanShowModalUI() {
   return tab && tab->CanShowModalUI();
 }
 
-void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserSetLastActive(
-    Browser* browser) {
+void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserActivated(
+    BrowserWindowInterface* browser) {
+  javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_)
+      ->BrowserActiveStateChanged();
+}
+
+void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserDeactivated(
+    BrowserWindowInterface* browser) {
   javascript_dialogs::TabModalDialogManager::FromWebContents(web_contents_)
       ->BrowserActiveStateChanged();
 }
