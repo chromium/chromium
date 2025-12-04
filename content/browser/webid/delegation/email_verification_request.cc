@@ -67,7 +67,7 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
     const std::string& email,
     const sdjwt::Jwk& public_key) {
   sdjwt::Header header;
-  header.alg = "RS256";
+  header.alg = public_key.alg;
   header.typ = "JWT";
   header.jwk = public_key;
   CHECK(header.jwk);
@@ -184,9 +184,29 @@ void EmailVerificationRequest::OnWellKnownFetched(
 
   // TODO(crbug.com/380367784): understand and document why RSA was
   // preferred over ECDSA here.
-  auto private_key = std::make_unique<crypto::keypair::PrivateKey>(
-      crypto::keypair::PrivateKey::GenerateRsa2048());
-  CHECK(private_key);
+  std::unique_ptr<crypto::keypair::PrivateKey> private_key;
+  for (const auto& supported_alg : well_known.signing_alg_values_supported) {
+    if (supported_alg == "EdDSA") {
+      private_key = std::make_unique<crypto::keypair::PrivateKey>(
+          crypto::keypair::PrivateKey::GenerateEd25519());
+      break;
+    } else if (supported_alg == "RS256") {
+      private_key = std::make_unique<crypto::keypair::PrivateKey>(
+          crypto::keypair::PrivateKey::GenerateRsa2048());
+      break;
+    } else if (supported_alg == "ES256") {
+      private_key = std::make_unique<crypto::keypair::PrivateKey>(
+          crypto::keypair::PrivateKey::GenerateEcP256());
+      break;
+    }
+    // TODO(crbug.com/380367784): figure out what to do if we get an unsupported
+    // algorithm here (should we reject? ignore?).
+  }
+
+  if (!private_key) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
 
   std::optional<sdjwt::Jwk> public_key = sdjwt::ExportPublicKey(*private_key);
   CHECK(public_key);

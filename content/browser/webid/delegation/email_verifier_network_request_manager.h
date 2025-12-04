@@ -35,6 +35,7 @@ class CONTENT_EXPORT EmailVerifierNetworkRequestManager
     ~WellKnown();
     WellKnown(const WellKnown&);
     GURL issuance_endpoint;
+    std::vector<std::string> signing_alg_values_supported;
   };
 
   struct CONTENT_EXPORT TokenResult {

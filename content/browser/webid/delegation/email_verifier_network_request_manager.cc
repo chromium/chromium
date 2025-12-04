@@ -32,6 +32,7 @@ constexpr char kWellKnownPath[] = "/.well-known/email-verification";
 
 // Well-known file JSON keys
 constexpr char kIssuanceEndpointKey[] = "issuance_endpoint";
+constexpr char kSigningAlgValuesSupportedKey[] = "signing_alg_values_supported";
 
 // Shared between the well-known files and config files
 constexpr char kIssuanceTokenKey[] = "issuance_token";
@@ -58,6 +59,16 @@ void OnWellKnownParsed(
 
   well_known.issuance_endpoint =
       ExtractEndpoint(well_known_url, *dict, kIssuanceEndpointKey);
+
+  const base::Value::List* signing_alg_values_supported_list =
+      dict->FindList(kSigningAlgValuesSupportedKey);
+  if (signing_alg_values_supported_list) {
+    for (const auto& value : *signing_alg_values_supported_list) {
+      if (value.is_string()) {
+        well_known.signing_alg_values_supported.push_back(value.GetString());
+      }
+    }
+  }
 
   if (well_known.issuance_endpoint.is_empty()) {
     std::move(callback).Run(

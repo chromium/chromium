@@ -112,6 +112,7 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
                   callback) {
             EmailVerifierNetworkRequestManager::WellKnown well_known;
             well_known.issuance_endpoint = kIssuanceEndpoint;
+            well_known.signing_alg_values_supported.push_back("RS256");
             std::move(callback).Run(FetchStatus{ParseStatus::kSuccess},
                                     well_known);
           }));
@@ -180,20 +181,20 @@ TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
   std::string nonce = kNonce;
   email_verification_request_.Send(kEmail, nonce, future.GetCallback());
   std::optional<std::string> token = future.Get();
-  EXPECT_TRUE(token.has_value());
+  ASSERT_TRUE(token.has_value());
 
   auto sd_jwt_kb = sdjwt::SdJwtKb::Parse(*token);
-  EXPECT_TRUE(sd_jwt_kb);
+  ASSERT_TRUE(sd_jwt_kb);
 
   auto kb_jwt_json = sdjwt::Jwt::Parse(sd_jwt_kb->kb_jwt.Serialize().value());
-  EXPECT_TRUE(kb_jwt_json);
+  ASSERT_TRUE(kb_jwt_json);
   auto kb_jwt = sdjwt::Jwt::From(*kb_jwt_json);
-  EXPECT_TRUE(kb_jwt);
+  ASSERT_TRUE(kb_jwt);
   auto kb_payload = sdjwt::Payload::From(*base::JSONReader::ReadDict(
       kb_jwt->payload.value(), base::JSON_PARSE_CHROMIUM_EXTENSIONS));
-  EXPECT_TRUE(kb_payload);
-  EXPECT_EQ(kb_payload->aud, main_rfh()->GetLastCommittedOrigin().Serialize());
-  EXPECT_EQ(kb_payload->nonce, kNonce);
+  ASSERT_TRUE(kb_payload);
+  ASSERT_EQ(kb_payload->aud, main_rfh()->GetLastCommittedOrigin().Serialize());
+  ASSERT_EQ(kb_payload->nonce, kNonce);
 }
 
 TEST(EmailVerificationRequestStaticTest, ValidEmail) {
