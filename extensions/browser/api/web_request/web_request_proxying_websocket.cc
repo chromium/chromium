@@ -63,6 +63,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     bool has_extra_headers,
+    bool has_security_info,
     int process_id,
     int render_frame_id,
     content::BrowserContext* browser_context,
@@ -74,6 +75,7 @@ WebRequestProxyingWebSocket::WebRequestProxyingWebSocket(
       request_headers_(request.headers),
       response_(network::mojom::URLResponseHead::New()),
       has_extra_headers_(has_extra_headers),
+      has_security_info_(has_security_info),
       info_(WebRequestInfoInitParams(
           request_id_generator->Generate(IPC::mojom::kRoutingIdNone, 0),
           process_id,
@@ -114,7 +116,7 @@ void WebRequestProxyingWebSocket::Start() {
   // OnBeforeSendHeaders and OnSendHeaders will be handled there. Otherwise,
   // send these events before the request starts.
   base::RepeatingCallback<void(int)> continuation;
-  if (has_extra_headers_) {
+  if (has_extra_headers_ || has_security_info_) {
     continuation = base::BindRepeating(
         &WebRequestProxyingWebSocket::ContinueToStartRequest,
         weak_factory_.GetWeakPtr());
@@ -123,6 +125,9 @@ void WebRequestProxyingWebSocket::Start() {
         &WebRequestProxyingWebSocket::OnBeforeRequestComplete,
         weak_factory_.GetWeakPtr());
   }
+
+  WebRequestEventRouter::Get(browser_context_)
+      ->HasSecurityInfoListenerForRequest(browser_context_, &info_);
 
   // TODO(yhirano): Consider having throttling here (probably with aligned with
   // WebRequestProxyingURLLoaderFactory).
@@ -205,7 +210,7 @@ void WebRequestProxyingWebSocket::OnConnectionEstablished(
 
   response_->remote_endpoint = handshake_response_->remote_endpoint;
 
-  // response_->headers will be set in OnBeforeSendHeaders if
+  // response_->headers will be set in OnHeadersReceived if
   // |receiver_as_header_client_| is set.
   if (receiver_as_header_client_.is_bound()) {
     ContinueToCompleted();
@@ -298,7 +303,14 @@ void WebRequestProxyingWebSocket::OnHeadersReceived(
     OnHeadersReceivedCallback callback) {
   DCHECK(receiver_as_header_client_.is_bound());
 
+  if (has_security_info_ &&
+      WebRequestEventRouter::Get(browser_context_)
+          ->HasSecurityInfoListenerForRequest(browser_context_, &info_)) {
+    info_.AddSslInfo(ssl_info);
+  }
+
   on_headers_received_callback_ = std::move(callback);
+
   response_->headers = base::MakeRefCounted<net::HttpResponseHeaders>(headers);
 
   ContinueToHeadersReceived();
@@ -317,6 +329,7 @@ void WebRequestProxyingWebSocket::StartProxying(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client,
     bool has_extra_headers,
+    bool has_security_info,
     int process_id,
     int render_frame_id,
     WebRequestAPI::RequestIDGenerator* request_id_generator,
@@ -334,8 +347,8 @@ void WebRequestProxyingWebSocket::StartProxying(
 
   auto proxy = std::make_unique<WebRequestProxyingWebSocket>(
       std::move(factory), request, std::move(handshake_client),
-      has_extra_headers, process_id, render_frame_id, browser_context,
-      request_id_generator, proxies);
+      has_extra_headers, has_security_info, process_id, render_frame_id,
+      browser_context, request_id_generator, proxies);
 
   auto* raw_proxy = proxy.get();
   proxies->AddProxy(std::move(proxy));
@@ -420,7 +433,7 @@ void WebRequestProxyingWebSocket::ContinueToStartRequest(int error_code) {
 
   mojo::PendingRemote<network::mojom::TrustedHeaderClient>
       trusted_header_client = mojo::NullRemote();
-  if (has_extra_headers_) {
+  if (has_extra_headers_ || has_security_info_) {
     trusted_header_client =
         receiver_as_header_client_.BindNewPipeAndPassRemote();
   }

@@ -53,6 +53,7 @@ class WebRequestProxyingWebSocket
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
+      bool has_security_info,
       int process_id,
       int render_frame_id,
       content::BrowserContext* browser_context,
@@ -103,6 +104,7 @@ class WebRequestProxyingWebSocket
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
+      bool has_security_info,
       int process_id,
       int render_frame_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
@@ -160,6 +162,7 @@ class WebRequestProxyingWebSocket
   GURL redirect_url_;
   bool is_done_ = false;
   bool has_extra_headers_;
+  bool has_security_info_;
   mojo::PendingRemote<network::mojom::WebSocket> websocket_;
   mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver_;
   network::mojom::WebSocketHandshakeResponsePtr handshake_response_ = nullptr;

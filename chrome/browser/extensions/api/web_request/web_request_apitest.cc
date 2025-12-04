@@ -8390,6 +8390,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Secure) {
                       embedded_test_server()->GetURL("/simple.html"));
 }
 
+// Tests that fetch('http://') results in web request listener
+// getting SecurityInfo with state='insecure' and all other fields not set.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, SecurityInfo_Insecure) {
   ASSERT_TRUE(StartEmbeddedTestServer());
 
@@ -8419,6 +8421,43 @@ IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
   RunSecurityInfoTest("broken", /*use_web_socket=*/false,
                       embedded_test_server()->GetCertificate(),
                       embedded_test_server()->GetURL("/simple.html"));
+}
+
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       SecurityInfo_WebSocket_Secure) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  InitWebSocketHttpsServer();
+  ASSERT_TRUE(StartWebSocketServer());
+
+  RunSecurityInfoTest("secure", /*use_web_socket=*/true,
+                      GetWebSocketServer().GetCertificate(),
+                      GetWebSocketServer().GetURL("/echo-with-no-extension"));
+}
+
+// Tests that new Websocket('ws://') results in web request listener
+// getting SecurityInfo with state='insecure' and all other fields not set.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       SecurityInfo_WebSocket_Insecure) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(StartWebSocketServer());
+
+  RunSecurityInfoInsecureTest(
+      /*use_web_socket=*/true,
+      GetWebSocketServer().GetURL("/echo-with-no-extension"));
+}
+
+IN_PROC_BROWSER_TEST_F(SecurityInfoBrokenWebRequestApiTest,
+                       SecurityInfo_WebSocket_Broken) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  InitWebSocketHttpsServer(
+      net::test_server::EmbeddedTestServer::ServerCertificate::CERT_EXPIRED);
+  ASSERT_TRUE(StartWebSocketServer());
+
+  RunSecurityInfoTest("broken", /*use_web_socket=*/true,
+                      GetWebSocketServer().GetCertificate(),
+                      GetWebSocketServer().GetURL("/echo-with-no-extension"));
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)

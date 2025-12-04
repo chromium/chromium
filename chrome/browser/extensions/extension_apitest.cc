@@ -268,6 +268,16 @@ net::EmbeddedTestServer& ExtensionApiTest::GetWebSocketServer() {
   return *websocket_server_;
 }
 
+void ExtensionApiTest::InitWebSocketHttpsServer(
+    net::test_server::EmbeddedTestServer::ServerCertificate
+        server_certificate) {
+  CHECK(!websocket_server_);
+  websocket_server_ = std::make_unique<net::test_server::EmbeddedTestServer>(
+      net::test_server::EmbeddedTestServer::Type::TYPE_HTTPS);
+  websocket_server_->SetSSLConfig(server_certificate);
+  net::test_server::InstallDefaultWebSocketHandlers(websocket_server_.get());
+}
+
 bool ExtensionApiTest::StartWebSocketServer(
     bool enable_basic_auth) {
   // Initialize `websocket_server_`, if needed.

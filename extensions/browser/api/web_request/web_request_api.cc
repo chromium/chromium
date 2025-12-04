@@ -630,10 +630,13 @@ void WebRequestAPI::ProxyWebSocket(
   const bool has_extra_headers =
       WebRequestEventRouter::Get(browser_context)
           ->HasAnyExtraHeadersListener(browser_context);
+  const bool has_security_info =
+      WebRequestEventRouter::Get(browser_context)
+          ->HasAnySecurityInfoListener(browser_context);
 
   WebRequestProxyingWebSocket::StartProxying(
       std::move(factory), url, site_for_cookies, user_agent,
-      std::move(handshake_client), has_extra_headers,
+      std::move(handshake_client), has_extra_headers, has_security_info,
       frame->GetProcess()->GetDeprecatedID(), frame->GetRoutingID(),
       &request_id_generator_, frame->GetLastCommittedOrigin(),
       frame->GetProcess()->GetBrowserContext(), proxies_.get());

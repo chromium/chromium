@@ -126,6 +126,13 @@ class ExtensionApiTest : public ExtensionBrowserTest {
   // the server before it has started.
   net::test_server::EmbeddedTestServer& GetWebSocketServer();
 
+  // Initializes web_socket that is returned by `GetWebSocketServer` function
+  // to serve endpoints via secure wss protocol.
+  void InitWebSocketHttpsServer(
+      net::test_server::EmbeddedTestServer::ServerCertificate
+          server_certificate =
+              net::test_server::EmbeddedTestServer::ServerCertificate::CERT_OK);
+
   // Start the test WebSocket server, and store details of its state. Those
   // details will be available to javascript tests using
   // chrome.test.getConfig(). Enable HTTP basic authentication if needed.
