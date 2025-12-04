@@ -39,7 +39,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.JavaExceptionReporter;
-import org.chromium.base.MathUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.ValueChangedCallback;
@@ -63,14 +62,12 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.bookmarks.BookmarkModelObserver;
 import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
-import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
-import org.chromium.chrome.browser.browser_controls.TopControlsStacker.TopControlType;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -202,7 +199,6 @@ import org.chromium.components.browser_ui.accessibility.PageZoomManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -405,6 +401,7 @@ public class ToolbarManager
     private final FormFieldFocusedSupplier mFormFieldFocusedSupplier =
             new FormFieldFocusedSupplier();
     private final View mProgressBarContainer;
+    private final ToolbarProgressBarLayer mToolbarProgressBarLayer;
     private @Nullable Supplier<Integer> mBookmarkBarHeightSupplier;
     private boolean mInTabSwitcherTransition;
     private final boolean mIsNewTabPageCustomizationToolbarButtonEnabled;
@@ -1177,6 +1174,15 @@ public class ToolbarManager
         progressBar.setAnimatingView(
                 mProgressBarContainer.findViewById(R.id.progress_bar_animating_view));
         mBrowserControlsSizer.addObserver(progressBar);
+        mToolbarProgressBarLayer =
+                new ToolbarProgressBarLayer(
+                        mControlContainer,
+                        mProgressBarContainer,
+                        progressBar,
+                        mToolbarHairline,
+                        mToolbarPositionSupplier,
+                        topControlsStacker,
+                        bottomControlsStacker);
 
         HomeButtonDisplay homeButtonDisplay =
                 mIsNewTabPageCustomizationToolbarButtonEnabled
@@ -1324,11 +1330,7 @@ public class ToolbarManager
         mLocationBar.addOmniboxSuggestionsDropdownScrollListener(mStatusBarColorController);
 
         mProgressBarCoordinator =
-                new LoadProgressCoordinator(
-                        mActivityTabProvider,
-                        mToolbar.getProgressBar(),
-                        topControlsStacker,
-                        mBrowserControlsSizer);
+                new LoadProgressCoordinator(mActivityTabProvider, mToolbar.getProgressBar());
         mToolbar.setToolbarColorObserver(statusBarColorController);
 
         mActivityTabTabObserver =
@@ -2389,52 +2391,6 @@ public class ToolbarManager
                     () -> TabArchiveSettings.setIphShownThisSession(false));
         }
 
-        Callback<DrawingInfo> onProgressInfoUpdate =
-                (drawingInfo) -> {
-                    mControlContainer.getProgressBarDrawingInfo(drawingInfo);
-
-                    // Control container / progress bar container can have a non-zero translation
-                    // when sitting at the bottom / during animation.
-                    // TODO(crbug.com/419846301): Coordinate the yOffset based on browser controls.
-                    final float controlContainerY = mControlContainer.getY();
-                    final float progressBarContainerY = mProgressBarContainer.getY();
-                    int yOffset =
-                            (int)
-                                    MathUtils.clamp(
-                                            progressBarContainerY - controlContainerY,
-                                            0,
-                                            mControlContainer.getHeight());
-
-                    if (ChromeFeatureList.sAndroidAnimatedProgressBarInBrowser.isEnabled()) {
-                        // TODO(peilinwang) update these calculations and move them to the stackers
-                        // when the progress bar gets decoupled from the toolbar and when top
-                        // stacker is complete. Note: the hairline is a TopControlsLayer, but is not
-                        // integrated with the TopControlsStacker yet, which is why we have to
-                        // explicitly account for its height after calling getHeightFromLayerToX.
-                        int toolbarPosition = mToolbarPositionSupplier.get();
-                        int hairlineHeight = mToolbarHairline.getHeight();
-                        if (toolbarPosition == ControlsPosition.TOP) {
-                            yOffset =
-                                    mTopControlsStacker.getHeightFromLayerToTop(
-                                                    TopControlType.PROGRESS_BAR)
-                                            - mTopControlsStacker.getHeightFromLayerToTop(
-                                                    TopControlType.TOOLBAR)
-                                            + hairlineHeight;
-                        } else if (toolbarPosition == ControlsPosition.BOTTOM) {
-                            yOffset =
-                                    -(mBottomControlsStacker.getHeightFromLayerToBottom(
-                                                            LayerType.PROGRESS_BAR)
-                                                    - mBottomControlsStacker
-                                                            .getHeightFromLayerToBottom(
-                                                                    LayerType.BOTTOM_TOOLBAR))
-                                            - mProgressBarContainer.getHeight()
-                                            - hairlineHeight;
-                        }
-                    }
-                    drawingInfo.progressBarRect.offset(0, yOffset);
-                    drawingInfo.progressBarBackgroundRect.offset(0, yOffset);
-                };
-
         if (BrowserControlsUtils.isTopControlsRefactorOffsetEnabled()
                 && stripLayoutHelperManager != null) {
             mTabStripTopControlLayer.initializeWithNative(stripLayoutHelperManager);
@@ -2450,7 +2406,7 @@ public class ToolbarManager
                 mTopUiThemeColorProvider,
                 mBottomToolbarControlsOffsetSupplier,
                 mSuppressToolbarSceneLayerSupplier,
-                onProgressInfoUpdate,
+                mToolbarProgressBarLayer::onProgressBarInfoUpdate,
                 mCaptureResourceIdSupplier,
                 mTabStripTopControlLayer);
         mTabStripTopControlLayer.set(mToolbar.getTabStripHeight());
@@ -2688,7 +2644,7 @@ public class ToolbarManager
             mActivityTabTabObserver.destroy();
             mActivityTabTabObserver = null;
         }
-
+        mToolbarProgressBarLayer.destroy();
         if (mProgressBarCoordinator != null) mProgressBarCoordinator.destroy();
 
         if (mFindToolbarManager != null) {

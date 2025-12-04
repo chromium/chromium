@@ -197,6 +197,7 @@ public class TabStripTopControlLayer extends ObservableSupplierImpl<Integer>
         // The offset tags needs to be set here, since the tab strip do not want to drive the
         // animation using the offset tags.
         mTabStrip.updateOffsetTagsInfo(null);
+        mTabStrip.onLayerYOffsetChanged(latestYOffset, getTopControlHeight());
     }
 
     // Implements TabStripTransitionHandler
