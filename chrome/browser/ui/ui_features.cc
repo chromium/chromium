@@ -328,7 +328,7 @@ BASE_FEATURE_ENUM_PARAM(SidePanelRelativeAlignment,
 
 BASE_FEATURE(kAppBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPopupBrowserUseNewLayout, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPopupBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabbedBrowserUseNewLayout, base::FEATURE_ENABLED_BY_DEFAULT);
 

@@ -70,6 +70,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
+#include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #include "third_party/blink/public/common/switches.h"
@@ -457,8 +458,12 @@ IN_PROC_BROWSER_TEST_F(PopupBlockerBrowserTest, MAYBE_WindowFeatures) {
       WindowOpenDisposition::CURRENT_TAB, kExpectPopup, kDontCheckTitle);
 
   // Check that the new popup has (roughly) the requested size.
-  gfx::Size window_size = popup->GetContainerBounds().size();
-  EXPECT_TRUE(349 <= window_size.width() && window_size.width() <= 351);
+  auto* const popup_widget =
+      views::Widget::GetWidgetForNativeWindow(popup->GetTopLevelNativeWindow());
+  popup_widget->LayoutRootViewIfNecessary();
+  const gfx::Size window_size = popup->GetContainerBounds().size();
+  EXPECT_GE(window_size.width(), 349);
+  EXPECT_LE(window_size.width(), 351);
   EXPECT_GE(window_size.height(), 249);
   EXPECT_LE(window_size.height(), 253);
 }

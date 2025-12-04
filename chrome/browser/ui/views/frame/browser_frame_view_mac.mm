@@ -461,6 +461,13 @@ BrowserFrameViewMac::BoundsAndMargins
 BrowserFrameViewMac::GetCaptionButtonBounds() const {
   BoundsAndMargins result;
 
+  // In popups, the titlebar is system-drawn and the caption buttons aren't part
+  // of the client area.
+  if (browser_view()->browser()->is_type_popup() ||
+      browser_view()->browser()->is_type_devtools()) {
+    return result;
+  }
+
   // These are empirically determined; feel free to change them if they're
   // not precise.
   if (@available(macOS 26, *)) {

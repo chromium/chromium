@@ -100,6 +100,20 @@ void BrowserViewLayoutImpl::ProposedLayout::ApplyLayout(
   }
 }
 
+std::string BrowserViewLayoutImpl::ProposedLayout::ToString(int depth) const {
+  std::ostringstream oss;
+  for (auto& [child, layout] : children) {
+    oss << std::string(2 * depth, ' ') << child->GetClassName() << " at "
+        << layout.bounds.ToString();
+    if (layout.visibility) {
+      oss << (*layout.visibility ? " VISIBLE" : " NOT VISIBLE");
+    }
+    oss << std::endl;
+    oss << layout.ToString(depth + 1);
+  }
+  return oss.str();
+}
+
 // Common layout.
 
 BrowserViewLayoutImpl::BrowserViewLayoutImpl(

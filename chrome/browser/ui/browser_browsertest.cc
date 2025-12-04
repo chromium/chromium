@@ -2744,7 +2744,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/567925.
     EXPECT_GE(bounds.width(), 100);
-    EXPECT_EQ(122, bounds.height());
+
+    // EXPECT_GE as Mac will have a larger height with the additional title bar.
+    EXPECT_GE(bounds.height(), 122);
     browser->window()->Close();
   }
 
@@ -2792,7 +2794,9 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestPopupBounds) {
     // Should be EXPECT_EQ, but this width is inconsistent across platforms.
     // See https://crbug.com/567925.
     EXPECT_GE(bounds.width(), 100);
-    EXPECT_EQ(122, bounds.height());
+
+    // EXPECT_GE as Mac will have a larger height with the additional title bar.
+    EXPECT_GE(bounds.height(), 122);
     browser->window()->Close();
   }
 }

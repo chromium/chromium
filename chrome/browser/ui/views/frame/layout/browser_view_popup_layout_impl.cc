@@ -23,11 +23,6 @@ BrowserViewPopupLayoutImpl::~BrowserViewPopupLayoutImpl() = default;
 
 gfx::Size BrowserViewPopupLayoutImpl::GetMinimumSize(
     const views::View* host) const {
-  // The minimum size of a window is unrestricted for a borderless mode popup.
-  if (delegate().GetBorderlessModeEnabled()) {
-    return gfx::Size(1, 1);
-  }
-
   const auto params =
       delegate().GetBrowserLayoutParams(/*use_browser_bounds=*/false);
   const auto leading = params.leading_exclusion.ContentWithPadding();

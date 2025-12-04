@@ -92,6 +92,10 @@ class BrowserViewLayoutImpl : public BrowserViewLayout {
     // stack dump is triggered (this will be a CHECK() in the future).
     void ApplyLayout(views::View* root,
                      SetViewVisibility set_view_visibility) &&;
+
+    // Returns a string representation of this layout; `depth` is used for
+    // nesting children and should not be specified.
+    std::string ToString(int depth = 0) const;
   };
 
   // Shorthand for validating both `child` and `parent` and checking that one is

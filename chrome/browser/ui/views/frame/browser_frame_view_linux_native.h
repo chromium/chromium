@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view_linux.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -63,7 +65,9 @@ class BrowserFrameViewLinuxNative : public BrowserFrameViewLinux {
 
   const raw_ptr<BrowserFrameViewLayoutLinuxNative> layout_;
 
-  DrawFrameButtonParams cache_{0, false, false};
+  // Cache the last parameters with which the caption buttons were drawn.
+  // Parameters still need to be computed even if the buttons cannot be drawn.
+  std::optional<DrawFrameButtonParams> cache_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_VIEW_LINUX_NATIVE_H_
