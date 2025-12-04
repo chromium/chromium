@@ -66,6 +66,8 @@ class TransitionEvent final : public Event {
   double elapsedTime() const;
   const String& pseudoElement() const;
 
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
+
   const AtomicString& InterfaceName() const override;
 
   void Trace(Visitor*) const override;

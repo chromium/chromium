@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/static_node_list.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
+#include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/focus_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
@@ -433,6 +434,22 @@ CSSPseudoElement* Event::pseudoTarget() const {
   PseudoElement* pseudo_element_target = PseudoElementTarget();
   if (!pseudo_element_target) {
     return nullptr;
+  }
+
+  // Boundary events like mouseover/mouseout/pointerover/pointerout and
+  // related enter/leave events do not currently define a pseudoTarget.
+  // Return null for those event types.
+  if (IsMouseEvent() || IsPointerEvent()) {
+    if (type() == event_type_names::kMouseover ||
+        type() == event_type_names::kMouseout ||
+        type() == event_type_names::kMouseenter ||
+        type() == event_type_names::kMouseleave ||
+        type() == event_type_names::kPointerover ||
+        type() == event_type_names::kPointerout ||
+        type() == event_type_names::kPointerenter ||
+        type() == event_type_names::kPointerleave) {
+      return nullptr;
+    }
   }
 
   Element& target_element = *To<Element>(target()->ToNode());

@@ -34,6 +34,8 @@
     readonly attribute short            button;
     readonly attribute unsigned short   buttons;
     readonly attribute EventTarget?     relatedTarget;
+    [RuntimeEnabled=EventPseudoTargetProperty, Exposed=Window]
+    readonly attribute CSSPseudoElement? pseudoTarget;
     boolean getModifierState(DOMString keyArg);
 
     // https://w3c.github.io/uievents/#idl-interface-MouseEvent-initializers

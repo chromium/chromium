@@ -151,11 +151,6 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
   EventTarget* target() const;
   void SetTarget(EventTarget*);
 
-  // Returns the CSSPseudoElement that this event originated from, if any.
-  // Returns null if the originating target is a real element or the feature
-  // is disabled. This is not affected by retargeting performed for
-  // Event#target.
-  CSSPseudoElement* pseudoTarget() const;
 
   // This is the target that the event was dispatched to, without any
   // retargeting. Can be a pseudo-element. Shouldn't we web exposed.
@@ -358,6 +353,12 @@ class CORE_EXPORT Event : public ScriptWrappable, public DOMOriginUtils {
 
  protected:
   virtual void ReceivedTarget();
+
+  // Returns the CSSPseudoElement that this event originated from, if any.
+  // Returns null if the originating target is a real element or the feature
+  // is disabled. This accessor is protected: only specific event subclasses
+  // should expose it as a public web API.
+  CSSPseudoElement* pseudoTarget() const;
 
   void SetBubbles(bool bubble) { bubbles_ = bubble; }
 

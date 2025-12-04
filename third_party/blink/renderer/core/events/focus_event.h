@@ -69,6 +69,8 @@ class FocusEvent final : public UIEvent {
     related_target_ = related_target;
   }
 
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
+
   const AtomicString& InterfaceName() const override;
   bool IsFocusEvent() const override;
 

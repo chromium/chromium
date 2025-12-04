@@ -32,4 +32,6 @@
     readonly attribute DOMString animationName;
     readonly attribute double elapsedTime;
     readonly attribute DOMString pseudoElement;
+    [RuntimeEnabled=EventPseudoTargetProperty, Exposed=Window]
+    readonly attribute CSSPseudoElement? pseudoTarget;
 };

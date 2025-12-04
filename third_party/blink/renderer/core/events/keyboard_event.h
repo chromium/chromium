@@ -99,6 +99,8 @@ class CORE_EXPORT KeyboardEvent final : public UIEventWithKeyState {
   unsigned which() const override;
   bool isComposing() const { return is_composing_; }
 
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
+
   void Trace(Visitor*) const override;
 
  private:

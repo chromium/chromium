@@ -103,6 +103,7 @@ interface AnimationEvent : Event
     getter animationName
     getter elapsedTime
     getter pseudoElement
+    getter pseudoTarget
     method constructor
 interface AnimationPlaybackEvent : Event
     attribute @@toStringTag
@@ -2748,7 +2749,6 @@ interface Event
     getter currentTarget
     getter defaultPrevented
     getter eventPhase
-    getter pseudoTarget
     getter returnValue
     getter srcElement
     getter target
@@ -2923,6 +2923,7 @@ interface Float16Array : TypedArray
     method constructor
 interface FocusEvent : UIEvent
     attribute @@toStringTag
+    getter pseudoTarget
     getter relatedTarget
     method constructor
 interface FontFace
@@ -5600,6 +5601,7 @@ interface KeyboardEvent : UIEvent
     getter keyCode
     getter location
     getter metaKey
+    getter pseudoTarget
     getter repeat
     getter shiftKey
     method constructor
@@ -6356,6 +6358,7 @@ interface MouseEvent : UIEvent
     getter offsetY
     getter pageX
     getter pageY
+    getter pseudoTarget
     getter relatedTarget
     getter screenX
     getter screenY
@@ -9805,6 +9808,7 @@ interface TouchEvent : UIEvent
     getter changedTouches
     getter ctrlKey
     getter metaKey
+    getter pseudoTarget
     getter shiftKey
     getter targetTouches
     getter touches
@@ -9849,6 +9853,7 @@ interface TransitionEvent : Event
     getter elapsedTime
     getter propertyName
     getter pseudoElement
+    getter pseudoTarget
     method constructor
 interface TreeWalker
     attribute @@toStringTag
