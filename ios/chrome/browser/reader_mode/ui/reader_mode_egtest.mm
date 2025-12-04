@@ -1000,9 +1000,11 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:entrypoint
                                                  timeout:base::Seconds(10)];
 
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kAIHubEntrypointAccessibilityIdentifier)]
+  id<GREYMatcher> entrypointMatcher =
+      grey_allOf(grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey selectElementWithMatcher:entrypointMatcher]
       performAction:grey_tap()];
 
   // Verify the bottom sheet appears.

@@ -21,6 +21,7 @@ source_set("regular") {
     "//ios/chrome/browser/collaboration/model:features",
     "//ios/chrome/browser/collaboration/model/messaging",
     "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/saved_tab_groups/coordinator",
     "//ios/chrome/browser/saved_tab_groups/model",

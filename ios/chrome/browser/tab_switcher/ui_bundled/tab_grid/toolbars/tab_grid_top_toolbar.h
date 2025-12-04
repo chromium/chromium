@@ -17,7 +17,9 @@
 // size, current TabGrid page and mode:
 //
 // Horizontal-compact and vertical-regular screen size:
-//   Normal mode:     [               PageControl      Select]
+//   Normal mode:     [Search         PageControl            ]
+//   Normal mode with Page Action Menu Entry Point enabled:
+//                    [Search         PageControl  PageActionMenu]
 //   Tab Groups page: [               PageControl            ]
 //   Remote page:     [               PageControl            ]
 //   Selection mode:  [SelectAll    SelectedTabsCount    Done]
@@ -54,6 +56,10 @@
 - (void)setUndoButtonEnabled:(BOOL)enabled;
 // Uses undo text on the close all button based on `useUndo` value.
 - (void)useUndo:(BOOL)useUndo;
+// Sets `enabled` on the page action menu entry point.
+- (void)setPageActionMenuButtonEnabled:(BOOL)enabled;
+// Sets `visible` on the page action menu entry point.
+- (void)setPageActionMenuButtonVisible:(BOOL)visible;
 
 // Sets the `menu` displayed on tapping the Edit button.
 - (void)setEditButtonMenu:(UIMenu*)menu;

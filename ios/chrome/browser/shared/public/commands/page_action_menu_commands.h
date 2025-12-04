@@ -7,11 +7,17 @@
 
 #import "base/ios/block_types.h"
 
+// Enum to specify the entry point for showing the Page Action Menu.
+typedef NS_ENUM(NSInteger, PageActionMenuEntryPoint) {
+  PageActionMenuEntryPointLocationBar = 0,
+  PageActionMenuEntryPointTabGrid = 1,
+};
+
 // Commands relating to the page action menu.
 @protocol PageActionMenuCommands
 
-// Presents the page action menu.
-- (void)showPageActionMenu;
+// Presents the page action menu from the given entrypoint.
+- (void)showPageActionMenuFromEntryPoint:(PageActionMenuEntryPoint)entryPoint;
 
 // Dismisses the page action menu with a completion block.
 - (void)dismissPageActionMenuWithCompletion:(ProceduralBlock)completion;

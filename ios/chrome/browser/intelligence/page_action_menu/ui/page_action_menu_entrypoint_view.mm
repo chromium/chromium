@@ -58,6 +58,7 @@ NSTimeInterval kAnimationDuration = 0.3;
 - (instancetype)init {
   self = [super initWithFrame:CGRectZero];
   if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
     _backgroundView = [[UIView alloc] init];
     self.pointerInteractionEnabled = YES;
     self.minimumDiameter = kMinimumWidth;

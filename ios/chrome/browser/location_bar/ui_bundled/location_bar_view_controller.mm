@@ -1074,7 +1074,8 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [self.BWGHandler startBWGFlowWithEntryPoint:bwg::EntryPoint::OmniboxChip];
   } else {
     RecordAIHubIconTapped();
-    [self.pageActionMenuHandler showPageActionMenu];
+    [self.pageActionMenuHandler
+        showPageActionMenuFromEntryPoint:PageActionMenuEntryPointLocationBar];
   }
 }
 

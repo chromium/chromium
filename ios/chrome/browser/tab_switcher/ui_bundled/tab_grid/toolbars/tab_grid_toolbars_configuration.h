@@ -28,6 +28,11 @@
 @property(nonatomic) BOOL doneButton;
 @property(nonatomic) BOOL newTabButton;
 
+// YES if the button should be displayed.
+@property(nonatomic) BOOL pageActionMenuButtonVisible;
+// YES if the button should be enabled. If NO, the button is grayed out.
+@property(nonatomic) BOOL pageActionMenuButtonEnabled;
+
 // SELECTION MODE =================
 // YES if displayed, specific to tab selection mode.
 @property(nonatomic) BOOL deselectAllButton;

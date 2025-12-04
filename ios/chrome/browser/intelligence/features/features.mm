@@ -79,7 +79,9 @@ bool IsGeminiCrossTabEnabled() {
 }
 
 bool IsDirectBWGEntryPoint() {
-  CHECK(IsPageActionMenuEnabled());
+  if (!IsPageActionMenuEnabled()) {
+    return false;
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
       kPageActionMenu, kPageActionMenuDirectEntryPointParam, false);
 }

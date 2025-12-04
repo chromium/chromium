@@ -1906,6 +1906,10 @@ web::WebState* WebStateWithSnapshotID(WebStateList& web_state_list,
   _modeHolder.mode = TabGridMode::kNormal;
 }
 
+- (void)pageActionMenuEntrypointTapped:(id)sender {
+  NOTREACHED() << "Should be implemented in a subclass.";
+}
+
 - (void)closeSelectedTabs:(id)sender {
   [self.delegate dismissPopovers];
 

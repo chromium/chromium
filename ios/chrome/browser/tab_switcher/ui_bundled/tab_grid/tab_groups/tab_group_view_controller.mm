@@ -1071,4 +1071,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   NOTREACHED();
 }
 
+- (void)pageActionMenuEntrypointTapped:(id)sender {
+  NOTREACHED();
+}
+
 @end

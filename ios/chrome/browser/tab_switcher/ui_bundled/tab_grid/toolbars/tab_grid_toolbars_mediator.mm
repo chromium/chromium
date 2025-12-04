@@ -92,6 +92,14 @@
   [self.bottomToolbarConsumer setDoneButtonEnabled:_configuration.doneButton];
 
   [self.topToolbarConsumer setSearchButtonEnabled:_configuration.searchButton];
+
+  BOOL pageActionMenuButtonVisible = _configuration.pageActionMenuButtonVisible;
+  [self.topToolbarConsumer
+      setPageActionMenuButtonVisible:pageActionMenuButtonVisible];
+  BOOL pageActionMenuButtonEnabled =
+      pageActionMenuButtonVisible && _configuration.pageActionMenuButtonEnabled;
+  [self.topToolbarConsumer
+      setPageActionMenuButtonEnabled:pageActionMenuButtonEnabled];
 }
 
 - (void)setToolbarsButtonsDelegate:(id<TabGridToolbarsGridDelegate>)delegate {

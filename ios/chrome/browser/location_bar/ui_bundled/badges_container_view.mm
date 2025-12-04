@@ -398,7 +398,8 @@ const CGFloat kBackgroundHorizontalInset = 5.0;
 
 // Handles tap events on the overlay button and shows the page action menu.
 - (void)handleOverlayTap:(id)sender {
-  [self.pageActionMenuHandler showPageActionMenu];
+  [self.pageActionMenuHandler
+      showPageActionMenuFromEntryPoint:PageActionMenuEntryPointLocationBar];
 }
 
 // Creates blue background container for unified badge state.

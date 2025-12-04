@@ -14,8 +14,10 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_entrypoint_view.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -76,6 +78,9 @@ CGFloat HorizontalMargin() {
   NSLayoutConstraint* _searchFirstConstraint;
   NSLayoutConstraint* _searchAfterUndoConstraint;
   NSLayoutConstraint* _searchAfterEditConstraint;
+  // Constraints for the positioning of the search button.
+  NSLayoutConstraint* _pageActionMenuEntrypointFirstConstraint;
+  NSLayoutConstraint* _pageActionMenuEntrypointBeforeDoneConstraint;
 
   NSArray<UIView*>* _allViews;
 
@@ -87,6 +92,9 @@ CGFloat HorizontalMargin() {
 
   // Configures the responder following the receiver in the responder chain.
   UIResponder* _followingNextResponder;
+
+  // The button to access the page action menu.
+  PageActionMenuEntrypointView* _pageActionMenuEntrypointView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -262,6 +270,16 @@ CGFloat HorizontalMargin() {
   _editButton.enabled = enabled;
 }
 
+#pragma mark Page Action Menu Button
+
+- (void)setPageActionMenuButtonEnabled:(BOOL)enabled {
+  _pageActionMenuEntrypointView.enabled = enabled;
+}
+
+- (void)setPageActionMenuButtonVisible:(BOOL)visible {
+  _pageActionMenuEntrypointView.hidden = !visible;
+}
+
 #pragma mark Search Bar
 
 - (void)setSearchBarText:(NSString*)text {
@@ -348,15 +366,27 @@ CGFloat HorizontalMargin() {
 // Sets up the buttons for the `traitCollection`.
 - (void)setButtonsForTraitCollection:(UITraitCollection*)traitCollection {
   for (UIView* view in _allViews) {
-    view.hidden = YES;
+    // The visibility of `_pageActionMenuEntrypointView` is exclusively
+    // controlled by the active grid mediator. The
+    // `setButtonsForTraitCollection` method should not modify
+    // `_pageActionMenuEntrypointView.hidden` to avoid overriding the
+    // mediator's configuration settings.
+    if (view != _pageActionMenuEntrypointView) {
+      view.hidden = YES;
+    }
   }
   _searchFirstConstraint.active = NO;
   _searchAfterEditConstraint.active = NO;
   _searchAfterUndoConstraint.active = NO;
+
+  _pageActionMenuEntrypointFirstConstraint.active = NO;
+  _pageActionMenuEntrypointBeforeDoneConstraint.active = NO;
+
   if ([self shouldUseCompactLayout:traitCollection]) {
     switch (_mode) {
       case TabGridMode::kNormal:
         _searchFirstConstraint.active = YES;
+        _pageActionMenuEntrypointFirstConstraint.active = YES;
         _searchButton.hidden = NO;
         _pageControl.hidden = NO;
         break;
@@ -381,6 +411,7 @@ CGFloat HorizontalMargin() {
           _editButton.hidden = NO;
           _searchAfterEditConstraint.active = YES;
         }
+        _pageActionMenuEntrypointBeforeDoneConstraint.active = YES;
         _searchButton.hidden = NO;
         _pageControl.hidden = NO;
         _doneButton.hidden = NO;
@@ -496,6 +527,11 @@ CGFloat HorizontalMargin() {
 
   _cancelSearchButton.accessibilityIdentifier = kTabGridCancelButtonIdentifier;
 
+  _pageActionMenuEntrypointView = [[PageActionMenuEntrypointView alloc] init];
+  [_pageActionMenuEntrypointView addTarget:self
+                                    action:@selector(pageActionMenuTapped:)
+                          forControlEvents:UIControlEventTouchUpInside];
+
   [self setUpConstraintsForContainerView:containerView];
 }
 
@@ -525,8 +561,10 @@ CGFloat HorizontalMargin() {
 
   _allViews = @[
     _selectAllButton, _editButton, _undoButton, _searchButton, _pageControl,
-    _selectedTabsLabel, _searchBar, _cancelSearchButton, _doneButton
+    _selectedTabsLabel, _searchBar, _cancelSearchButton, _doneButton,
+    _pageActionMenuEntrypointView
   ];
+
   for (UIView* view in _allViews) {
     [containerView addSubview:view];
     [view.centerYAnchor constraintEqualToAnchor:containerView.centerYAnchor]
@@ -550,6 +588,15 @@ CGFloat HorizontalMargin() {
   _searchAfterEditConstraint = [_searchButton.leadingAnchor
       constraintEqualToAnchor:_editButton.trailingAnchor
                      constant:HorizontalMargin()];
+
+  _pageActionMenuEntrypointFirstConstraint =
+      [_pageActionMenuEntrypointView.trailingAnchor
+          constraintEqualToAnchor:containerView.trailingAnchor
+                         constant:-HorizontalMargin()];
+  _pageActionMenuEntrypointBeforeDoneConstraint =
+      [_pageActionMenuEntrypointView.trailingAnchor
+          constraintEqualToAnchor:_doneButton.leadingAnchor
+                         constant:-HorizontalMargin()];
 
   NSLayoutConstraint* centeredLabelConstraint =
       [_selectedTabsLabel.centerXAnchor
@@ -733,6 +780,12 @@ CGFloat HorizontalMargin() {
 - (void)cancelSearchButtonTapped:(id)sender {
   if (_cancelSearchButton.enabled) {
     [self.buttonsDelegate cancelSearchButtonTapped:sender];
+  }
+}
+
+- (void)pageActionMenuTapped:(id)sender {
+  if (_pageActionMenuEntrypointView.enabled) {
+    [self.buttonsDelegate pageActionMenuEntrypointTapped:sender];
   }
 }
 

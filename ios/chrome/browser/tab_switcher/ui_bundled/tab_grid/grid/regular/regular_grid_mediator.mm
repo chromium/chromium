@@ -15,6 +15,7 @@
 #import "components/sessions/core/tab_restore_service.h"
 #import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/collaboration/model/messaging/messaging_backend_service_bridge.h"
+#import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/tab_group_utils.h"
@@ -23,6 +24,8 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_collection_consumer.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/activity_label_data.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_consumer.h"
@@ -230,6 +233,14 @@ using ScopedTabGroupSyncObservation =
   }
 }
 
+- (void)pageActionMenuEntrypointTapped:(id)sender {
+  CHECK(IsPageActionMenuEnabled() && IsSmartTabGroupingEnabled());
+  // Dispatch the command to show the Page Action Menu.
+  id<PageActionMenuCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+  [handler showPageActionMenuFromEntryPoint:PageActionMenuEntryPointTabGrid];
+}
+
 #pragma mark - Parent's function
 
 - (void)disconnect {
@@ -277,6 +288,12 @@ using ScopedTabGroupSyncObservation =
     toolbarsConfiguration.selectTabsButton = [self hasRegularTabs];
     toolbarsConfiguration.undoButton = [self canUndoCloseRegularOrInactiveTabs];
   }
+
+  BOOL showPageActionMenu = (self.modeHolder.mode == TabGridMode::kNormal) &&
+                            IsPageActionMenuEnabled() &&
+                            IsSmartTabGroupingEnabled();
+  toolbarsConfiguration.pageActionMenuButtonVisible = showPageActionMenu;
+  toolbarsConfiguration.pageActionMenuButtonEnabled = showPageActionMenu;
 
   [self.toolbarsMutator setToolbarConfiguration:toolbarsConfiguration];
 }

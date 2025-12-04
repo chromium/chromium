@@ -91,9 +91,11 @@ id<GREYMatcher> GeminiButton() {
 
 // Tests that the FRE is displayed correctly from the Page Action Menu.
 - (void)testFREFromPageActionMenu {
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kAIHubEntrypointAccessibilityIdentifier)]
+  id<GREYMatcher> entrypointMatcher =
+      grey_allOf(grey_accessibilityID(kAIHubEntrypointAccessibilityIdentifier),
+                 grey_sufficientlyVisible(), nil);
+
+  [[EarlGrey selectElementWithMatcher:entrypointMatcher]
       performAction:grey_tap()];
 
   // Tap the Gemini button.
