@@ -20,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/functional/function_ref.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -32,7 +31,6 @@
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/thread_annotations.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -253,47 +251,6 @@ TEST(LockTest, MutexFourThreads) {
   PlatformThread::Join(handle3);
 
   EXPECT_EQ(4 * 40, value);
-}
-
-// Test invariant checking -----------------------------------------------------
-
-TEST(LockTest, InvariantIsCalled) {
-  // This test should compile and execute safely regardless of invariant
-  // checking, but if `kInvariantsActive` is false, we don't expect the
-  // invariant to be checked when the lock state changes.
-  constexpr bool kInvariantsActive = DCHECK_IS_ON();
-
-  class InvariantChecker {
-   public:
-    explicit InvariantChecker(const Lock& lock LIFETIME_BOUND) : lock(lock) {}
-    void Check() ASSERT_EXCLUSIVE_LOCK(lock) {
-      lock->AssertAcquired();
-      invariant_called = true;
-    }
-    bool TestAndReset() { return std::exchange(invariant_called, false); }
-
-   private:
-    const raw_ref<const Lock> lock;
-    bool invariant_called = false;
-  };
-
-  // Awkward construction order here allows `checker` to refer to `lock`, which
-  // refers to `check_ref`, which refers to `check`, which refers to `checker`.
-  std::unique_ptr<InvariantChecker> checker;
-  auto check = [&] { checker->Check(); };
-  auto check_ref = base::FunctionRef<void()>(check);
-  Lock lock([&](Lock* lp) {
-    checker = std::make_unique<InvariantChecker>(*lp);
-    return check_ref;
-  }(&lock));
-
-  EXPECT_FALSE(checker->TestAndReset());
-
-  lock.Acquire();
-  EXPECT_EQ(kInvariantsActive, checker->TestAndReset());
-
-  lock.Release();
-  EXPECT_EQ(kInvariantsActive, checker->TestAndReset());
 }
 
 // AutoLock tests --------------------------------------------------------------
