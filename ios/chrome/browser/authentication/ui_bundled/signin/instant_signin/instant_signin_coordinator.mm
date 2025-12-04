@@ -80,11 +80,10 @@
 }
 
 - (void)dealloc {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
-  DUMP_WILL_BE_CHECK(!_signinLogger)
-      << base::SysNSStringToUTF8([self description]);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!_mediator) << base::SysNSStringToUTF8([self description]);
+  DCHECK(!_signinLogger) << base::SysNSStringToUTF8([self description]);
 }
 
 #pragma mark - ChromeCoordinator
@@ -355,9 +354,9 @@
 
 // Adds an activity overlay to block the UI.
 - (void)showActivityOverlay {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!_activityOverlayCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!_activityOverlayCoordinator);
   _activityOverlayCoordinator = [[ActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.baseViewController
                          browser:self.browser];

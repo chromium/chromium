@@ -907,9 +907,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 - (void)showPasswordDetailsForCredential:
             (password_manager::CredentialUIEntry)credential
                               inEditMode:(BOOL)editMode {
-  // TODO(crbug.com/40067451): Switch back to DCHECK if the number of reports is
-  // low.
-  DUMP_WILL_BE_CHECK(!self.passwordDetailsCoordinator);
+  // Not an invariant due to possible race conditions. DCHECKing for debugging
+  // purposes. See crbug.com/40067451.
+  DCHECK(!self.passwordDetailsCoordinator);
   self.passwordDetailsCoordinator = [[PasswordDetailsCoordinator alloc]
       initWithBaseNavigationController:self
                                browser:self.browser
