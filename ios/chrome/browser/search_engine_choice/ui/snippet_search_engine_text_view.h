@@ -22,7 +22,7 @@ enum class SearchEngineCurrentDefaultState;
 @property(nonatomic, copy) NSString* snippetText;
 // Returns YES if `snippetText` doesn't fit on one line only.
 @property(nonatomic, assign, readonly) BOOL isSnippetExpandable;
-// Weither the snippet is shown on one line or multiple lines.
+// Whether the snippet is shown on one line or multiple lines.
 @property(nonatomic, assign) BOOL snippetExpanded;
 // Anchor on Y axis centered on the text when the snippet is collapsed on one
 // line (even if the snippet is expanded).

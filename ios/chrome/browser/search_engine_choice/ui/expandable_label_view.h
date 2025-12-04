@@ -13,7 +13,7 @@
 
 // The text to display.
 @property(nonatomic, copy) NSString* text;
-// Weither the text shown on one line or multiple lines.
+// Whether the text shown on one line or multiple lines.
 @property(nonatomic, assign) BOOL expanded;
 // YES if the text doesn't fit with only one line.
 @property(nonatomic, assign, readonly) BOOL isExpandable;
