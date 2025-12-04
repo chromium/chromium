@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -2126,6 +2127,97 @@ TEST_F(
   bnpl_manager_->OnSuggestionsShown(suggestions, callback.Get());
   bnpl_manager_->OnAmountExtractionReturned(1'234'560'000ULL,
                                             /*timeout_reached=*/false);
+}
+
+TEST_F(BnplManagerTest,
+       OnSuggestionsShown_BnplPrefUpdatedWhenAiBasedAmountExtractionEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm,
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  ASSERT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
+
+  bnpl_manager_->OnSuggestionsShown(suggestions, base::DoNothing());
+
+  EXPECT_TRUE(autofill_client()
+                  .GetPersonalDataManager()
+                  .payments_data_manager()
+                  .IsAutofillHasSeenBnplPrefEnabled());
+}
+
+TEST_F(
+    BnplManagerTest,
+    OnSuggestionsShown_BnplPrefNotUpdatedWhenAiBasedAmountExtractionEnabledButNoBnplSuggestion) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kAutofillEnableAiBasedAmountExtraction);
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm,
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry)};
+
+  ASSERT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
+
+  bnpl_manager_->OnSuggestionsShown(suggestions, base::DoNothing());
+
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
+}
+
+TEST_F(
+    BnplManagerTest,
+    OnSuggestionsShown_BnplPrefNotUpdatedWhenAiBasedAmountExtractionDisabled) {
+  // Add one linked issuer and one unlinked issuer to payments data manager.
+  SetUpLinkedBnplIssuer(/*price_lower_bound_in_micros=*/40'000'000,
+                        /*price_higher_bound_in_micros=*/1'000'000'000,
+                        IssuerId::kBnplAffirm,
+                        /*instrument_id=*/1234);
+  SetUpUnlinkedBnplIssuer(/*price_lower_bound_in_micros=*/1'000'000'000,
+                          /*price_higher_bound_in_micros=*/2'000'000'000,
+                          IssuerId::kBnplZip);
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(SuggestionType::kCreditCardEntry),
+      Suggestion(SuggestionType::kBnplEntry)};
+
+  ASSERT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
+
+  bnpl_manager_->OnSuggestionsShown(suggestions, base::DoNothing());
+
+  EXPECT_FALSE(autofill_client()
+                   .GetPersonalDataManager()
+                   .payments_data_manager()
+                   .IsAutofillHasSeenBnplPrefEnabled());
 }
 
 TEST_F(BnplManagerTest, IsBnplIssuerSupported) {
