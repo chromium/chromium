@@ -12,17 +12,17 @@ export function getHtml(this: ComposeboxElement) {
   const submitContainer = html`
     <div id="submitContainer" class="icon-fade" part="submit"
         slot="${this.ntpRealboxNextEnabled ? 'submit-button' : nothing}"
-        tabindex="0"
-        title="${this.i18n('composeboxSubmitButtonTitle')}"
+        tabindex="-1"
         @click="${this.submitQuery_}"
-        ?disabled="${!this.submitEnabled_}"
         @focusin="${this.handleSubmitFocusIn_}">
       <div id="submitOverlay"></div>
       <cr-icon-button
         class="action-icon icon-arrow-upward"
         id="submitIcon"
         part="action-icon submit-icon"
-        tabindex="-1">
+        tabindex="0"
+        title="${this.i18n('composeboxSubmitButtonTitle')}"
+        ?disabled="${!this.submitEnabled_}">
       </cr-icon-button>
     </div>`;
   // clang-format off
