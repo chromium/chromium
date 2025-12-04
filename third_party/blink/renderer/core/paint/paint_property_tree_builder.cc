@@ -2556,8 +2556,26 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   if (object_.HasLayer() || properties_ || IsLinkHighlighted(object_) ||
       object_.CanContainFixedPositionObjects() ||
       object_.CanContainAbsolutePositionObjects()) {
+    // The ::view-transition pseudo is a child of the scoped element; however,
+    // it and its children must be able to paint outside any overflow clip
+    // imposed by the scoped element. Otherwise, the border and box-shadow on
+    // the scoped element disappear.
+    // See https://github.com/w3c/csswg-drafts/issues/12324.
+    bool escape_clip = false;
+    if (object_.GetNode() &&
+        IsTransitionPseudoElement(object_.GetNode()->GetPseudoId())) {
+      Element& scope =
+          To<PseudoElement>(object_.GetNode())->UltimateOriginatingElement();
+      auto* scope_properties =
+          scope.GetLayoutObject()->FirstFragment().PaintProperties();
+      if (scope_properties && scope_properties->OverflowClip()) {
+        escape_clip = true;
+      }
+    }
+
     new_transform = context_.current.transform;
-    new_clip = context_.current.clip;
+    new_clip =
+        escape_clip ? context_.current.clip->Parent() : context_.current.clip;
     new_effect = context_.current_effect;
     fragment_data_.SetLocalBorderBoxProperties(
         PropertyTreeStateOrAlias(*new_transform, *new_clip, *new_effect));

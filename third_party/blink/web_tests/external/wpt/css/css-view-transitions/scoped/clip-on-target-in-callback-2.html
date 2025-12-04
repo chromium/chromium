@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<title>View Transitions: Clip on target in callback does not clip root</title>
-<!-- In this test #target is  participating in the view transition and
-     therefore should escape clipping on the scoped element. -->
+<title>View Transitions: Fade out of clipped content</title>
+<!-- In this test #target is not participating in the view transition and
+     therefore should have the clipped portion fade out. -->
 <link rel="help" href="https://drafts.csswg.org/css-view-transitions-2/">
-<link rel="match" href="clip-on-target-in-callback-ref.html">
+<link rel="match" href="clip-on-target-in-callback-2-ref.html">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <!-- Accommodate small color mismatch -->
 <meta name="fuzzy" content="maxDifference=0-2; totalPixels=0-48600">
@@ -16,6 +16,7 @@
   height: 200px;
   background: blue;
   border: 5px solid black;
+  position: relative;
 }
 #container.after {
   overflow: clip;
@@ -26,17 +27,18 @@
   width: 100px;
   height: 100px;
   background: green;
-  view-transition-name: target;
 }
 
 ::view-transition-group(*),
 ::view-transition-image-pair(*),
 ::view-transition-old(*),
 ::view-transition-new(*) {
-  /* freeze all animations at start */
+  /* freeze all animations at mid-point */
   animation-duration: 100000s;
-  animation-timing-function: steps(1, jump-end);
+  animation-delay: -50000s;
+  animation-timing-function: cubic-bezier(0, 1, 1, 0);
 }
+
 </style>
 
 <div id="container">
