@@ -1003,21 +1003,6 @@ PrivacySandboxSettingsImpl::GetCookieDeprecationExperimentCurrentEligibility()
   return delegate_->GetCookieDeprecationExperimentCurrentEligibility();
 }
 
-bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowed() const {
-  return delegate_->IsCookieDeprecationLabelAllowed();
-}
-
-bool PrivacySandboxSettingsImpl::IsCookieDeprecationLabelAllowedForContext(
-    const url::Origin& top_frame_origin,
-    const url::Origin& context_origin) const {
-  if (!IsCookieDeprecationLabelAllowed()) {
-    return false;
-  }
-
-  return IsAllowed(
-      GetSiteAccessAllowedStatus(top_frame_origin, context_origin.GetURL()));
-}
-
 void PrivacySandboxSettingsImpl::OnBlockAllThirdPartyCookiesChanged() {
   for (auto& observer : observers_) {
     observer.OnRelatedWebsiteSetsEnabledChanged(AreRelatedWebsiteSetsEnabled());

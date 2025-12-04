@@ -103,9 +103,6 @@ class PrivacySandboxSettings : public KeyedService {
     virtual TpcdExperimentEligibility
     GetCookieDeprecationExperimentCurrentEligibility() const = 0;
 
-    // Whether cookie deprecation label is allowed.
-    virtual bool IsCookieDeprecationLabelAllowed() const = 0;
-
     // Whether third-party cookies are blocked due to cookie deprecation
     // experiment. Also returns false if users explicitly block third-party
     // cookies.
@@ -307,18 +304,6 @@ class PrivacySandboxSettings : public KeyedService {
   // The eligibility applies for both mode A and mode B experiments.
   virtual TpcdExperimentEligibility
   GetCookieDeprecationExperimentCurrentEligibility() const = 0;
-
-  // Determines whether cookie deprecation label is allowable. This consults
-  // whether the profile is eligible for 3PCD experiments. If true, the more
-  // specific function, IsCookieDeprecationLabelAllowed(), should be consulted
-  // for the relevant context.
-  virtual bool IsCookieDeprecationLabelAllowed() const = 0;
-
-  // Determines whether cookie deprecation label is allowable for
-  // `context_origin` in the context of `top_frame_origin`.
-  virtual bool IsCookieDeprecationLabelAllowedForContext(
-      const url::Origin& top_frame_origin,
-      const url::Origin& context_origin) const = 0;
 
   // Allows all Privacy Sandbox prefs for testing. This should be used if tests
   // don't depend on specific access control and just would like to have Privacy

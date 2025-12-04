@@ -106,11 +106,6 @@ class MockPrivacySandboxSettings
               GetCookieDeprecationExperimentCurrentEligibility,
               (),
               (override, const));
-  MOCK_METHOD(bool, IsCookieDeprecationLabelAllowed, (), (override, const));
-  MOCK_METHOD(bool,
-              IsCookieDeprecationLabelAllowedForContext,
-              (const url::Origin&, const url::Origin&),
-              (override, const));
   MOCK_METHOD(void, SetAllPrivacySandboxAllowedForTesting, (), (override));
   MOCK_METHOD(void, SetTopicsBlockedForTesting, (), (override));
   MOCK_METHOD(bool, IsPrivacySandboxRestricted, (), (override, const));

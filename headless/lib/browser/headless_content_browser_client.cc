@@ -419,18 +419,6 @@ bool HeadlessContentBrowserClient::IsFencedStorageReadAllowed(
   return true;
 }
 
-bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowed(
-    content::BrowserContext* browser_context) {
-  return true;
-}
-
-bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
-    content::BrowserContext* browser_context,
-    const url::Origin& top_frame_origin,
-    const url::Origin& context_origin) {
-  return true;
-}
-
 void HeadlessContentBrowserClient::ConfigureNetworkContextParams(
     content::BrowserContext* context,
     bool in_memory,

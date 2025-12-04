@@ -271,11 +271,6 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
     return allow_list_->contains(destination_origin);
   }
 
-  bool IsCookieDeprecationLabelAllowed(
-      content::BrowserContext* browser_context) override {
-    return true;
-  }
-
  private:
   // If not present, all origins are allowed.
   std::optional<base::flat_set<url::Origin>> allow_list_;

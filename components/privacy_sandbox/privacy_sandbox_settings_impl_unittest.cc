@@ -134,8 +134,6 @@ class PrivacySandboxSettingsTest : public testing::Test {
         /*eligible=*/true);
     mock_delegate()->SetUpGetCookieDeprecationExperimentCurrentEligibility(
         /*eligibility_reason=*/TpcdExperimentEligibility::Reason::kEligible);
-    mock_delegate()->SetUpIsCookieDeprecationLabelAllowedResponse(
-        /*allowed=*/true);
     mock_delegate()
         ->SetUpAreThirdPartyCookiesBlockedByCookieDeprecationExperimentResponse(
             /*result=*/false);
@@ -506,18 +504,6 @@ TEST_F(PrivacySandboxSettingsTest,
                 ->GetCookieDeprecationExperimentCurrentEligibility()
                 .reason(),
             TpcdExperimentEligibility::Reason::kEligible);
-}
-
-TEST_F(PrivacySandboxSettingsTest, IsCookieDeprecationLabelAllowed) {
-  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationLabelAllowed())
-      .Times(1)
-      .WillOnce(Return(false));
-  EXPECT_FALSE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
-
-  EXPECT_CALL(*mock_delegate(), IsCookieDeprecationLabelAllowed())
-      .Times(1)
-      .WillOnce(Return(true));
-  EXPECT_TRUE(privacy_sandbox_settings()->IsCookieDeprecationLabelAllowed());
 }
 
 class PrivacySandboxSettingsAttributionReportingTransitionalDebugModeTest
@@ -1049,7 +1035,6 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataDefaultBlockExceptionApplies) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext,
                kIsFencedStorageReadAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
@@ -1104,7 +1089,6 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataBlockExceptionApplies) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext,
                kIsFencedStorageReadAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,
@@ -1147,7 +1131,6 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowDoesntOverridePref) {
            url::Origin::Create(GURL("https://dest-origin.com"))}},
       TestOutput{
           {MultipleOutputKeys{kIsSharedStorageAllowed,
-                              kIsCookieDeprecationLabelAllowedForContext,
                               kIsFencedStorageReadAllowed},
            true},
           {MultipleOutputKeys{
@@ -1206,7 +1189,6 @@ TEST_F(PrivacySandboxSettingsM1Test, SiteDataAllowExceptions) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext,
                kIsFencedStorageReadAllowed},
            true},
           {MultipleOutputKeys{
@@ -1253,7 +1235,6 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataBlock) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext,
                kIsFencedStorageReadAllowed},
            true},
           {MultipleOutputKeys{
@@ -1303,7 +1284,6 @@ TEST_F(PrivacySandboxSettingsM1Test, UnrelatedSiteDataAllow) {
                kIsSharedStorageAllowed, kIsSharedStorageSelectURLAllowed,
                kIsPrivateAggregationAllowed,
                kIsPrivateAggregationDebugModeAllowed,
-               kIsCookieDeprecationLabelAllowedForContext,
                kIsFencedStorageReadAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedMetric,

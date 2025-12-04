@@ -81,12 +81,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
                                   content::RenderFrameHost* rfh,
                                   const url::Origin& top_frame_origin,
                                   const url::Origin& accessing_origin) override;
-  bool IsCookieDeprecationLabelAllowed(
-      content::BrowserContext* browser_context) override;
-  bool IsCookieDeprecationLabelAllowedForContext(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_frame_origin,
-      const url::Origin& context_origin) override;
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
       content::BrowserContext* context) override;
   base::OnceClosure SelectClientCertificate(

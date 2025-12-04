@@ -1239,19 +1239,6 @@ class CONTENT_EXPORT ContentBrowserClient {
       const url::Origin& top_frame_origin,
       const url::Origin& reporting_origin);
 
-  // Returns whether cookie deprecation label should be allowed for the
-  // profile. Defaults to false to ensure no traffic label is sent by default.
-  virtual bool IsCookieDeprecationLabelAllowed(
-      content::BrowserContext* browser_context);
-
-  // Returns whether cookie deprecation label should be allowed for the
-  // profile in a given context. Defaults to false to ensure no traffic label
-  // is sent by default.
-  virtual bool IsCookieDeprecationLabelAllowedForContext(
-      content::BrowserContext* browser_context,
-      const url::Origin& top_frame_origin,
-      const url::Origin& context_origin);
-
   // Returns whether cookies should be allowed for requests to `url`, fetched
   // from contexts whose storage is keyed on `storage_key`.
   // The `web_contents` parameter should be `nullptr` for requests coming from

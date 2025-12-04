@@ -44,7 +44,6 @@ class PrivacySandboxSettingsDelegate
   bool IsCookieDeprecationExperimentEligible() const override;
   privacy_sandbox::TpcdExperimentEligibility
   GetCookieDeprecationExperimentCurrentEligibility() const override;
-  bool IsCookieDeprecationLabelAllowed() const override;
   bool AreThirdPartyCookiesBlockedByCookieDeprecationExperiment()
       const override;
 
