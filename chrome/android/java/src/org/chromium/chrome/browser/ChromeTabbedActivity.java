@@ -1479,6 +1479,10 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             initiateArchivedTabsAutoDeletePromoManager();
+
+            if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
+                TipsUtils.registerTipsNotificationsModuleEnabledSettingsPref();
+            }
         }
     }
 
@@ -3052,10 +3056,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
 
     private void maybeRegisterHomeModules() {
         if (!HomeModulesMetricsUtils.useMagicStack()) return;
-
-        if (ChromeFeatureList.sAndroidTipsNotifications.isEnabled()) {
-            TipsUtils.registerTipsNotificationsModuleEnabledSettingsPref();
-        }
 
         ModuleRegistry moduleRegistry =
                 new ModuleRegistry(
