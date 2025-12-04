@@ -11,7 +11,6 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -60,7 +59,6 @@ public class TipsPromoViewBinderUnitTest {
     private TextView mTitleView;
     private TextView mDescriptionView;
     private TextView mDetailsTitleView;
-    private ImageView mLogoView;
 
     @Before
     public void setUp() {
@@ -75,7 +73,6 @@ public class TipsPromoViewBinderUnitTest {
         mTitleView = mView.findViewById(R.id.main_page_title_text);
         mDescriptionView = mView.findViewById(R.id.main_page_description_text);
         mDetailsTitleView = mView.findViewById(R.id.details_page_title_text);
-        mLogoView = mView.findViewById(R.id.main_page_logo);
 
         mModel = TipsPromoProperties.createDefaultModel();
         PropertyModelChangeProcessor.create(mModel, mView, TipsPromoViewBinder::bind);
@@ -102,7 +99,6 @@ public class TipsPromoViewBinderUnitTest {
         assertEquals(PROMO_TITLE, mTitleView.getText());
         assertEquals(PROMO_DESCRIPTION, mDescriptionView.getText());
         assertEquals(DETAILS_TITLE, mDetailsTitleView.getText());
-        assertNotNull(mLogoView.getDrawable());
     }
 
     @SmallTest

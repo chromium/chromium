@@ -29,11 +29,12 @@ found in the LICENSE file.
             android:clickable="true"
             android:focusable="true">
 
-            <ImageView
+            <com.airbnb.lottie.LottieAnimationView
                 android:id="@+id/main_page_logo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
+                android:minHeight="312dp"
                 android:importantForAccessibility="no"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"/>
