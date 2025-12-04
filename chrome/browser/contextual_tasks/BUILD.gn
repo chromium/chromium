@@ -157,6 +157,7 @@ if (!is_android) {
     deps = [
       ":ui",
       "//base",
+      "//chrome/browser/autocomplete:aim_eligibility_service",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/resources/contextual_tasks:resources",
       "//chrome/browser/signin",
@@ -177,8 +178,6 @@ if (!is_android) {
       "//third_party/protobuf:protobuf_lite",
       "//url",
     ]
-
-    deps += [ "//chrome/browser/autocomplete:aim_eligibility_service" ]
   }
 
   mojom("mojo_bindings") {
