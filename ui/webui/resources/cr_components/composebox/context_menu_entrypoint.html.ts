@@ -86,12 +86,12 @@ export function getHtml(this: ContextMenuEntrypointElement) {
       <cr-icon icon="composebox:imageUpload"></cr-icon>
       ${this.i18n('addImage')}
     </button>
-    <button id="fileUpload" class="dropdown-item"
+    ${this.pdfUploadEnabled_ ? html`<button id="fileUpload" class="dropdown-item"
         @click="${this.openFileUpload_}"
         ?disabled="${this.fileUploadDisabled_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.i18n('uploadFile')}
-    </button>
+    </button>`: ''}
     ${this.showDeepSearch_ || this.showCreateImage_ ? html`<hr/>` : ''}
     ${this.showDeepSearch_ ?
     html`<button id="deepSearch" class="dropdown-item"

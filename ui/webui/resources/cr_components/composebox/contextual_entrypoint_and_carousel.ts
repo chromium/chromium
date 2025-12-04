@@ -11,6 +11,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -606,11 +607,14 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
   }
 
   protected openImageUpload_() {
+    assert(this.$.imageInput);
     this.$.imageInput.click();
   }
 
   protected openFileUpload_() {
-    this.$.fileInput.click();
+    if (this.$.fileInput) {
+      this.$.fileInput.click();
+    }
   }
 
   protected onDeepSearchClick_() {
