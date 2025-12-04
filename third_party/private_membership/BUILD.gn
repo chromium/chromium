@@ -81,7 +81,7 @@ proto_library("private_membership_proto") {
   deps = [ "//third_party/shell-encryption:serialization_proto" ]
 }
 
-if (is_chromeos || is_linux) {
+if (is_chromeos) {
   component("private_membership") {
     public_configs = [ ":private_membership_config" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -126,7 +126,9 @@ if (is_chromeos || is_linux) {
       "//third_party/shell-encryption:shell_encryption",
     ]
   }
+}
 
+if (is_chromeos) {
   test("private_membership_unittests") {
     testonly = true
     public_configs = [ ":private_membership_config" ]

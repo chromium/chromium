@@ -65,14 +65,10 @@ static_library("test_support") {
     "test_server_helpers.cc",
     "test_server_helpers.h",
   ]
-  if (is_chromeos || is_linux) {
+  if (is_chromeos) {
     sources += [
       "fake_dmserver.cc",
       "fake_dmserver.h",
-    ]
-  }
-  if (is_chromeos) {
-    sources += [
       "request_handler_for_psm_auto_enrollment.cc",
       "request_handler_for_psm_auto_enrollment.h",
     ]
@@ -93,14 +89,12 @@ static_library("test_support") {
     "//third_party/re2",
   ]
 
-  if (is_chromeos || is_linux) {
+  if (is_chromeos) {
     public_deps += [ "//third_party/private_membership" ]
     deps += [
       ":remote_commands_service_castcore",
       "//chromecast/cast_core/grpc",
     ]
-  }
-  if (is_chromeos) {
     data = [
       # TODO(crbug.com/40248354): Script should create binarypb from textpb.
       # Required for policy/enrollment/psm/rlwe_test_support.cc
@@ -113,7 +107,7 @@ static_library("test_support") {
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
 
-if (is_chromeos || is_linux) {
+if (is_chromeos) {
   cast_core_grpc_library("remote_commands_service") {
     testonly = true
     sources = [ "remote_commands_service.proto" ]
@@ -182,10 +176,8 @@ source_set("unittests") {
     "signature_provider_unittest.cc",
   ]
 
-  if (is_chromeos || is_linux) {
-    sources += [ "fake_dmserver_unittest.cc" ]
-  }
   if (is_chromeos) {
+    sources += [ "fake_dmserver_unittest.cc" ]
     sources += [ "request_handler_for_psm_auto_enrollment_unittest.cc" ]
   }
 
