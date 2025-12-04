@@ -73,6 +73,8 @@ component("display") {
       "mac/screen_mac.mm",
       "mac/screen_mac_headless.h",
       "mac/screen_mac_headless.mm",
+      "mac/screen_utils_mac.h",
+      "mac/screen_utils_mac.mm",
     ]
   }
 

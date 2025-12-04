@@ -11,22 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
-
-namespace {
-
-NSScreen* GetNSScreenFromDisplayID(CGDirectDisplayID display_id) {
-  for (NSScreen* screen in NSScreen.screens) {
-    CGDirectDisplayID screenNumber =
-        [screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue];
-    if (screenNumber == display_id) {
-      return screen;
-    }
-  }
-
-  return nullptr;
-}
-
-}  // namespace
+#include "ui/display/mac/screen_utils_mac.h"
 
 API_AVAILABLE(macos(14.0))
 @interface CADisplayLinkTarget : NSObject {
@@ -113,21 +98,15 @@ void CADisplayLinkMac::Step() {
 }
 
 double CADisplayLinkMac::GetRefreshRate() const {
-  NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
-  return 1.0 / screen.minimumRefreshInterval;
+  return display::GetNSScreenRefreshRate(display_id_);
 }
 
 void CADisplayLinkMac::GetRefreshIntervalRange(
     base::TimeDelta& min_interval,
     base::TimeDelta& max_interval,
     base::TimeDelta& granularity) const {
-  NSScreen* screen = GetNSScreenFromDisplayID(display_id_);
-  min_interval = base::Seconds(1) * screen.minimumRefreshInterval;
-  // No support for dynamic refresh range for now. Just return the minimum
-  // interval instead of using screen.maximumRefreshInterval and
-  // screen.displayUpdateGranularity.
-  max_interval = min_interval;
-  granularity = min_interval;
+  display::GetNSScreenRefreshIntervalRange(display_id_, min_interval,
+                                           max_interval, granularity);
 }
 
 // static
@@ -138,7 +117,7 @@ scoped_refptr<DisplayLinkMac> CADisplayLinkMac::GetForDisplayOnCurrentThread(
         new CADisplayLinkMac(display_id));
     auto* objc_state = display_link->objc_state_.get();
 
-    NSScreen* screen = GetNSScreenFromDisplayID(display_id);
+    NSScreen* screen = display::GetNSScreenFromDisplayID(display_id);
     if (!screen) {
       return nullptr;
     }
