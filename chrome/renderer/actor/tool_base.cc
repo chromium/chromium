@@ -238,6 +238,7 @@ bool ToolBase::EnsureTargetInView() {
   WebElement node = GetNodeFromIdIncludingPopup(frame_.get(), dom_node_id)
                         .DynamicTo<WebElement>();
   if (node && node.VisibleBoundsInWidget().IsEmpty()) {
+    node.RevealAutoExpandableAncestors();
     node.ScrollIntoViewIfNeeded();
     return true;
   }

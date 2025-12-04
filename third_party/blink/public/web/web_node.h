@@ -144,6 +144,8 @@ class BLINK_EXPORT WebNode {
 
   bool Focused() const;
 
+  void RevealAutoExpandableAncestors() const;
+
   WebPluginContainer* PluginContainer() const;
 
   bool IsInsideFocusableElementOrARIAWidget() const;

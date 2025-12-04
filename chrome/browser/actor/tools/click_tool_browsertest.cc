@@ -211,6 +211,33 @@ IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_OffscreenElement) {
           "mouseup[BUTTON#offscreen],click[BUTTON#offscreen]"));
 }
 
+// Sending a click to an element that's not in the viewport should cause it to
+// first be scrolled into view then clicked.
+IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest,
+                       ClickTool_OffscreenHiddenElement) {
+  const GURL url = embedded_test_server()->GetURL("/actor/oov_elements.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  for (const char* selector :
+       {"#detailButton", "#hiddenButton", "#autoButton"}) {
+    SCOPED_TRACE(selector);
+    // Starts unscrolled
+    ASSERT_TRUE(EvalJs(web_contents(), "window.scroll(0,0)").is_ok());
+
+    std::optional<int> button_id = GetDOMNodeId(*main_frame(), selector);
+    ASSERT_TRUE(button_id);
+
+    std::unique_ptr<ToolRequest> action =
+        MakeClickRequest(*main_frame(), button_id.value());
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    // Page is now scrolled.
+    EXPECT_GT(EvalJs(web_contents(), "window.scrollY"), 0);
+  }
+}
+
 // Ensure clicks can be sent to elements that are only partially onscreen.
 IN_PROC_BROWSER_TEST_P(ActorClickToolBrowserTest, ClickTool_ClippedElements) {
   const GURL url =

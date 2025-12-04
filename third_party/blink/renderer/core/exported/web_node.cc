@@ -40,6 +40,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -273,6 +274,13 @@ std::vector<WebNode> WebNode::FindAllTextNodesMatchingRegex(
 
 bool WebNode::Focused() const {
   return private_->IsFocused();
+}
+
+void WebNode::RevealAutoExpandableAncestors() const {
+  auto result = DisplayLockUtilities::RevealAutoExpandableAncestors(*private_);
+  if (result.revealed_details || result.revealed_hidden_until_found) {
+    private_->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kInput);
+  }
 }
 
 cc::ElementId WebNode::ScrollingElementIdForTesting() const {
