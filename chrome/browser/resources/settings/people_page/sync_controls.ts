@@ -239,15 +239,20 @@ export class SettingsSyncControlsElement extends
         this.batchUploadPromoString_, {tags: ['a'], attrs: ['id']});
   }
 
-  /** Attached the click action to the batch upload promo link. */
+  /** Attach the click action and aria label to the batch upload promo link. */
   private attachOpenBatchUploadLinkClick_(): void {
-    const elementId = 'openBatchUploadLink';
     const element: HTMLElement|null|undefined =
-        this.shadowRoot?.querySelector(`#${elementId}`);
+        this.shadowRoot?.querySelector(`#openBatchUploadLink`);
     if (element !== null && element !== undefined) {
       element.addEventListener('click', (me: MouseEvent) => {
         this.onPromoClicked_(me);
       });
+
+      // Since there is a link for the batch upload, we can also be sure that
+      // the containing element exists.
+      const batchUploadElement: HTMLElement|null|undefined =
+          this.shadowRoot?.querySelector(`#batchUploadPromo`);
+      element.setAttribute('aria-label', batchUploadElement!.textContent);
     }
   }
 
