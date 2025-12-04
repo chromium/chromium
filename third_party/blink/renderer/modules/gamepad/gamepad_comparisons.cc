@@ -52,7 +52,7 @@ bool Compare(const Collection* old_array,
 
 // static
 bool GamepadComparisons::HasUserActivation(
-    const HeapVector<Member<Gamepad>> gamepads) {
+    const HeapVector<Member<Gamepad>>& gamepads) {
   // A button press counts as a user activation if the button's value is greater
   // than the activation threshold. A threshold is used so that analog buttons
   // or triggers do not generate an activation from a light touch.
@@ -80,8 +80,8 @@ void GamepadComparisons::HasGamepadConnectionChanged(bool old_connected,
 }
 
 GamepadStateCompareResult::GamepadStateCompareResult(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   any_change_ = CompareGamepads(old_gamepads, new_gamepads, compare_all_axes,
@@ -143,8 +143,8 @@ bool GamepadStateCompareResult::IsTouchChanged(size_t pad_index,
 }
 
 bool GamepadStateCompareResult::CompareGamepads(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   bool any_change = false;
@@ -340,8 +340,8 @@ Vector<int> GamepadStateCompareResult::GetChangedTouches(
 }
 
 GamepadStateCompareResult GamepadComparisons::Compare(
-    const HeapVector<Member<Gamepad>> old_gamepads,
-    const HeapVector<Member<Gamepad>> new_gamepads,
+    const HeapVector<Member<Gamepad>>& old_gamepads,
+    const HeapVector<Member<Gamepad>>& new_gamepads,
     bool compare_all_axes,
     bool compare_all_buttons) {
   return GamepadStateCompareResult(old_gamepads, new_gamepads, compare_all_axes,

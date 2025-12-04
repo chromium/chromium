@@ -20,8 +20,8 @@ class MODULES_EXPORT GamepadStateCompareResult {
   STACK_ALLOCATED();
 
  public:
-  GamepadStateCompareResult(const HeapVector<Member<Gamepad>> old_gamepads,
-                            const HeapVector<Member<Gamepad>> new_gamepads,
+  GamepadStateCompareResult(const HeapVector<Member<Gamepad>>& old_gamepads,
+                            const HeapVector<Member<Gamepad>>& new_gamepads,
                             bool compare_all_axes,
                             bool compare_all_buttons);
   ~GamepadStateCompareResult() = default;
@@ -48,8 +48,8 @@ class MODULES_EXPORT GamepadStateCompareResult {
   Vector<int> GetChangedTouches(size_t pad_index) const;
 
  private:
-  bool CompareGamepads(const HeapVector<Member<Gamepad>> old_gamepads,
-                       const HeapVector<Member<Gamepad>> new_gamepads,
+  bool CompareGamepads(const HeapVector<Member<Gamepad>>& old_gamepads,
+                       const HeapVector<Member<Gamepad>>& new_gamepads,
                        bool compare_all_axes,
                        bool compare_all_buttons);
   bool CompareAxes(Gamepad* old_gamepad,
@@ -91,7 +91,7 @@ class MODULES_EXPORT GamepadComparisons {
  public:
   // Inspect the gamepad state in |gamepads| and return true if any gamepads
   // have a user activation gesture.
-  static bool HasUserActivation(const HeapVector<Member<Gamepad>> gamepads);
+  static bool HasUserActivation(const HeapVector<Member<Gamepad>>& gamepads);
 
   // Given the connection state of a gamepad in consecutive samples and whether
   // the ID string changed, return whether the gamepad was newly connected in
@@ -107,8 +107,8 @@ class MODULES_EXPORT GamepadComparisons {
   // is true, all axes or buttons will be compared. Otherwise, the comparison
   // will short-circuit after the first difference.
   static GamepadStateCompareResult Compare(
-      const HeapVector<Member<Gamepad>> old_gamepads,
-      const HeapVector<Member<Gamepad>> new_gamepads,
+      const HeapVector<Member<Gamepad>>& old_gamepads,
+      const HeapVector<Member<Gamepad>>& new_gamepads,
       bool compare_all_axes,
       bool compare_all_buttons);
 };
