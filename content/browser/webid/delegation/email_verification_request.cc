@@ -80,9 +80,6 @@ sdjwt::Jwt EmailVerificationRequest::CreateRequestToken(
 
   sdjwt::Payload payload;
   payload.email = email;
-  // TODO(crbug.com/380367784): figure out why/whether the
-  // nonce is needed here. Use a hardcoded value for now.
-  payload.nonce = "--a-fake-nonce--";
   // TODO(crbug.com/380367784): check if `render_frame_host_` isn't an
   // opaque origin, or any other validation that might be
   // necessary.
