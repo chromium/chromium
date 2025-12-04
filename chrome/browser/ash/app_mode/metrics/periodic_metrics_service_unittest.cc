@@ -30,12 +30,6 @@ struct KioskSessionInternetAccessTestCase {
   KioskInternetAccessInfo expected_metric;
 };
 
-struct KioskSessionUserActivityTestCase {
-  std::string test_name;
-  base::TimeDelta idle_timeout;
-  KioskUserActivity expected_metric;
-};
-
 }  // namespace
 
 class BasePeriodicMetricsServiceTest {
@@ -76,8 +70,6 @@ class BasePeriodicMetricsServiceTest {
     // first time.
     histogram_tester()->ExpectTotalCount(
         kKioskSessionRestartInternetAccessHistogram, 0);
-    histogram_tester()->ExpectTotalCount(
-        kKioskSessionRestartUserActivityHistogram, 0);
 
     // Emulate kiosk session restart.
     RecordPreviousSessionMetrics();
@@ -195,106 +187,5 @@ INSTANTIATE_TEST_SUITE_P(
         InternetPeriodicMetricsServiceTest::ParamType>& info) {
       return info.param.test_name;
     });
-
-class UserActivityPeriodicMetricsServiceTest
-    : public ::testing::TestWithParam<KioskSessionUserActivityTestCase>,
-      public BasePeriodicMetricsServiceTest {
- public:
-  UserActivityPeriodicMetricsServiceTest() = default;
-  UserActivityPeriodicMetricsServiceTest(
-      const UserActivityPeriodicMetricsServiceTest&) = delete;
-  UserActivityPeriodicMetricsServiceTest& operator=(
-      const UserActivityPeriodicMetricsServiceTest&) = delete;
-
-  void TearDown() override {
-    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->RemoveUserPref(
-        prefs::kKioskMetrics);
-  }
-
-  void SetDeviceIdleTime(base::TimeDelta idle_time,
-                         base::TimeTicks from_time = base::TimeTicks::Now()) {
-    ui::UserActivityDetector::Get()->set_last_activity_time_for_test(from_time -
-                                                                     idle_time);
-  }
-};
-
-TEST_P(UserActivityPeriodicMetricsServiceTest, KioskUserActivityMetric) {
-  const KioskSessionUserActivityTestCase& test_config = GetParam();
-
-  SetDeviceIdleTime(test_config.idle_timeout);
-  EmulateKioskRestart();
-
-  histogram_tester()->ExpectBucketCount(
-      kKioskSessionRestartUserActivityHistogram, test_config.expected_metric,
-      1);
-  histogram_tester()->ExpectTotalCount(
-      kKioskSessionRestartUserActivityHistogram, 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    UserActivityInfos,
-    UserActivityPeriodicMetricsServiceTest,
-    testing::ValuesIn<KioskSessionUserActivityTestCase>({
-        {/*test_name=*/"UserActiv",
-         /*idle_timeout=*/base::Seconds(0),
-         /*expected_metric=*/KioskUserActivity::kActive},
-        {/*test_name=*/"UserAlmostIdle",
-         /*idle_timeout=*/kFirstIdleTimeout / 2,
-         /*expected_metric=*/KioskUserActivity::kActive},
-        {/*test_name=*/"UserIdle",
-         /*idle_timeout=*/kFirstIdleTimeout,
-         /*expected_metric=*/KioskUserActivity::kIdle},
-    }),
-    [](const testing::TestParamInfo<
-        UserActivityPeriodicMetricsServiceTest::ParamType>& info) {
-      return info.param.test_name;
-    });
-
-// Check that after the first metrics record, ChromeOS is using a new idle
-// timeout.
-TEST_F(UserActivityPeriodicMetricsServiceTest, UserActivityTimeoutChanged) {
-  ASSERT_TRUE(kFirstIdleTimeout < kRegularIdleTimeout / 2);
-  SetDeviceIdleTime(kFirstIdleTimeout);
-
-  // Emulate running a kiosk session. The user is idle.
-  RecordPreviousSessionMetrics();
-  StartRecordingPeriodicMetrics();
-
-  // User was active during.
-  SetDeviceIdleTime(
-      kRegularIdleTimeout / 2,
-      /*from_time=*/base::TimeTicks::Now() + kPeriodicMetricsInterval);
-  task_environment()->FastForwardBy(kPeriodicMetricsInterval);
-
-  // Emulate kiosk session restart.
-  RecordPreviousSessionMetrics();
-
-  histogram_tester()->ExpectBucketCount(
-      kKioskSessionRestartUserActivityHistogram, KioskUserActivity::kActive, 1);
-  histogram_tester()->ExpectTotalCount(
-      kKioskSessionRestartUserActivityHistogram, 1);
-}
-
-TEST_F(UserActivityPeriodicMetricsServiceTest, UserBecomesIdle) {
-  ASSERT_TRUE(kFirstIdleTimeout < kRegularIdleTimeout / 2);
-  SetDeviceIdleTime(kFirstIdleTimeout / 2);
-
-  // Emulate running a kiosk session.
-  RecordPreviousSessionMetrics();
-  StartRecordingPeriodicMetrics();
-
-  // User becomes idle and metrics should be updated because of the timeout.
-  SetDeviceIdleTime(kRegularIdleTimeout, /*from_time=*/base::TimeTicks::Now() +
-                                             kPeriodicMetricsInterval);
-  task_environment()->FastForwardBy(kPeriodicMetricsInterval);
-
-  // Emulate kiosk session restart.
-  RecordPreviousSessionMetrics();
-
-  histogram_tester()->ExpectBucketCount(
-      kKioskSessionRestartUserActivityHistogram, KioskUserActivity::kIdle, 1);
-  histogram_tester()->ExpectTotalCount(
-      kKioskSessionRestartUserActivityHistogram, 1);
-}
 
 }  // namespace ash

@@ -43,11 +43,6 @@ bool IsDeviceOnline() {
   return default_network->IsOnline();
 }
 
-base::TimeDelta GetDeviceIdlePeriod() {
-  return base::TimeTicks::Now() -
-         ui::UserActivityDetector::Get()->last_activity_time();
-}
-
 template <typename ResultType>
 std::optional<ResultType> GetSavedEnumFromKioskMetrics(
     const PrefService* prefs,
@@ -70,15 +65,10 @@ const char kKioskRamUsagePercentageHistogram[] = "Kiosk.RamUsagePercentage";
 const char kKioskSwapUsagePercentageHistogram[] = "Kiosk.SwapUsagePercentage";
 const char kKioskSessionRestartInternetAccessHistogram[] =
     "Kiosk.SessionRestart.InternetAccess";
-const char kKioskSessionRestartUserActivityHistogram[] =
-    "Kiosk.SessionRestart.UserActivity";
 
 const char kKioskInternetAccessInfo[] = "internet-access";
-const char kKioskUserActivity[] = "user-activity";
 
 const base::TimeDelta kPeriodicMetricsInterval = base::Hours(1);
-const base::TimeDelta kFirstIdleTimeout = base::Minutes(5);
-const base::TimeDelta kRegularIdleTimeout = kPeriodicMetricsInterval;
 
 PeriodicMetricsService::PeriodicMetricsService(PrefService* prefs)
     : prefs_(prefs) {}
@@ -87,7 +77,6 @@ PeriodicMetricsService::~PeriodicMetricsService() = default;
 
 void PeriodicMetricsService::RecordPreviousSessionMetrics() const {
   RecordPreviousInternetAccessInfo();
-  RecordPreviousUserActivity();
 }
 
 void PeriodicMetricsService::StartRecordingPeriodicMetrics(
@@ -95,19 +84,17 @@ void PeriodicMetricsService::StartRecordingPeriodicMetrics(
   is_offline_enabled_ = is_offline_enabled;
   // Record all periodic metrics at the beginning of the kiosk session and then
   // every `kPeriodicMetricsInterval`.
-  RecordPeriodicMetrics(kFirstIdleTimeout);
+  RecordPeriodicMetrics();
   metrics_timer_.Start(
       FROM_HERE, kPeriodicMetricsInterval,
       base::BindRepeating(&PeriodicMetricsService::RecordPeriodicMetrics,
-                          weak_ptr_factory_.GetWeakPtr(), kRegularIdleTimeout));
+                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void PeriodicMetricsService::RecordPeriodicMetrics(
-    const base::TimeDelta& idle_timeout) {
+void PeriodicMetricsService::RecordPeriodicMetrics() {
   RecordRamUsage();
   RecordSwapUsage();
   SaveInternetAccessInfo();
-  SaveUserActivity(idle_timeout);
 }
 
 void PeriodicMetricsService::RecordRamUsage() const {
@@ -141,17 +128,6 @@ void PeriodicMetricsService::RecordPreviousInternetAccessInfo() const {
   }
 }
 
-void PeriodicMetricsService::RecordPreviousUserActivity() const {
-  std::optional<KioskUserActivity> previous_session_user_activity =
-      GetSavedEnumFromKioskMetrics<KioskUserActivity>(prefs_,
-                                                      kKioskUserActivity);
-
-  if (previous_session_user_activity.has_value()) {
-    base::UmaHistogramEnumeration(kKioskSessionRestartUserActivityHistogram,
-                                  previous_session_user_activity.value());
-  }
-}
-
 void PeriodicMetricsService::SaveInternetAccessInfo() const {
   bool is_device_online = IsDeviceOnline();
   KioskInternetAccessInfo network_access_info =
@@ -164,16 +140,6 @@ void PeriodicMetricsService::SaveInternetAccessInfo() const {
                  : KioskInternetAccessInfo::kOfflineAndAppRequiresInternet);
   ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
       ->Set(kKioskInternetAccessInfo, static_cast<int>(network_access_info));
-}
-
-void PeriodicMetricsService::SaveUserActivity(
-    const base::TimeDelta& idle_timeout) const {
-  KioskUserActivity user_activity = (GetDeviceIdlePeriod() >= idle_timeout)
-                                        ? KioskUserActivity::kIdle
-                                        : KioskUserActivity::kActive;
-
-  ScopedDictPrefUpdate(prefs_, prefs::kKioskMetrics)
-      ->Set(kKioskUserActivity, static_cast<int>(user_activity));
 }
 
 }  // namespace ash

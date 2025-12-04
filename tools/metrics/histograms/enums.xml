@@ -6738,11 +6738,6 @@ shown properly on the user-facing crash UI.
   <int value="8" label="IWA kiosk started"/>
 </enum>
 
-<enum name="KioskUserActivity">
-  <int value="0" label="User is using the device"/>
-  <int value="1" label="Device is idle"/>
-</enum>
-
 <enum name="LanguageName">
   <summary>
     Deprecated: Instead use LocaleCodeBCP47 since it supports script tags and
