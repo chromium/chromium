@@ -101,10 +101,11 @@
   // View controller that lays down the table views for the edit profile view.
   _AutofillProfileEditTableViewHelper =
       [[AutofillProfileEditTableViewHelper alloc]
-          initWithDelegate:_autofillProfileEditMediator
-                 userEmail:[_handler userEmail]
-                controller:editModalViewController
-            addressContext:saveAddressContext];
+           initWithDelegate:_autofillProfileEditMediator
+                  userEmail:[_handler userEmail]
+                 controller:editModalViewController
+          textFieldDelegate:editModalViewController
+             addressContext:saveAddressContext];
   _autofillProfileEditMediator.consumer = _AutofillProfileEditTableViewHelper;
   // `editModalViewController` lays down the bottom sheet view and communicates
   // with `_AutofillProfileEditTableViewHelper` via

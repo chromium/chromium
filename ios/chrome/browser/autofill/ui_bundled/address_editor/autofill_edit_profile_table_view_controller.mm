@@ -31,7 +31,7 @@ NSString* const kCustomExpandedDetentIdentifier = @"customExpandedDetent";
 const CGFloat kDefaultHeaderFooterHeight = 10;
 }  // namespace
 
-@interface AutofillEditProfileTableViewController () <UITextFieldDelegate> {
+@interface AutofillEditProfileTableViewController () {
   // Delegate for this view controller.
   __weak id<AutofillEditProfileTableViewControllerDelegate> _delegate;
 
@@ -142,9 +142,7 @@ const CGFloat kDefaultHeaderFooterHeight = 10;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  return [self.handler cell:cell
-          forRowAtIndexPath:indexPath
-           withTextDelegate:self];
+  return [self.handler cell:cell forRowAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView*)tableView

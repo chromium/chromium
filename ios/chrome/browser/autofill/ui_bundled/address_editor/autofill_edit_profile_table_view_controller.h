@@ -18,7 +18,7 @@
 
 // The Bottom Sheet TableView for an Autofill save/update address edit menu.
 @interface AutofillEditProfileTableViewController
-    : LegacyChromeTableViewController
+    : LegacyChromeTableViewController <UITextFieldDelegate>
 
 - (instancetype)initWithDelegate:
                     (id<AutofillEditProfileTableViewControllerDelegate>)delegate

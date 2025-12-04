@@ -74,6 +74,9 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 
   // Stores the record type for the profile.
   autofill::AutofillProfile::RecordType _recordType;
+
+  // Delegate for the items containing a text field.
+  id<UITextFieldDelegate> _textFieldDelegate;
 }
 
 #pragma mark - Initialization
@@ -82,12 +85,14 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
                     (id<AutofillProfileEditTableViewHelperDelegate>)delegate
                        userEmail:(NSString*)userEmail
                       controller:(LegacyChromeTableViewController*)controller
+               textFieldDelegate:(id<UITextFieldDelegate>)textFieldDelegate
                   addressContext:(SaveAddressContext)addressContext {
   self = [super init];
   if (self) {
     _delegate = delegate;
     _userEmail = userEmail;
     _controller = controller;
+    _textFieldDelegate = textFieldDelegate;
     _addressContext = addressContext;
     _moveToAccountFromSettings = NO;
     _hasSaveButton = NO;
@@ -188,8 +193,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 }
 
 - (UITableViewCell*)cell:(UITableViewCell*)cell
-       forRowAtIndexPath:(NSIndexPath*)indexPath
-        withTextDelegate:(id<UITextFieldDelegate>)delegate {
+       forRowAtIndexPath:(NSIndexPath*)indexPath {
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   NSInteger itemType =
       [_controller.tableViewModel itemTypeForIndexPath:indexPath];
@@ -207,14 +211,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     if ([self showEditView]) {
       cell.selectionStyle = UITableViewCellSelectionStyleDefault;
     }
-    return cell;
   }
-
-  TableViewTextEditCell* textFieldCell =
-      base::apple::ObjCCastStrict<TableViewTextEditCell>(cell);
-  textFieldCell.accessibilityIdentifier = textFieldCell.textLabel.text;
-  textFieldCell.textField.delegate = delegate;
-  return textFieldCell;
+  return cell;
 }
 
 - (void)didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
@@ -505,6 +503,8 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
       initWithType:AutofillProfileDetailsItemTypeTextField];
   item.fieldNameLabelText = fieldLabel;
   item.autofillFieldType = autofillType;
+  item.accessibilityIdentifier = fieldLabel;
+  item.textFieldDelegate = _textFieldDelegate;
   item.textFieldValue = [_delegate currentValueForType:item.autofillFieldType];
   item.textFieldEnabled = [self showEditView];
   item.hideIcon =

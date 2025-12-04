@@ -67,10 +67,11 @@ class AutofillProfileEditTableViewHelperTest
 
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewHelper alloc]
-            initWithDelegate:autofill_profile_edit_mediator_
-                   userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
-                  controller:controller()
-              addressContext:GetParam().address_context];
+             initWithDelegate:autofill_profile_edit_mediator_
+                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
+                   controller:controller()
+            textFieldDelegate:nil
+               addressContext:GetParam().address_context];
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
 

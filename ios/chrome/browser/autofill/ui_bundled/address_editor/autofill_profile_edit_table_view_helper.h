@@ -26,6 +26,7 @@
                     (id<AutofillProfileEditTableViewHelperDelegate>)delegate
                        userEmail:(NSString*)userEmail
                       controller:(LegacyChromeTableViewController*)controller
+               textFieldDelegate:(id<UITextFieldDelegate>)textFieldDelegate
                   addressContext:(SaveAddressContext)addressContext
     NS_DESIGNATED_INITIALIZER;
 

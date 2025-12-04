@@ -93,10 +93,11 @@
       shouldShowMigrateToAccountButton:_showMigrateToAccountButton
                              userEmail:[self userEmail]];
   _sharedViewController = [[AutofillProfileEditTableViewHelper alloc]
-      initWithDelegate:_mediator
-             userEmail:[self userEmail]
-            controller:_viewController
-        addressContext:SaveAddressContext::kEditingSavedAddress];
+       initWithDelegate:_mediator
+              userEmail:[self userEmail]
+             controller:_viewController
+      textFieldDelegate:_viewController
+         addressContext:SaveAddressContext::kEditingSavedAddress];
   _mediator.consumer = _sharedViewController;
   _viewController.handler = _sharedViewController;
   _viewController.snackbarCommandsHandler = HandlerForProtocol(

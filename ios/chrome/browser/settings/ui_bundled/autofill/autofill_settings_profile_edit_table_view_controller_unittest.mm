@@ -99,10 +99,11 @@ class AutofillSettingsProfileEditTableViewControllerTest
                                                  kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewHelper alloc]
-            initWithDelegate:autofill_profile_edit_mediator_
-                   userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
-                  controller:viewController
-              addressContext:SaveAddressContext::kEditingSavedAddress];
+             initWithDelegate:autofill_profile_edit_mediator_
+                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
+                   controller:viewController
+            textFieldDelegate:nil
+               addressContext:SaveAddressContext::kEditingSavedAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;
@@ -229,10 +230,11 @@ class AutofillSettingsProfileEditTableViewControllerWithMigrationButtonTest
                                                  kTestSyncingEmail)];
     autofill_profile_edit_table_view_controller_ =
         [[AutofillProfileEditTableViewHelper alloc]
-            initWithDelegate:autofill_profile_edit_mediator_
-                   userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
-                  controller:viewController
-              addressContext:SaveAddressContext::kEditingSavedAddress];
+             initWithDelegate:autofill_profile_edit_mediator_
+                    userEmail:base::SysUTF16ToNSString(kTestSyncingEmail)
+                   controller:viewController
+            textFieldDelegate:nil
+               addressContext:SaveAddressContext::kEditingSavedAddress];
     viewController.handler = autofill_profile_edit_table_view_controller_;
     autofill_profile_edit_mediator_.consumer =
         autofill_profile_edit_table_view_controller_;

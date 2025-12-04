@@ -227,9 +227,7 @@ const CGFloat kSymbolSize = 22;
   if (itemType == AutofillProfileDetailsItemTypeEdit) {
     return cell;
   }
-  return [self.handler cell:cell
-          forRowAtIndexPath:indexPath
-           withTextDelegate:self];
+  return [self.handler cell:cell forRowAtIndexPath:indexPath];
 }
 
 - (void)tableView:(UITableView*)tableView
