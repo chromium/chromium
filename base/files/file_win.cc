@@ -177,9 +177,9 @@ int File::WriteAtCurrentPos(const char* data, int size) {
   return -1;
 }
 
-int File::WriteAtCurrentPosNoBestEffort(const char* data, int size) {
-  // SAFETY: required from caller, enforced by UNSAFE_BUFFER_USAGE in header.
-  return UNSAFE_BUFFERS(WriteAtCurrentPos(data, size));
+std::optional<size_t> File::WriteAtCurrentPosNoBestEffort(
+    base::span<const uint8_t> data) {
+  return WriteAtCurrentPos(data);
 }
 
 int64_t File::GetLength() const {

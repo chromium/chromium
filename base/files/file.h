@@ -267,12 +267,8 @@ class BASE_EXPORT File {
   std::optional<size_t> WriteAtCurrentPos(base::span<const uint8_t> data);
 
   // Same as above but does not make any effort to write all data on all
-  // platforms. Returns the number of bytes written, or -1/std::nullopt
+  // platforms. Returns the number of bytes written, or std::nullopt
   // on error.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int WriteAtCurrentPosNoBestEffort(const char* data,
-                                                        int size);
   std::optional<size_t> WriteAtCurrentPosNoBestEffort(
       base::span<const uint8_t> data);
 
