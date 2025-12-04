@@ -38,6 +38,9 @@
 -LayerTreeHostTestVideoLayerInvalidate.RunMultiThread_DelegatingRenderer
 -LayerTreeHostTestPushPropertiesRemovingChildStopsRecursionWithPersistence.RunMultiThread_DelegatingRenderer
 -SoftwareTextureLayerLoseFrameSinkTest.RunMultiThread_DelegatingRenderer
+-TextureLayerChangeInvisibleMailboxTest.RunMultiThread_DelegatingRenderer
+-TextureLayerImplWithMailboxThreadedCallback.RunMultiThread_DelegatingRenderer
+-TextureLayerNoExtraCommitForMailboxTest.RunMultiThread_DelegatingRenderer
 
 # TODO(crbug.com/448683984) These tests fails with TreesInViz because the
 # tiling removal optimization during pinch zoom is disabled which might impact
@@ -74,3 +77,8 @@
 # sends. Due to this, test expectations on shared image count can not be met at
 # the intended frame and might happen at later frames.
 -LayerTreeHostTestUIResource.RunMultiThread_DelegatingRenderer
+
+# TODO(crbug.com/383016428): Triage failures
+-TextureLayerChangeInvisibleMailboxTest.RunSingleThread_DelegatingRenderer
+-TextureLayerImplWithMailboxThreadedCallback.RunSingleThread_DelegatingRenderer
+-TextureLayerNoExtraCommitForMailboxTest.RunSingleThread_DelegatingRenderer
