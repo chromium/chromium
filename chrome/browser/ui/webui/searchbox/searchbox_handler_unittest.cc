@@ -202,7 +202,7 @@ TEST_F(RealboxHandlerTest, GetPlaceholderConfig) {
   auto config = future.Take();
 
   ASSERT_GT(config->texts.size(), 0u);
-  ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 4000u);
+  ASSERT_EQ(config->change_text_animation_interval.InMilliseconds(), 2000u);
   ASSERT_EQ(config->fade_text_animation_duration.InMilliseconds(), 250u);
 }
 
