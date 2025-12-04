@@ -172,13 +172,14 @@ def _build_tests(out_dir: str, scheme: str) -> bool:
         return False
 
 
-def _run_tests(out_dir: str, simulator_name: str, scheme: str,
+def _run_tests(out_dir: str, simulator_name: str, os_version: str, scheme: str,
                test_filters: List[str]) -> int:
     """Runs the EG tests on the specified simulator.
 
     Args:
         out_dir: The output directory for the build.
         simulator_name: The name of the simulator to use.
+        os_version: The OS version of the simulator to use.
         scheme: The EG test scheme to run.
         test_filters: A list of test filters to apply.
 
@@ -194,7 +195,7 @@ def _run_tests(out_dir: str, simulator_name: str, scheme: str,
         '-scheme',
         scheme,
         '-destination',
-        f'platform=iOS Simulator,name={simulator_name}',
+        f'platform=iOS Simulator,name={simulator_name},OS={os_version}',
     ]
     if test_filters:
         for test_filter in test_filters:
@@ -254,7 +255,13 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
             final_exit_code = 1
             continue  # Try next scheme even if this one fails to build.
 
-        exit_code = _run_tests(args.out_dir, simulator.name, scheme, tests)
+        exit_code = _run_tests(
+            args.out_dir,
+            simulator.name,
+            simulator.os_version,
+            scheme,
+            tests,
+        )
         if exit_code != 0:
             final_exit_code = exit_code
 
