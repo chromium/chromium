@@ -480,6 +480,10 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyProcessLauncherSucceeds();
   }
 
+  void ExpectProcessLauncherLaunchCmdLineSucceeds() {
+    test_commands_->ExpectProcessLauncherLaunchCmdLineSucceeds();
+  }
+
   void ExpectLegacyAppCommandWebSucceeds(const std::string& app_id,
                                          const std::string& command_id,
                                          const base::Value::List& parameters,
@@ -4806,7 +4810,7 @@ INSTANTIATE_TEST_SUITE_P(IntegrationLegacyProcessLauncherTestCases,
                          IntegrationLegacyProcessLauncherTest,
                          ::testing::ValuesIn(GetRealUpdaterVersions()));
 
-TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
+TEST_P(IntegrationLegacyProcessLauncherTest, LaunchCmdElevated) {
   // `ExpectLegacyProcessLauncherSucceeds` runs the process launcher once with
   // usagestats enabled, and twice without, so only a single ping is expected.
   ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
@@ -4814,6 +4818,10 @@ TEST_P(IntegrationLegacyProcessLauncherTest, Test) {
       1, update_client::protocol_request::kEventAppCommandComplete, {},
       GetParam().version));
   ASSERT_NO_FATAL_FAILURE(ExpectLegacyProcessLauncherSucceeds());
+}
+
+TEST_P(IntegrationLegacyProcessLauncherTest, LaunchCmdLine) {
+  ASSERT_NO_FATAL_FAILURE(ExpectProcessLauncherLaunchCmdLineSucceeds());
 }
 
 class IntegrationLegacyPolicyStatusTest

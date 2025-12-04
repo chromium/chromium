@@ -171,6 +171,7 @@ class IntegrationTestCommands
       int expected_error_code,
       bool cancel_when_downloading) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
+  virtual void ExpectProcessLauncherLaunchCmdLineSucceeds() const = 0;
   virtual void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,

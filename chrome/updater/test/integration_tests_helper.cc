@@ -382,6 +382,8 @@ void AppTestHelper::FirstTaskRun() {
                                    Wrap(&ExpectLegacyUpdate3WebSucceeds)))))))},
           {"expect_legacy_process_launcher_succeeds",
            WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+          {"expect_process_launcher_launch_cmd_line_succeeds",
+           WithSystemScope(Wrap(&ExpectProcessLauncherLaunchCmdLineSucceeds))},
           {"expect_legacy_app_command_web_succeeds",
            WithSwitch(
                "expected_exit_code",

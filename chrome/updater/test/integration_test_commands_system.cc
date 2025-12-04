@@ -477,6 +477,10 @@ class IntegrationTestCommandsSystem : public IntegrationTestCommands {
     RunCommand("expect_legacy_process_launcher_succeeds");
   }
 
+  void ExpectProcessLauncherLaunchCmdLineSucceeds() const override {
+    RunCommand("expect_process_launcher_launch_cmd_line_succeeds");
+  }
+
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,

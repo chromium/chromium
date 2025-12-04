@@ -1127,10 +1127,18 @@ STDMETHODIMP LegacyProcessLauncherImpl::LaunchCmdLine(const WCHAR* cmd_line) {
     return E_INVALIDARG;
   }
 
-  RETURN_IF_ERROR(
-      base::win::RunDeElevated(base::CommandLine::FromString(cmd_line),
-                               GetExplorerPid()),
-      [](DWORD error_code) { return HRESULT_FROM_WIN32(error_code); });
+  ASSIGN_OR_RETURN(const DWORD explorer_pid, GetExplorerPid(), [] {
+    const HRESULT hr = HRESULTFromLastError();
+    LOG(ERROR) << "GetExplorerPid failed: " << hr;
+    return hr;
+  });
+
+  RETURN_IF_ERROR(base::win::RunDeElevated(
+                      base::CommandLine::FromString(cmd_line), explorer_pid),
+                  [](DWORD error_code) {
+                    LOG(ERROR) << "RunDeElevated failed: " << error_code;
+                    return HRESULT_FROM_WIN32(error_code);
+                  });
   return S_OK;
 }
 

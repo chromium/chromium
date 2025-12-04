@@ -369,6 +369,10 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyProcessLauncherSucceeds(updater_scope_);
   }
 
+  void ExpectProcessLauncherLaunchCmdLineSucceeds() const override {
+    updater::test::ExpectProcessLauncherLaunchCmdLineSucceeds(updater_scope_);
+  }
+
   void ExpectLegacyAppCommandWebSucceeds(
       const std::string& app_id,
       const std::string& command_id,

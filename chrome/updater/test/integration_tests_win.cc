@@ -52,8 +52,10 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "base/win/elevation_util.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -1516,6 +1518,32 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
       ProcessLaunchCmdElevated(process_launcher, kAppId1, kCommandId, 11555));
 
   DeleteAppClientKey(scope, kAppId1);
+}
+
+void ExpectProcessLauncherLaunchCmdLineSucceeds(UpdaterScope scope) {
+  // ProcessLauncher is only implemented for kSystem at the moment.
+  if (!IsSystemInstall(scope)) {
+    return;
+  }
+  ASSIGN_OR_RETURN(const DWORD explorer_pid, GetExplorerPid(), [] {});
+
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
+  ASSERT_HRESULT_SUCCEEDED(
+      CreateLocalServer(__uuidof(ProcessLauncherClass), unknown));
+  Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
+  EXPECT_HRESULT_SUCCEEDED(unknown.As(&process_launcher));
+  process_launcher.Reset();
+  EXPECT_HRESULT_SUCCEEDED(
+      unknown.CopyTo(__uuidof(IProcessLauncherSystem),
+                     IID_PPV_ARGS_Helper(&process_launcher)));
+
+  base::CommandLine test_process_cmd_line =
+      GetTestProcessCommandLine(scope, __func__);
+  ASSERT_EQ(process_launcher->LaunchCmdLine(
+                test_process_cmd_line.GetCommandLineString().c_str()),
+            base::win::IsProcessRunningAtMediumOrLower(explorer_pid)
+                ? S_OK
+                : E_ACCESSDENIED);
 }
 
 void ExpectLegacyAppCommandWebSucceeds(UpdaterScope scope,
