@@ -61,6 +61,7 @@ class IOSEnterpriseInterstitial
     GURL request_url_;
     safe_browsing::SBThreatType threat_type_;
     safe_browsing::ThreatSource threat_source_;
+    safe_browsing::RTLookupResponse rt_lookup_response_;
   };
 
   IOSEnterpriseInterstitial(

@@ -6,10 +6,11 @@
 #define IOS_CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_REPORTING_UTIL_H_
 
 class GURL;
+class ReportingEventRouter;
 
-namespace web {
-class WebState;
-}  // namespace web
+namespace safe_browsing {
+class RTLookupResponse;
+}  // namespace safe_browsing
 
 namespace enterprise_connectors {
 
@@ -29,10 +30,13 @@ enum class UrlFilteringEventType {
 // Parameters:
 //   event_type: The type of event that occurred (see UrlFilteringEventType).
 //   page_url: The URL that triggered the event.
-//   web_state: The WebState associated with the event.
-void ReportEnterpriseUrlFilteringEvent(UrlFilteringEventType event_type,
-                                       const GURL& page_url,
-                                       web::WebState* web_state);
+//   rt_lookup_response: Contains information about the event.
+//   event_router: The router to send the report.
+void ReportEnterpriseUrlFilteringEvent(
+    UrlFilteringEventType event_type,
+    const GURL& page_url,
+    const safe_browsing::RTLookupResponse& rt_lookup_response,
+    ReportingEventRouter* event_router);
 
 }  // namespace enterprise_connectors
 
