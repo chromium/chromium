@@ -27,3 +27,12 @@ fn buf_read() {
     reader.read_line(&mut line).unwrap();
     assert_eq!("world", &line);
 }
+
+#[test]
+fn get_mut() {
+    let buf = &b"hello world"[..];
+    let mut reader = buf.reader();
+    let buf_mut = reader.get_mut();
+    assert_eq!(11, buf_mut.remaining());
+    assert_eq!(b"hello world", buf_mut);
+}

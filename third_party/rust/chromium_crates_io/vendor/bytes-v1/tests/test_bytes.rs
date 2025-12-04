@@ -5,7 +5,6 @@ use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
 
 use std::panic::{self, AssertUnwindSafe};
-use std::usize;
 
 const LONG: &[u8] = b"mary had a little lamb, little lamb, little lamb";
 const SHORT: &[u8] = b"hello world";
@@ -82,7 +81,6 @@ fn fmt() {
 #[test]
 fn fmt_write() {
     use std::fmt::Write;
-    use std::iter::FromIterator;
     let s = String::from_iter((0..10).map(|_| "abcdefg"));
 
     let mut a = BytesMut::with_capacity(64);
@@ -158,6 +156,13 @@ fn slice_oob_2() {
 }
 
 #[test]
+#[should_panic]
+fn slice_start_greater_than_end() {
+    let a = Bytes::from(&b"hello world"[..]);
+    a.slice(5..3);
+}
+
+#[test]
 fn split_off() {
     let mut hello = Bytes::from(&b"helloworld"[..]);
     let world = hello.split_off(5);
@@ -176,6 +181,13 @@ fn split_off() {
 #[should_panic]
 fn split_off_oob() {
     let mut hello = Bytes::from(&b"helloworld"[..]);
+    let _ = hello.split_off(44);
+}
+
+#[test]
+#[should_panic = "split_off out of bounds"]
+fn bytes_mut_split_off_oob() {
+    let mut hello = BytesMut::from(&b"helloworld"[..]);
     let _ = hello.split_off(44);
 }
 
@@ -722,6 +734,15 @@ fn advance_bytes_mut_remaining_capacity() {
 fn advance_past_len() {
     let mut a = BytesMut::from("hello world");
     a.advance(20);
+}
+
+#[test]
+#[should_panic]
+fn mut_advance_past_len() {
+    let mut a = BytesMut::from("hello world");
+    unsafe {
+        a.advance_mut(20);
+    }
 }
 
 #[test]
@@ -1406,6 +1427,26 @@ fn try_reclaim_arc() {
 }
 
 #[test]
+fn slice_empty_addr() {
+    let buf = Bytes::from(vec![0; 1024]);
+
+    let ptr_start = buf.as_ptr();
+    let ptr_end = ptr_start.wrapping_add(1024);
+
+    let empty_end = buf.slice(1024..);
+    assert_eq!(empty_end.len(), 0);
+    assert_eq!(empty_end.as_ptr(), ptr_end);
+
+    let empty_start = buf.slice(..0);
+    assert_eq!(empty_start.len(), 0);
+    assert_eq!(empty_start.as_ptr(), ptr_start);
+
+    // Is miri happy about the provenance?
+    let _ = &empty_end[..];
+    let _ = &empty_start[..];
+}
+
+#[test]
 fn split_off_empty_addr() {
     let mut buf = Bytes::from(vec![0; 1024]);
 
@@ -1646,4 +1687,23 @@ fn owned_safe_drop_on_as_ref_panic() {
 
     assert!(result.is_err());
     assert_eq!(drop_counter.get(), 1);
+}
+
+/// Test `BytesMut::put` reuses allocation of `Bytes`.
+#[test]
+fn bytes_mut_put_bytes_specialization() {
+    let mut vec = Vec::with_capacity(1234);
+    vec.push(10);
+    let capacity = vec.capacity();
+    assert!(capacity >= 1234);
+
+    // Make `Bytes` backed by `Vec`.
+    let bytes = Bytes::from(vec);
+    let mut bytes_mut = BytesMut::new();
+    bytes_mut.put(bytes);
+
+    // Check contents is correct.
+    assert_eq!(&[10], bytes_mut.as_ref());
+    // If allocation is reused, capacity should be equal to original vec capacity.
+    assert_eq!(bytes_mut.capacity(), capacity);
 }

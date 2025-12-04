@@ -64,7 +64,6 @@ chrome/browser/resources/chromeos/network_ui/third_party
 chrome/browser/resources/settings/site_settings
 chrome/browser/speech/extension_api
 chrome/browser/support_tool/ash
-chrome/browser/sync/test/integration
 chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox
 chrome/browser/ui/views/search_engines
 chrome/browser/ui/views/side_panel

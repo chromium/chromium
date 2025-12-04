@@ -114,7 +114,6 @@ fn abort() -> ! {
 #[inline(always)]
 #[cfg(feature = "std")]
 fn saturating_sub_usize_u64(a: usize, b: u64) -> usize {
-    use core::convert::TryFrom;
     match usize::try_from(b) {
         Ok(b) => a.saturating_sub(b),
         Err(_) => 0,
@@ -124,7 +123,6 @@ fn saturating_sub_usize_u64(a: usize, b: u64) -> usize {
 #[inline(always)]
 #[cfg(feature = "std")]
 fn min_u64_usize(a: u64, b: usize) -> usize {
-    use core::convert::TryFrom;
     match usize::try_from(a) {
         Ok(a) => usize::min(a, b),
         Err(_) => b,
@@ -181,19 +179,4 @@ fn panic_does_not_fit(size: usize, nbytes: usize) -> ! {
         "size too large: the integer type can fit {} bytes, but nbytes is {}",
         size, nbytes
     );
-}
-
-/// Precondition: dst >= original
-///
-/// The following line is equivalent to:
-///
-/// ```rust,ignore
-/// self.ptr.as_ptr().offset_from(ptr) as usize;
-/// ```
-///
-/// But due to min rust is 1.39 and it is only stabilized
-/// in 1.47, we cannot use it.
-#[inline]
-fn offset_from(dst: *const u8, original: *const u8) -> usize {
-    dst as usize - original as usize
 }

@@ -3,7 +3,7 @@ use crate::buf::{limit, Chain, Limit, UninitSlice};
 use crate::buf::{writer, Writer};
 use crate::{panic_advance, panic_does_not_fit, TryGetError};
 
-use core::{mem, ptr, usize};
+use core::{mem, ptr};
 
 use alloc::{boxed::Box, vec::Vec};
 
@@ -1503,7 +1503,7 @@ unsafe impl BufMut for &mut [u8] {
         }
 
         // Lifetime dance taken from `impl Write for &mut [u8]`.
-        let (_, b) = core::mem::replace(self, &mut []).split_at_mut(cnt);
+        let (_, b) = core::mem::take(self).split_at_mut(cnt);
         *self = b;
     }
 
@@ -1559,7 +1559,7 @@ unsafe impl BufMut for &mut [core::mem::MaybeUninit<u8>] {
         }
 
         // Lifetime dance taken from `impl Write for &mut [u8]`.
-        let (_, b) = core::mem::replace(self, &mut []).split_at_mut(cnt);
+        let (_, b) = core::mem::take(self).split_at_mut(cnt);
         *self = b;
     }
 
@@ -1600,7 +1600,7 @@ unsafe impl BufMut for Vec<u8> {
     #[inline]
     fn remaining_mut(&self) -> usize {
         // A vector can never have more than isize::MAX bytes
-        core::isize::MAX as usize - self.len()
+        isize::MAX as usize - self.len()
     }
 
     #[inline]

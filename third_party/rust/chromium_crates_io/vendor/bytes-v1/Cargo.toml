@@ -10,10 +10,10 @@
 # See Cargo.toml.orig for the original contents.
 
 [package]
-edition = "2018"
-rust-version = "1.39"
+edition = "2021"
+rust-version = "1.57"
 name = "bytes"
-version = "1.10.1"
+version = "1.11.0"
 authors = [
     "Carl Lerche <me@carllerche.com>",
     "Sean McArthur <sean@seanmonstar.com>",
@@ -83,6 +83,10 @@ path = "tests/test_debug.rs"
 [[test]]
 name = "test_iter"
 path = "tests/test_iter.rs"
+
+[[test]]
+name = "test_limit"
+path = "tests/test_limit.rs"
 
 [[test]]
 name = "test_reader"
