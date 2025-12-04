@@ -6366,6 +6366,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5730" label="UseCssSizingProperties"/>
   <int value="5731" label="SharedStorageAPIAll"/>
   <int value="5732" label="GamepadRawInputChangeEventListener"/>
+  <int value="5733" label="LetterSpacingWithMargin"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

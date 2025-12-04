@@ -46,7 +46,9 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_text_layout_attributes_builder.h"
 #include "third_party/blink/renderer/core/layout/unpositioned_float.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/core/style/computed_style_base.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/ng_shape_cache.h"
@@ -549,6 +551,51 @@ void TruncateOrPadText(String* text, unsigned length) {
     while (builder.length() < length)
       builder.Append(uchar::kSpace);
     *text = builder.ToString();
+  }
+}
+
+// True if the `style` has a positive `letter-spacing` and a negative
+// `margin-right`.
+bool ShouldReportLetterSpacing(const ComputedStyle& style) {
+  const FontDescription& font_description = style.GetFontDescription();
+  const float letter_spacing = font_description.LetterSpacing();
+  if (letter_spacing < 0.5) {
+    return false;
+  }
+  if (!style.MayHaveMargin()) {
+    return false;
+  }
+  if (!style.IsHorizontalWritingMode()) [[unlikely]] {
+    return false;
+  }
+  const Length& margin_right = style.MarginRight();
+  if (margin_right.IsFixed() && margin_right.Pixels() < 0) {
+    return true;
+  }
+  return false;
+}
+
+bool ShouldReportLetterSpacing(const InlineNode node,
+                               const InlineItems& items) {
+  const ComputedStyle& block_style = node.Style();
+  if (ShouldReportLetterSpacing(block_style)) [[unlikely]] {
+    return true;
+  }
+  for (const auto& item_ptr : items) {
+    const InlineItem& item = *item_ptr;
+    if (item.Type() == InlineItem::kOpenTag) {
+      const ComputedStyle& style = *item.Style();
+      if (ShouldReportLetterSpacing(style)) [[unlikely]] {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+void ReportLetterSpacing(const InlineNode node, const InlineItems& items) {
+  if (ShouldReportLetterSpacing(node, items)) [[unlikely]] {
+    UseCounter::Count(node.GetDocument(), WebFeature::kLetterSpacingWithMargin);
   }
 }
 
@@ -1461,6 +1508,7 @@ void InlineNode::ShapeText(InlineItemsData* data,
   DCHECK(!data->segments ||
          data->segments->EndOffset() == text_content.length());
 
+  bool is_letter_spacing_reported = false;
   for (unsigned index = 0; index < items.size();) {
     InlineItem& start_item = *items[index];
     if (start_item.Type() != InlineItem::kText || !start_item.Length()) {
@@ -1607,6 +1655,10 @@ void InlineNode::ShapeText(InlineItemsData* data,
       // The ShapeResult is actually not a reusable entry of NGShapeCache,
       // so it is safe to mutate it.
       const_cast<ShapeResult*>(shape_result)->ApplySpacing(spacing);
+      if (!is_letter_spacing_reported) {
+        is_letter_spacing_reported = true;
+        ReportLetterSpacing(*this, items);
+      }
     }
 
     // If the text is from one item, use the ShapeResult as is.
