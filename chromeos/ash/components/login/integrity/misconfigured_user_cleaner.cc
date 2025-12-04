@@ -72,8 +72,20 @@ void MisconfiguredUserCleaner::DoCleanup(
   }
 
   LOG(WARNING) << "User is non-owner, trigger user removal.";
-  integrity_manager.RemoveUser(account_id);
-  integrity_manager.ClearPrefs();
+  bool safe_to_remove_user = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kFirstExecAfterBoot);
+  // If we got to this point after user have signed in since last reboot (e.g.
+  // if Chrome have crashed right after starting user session), user removal
+  // might fail. Trigger a reboot without clearing prefs, it guarantees that
+  // this code would be called again after the reboot.
+  if (safe_to_remove_user) {
+    integrity_manager.RemoveUser(account_id);
+    integrity_manager.ClearPrefs();
+  } else {
+    chromeos::PowerManagerClient::Get()->RequestRestart(
+        power_manager::RequestRestartReason::REQUEST_RESTART_OTHER,
+        "Restarting for logged-in misconfigured user removal");
+  }
 }
 
 void MisconfiguredUserCleaner::OnStartDeviceWipe(bool result) {

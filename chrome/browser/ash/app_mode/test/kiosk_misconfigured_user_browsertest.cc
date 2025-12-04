@@ -6,6 +6,8 @@
 #include <string_view>
 #include <variant>
 
+#include "ash/constants/ash_switches.h"
+#include "base/command_line.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
@@ -115,6 +117,11 @@ class KioskMisconfiguredUserTest
             GetAutoLaunchAccountIdFromConfig(GetParam()).value(),
             user_manager::UserDirectoryIntegrityManager::CleanupStrategy::
                 kRemoveUser);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(ash::switches::kFirstExecAfterBoot);
+    MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
   }
 
   KioskMixin kiosk_{&mixin_host_,
