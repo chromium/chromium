@@ -16,6 +16,7 @@ enum class ComposeboxInputPlateControls : unsigned int {
   kLens = 1 << 3,
   kVoice = 1 << 4,
   kSend = 1 << 5,
+  kLeadingImage = 1 << 6,
 };
 
 constexpr ComposeboxInputPlateControls operator|(

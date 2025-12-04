@@ -1188,10 +1188,15 @@ CreateInputDataFromAnnotatedPageContent(
   BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
   BOOL canSend = hasContent && !compactMode;
   BOOL showShortcuts = !hasContent && !canSend;
+  BOOL showLeadingImage = !compactMode || !allowsMultimodalActions;
 
   ComposeboxInputPlateControls leadingAction =
       allowsMultimodalActions ? ComposeboxInputPlateControls::kPlus
                               : ComposeboxInputPlateControls::kNone;
+
+  ComposeboxInputPlateControls leadingImage =
+      showLeadingImage ? ComposeboxInputPlateControls::kLeadingImage
+                       : ComposeboxInputPlateControls::kNone;
 
   ComposeboxInputPlateControls modeSwitchButton;
   switch (_modeHolder.mode) {
@@ -1218,7 +1223,7 @@ CreateInputDataFromAnnotatedPageContent(
   }
 
   ComposeboxInputPlateControls visibleControls =
-      (leadingAction | modeSwitchButton | trailingAction);
+      (leadingImage | leadingAction | modeSwitchButton | trailingAction);
 
   [self.consumer updateVisibleControls:visibleControls];
 }

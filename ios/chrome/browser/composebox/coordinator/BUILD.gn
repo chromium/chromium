@@ -138,6 +138,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager",
     "//components/variations",
     "//components/version_info:channel",
+    "//ios/chrome/browser/composebox/public:features",
     "//ios/chrome/browser/composebox/public:input_plate_controls",
     "//ios/chrome/browser/composebox/ui",
     "//ios/chrome/browser/shared/model/profile/test",
