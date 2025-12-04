@@ -2943,6 +2943,20 @@ Called by update_net_trust_anchors.py.-->
   <int value="9" label="Automatic with DoH fallback, by enterprise policy"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryStorageResult) -->
+
+<enum name="SharedDictionaryStorageResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Create Entry Failed"/>
+  <int value="2" label="Write Data Failed"/>
+  <int value="3" label="Size Exceeds Limit"/>
+  <int value="4" label="Size Zero"/>
+  <int value="5" label="Aborted"/>
+  <int value="6" label="Database Write Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_storage_result.h:SharedDictionaryStorageResult) -->
+
 <enum name="SharedDictionaryStoreError">
   <int value="0" label="Ok"/>
   <int value="1" label="FailedToInitializeDatabase"/>

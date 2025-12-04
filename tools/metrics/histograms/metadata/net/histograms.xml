@@ -7364,6 +7364,19 @@ chromium-metrics-reviews@google.com.
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
+<histogram name="Net.SharedDictionaryOnDisk.StorageResult"
+    enum="SharedDictionaryStorageResult" expires_after="2026-11-11">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>src/net/extras/shared_dictionary/OWNERS</owner>
+  <summary>
+    After a dictionary is fetched, this metric tracks the outcome of the storage
+    process. It records whether the dictionary was successfully written to the
+    disk cache and its metadata was registered in the database, along with a
+    variety of specific failure modes (e.g., disk write errors, database errors,
+    size limit exceeded).
+  </summary>
+</histogram>
+
 <histogram name="Net.SharedDictionaryStorageOnDisk.IsMetadataReadyOnFirstUse"
     enum="Boolean" expires_after="2026-07-01">
   <owner>pmeenan@chromium.org</owner>

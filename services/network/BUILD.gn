@@ -196,6 +196,7 @@ component("network_service") {
     "shared_dictionary/shared_dictionary_storage_in_memory.h",
     "shared_dictionary/shared_dictionary_storage_on_disk.cc",
     "shared_dictionary/shared_dictionary_storage_on_disk.h",
+    "shared_dictionary/shared_dictionary_storage_result.h",
     "shared_dictionary/shared_dictionary_writer.h",
     "shared_dictionary/shared_dictionary_writer_in_memory.cc",
     "shared_dictionary/shared_dictionary_writer_in_memory.h",

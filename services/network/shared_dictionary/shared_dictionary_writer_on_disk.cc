@@ -7,9 +7,11 @@
 #include <limits>
 
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 
 namespace network {
 
@@ -147,6 +149,30 @@ void SharedDictionaryWriterOnDisk::OnWrittenData(int expected_result,
 void SharedDictionaryWriterOnDisk::OnFailed(Result result) {
   DCHECK_NE(State::kFailed, state_);
   state_ = State::kFailed;
+
+  SharedDictionaryStorageResult uma_result;
+  switch (result) {
+    case Result::kErrorCreateEntryFailed:
+      uma_result = SharedDictionaryStorageResult::kErrorCreateEntryFailed;
+      break;
+    case Result::kErrorWriteDataFailed:
+      uma_result = SharedDictionaryStorageResult::kErrorWriteDataFailed;
+      break;
+    case Result::kErrorSizeExceedsLimit:
+      uma_result = SharedDictionaryStorageResult::kErrorSizeExceedsLimit;
+      break;
+    case Result::kErrorSizeZero:
+      uma_result = SharedDictionaryStorageResult::kErrorSizeZero;
+      break;
+    case Result::kErrorAborted:
+      uma_result = SharedDictionaryStorageResult::kErrorAborted;
+      break;
+    case Result::kSuccess:
+      NOTREACHED();
+  }
+  base::UmaHistogramEnumeration("Net.SharedDictionaryOnDisk.StorageResult",
+                                uma_result);
+
   pending_write_buffers_.clear();
   if (entry_) {
     entry_->Doom();

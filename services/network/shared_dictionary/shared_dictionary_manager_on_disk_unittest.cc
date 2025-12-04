@@ -37,6 +37,7 @@
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -2558,4 +2559,62 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
       "PreviouslyEvictedByMemoryPressure",
       true, 1);
 }
+TEST_F(SharedDictionaryManagerOnDiskTest, StorageResultSuccess) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "testfile*",
+                  kTestData1);
+  FlushCacheTasks();
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kSuccess, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest, StorageResultDatabaseFailure) {
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+  // Create a manager and write a dictionary to initialize the database.
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict_init"),
+                    "testfile_init*", kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Now corrupt the database.
+  CorruptDatabase();
+
+  base::HistogramTester histogram_tester;
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    FlushCacheTasks();
+
+    // WriteDictionary will try to write to the corrupted database.
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"),
+                    "testfile*", kTestData1);
+    FlushCacheTasks();
+  }
+
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorDatabaseWriteFailed, 1);
+}
+
 }  // namespace network

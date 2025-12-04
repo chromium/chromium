@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 
 namespace network {
 namespace {
@@ -668,11 +669,16 @@ void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDatabase(
         result) {
   CHECK(writing_disk_cache_key_tokens_.erase(info.disk_cache_key_token()) == 1);
   if (!result.has_value()) {
+    base::UmaHistogramEnumeration(
+        "Net.SharedDictionaryOnDisk.StorageResult",
+        SharedDictionaryStorageResult::kErrorDatabaseWriteFailed);
     disk_cache_.DoomEntry(info.disk_cache_key_token().ToString(),
                           base::DoNothing());
     return;
   }
 
+  base::UmaHistogramEnumeration("Net.SharedDictionaryOnDisk.StorageResult",
+                                SharedDictionaryStorageResult::kSuccess);
   base::UmaHistogramMemoryKB("Net.SharedDictionaryManagerOnDisk.DictionarySize",
                              info.size());
   base::UmaHistogramMemoryMB(

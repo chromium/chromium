@@ -6,9 +6,11 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
 #include "crypto/hash.h"
@@ -20,6 +22,7 @@
 #include "net/disk_cache/mock/mock_entry_impl.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_storage_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -131,6 +134,7 @@ void SharedDictionaryWriterOnDiskTest::RunSimpleWriteTest(
     bool sync_create_backend,
     bool sync_create_entry,
     bool sync_write_data) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       sync_create_backend ? CreateBackendResultType::kSyncSuccess
                           : CreateBackendResultType::kAsyncSuccess);
@@ -227,6 +231,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, SimpleWrite) {
 
 void SharedDictionaryWriterOnDiskTest::RunCreateBackendFailureTest(
     bool sync_create_backend) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       sync_create_backend ? CreateBackendResultType::kSyncFailure
                           : CreateBackendResultType::kAsyncFailure);
@@ -256,6 +261,9 @@ void SharedDictionaryWriterOnDiskTest::RunCreateBackendFailureTest(
   }
 
   EXPECT_TRUE(finish_callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorCreateEntryFailed, 1);
 
   writer.reset();
 }
@@ -271,6 +279,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, CreateBackendFailure) {
 void SharedDictionaryWriterOnDiskTest::RunCreateEntryFailureTest(
     bool sync_create_backend,
     bool sync_create_entry) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       sync_create_backend ? CreateBackendResultType::kSyncSuccess
                           : CreateBackendResultType::kAsyncSuccess);
@@ -315,6 +324,9 @@ void SharedDictionaryWriterOnDiskTest::RunCreateEntryFailureTest(
         .Run(disk_cache::EntryResult::MakeError(net::ERR_FAILED));
   }
   EXPECT_TRUE(finish_callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorCreateEntryFailed, 1);
   writer.reset();
 }
 
@@ -334,6 +346,7 @@ void SharedDictionaryWriterOnDiskTest::RunWriteDataFailureTest(
     bool sync_create_backend,
     bool sync_create_entry,
     bool sync_write_data) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       sync_create_backend ? CreateBackendResultType::kSyncSuccess
                           : CreateBackendResultType::kAsyncSuccess);
@@ -406,6 +419,9 @@ void SharedDictionaryWriterOnDiskTest::RunWriteDataFailureTest(
   EXPECT_TRUE(finish_callback_called);
 
   EXPECT_TRUE(entry_doomed);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorWriteDataFailed, 1);
 
   writer.reset();
 }
@@ -429,6 +445,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, WriteDataFailure) {
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -507,6 +524,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -576,6 +594,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, AsyncWriteFailureOnMultipleWrites) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -648,12 +667,16 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AsyncWriteFailureOnMultipleWrites) {
   EXPECT_TRUE(finish_callback_called);
 
   EXPECT_TRUE(entry_doomed);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorWriteDataFailed, 1);
 
   std::move(write_data_callback2).Run(net::ERR_FAILED);
   writer.reset();
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, SyncWriteFailureOnMultipleWrites) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -709,10 +732,14 @@ TEST_F(SharedDictionaryWriterOnDiskTest, SyncWriteFailureOnMultipleWrites) {
 
   EXPECT_TRUE(finish_callback_called);
   EXPECT_TRUE(entry_doomed);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorWriteDataFailed, 1);
   writer.reset();
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, AbortedWithoutWrite) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -753,9 +780,13 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AbortedWithoutWrite) {
 
   EXPECT_TRUE(entry_doomed);
   EXPECT_TRUE(finish_callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorAborted, 1);
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, AbortedAfterWrite) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -807,9 +838,13 @@ TEST_F(SharedDictionaryWriterOnDiskTest, AbortedAfterWrite) {
 
   EXPECT_TRUE(entry_doomed);
   EXPECT_TRUE(finish_callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorAborted, 1);
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeZero) {
+  base::HistogramTester histogram_tester;
   auto disk_cache = std::make_unique<FakeSharedDictionaryDiskCache>(
       CreateBackendResultType::kAsyncSuccess);
   disk_cache->Initialize();
@@ -851,9 +886,13 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeZero) {
 
   EXPECT_TRUE(entry_doomed);
   EXPECT_TRUE(finish_callback_called);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorSizeZero, 1);
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
+  base::HistogramTester histogram_tester;
   base::ScopedClosureRunner size_limit_resetter =
       shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
 
@@ -901,10 +940,15 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitBeforeOnEntry) {
   std::move(create_entry_callback)
       .Run(disk_cache::EntryResult::MakeCreated(entry.release()));
 
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorSizeExceedsLimit, 1);
+
   writer.reset();
 }
 
 TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitAfterOnEntry) {
+  base::HistogramTester histogram_tester;
   base::ScopedClosureRunner size_limit_resetter =
       shared_dictionary::SetDictionarySizeLimitForTesting(kTestData1.size());
 
@@ -976,6 +1020,9 @@ TEST_F(SharedDictionaryWriterOnDiskTest, ErrorSizeExceedsLimitAfterOnEntry) {
   // Test that calling Append() and Finish() doesn't cause unexpected crash.
   writer->Append(base::as_byte_span(kTestData2));
   writer->Finish();
+  histogram_tester.ExpectUniqueSample(
+      "Net.SharedDictionaryOnDisk.StorageResult",
+      SharedDictionaryStorageResult::kErrorSizeExceedsLimit, 1);
 }
 
 }  // namespace
