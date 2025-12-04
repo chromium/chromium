@@ -124,6 +124,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_ios.h"
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_browser_agent.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
@@ -3132,11 +3133,16 @@ const char kChromeAppStoreUrl[] =
 
 - (void)startBWGFlowWithImageAttachment:(UIImage*)image
                              entryPoint:(bwg::EntryPoint)entryPoint {
+  if (entryPoint == bwg::EntryPoint::ImageContextMenu) {
+    BwgBrowserAgent::FromBrowser(self.browser)
+        ->StartGeminiFlow(self.viewController, image);
+    return;
+  }
+
   _BWGCoordinator =
       [[BWGCoordinator alloc] initWithBaseViewController:self.viewController
                                                  browser:self.browser
                                           fromEntryPoint:entryPoint];
-  _BWGCoordinator.imageAttachment = image;
   [_BWGCoordinator start];
 }
 

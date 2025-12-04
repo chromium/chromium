@@ -134,6 +134,7 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/infobars/ui_bundled:public",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
+    "//ios/chrome/browser/intelligence/bwg/model:browser_agent",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",

@@ -13,9 +13,6 @@
 // Coordinator that manages the first run and any BWG triggers.
 @interface BWGCoordinator : ChromeCoordinator
 
-// The image attachment to be passed to the Gemini overlay.
-@property(nonatomic, strong) UIImage* imageAttachment;
-
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             fromEntryPoint:(bwg::EntryPoint)entryPoint

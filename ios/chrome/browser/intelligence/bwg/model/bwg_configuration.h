@@ -86,6 +86,9 @@ class PageContext;
 // Label displayed from a Gemini contextual cue chip.
 @property(nonatomic, copy) NSString* contextualCueChipLabel;
 
+// Image to be attached to the Gemini instance.
+@property(nonatomic, strong) UIImage* imageAttachment;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_CONFIGURATION_H_

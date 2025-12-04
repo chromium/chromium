@@ -74,6 +74,16 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
 
 BwgBrowserAgent::~BwgBrowserAgent() = default;
 
+void BwgBrowserAgent::StartGeminiFlow(UIViewController* base_view_controller,
+                                      UIImage* image_attachment) {
+  // TODO(crbug.com/465535924): Have this method handle complete or pending
+  // PageContext extraction internally, and show the FRE if needed.
+  PresentBwgOverlayWithState(
+      base_view_controller, nullptr,
+      ios::provider::BWGPageContextComputationState::kPending,
+      image_attachment);
+}
+
 void BwgBrowserAgent::PresentBwgOverlay(
     UIViewController* base_view_controller,
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
@@ -127,7 +137,8 @@ void BwgBrowserAgent::UpdateBwgOverlayPageContext(
 void BwgBrowserAgent::PresentBwgOverlayWithState(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context_proto,
-    ios::provider::BWGPageContextComputationState computation_state) {
+    ios::provider::BWGPageContextComputationState computation_state,
+    UIImage* image_attachment) {
   SetSessionCommandHandlers();
   [bwg_page_state_change_handler_ setBaseViewController:base_view_controller];
 
@@ -140,6 +151,7 @@ void BwgBrowserAgent::PresentBwgOverlayWithState(
   config.singleSignOnService =
       GetApplicationContext()->GetSingleSignOnService();
   config.gateway = bwg_gateway_;
+  config.imageAttachment = image_attachment;
 
   // Use the tab helper to set the initial floaty state, which includes the chat
   // IDs and whether it was backgrounded.

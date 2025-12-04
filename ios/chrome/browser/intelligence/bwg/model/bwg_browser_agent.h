@@ -41,8 +41,17 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
 
   ~BwgBrowserAgent() override;
 
+  // Starts the Gemini flow on a given view controller and with an optional
+  // given image attachment.
+  // TODO(crbug.com/465535924): Have this method handle complete or pending
+  // PageContext extraction internally, and show the FRE if needed.
+  void StartGeminiFlow(UIViewController* base_view_controller,
+                       UIImage* image_attachment = nil);
+
   // Presents the BWG overlay on a given view controller with a given expected
   // PageContext.
+  // TODO(crbug.com/465535924): Deprecated, new callers should use
+  // `StartGeminiFlow` instead.
   void PresentBwgOverlay(
       UIViewController* base_view_controller,
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
@@ -50,11 +59,16 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
 
   // Presents the BWG overlay on a given view controller in a pending state
   // with a partial PageContext.
+  // TODO(crbug.com/465535924): Deprecated, new callers should use
+  // `StartGeminiFlow` instead.
   void PresentPendingBwgOverlay(
       UIViewController* base_view_controller,
       std::unique_ptr<optimization_guide::proto::PageContext> page_context);
 
   // Updates the page context for the BWG overlay.
+  // TODO(crbug.com/465535924): Deprecated, new callers should use
+  // `StartGeminiFlow` instead (and let this be handled internally within the
+  // browser agent).
   void UpdateBwgOverlayPageContext(
       base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                      PageContextWrapperError> expected_page_context);
@@ -64,12 +78,14 @@ class BwgBrowserAgent : public BrowserUserData<BwgBrowserAgent> {
   friend class BrowserUserData<BwgBrowserAgent>;
 
   // Presents the BWG overlay on a given view controller with page context,
-  // given specific computation state.
+  // given specific computation state and optional image attachment (can be
+  // nil).
   void PresentBwgOverlayWithState(
       UIViewController* base_view_controller,
       std::unique_ptr<optimization_guide::proto::PageContext>
           page_context_proto,
-      ios::provider::BWGPageContextComputationState computation_state);
+      ios::provider::BWGPageContextComputationState computation_state,
+      UIImage* image_attachment = nil);
 
   // Fetches the favicon for the page or a default favicon if not available.
   UIImage* FetchPageFavicon();
