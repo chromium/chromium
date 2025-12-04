@@ -32,15 +32,14 @@
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/test/extension_test_message_listener.h"
 
-// TODO(crbug.com/439448148): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/safety_hub/menu_notification_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"  // nogncheck
 #include "chrome/browser/ui/safety_hub/safety_hub_test_util.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/ui_test_utils.h"
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
@@ -51,8 +50,7 @@
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
-// TODO(crbug.com/439448148): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
  public:
   guest_view::TestGuestViewManager* GetGuestViewManager() {
     return factory_.GetOrCreateTestGuestViewManager(
@@ -62,11 +60,10 @@ class ExtensionSettingsUIBrowserTest : public ExtensionSettingsTestBase {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 };
 
-// TODO(crbug.com/439448148): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 // Tests that viewing a source of the options page works fine.
 // This is a regression test for https://crbug.com/796080.
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
@@ -122,7 +119,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest, ViewSource) {
       base::RemoveChars(expected_source_text, "\n", &expected_source_text));
   EXPECT_EQ(expected_source_text, actual_source_text);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(ENABLE_GUEST_VIEW)
 
 // Verify that listeners for the developer private API are only registered
 // when there is a chrome://extensions page open. This is important, since some
@@ -248,8 +245,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsActivityLogTest, TestActivityLogVisible) {
       )"));
 }
 
-// TODO(crbug.com/439448148): Enable on desktop android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+// Safety hub is not supported on Android.
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
                        TestSafetyHubMenuNotificationDismissed) {
   Profile* profile = browser()->profile();
@@ -295,4 +292,4 @@ IN_PROC_BROWSER_TEST_F(ExtensionSettingsUIBrowserTest,
   notification = notification_service->GetNotificationToShow();
   ASSERT_FALSE(notification.has_value());
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // BUILDFLAG(IS_ANDROID)
