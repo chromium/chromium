@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/types/optional_ref.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -252,8 +253,8 @@ class PermissionControllerImplTest : public ::testing::Test {
   }
 
   OverrideStatus SetPermissionOverrideAndWait(
-      const std::optional<url::Origin>& requesting_origin,
-      const std::optional<url::Origin>& embedding_origin,
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin,
       PermissionType permission,
       PermissionStatus status) {
     base::test::TestFuture<OverrideStatus> future;
@@ -264,8 +265,8 @@ class PermissionControllerImplTest : public ::testing::Test {
   }
 
   OverrideStatus GrantPermissionOverridesAndWait(
-      const std::optional<url::Origin>& requesting_origin,
-      const std::optional<url::Origin>& embedding_origin,
+      base::optional_ref<const url::Origin> requesting_origin,
+      base::optional_ref<const url::Origin> embedding_origin,
       const std::vector<PermissionType>& permissions) {
     base::test::TestFuture<OverrideStatus> future;
     permission_controller()->GrantPermissionOverrides(

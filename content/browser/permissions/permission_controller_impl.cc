@@ -11,6 +11,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/functional/bind.h"
+#include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/browser/permissions/permission_service_context.h"
@@ -337,8 +338,8 @@ PermissionResult PermissionControllerImpl::GetSubscriptionCurrentResult(
 
 PermissionControllerImpl::SubscriptionsStatusMap
 PermissionControllerImpl::GetSubscriptionsStatuses(
-    const std::optional<GURL>& requesting_origin,
-    const std::optional<GURL>& embedding_origin) {
+    base::optional_ref<const GURL> requesting_origin,
+    base::optional_ref<const GURL> embedding_origin) {
   SubscriptionsStatusMap statuses;
   for (SubscriptionsMap::iterator iter(&subscriptions_); !iter.IsAtEnd();
        iter.Advance()) {
@@ -451,7 +452,7 @@ void PermissionControllerImpl::GrantPermissionOverrides(
   NotifyChangedSubscriptions(old_statuses);
 
   UpdateCookieManagerContentSettings(
-      /*permission=*/std::nullopt,
+      /*permission_to_process=*/std::nullopt,
       base::BindOnce(std::move(callback), OverrideStatus::kOverrideSet));
 }
 
@@ -464,7 +465,7 @@ void PermissionControllerImpl::ResetPermissionOverrides(
   // must be notified manually.
   NotifyChangedSubscriptions(old_statuses);
 
-  UpdateCookieManagerContentSettings(/*permission=*/std::nullopt,
+  UpdateCookieManagerContentSettings(/*permission_to_process=*/std::nullopt,
                                      std::move(callback));
 }
 

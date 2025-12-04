@@ -12,6 +12,7 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/optional_ref.h"
 #include "content/browser/permissions/permission_overrides.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/permission_controller.h"
@@ -103,8 +104,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   }
 
   void set_exclusion_area_bounds_for_tests(
-      const std::optional<gfx::Rect>& bounds) {
-    exclusion_area_bounds_for_tests_ = bounds;
+      base::optional_ref<const gfx::Rect> bounds) {
+    exclusion_area_bounds_for_tests_ = bounds.CopyAsOptional();
   }
 
  private:
@@ -188,8 +189,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   PermissionResult GetSubscriptionCurrentResult(
       const content::PermissionResultSubscription& subscription);
   SubscriptionsStatusMap GetSubscriptionsStatuses(
-      const std::optional<GURL>& requesting_origin = std::nullopt,
-      const std::optional<GURL>& embedding_origin = std::nullopt);
+      base::optional_ref<const GURL> requesting_origin = std::nullopt,
+      base::optional_ref<const GURL> embedding_origin = std::nullopt);
   void NotifyChangedSubscriptions(const SubscriptionsStatusMap& old_statuses);
   // Notifies the callback of the new permission status.
   // If `ignore_status_override` is true, the status override is not applied,
