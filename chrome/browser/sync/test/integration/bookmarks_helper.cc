@@ -555,14 +555,18 @@ const BookmarkNode* AddURL(int profile,
   return result;
 }
 
-const BookmarkNode* AddFolder(int profile, const std::u16string& title) {
-  return AddFolder(profile, GetBookmarkBarNode(profile), 0, title);
+const BookmarkNode* AddFolder(int profile,
+                              const std::u16string& title,
+                              StoreType store_type) {
+  return AddFolder(profile, GetBookmarkBarNode(profile, store_type), 0, title);
 }
 
 const BookmarkNode* AddFolder(int profile,
                               size_t index,
-                              const std::u16string& title) {
-  return AddFolder(profile, GetBookmarkBarNode(profile), index, title);
+                              const std::u16string& title,
+                              StoreType store_type) {
+  return AddFolder(profile, GetBookmarkBarNode(profile, store_type), index,
+                   title);
 }
 
 const BookmarkNode* AddFolder(int profile,

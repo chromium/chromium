@@ -110,16 +110,20 @@ const bookmarks::BookmarkNode* AddURL(int profile,
 
 // Adds a folder named |title| to the bookmark bar of profile |profile|.
 // Returns a pointer to the folder that was added.
-// TODO(crbug.com/353425612): Add StoreType parameter.
-const bookmarks::BookmarkNode* AddFolder(int profile,
-                                         const std::u16string& title);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddFolder(
+    int profile,
+    const std::u16string& title,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a folder named |title| to the bookmark bar of profile |profile| at
 // position |index|. Returns a pointer to the folder that was added.
-// TODO(crbug.com/353425612): Add StoreType parameter.
-const bookmarks::BookmarkNode* AddFolder(int profile,
-                                         size_t index,
-                                         const std::u16string& title);
+// TODO(crbug.com/353425612): Remove the default value for `store`.
+const bookmarks::BookmarkNode* AddFolder(
+    int profile,
+    size_t index,
+    const std::u16string& title,
+    StoreType store_type = StoreType::kLocalOrSyncableStore);
 
 // Adds a folder named |title| to the node |parent| in the bookmark model of
 // profile |profile| at position |index|. Returns a pointer to the node that
