@@ -52,7 +52,7 @@ class ContextualTasksUiService : public KeyedService {
   // should be processed by this method.
   virtual void OnNavigationToAiPageIntercepted(
       const GURL& url,
-      base::WeakPtr<tabs::TabInterface> tab,
+      base::WeakPtr<tabs::TabInterface> source_tab,
       bool is_to_new_tab);
 
   // A notification to this service that a link in the AI thread was clicked by

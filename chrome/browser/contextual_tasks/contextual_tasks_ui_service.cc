@@ -13,6 +13,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/contextual_search/contextual_search_service_factory.h"
+#include "chrome/browser/contextual_search/contextual_search_web_contents_helper.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_context_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -25,6 +27,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/contextual_search/contextual_search_service.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/lens_url_utils.h"
@@ -82,9 +85,29 @@ ContextualTasksUiService::~ContextualTasksUiService() = default;
 
 void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
     const GURL& url,
-    base::WeakPtr<tabs::TabInterface> tab,
+    base::WeakPtr<tabs::TabInterface> source_tab,
     bool is_to_new_tab) {
   CHECK(context_controller_);
+
+  // Get the session handle from the source web contents.
+  std::unique_ptr<contextual_search::ContextualSearchSessionHandle>
+      session_handle;
+  if (source_tab) {
+    auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+        source_tab->GetContents());
+    if (helper && helper->session_handle()) {
+      auto* service =
+          ContextualSearchServiceFactory::GetForProfile(profile_.get());
+      if (service) {
+        // Create a new handle for existing session. The session handle should
+        // not be moved because there can be cases where a user opens the WebUI
+        // in a new tab (and would therefore leave the source tab without a
+        // handle).
+        session_handle =
+            service->GetSession(helper->session_handle()->session_id());
+      }
+    }
+  }
 
   // Create a task for the URL that was just intercepted.
   ContextualTask task = context_controller_->CreateTaskFromUrl(url);
@@ -99,9 +122,9 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
 
   content::WebContents* contextual_task_web_contents = nullptr;
   if (!is_to_new_tab) {
-    tab->GetContents()->GetController().LoadURLWithParams(
+    source_tab->GetContents()->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(ui_url));
-    contextual_task_web_contents = tab->GetContents();
+    contextual_task_web_contents = source_tab->GetContents();
   } else {
     NavigateParams params(profile_, ui_url, ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -112,6 +135,15 @@ void ContextualTasksUiService::OnNavigationToAiPageIntercepted(
   // Attach the session Id of the ai page to the task.
   if (contextual_task_web_contents) {
     AssociateWebContentsToTask(contextual_task_web_contents, task.GetTaskId());
+    if (session_handle) {
+      ContextualSearchWebContentsHelper::CreateForWebContents(
+          contextual_task_web_contents);
+      auto* helper = ContextualSearchWebContentsHelper::FromWebContents(
+          contextual_task_web_contents);
+      // Give the created session handle to the new web contents. Allows WebUI
+      // to propagate context from initial web contents.
+      helper->set_session_handle(std::move(session_handle));
+    }
   }
 }
 
