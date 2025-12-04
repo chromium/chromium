@@ -32,18 +32,15 @@ namespace {
 // against the canonical scheme of the base.
 //
 // The base URL should always be canonical, therefore it should be ASCII.
-template<typename CHAR>
-bool AreSchemesEqual(const char* base,
-                     const Component& base_scheme,
-                     const CHAR* cmp,
-                     const Component& cmp_scheme) {
-  if (base_scheme.len != cmp_scheme.len)
+template <typename CHAR>
+bool AreSchemesEqual(std::string_view base, std::basic_string_view<CHAR> cmp) {
+  if (base.length() != cmp.length()) {
     return false;
-  for (int i = 0; i < base_scheme.len; i++) {
+  }
+  for (size_t i = 0; i < base.length(); ++i) {
     // We assume the base is already canonical, so we don't have to
     // canonicalize it.
-    if (UNSAFE_TODO(CanonicalSchemeChar(cmp[cmp_scheme.begin + i]) !=
-                    base[base_scheme.begin + i])) {
+    if (CanonicalSchemeChar(cmp[i]) != base[i]) {
       return false;
     }
   }
@@ -164,7 +161,8 @@ bool DoIsRelativeUrl(std::string_view base,
   }
 
   // If the scheme isn't valid, then it's relative.
-  if (!IsValidScheme(scheme.AsViewOn(url))) {
+  std::basic_string_view<CHAR> url_scheme = scheme.AsViewOn(url);
+  if (!IsValidScheme(url_scheme)) {
     if (url[0] == '#') {
       // |url| is a bare fragment (e.g. "#foo:bar"). This can be resolved
       // against any base. Fall-through.
@@ -185,8 +183,9 @@ bool DoIsRelativeUrl(std::string_view base,
   // scheme state:
   // > 2.6. Otherwise, if url is special, base is non-null, and base’s scheme is
   // >      url’s scheme:
-  if (!IsStandard(base_parsed.scheme.MaybeAsViewOn(base)) ||
-      !AreSchemesEqual(base.data(), base_parsed.scheme, url.data(), scheme)) {
+  auto maybe_base_scheme = base_parsed.scheme.MaybeAsViewOn(base);
+  if (!IsStandard(maybe_base_scheme) ||
+      !AreSchemesEqual(*maybe_base_scheme, url_scheme)) {
     return true;
   }
 
