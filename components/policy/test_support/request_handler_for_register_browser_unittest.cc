@@ -70,7 +70,8 @@ TEST_F(RequestHandlerForRegisterBrowserTest,
   em::RegisterBrowserRequest* register_browser_request =
       device_management_request.mutable_register_browser_request();
   register_browser_request->set_os_platform("Windows");
-  register_browser_request->set_machine_name(kMachineName);
+  register_browser_request->mutable_browser_device_identifier()
+      ->set_computer_name(kMachineName);
 
   SetEnrollmentTokenHeader(kInvalidEnrollmentToken);
   SetPayload(device_management_request);
@@ -87,7 +88,8 @@ TEST_F(RequestHandlerForRegisterBrowserTest, HandleRequest_Success) {
   em::RegisterBrowserRequest* register_browser_request =
       device_management_request.mutable_register_browser_request();
   register_browser_request->set_os_platform("Windows");
-  register_browser_request->set_machine_name(kMachineName);
+  register_browser_request->mutable_browser_device_identifier()
+      ->set_computer_name(kMachineName);
 
   SetEnrollmentTokenHeader(kEnrollmentToken);
   SetPayload(device_management_request);
@@ -188,7 +190,8 @@ TEST_F(RequestHandlerForRegisterPolicyAgentTest,
   em::RegisterBrowserRequest* register_browser_request =
       device_management_request.mutable_register_browser_request();
   register_browser_request->set_os_platform("Linux");
-  register_browser_request->set_machine_name(kMachineName);
+  register_browser_request->mutable_browser_device_identifier()
+      ->set_computer_name(kMachineName);
 
   SetEnrollmentTokenHeader(kInvalidEnrollmentToken);
   SetPayload(device_management_request);
@@ -205,7 +208,8 @@ TEST_F(RequestHandlerForRegisterPolicyAgentTest, HandleRequest_Success) {
   em::RegisterBrowserRequest* register_browser_request =
       device_management_request.mutable_register_browser_request();
   register_browser_request->set_os_platform("Mac OS X");
-  register_browser_request->set_machine_name(kMachineName);
+  register_browser_request->mutable_browser_device_identifier()
+      ->set_computer_name(kMachineName);
 
   SetEnrollmentTokenHeader(kEnrollmentToken);
   SetPayload(device_management_request);

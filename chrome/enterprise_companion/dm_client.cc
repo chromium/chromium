@@ -116,7 +116,6 @@ class ClientDataDelegate : public policy::ClientDataDelegate {
   void FillRegisterBrowserRequest(
       enterprise_management::RegisterBrowserRequest* request,
       base::OnceClosure callback) const override {
-    request->set_machine_name(policy::GetMachineName());
     request->set_os_platform(policy::GetOSPlatform());
     request->set_os_version(policy::GetOSVersion());
     request->set_allocated_browser_device_identifier(

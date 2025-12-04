@@ -305,7 +305,8 @@ class ChromeBrowserCloudManagementServiceIntegrationTest
         request.mutable_register_browser_request();
     register_browser_request->set_os_platform(GetOSPlatform());
     if (!machine_name.empty()) {
-      register_browser_request->set_machine_name(machine_name);
+      register_browser_request->mutable_browser_device_identifier()
+          ->set_computer_name(kMachineName);
     }
     std::string payload;
     ASSERT_TRUE(request.SerializeToString(&payload));
