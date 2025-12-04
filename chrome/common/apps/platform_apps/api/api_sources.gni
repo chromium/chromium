@@ -8,13 +8,13 @@ assert(enable_extensions)
 
 chrome_apps_api_schema_files_ = [
   "browser.idl",
-  "media_galleries.idl",
   "sync_file_system.idl",
 ]
 
 if (is_chromeos) {
   chrome_apps_api_schema_files_ += [
     "arc_apps_private.idl",
+    "media_galleries.idl",
     "enterprise_remote_apps.idl",
   ]
 }

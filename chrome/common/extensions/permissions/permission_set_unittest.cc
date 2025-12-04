@@ -17,6 +17,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_test_util.h"
@@ -693,6 +694,9 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
       // All of the below are platform app permissions.
       {"platformapp1", false},      // host permissions for platform apps
       {"platformapp2", true},       // API permissions for platform apps
+#if BUILDFLAG(IS_CHROMEOS)
+      // TODO(crbug.com/445350577): Remove the IS_CHROMEOS check when
+      // IS_CHROMEOS and ENABLE_PLATFORM_APPS are equivalent.
       {"media_galleries1", true},   // all -> read|all
       {"media_galleries2", true},   // read|all -> read|delete|copyTo|all
       {"media_galleries3", true},   // all -> read|delete|all
@@ -700,6 +704,7 @@ TEST(PermissionsTest, IsPrivilegeIncrease) {
       {"media_galleries5", false},  // read|copyTo|delete|all -> read|all
       {"media_galleries6", false},  // read|all -> read|all
       {"media_galleries7", true},   // read|delete|all -> read|copyTo|delete|all
+#endif
       {"sockets1", true},           // none -> tcp:*:*
       {"sockets2", false},          // tcp:*:* -> tcp:*:*
       {"sockets3", true},           // tcp:a.com:80 -> tcp:*:*

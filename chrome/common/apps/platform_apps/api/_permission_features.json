@@ -57,29 +57,35 @@
   },
   "mediaGalleries": {
     "channel": "stable",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   // TODO(devlin): These all specify the same permissions. There's no need for
   // child features.
   "mediaGalleries.allAutoDetected": {
     "channel": "stable",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   "mediaGalleries.scan": {
     "channel": "dev",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   "mediaGalleries.read": {
     "channel": "stable",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   "mediaGalleries.copyTo": {
     "channel": "stable",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   "mediaGalleries.delete": {
     "channel": "stable",
-    "extension_types": [ "platform_app" ]
+    "extension_types": [ "platform_app" ],
+    "platforms": ["chromeos"]
   },
   "pointerLock": {
     "channel": "stable",

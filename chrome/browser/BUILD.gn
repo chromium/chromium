@@ -3898,37 +3898,6 @@ static_library("browser") {
       "media/offscreen_tab.h",
       "media/unified_autoplay_config.cc",
       "media/unified_autoplay_config.h",
-      "media_galleries/fileapi/av_scanning_file_validator.cc",
-      "media_galleries/fileapi/av_scanning_file_validator.h",
-      "media_galleries/fileapi/media_file_system_backend.cc",
-      "media_galleries/fileapi/media_file_system_backend.h",
-      "media_galleries/fileapi/media_file_validator_factory.cc",
-      "media_galleries/fileapi/media_file_validator_factory.h",
-      "media_galleries/fileapi/media_path_filter.cc",
-      "media_galleries/fileapi/media_path_filter.h",
-      "media_galleries/fileapi/native_media_file_util.cc",
-      "media_galleries/fileapi/native_media_file_util.h",
-      "media_galleries/fileapi/readahead_file_stream_reader.cc",
-      "media_galleries/fileapi/readahead_file_stream_reader.h",
-      "media_galleries/fileapi/supported_audio_video_checker.cc",
-      "media_galleries/fileapi/supported_audio_video_checker.h",
-      "media_galleries/fileapi/supported_image_type_validator.cc",
-      "media_galleries/fileapi/supported_image_type_validator.h",
-      "media_galleries/gallery_watch_manager.cc",
-      "media_galleries/gallery_watch_manager.h",
-      "media_galleries/gallery_watch_manager_observer.h",
-      "media_galleries/media_file_system_registry.cc",
-      "media_galleries/media_file_system_registry.h",
-      "media_galleries/media_galleries_dialog_controller.cc",
-      "media_galleries/media_galleries_dialog_controller.h",
-      "media_galleries/media_galleries_permission_controller.cc",
-      "media_galleries/media_galleries_permission_controller.h",
-      "media_galleries/media_galleries_preferences.cc",
-      "media_galleries/media_galleries_preferences.h",
-      "media_galleries/media_galleries_preferences_factory.cc",
-      "media_galleries/media_galleries_preferences_factory.h",
-      "media_galleries/media_gallery_context_menu.cc",
-      "media_galleries/media_gallery_context_menu.h",
       "memory/oom_memory_details.cc",
       "memory/oom_memory_details.h",
       "metrics/browser_activity_watcher.cc",
@@ -4946,6 +4915,45 @@ static_library("browser") {
       "media/chromeos_login_and_lock_media_access_handler.h",
       "media/platform_verification_chromeos.cc",
       "media/platform_verification_chromeos.h",
+      "media_galleries/fileapi/av_scanning_file_validator.cc",
+      "media_galleries/fileapi/av_scanning_file_validator.h",
+      "media_galleries/fileapi/device_media_async_file_util.cc",
+      "media_galleries/fileapi/device_media_async_file_util.h",
+      "media_galleries/fileapi/media_file_system_backend.cc",
+      "media_galleries/fileapi/media_file_system_backend.h",
+      "media_galleries/fileapi/media_file_validator_factory.cc",
+      "media_galleries/fileapi/media_file_validator_factory.h",
+      "media_galleries/fileapi/media_path_filter.cc",
+      "media_galleries/fileapi/media_path_filter.h",
+      "media_galleries/fileapi/mtp_device_async_delegate.cc",
+      "media_galleries/fileapi/mtp_device_async_delegate.h",
+      "media_galleries/fileapi/mtp_device_map_service.cc",
+      "media_galleries/fileapi/mtp_device_map_service.h",
+      "media_galleries/fileapi/mtp_file_stream_reader.cc",
+      "media_galleries/fileapi/mtp_file_stream_reader.h",
+      "media_galleries/fileapi/native_media_file_util.cc",
+      "media_galleries/fileapi/native_media_file_util.h",
+      "media_galleries/fileapi/readahead_file_stream_reader.cc",
+      "media_galleries/fileapi/readahead_file_stream_reader.h",
+      "media_galleries/fileapi/supported_audio_video_checker.cc",
+      "media_galleries/fileapi/supported_audio_video_checker.h",
+      "media_galleries/fileapi/supported_image_type_validator.cc",
+      "media_galleries/fileapi/supported_image_type_validator.h",
+      "media_galleries/gallery_watch_manager.cc",
+      "media_galleries/gallery_watch_manager.h",
+      "media_galleries/gallery_watch_manager_observer.h",
+      "media_galleries/media_file_system_registry.cc",
+      "media_galleries/media_file_system_registry.h",
+      "media_galleries/media_galleries_dialog_controller.cc",
+      "media_galleries/media_galleries_dialog_controller.h",
+      "media_galleries/media_galleries_permission_controller.cc",
+      "media_galleries/media_galleries_permission_controller.h",
+      "media_galleries/media_galleries_preferences.cc",
+      "media_galleries/media_galleries_preferences.h",
+      "media_galleries/media_galleries_preferences_factory.cc",
+      "media_galleries/media_galleries_preferences_factory.h",
+      "media_galleries/media_gallery_context_menu.cc",
+      "media_galleries/media_gallery_context_menu.h",
       "media_galleries/mtp_device_delegate_impl.cc",
       "media_galleries/mtp_device_delegate_impl.h",
       "media_galleries/mtp_device_object_enumerator.cc",
@@ -7218,19 +7226,6 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_mac || (is_chromeos && use_dbus)) {
-    sources += [
-      "media_galleries/fileapi/device_media_async_file_util.cc",
-      "media_galleries/fileapi/device_media_async_file_util.h",
-      "media_galleries/fileapi/mtp_device_async_delegate.cc",
-      "media_galleries/fileapi/mtp_device_async_delegate.h",
-      "media_galleries/fileapi/mtp_device_map_service.cc",
-      "media_galleries/fileapi/mtp_device_map_service.h",
-      "media_galleries/fileapi/mtp_file_stream_reader.cc",
-      "media_galleries/fileapi/mtp_file_stream_reader.h",
-    ]
-  }
-
   if (is_win || is_android || is_linux) {
     sources += [
       "metrics/chrome_metrics_service_crash_reporter.cc",
@@ -9180,6 +9175,8 @@ static_library("test_support") {
 
   if (is_chromeos) {
     sources += [
+      "media_galleries/media_galleries_test_util.cc",
+      "media_galleries/media_galleries_test_util.h",
       "sharesheet/sharesheet_test_util.cc",
       "sharesheet/sharesheet_test_util.h",
       "speech/speech_recognition_test_helper.cc",
@@ -9198,6 +9195,7 @@ static_library("test_support") {
       "//chromeos/ash/components/login/auth",
       "//chromeos/components/kiosk",
       "//components/account_manager_core:test_support",
+      "//components/crx_file",
       "//components/login",
       "//components/session_manager/core",
       "//components/soda",
@@ -9205,7 +9203,10 @@ static_library("test_support") {
       "//components/webapk:proto",
       "//crypto:test_support",
       "//extensions:test_support",
+      "//extensions/browser",
+      "//extensions/browser/api/content_settings",
       "//extensions/browser/api/messaging",
+      "//extensions/common:mojom",
       "//ui/base:test_support",
       "//ui/base/ime/ash",
     ]
@@ -9235,19 +9236,6 @@ static_library("test_support") {
       "//chrome/services/printing:lib",
       "//chrome/services/printing/public/mojom",
       "//printing:test_support",
-    ]
-  }
-
-  if (enable_extensions) {
-    sources += [
-      "media_galleries/media_galleries_test_util.cc",
-      "media_galleries/media_galleries_test_util.h",
-    ]
-    deps += [
-      "//components/crx_file",
-      "//extensions/browser",
-      "//extensions/browser/api/content_settings",
-      "//extensions/common:mojom",
     ]
   }
 

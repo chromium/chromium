@@ -67,7 +67,6 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
-#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
@@ -99,6 +98,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #endif
 
 #if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
@@ -512,17 +512,14 @@ TestingBrowserProcess::component_updater() {
 #endif
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 MediaFileSystemRegistry* TestingBrowserProcess::media_file_system_registry() {
-#if BUILDFLAG(IS_ANDROID)
-  NOTIMPLEMENTED();
-  return nullptr;
-#else
   if (!media_file_system_registry_) {
     media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
   }
   return media_file_system_registry_.get();
-#endif
 }
+#endif
 
 network_time::NetworkTimeTracker*
 TestingBrowserProcess::network_time_tracker() {

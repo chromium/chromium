@@ -169,6 +169,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "components/soda/soda_installer_impl_chromeos.h"
 #else
 #include "ui/message_center/message_center.h"
@@ -214,7 +215,6 @@ void OnLocalStatePrefsLoaded();
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/apps/platform_apps/chrome_apps_browser_api_provider.h"
-#include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "chrome/common/extensions/chrome_extensions_client.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -589,10 +589,13 @@ void BrowserProcessImpl::StartTearDown() {
         ->StopObservingPrefChanges();
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
   // The `media_file_system_registry_` cannot be reset until the
   // `profile_manager_` has been.
   media_file_system_registry_.reset();
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   // Remove the global instance of the Storage Monitor now. Otherwise the
   // FILE thread would be gone when we try to release it in the dtor and
   // Valgrind would report a leak on almost every single browser_test.
@@ -1078,15 +1081,13 @@ DownloadStatusUpdater* BrowserProcessImpl::download_status_updater() {
   return download_status_updater_.get();
 }
 
+#if BUILDFLAG(IS_CHROMEOS)
 MediaFileSystemRegistry* BrowserProcessImpl::media_file_system_registry() {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   if (!media_file_system_registry_)
     media_file_system_registry_ = std::make_unique<MediaFileSystemRegistry>();
   return media_file_system_registry_.get();
-#else
-  return NULL;
-#endif
 }
+#endif
 
 WebRtcLogUploader* BrowserProcessImpl::webrtc_log_uploader() {
   if (!webrtc_log_uploader_)

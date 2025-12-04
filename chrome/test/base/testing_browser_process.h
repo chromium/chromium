@@ -150,7 +150,9 @@ class TestingBrowserProcess
 #endif
 
   component_updater::ComponentUpdateService* component_updater() override;
+#if BUILDFLAG(IS_CHROMEOS)
   MediaFileSystemRegistry* media_file_system_registry() override;
+#endif
 
   WebRtcLogUploader* webrtc_log_uploader() override;
 
@@ -282,7 +284,7 @@ class TestingBrowserProcess
   std::unique_ptr<network::TestNetworkConnectionTracker>
       test_network_connection_tracker_;
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<MediaFileSystemRegistry> media_file_system_registry_;
 #endif
 
