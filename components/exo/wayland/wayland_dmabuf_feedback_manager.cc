@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/wayland_dmabuf_feedback_manager.h"
 
 #include <bits/types.h>
@@ -16,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/shell.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -406,8 +402,8 @@ WaylandDmabufFeedbackManager::WaylandDmabufFeedbackManager(Display* display)
 
   for (const auto& [format, modifier_entries] : drm_formats_and_modifiers_) {
     for (const auto& [table_index, modifier] : modifier_entries) {
-      format_table[table_index].format = format;
-      format_table[table_index].modifier = modifier;
+      UNSAFE_TODO(format_table[table_index]).format = format;
+      UNSAFE_TODO(format_table[table_index]).modifier = modifier;
     }
   }
 

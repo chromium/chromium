@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/zcr_notification_shell.h"
 
 #include <notification-shell-unstable-v1-server-protocol.h>
@@ -17,6 +12,7 @@
 #include <string>
 
 #include "base/atomic_sequence_num.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notimplemented.h"
@@ -149,9 +145,10 @@ void notification_shell_create_notification(wl_client* client,
   std::vector<std::string> button_strings;
   const char* data = static_cast<const char*>(buttons->data);
   int len = 0;
-  for (const char *pos = data; pos < data + buttons->size; ++pos, ++len) {
+  for (const char* pos = data; pos < UNSAFE_TODO(data + buttons->size);
+       UNSAFE_TODO(++pos), ++len) {
     if (*pos == '\0') {
-      button_strings.emplace_back(std::string(pos - len, len));
+      button_strings.emplace_back(std::string(UNSAFE_TODO(pos - len), len));
       len = 0;
     }
   }

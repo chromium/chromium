@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/zcr_keyboard_configuration.h"
 
 #include <linux/input.h>
@@ -18,6 +13,7 @@
 
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/shell.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/free_deleter.h"
@@ -179,8 +175,10 @@ class WaylandKeyboardDeviceConfigurationDelegate
             std::move(shared_keymap_region));
     DCHECK(shared_keymap.IsValid());
 
-    std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size());
-    static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()] = '\0';
+    UNSAFE_TODO(
+        std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size()));
+    UNSAFE_TODO(static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()]) =
+        '\0';
 
     zcr_keyboard_device_configuration_v1_send_layout_install(
         resource_, layout_name.c_str(), WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
@@ -205,7 +203,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
       wl_array_release(&wl_key_bits);
       return;
     }
-    memset(wl_key_bits_ptr, 0, key_bits_len);
+    UNSAFE_TODO(memset(wl_key_bits_ptr, 0, key_bits_len));
 
     ui::InputController* input_controller =
         ui::OzonePlatform::GetInstance()->GetInputController();
@@ -215,7 +213,7 @@ class WaylandKeyboardDeviceConfigurationDelegate
       const std::vector<uint64_t>& key_bits =
           input_controller->GetKeyboardKeyBits(device.id);
       for (size_t i = 0; i < key_bits.size(); i++) {
-        wl_key_bits_ptr[i] |= key_bits[i];
+        UNSAFE_TODO(wl_key_bits_ptr[i]) |= key_bits[i];
       }
     }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <drm_fourcc.h>
 #include <fcntl.h>
 #include <gbm.h>
@@ -14,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/numerics/safe_conversions.h"
@@ -54,7 +50,7 @@ bool YuvClient::WriteSolidColor(gbm_bo* bo, SkColor color) {
       LOG(ERROR) << "Failed mmap().";
       return false;
     }
-    uint8_t* data = static_cast<uint8_t*>(void_data) + offset;
+    uint8_t* data = UNSAFE_TODO(static_cast<uint8_t*>(void_data) + offset);
     uint8_t yuv[] = {
         base::ClampRound<uint8_t>((0.257 * SkColorGetR(color)) +
                                   (0.504 * SkColorGetG(color)) +
@@ -68,14 +64,14 @@ bool YuvClient::WriteSolidColor(gbm_bo* bo, SkColor color) {
     if (i == 0) {
       for (int y = 0; y < size_.height(); ++y) {
         for (int x = 0; x < size_.width(); ++x) {
-          data[stride * y + x] = yuv[0];
+          UNSAFE_TODO(data[stride * y + x]) = yuv[0];
         }
       }
     } else {
       for (int y = 0; y < size_.height() / 2; ++y) {
         for (int x = 0; x < size_.width() / 2; ++x) {
-          data[stride * y + x * 2] = yuv[1];
-          data[stride * y + x * 2 + 1] = yuv[2];
+          UNSAFE_TODO(data[stride * y + x * 2]) = yuv[1];
+          UNSAFE_TODO(data[stride * y + x * 2 + 1]) = yuv[2];
         }
       }
     }
@@ -108,9 +104,11 @@ void YuvClient::Run(const ClientBase::InitParams& params) {
     }
     const SkColor kColors[] = {SK_ColorBLUE,   SK_ColorGREEN, SK_ColorRED,
                                SK_ColorYELLOW, SK_ColorCYAN,  SK_ColorMAGENTA};
-    if (!WriteSolidColor(buffer->bo.get(),
-                         kColors[frame_number % buffers_.size()]))
+    if (!WriteSolidColor(
+            buffer->bo.get(),
+            UNSAFE_TODO(kColors[frame_number % buffers_.size()]))) {
       return;
+    }
 
     wl_surface_set_buffer_scale(surface_.get(), scale_);
     wl_surface_set_buffer_transform(surface_.get(), transform_);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/exo/wayland/server.h"
 
 #include <stdlib.h>
@@ -15,6 +10,7 @@
 
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -41,8 +37,8 @@ struct TestListener {
 
 TestListener::TestListener() {
   listener.notify = [](wl_listener* listener_ptr, void* data) {
-    TestListener* test_listener = wl_container_of(
-        listener_ptr, /*sample=*/test_listener, /*member=*/listener);
+    TestListener* test_listener = UNSAFE_TODO(wl_container_of(
+        listener_ptr, /*sample=*/test_listener, /*member=*/listener));
     test_listener->notified = true;
   };
 }
