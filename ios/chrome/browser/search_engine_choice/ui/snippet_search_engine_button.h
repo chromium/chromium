@@ -13,14 +13,6 @@
 @class FaviconView;
 enum class SearchEngineCurrentDefaultState;
 
-// State of the snippet in SnippetSearchEngineButton.
-enum class SnippetButtonState {
-  // The chevron is pointing down, the snippet label shows one line.
-  kOneLine,
-  // The chevron is pointing up, the snippet label shows all the text.
-  kExpanded,
-};
-
 // Button used in the search engine choice to display one search engine.
 // This button contains a search engine title, a snippet, a radio button, and
 // a chevron.
@@ -37,9 +29,8 @@ enum class SnippetButtonState {
 @property(nonatomic, copy) NSString* searchEngineName;
 // The search engine snippet for the description.
 @property(nonatomic, copy) NSString* snippetText;
-// Snippet state (hidden or closed). Setting the value using this property
-// will not trigger animation.
-@property(nonatomic, assign) SnippetButtonState snippetButtonState;
+// Whether the snippet is shown on one line or multiple lines.
+@property(nonatomic, assign) BOOL snippetExpanded;
 // YES if the search engine has been selected by the user.
 @property(nonatomic, assign) BOOL checked;
 // Identifier for button.

@@ -820,8 +820,7 @@ CGFloat GetSubtitleMarginDistance() {
   NSMutableSet<NSString*>* expandedSearchEngineKeyword = [NSMutableSet set];
   for (SnippetSearchEngineButton* oldSearchEngineButton in
            _searchEngineStackView.arrangedSubviews) {
-    if (oldSearchEngineButton.snippetButtonState ==
-        SnippetButtonState::kExpanded) {
+    if (oldSearchEngineButton.snippetExpanded) {
       [expandedSearchEngineKeyword
           addObject:oldSearchEngineButton.searchEngineKeyword];
     }
@@ -833,7 +832,7 @@ CGFloat GetSubtitleMarginDistance() {
     button = CreateSnippetSearchEngineButtonWithElement(element);
     button.animatedLayoutView = _scrollView;
     if ([expandedSearchEngineKeyword containsObject:element.keyword]) {
-      button.snippetButtonState = SnippetButtonState::kExpanded;
+      button.snippetExpanded = YES;
     }
     if ([selectedSearchEngineKeyword isEqualToString:element.keyword]) {
       button.checked = YES;

@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/search_engine_choice/ui/constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_choice_constants.h"
 #import "ios/chrome/browser/search_engine_choice/ui/search_engine_current_default_pill_view.h"
+#import "ios/chrome/browser/search_engine_choice/ui/snippet_search_engine_text_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
@@ -48,8 +49,6 @@ constexpr NSTimeInterval kCheckedBackgroundColorAlpha = .1;
 
 // List of values according to the style.
 typedef struct {
-  // Margin between the name and snippet labels.
-  const CGFloat name_snippet_label_margin;
   // Upper vertical margin for name label in the button.
   const CGFloat upper_vertical_margin;
   // Lower vertical margin for the snippet label in the button.
@@ -58,28 +57,15 @@ typedef struct {
 
 // Style with no current default pill.
 const ButtonLayout kNoCurrentDefaultButtonLayout = {
-    2,   // name_snippet_label_margin
     10,  // upper_vertical_margin
     12,  // lower_vertical_margin
 };
 
 // Style with current default pill visible or hidden.
 const ButtonLayout kWithCurrentDefaultButtonLayout = {
-    0,  // name_snippet_label_margin
     8,  // upper_vertical_margin
     5,  // lower_vertical_margin
 };
-
-// Returns a snippet label.
-UILabel* SnippetLabel() {
-  UILabel* snippetLabel = [[UILabel alloc] init];
-  snippetLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  snippetLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  snippetLabel.adjustsFontForContentSizeCategory = YES;
-  snippetLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  return snippetLabel;
-}
 
 // Background color for selected element.
 UIColor* GetCheckedBackgroundColor() {
@@ -98,28 +84,12 @@ UIColor* GetCheckedTintColor() {
   // Container View for the faviconView.
   UIView* _faviconContainerView;
   UIImageView* _faviconImageView;
-  UILabel* _nameLabel;
-  SnippetButtonState _snippetButtonState;
   UIButton* _chevronButton;
   BOOL _isChevronButtonEnabled;
   UIImageView* _radioButtonImageView;
   // Horizontal separator, shown only if `horizontalSeparatorHidden` is NO.
   UIView* _horizontalSeparator;
-  // UILabel to display the first line of the snippet.
-  UILabel* _snippetLabelOneLine;
-  // UILabel to display the snippet with all lines.
-  UILabel* _snippetLabelExpanded;
-  // Constraint to activate when the button is collapsed. This contraint
-  // locks the bottom of `_snippetLabelOneLine` with the bottom of
-  // SnippetSearchEngineButton (with the right margin).
-  // `_snippetLabelExpandedConstraint` needs to be disabled.
-  NSLayoutConstraint* _snippetLabelOneLineConstraint;
-  // Constraint to activate when the button is expanded. This contraint
-  // locks the bottom of `_snippetLabelExpanded` with the bottom of
-  // SnippetSearchEngineButton (with the right margin).
-  // `_snippetLabelOneLineConstraint` needs to be disabled.
-  NSLayoutConstraint* _snippetLabelExpandedConstraint;
-  SearchEngineCurrentDefaultState _currentDefaultState;
+  SnippetSearchEngineTextView* _textView;
 }
 
 - (instancetype)initWithCurrentDefaultState:
@@ -127,7 +97,6 @@ UIColor* GetCheckedTintColor() {
   self = [super initWithFrame:CGRectZero];
   if (self) {
     self.clipsToBounds = YES;
-    _currentDefaultState = currentDefaultState;
     // Add the favicon container view and the favicon image view.
     _faviconContainerView = [[UIView alloc] init];
     _faviconContainerView.userInteractionEnabled = NO;
@@ -146,55 +115,11 @@ UIColor* GetCheckedTintColor() {
         setContentCompressionResistancePriority:UILayoutPriorityRequired
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    const ButtonLayout* buttonLayout = &kNoCurrentDefaultButtonLayout;
-    // Add current default ship.
-    UIView* currentDefaultPill = nil;
-    switch (_currentDefaultState) {
-      case SearchEngineCurrentDefaultState::kNone:
-        break;
-      case SearchEngineCurrentDefaultState::kOtherIsDefault:
-        // The current default needs to be added to make sure the button
-        // has the same height than `kIsDefault`.
-        // But the current default needs to be hidden using alpha.
-        buttonLayout = &kWithCurrentDefaultButtonLayout;
-        currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
-        currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
-        currentDefaultPill.alpha = 0;
-        [self addSubview:currentDefaultPill];
-        break;
-      case SearchEngineCurrentDefaultState::kIsDefault:
-        buttonLayout = &kWithCurrentDefaultButtonLayout;
-        currentDefaultPill = [[SearchEngineCurrentDefaultPillView alloc] init];
-        currentDefaultPill.translatesAutoresizingMaskIntoConstraints = NO;
-        [self addSubview:currentDefaultPill];
-        break;
-    }
-    // Add name label.
-    _nameLabel = [[UILabel alloc] init];
-    _nameLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _nameLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-    _nameLabel.adjustsFontForContentSizeCategory = YES;
-    [self addSubview:_nameLabel];
-    // Make sure iOS prefers to strech the margins and not the name label,
-    // by increasing the hugging priority.
-    [_nameLabel setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
-                                  forAxis:UILayoutConstraintAxisVertical];
-    // Add one line snippet.
-    _snippetLabelOneLine = SnippetLabel();
-    _snippetLabelOneLine.numberOfLines = 1;
-    // Make sure the snippet is not streched.
-    [_snippetLabelOneLine
-        setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
-                          forAxis:UILayoutConstraintAxisVertical];
-    [self addSubview:_snippetLabelOneLine];
-    // Add expanded snippet.
-    _snippetLabelExpanded = SnippetLabel();
-    _snippetLabelExpanded.numberOfLines = 0;
-    // Make sure the snippet is not streched.
-    [_snippetLabelExpanded
-        setContentHuggingPriority:UILayoutPriorityDefaultHigh + 1
-                          forAxis:UILayoutConstraintAxisVertical];
-    [self addSubview:_snippetLabelExpanded];
+    _textView = [[SnippetSearchEngineTextView alloc]
+        initWithCurrentDefaultState:currentDefaultState];
+    _textView.translatesAutoresizingMaskIntoConstraints = NO;
+    _textView.userInteractionEnabled = NO;
+    [self addSubview:_textView];
     // Add Chevron.
     _chevronButton = [[UIButton alloc] init];
     _chevronButton.translatesAutoresizingMaskIntoConstraints = NO;
@@ -225,116 +150,26 @@ UIColor* GetCheckedTintColor() {
     _radioButtonImageView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:_radioButtonImageView];
 
-    // This layout guide is used to be center the block of text (current default
-    // if exists, title and snippet). All the other elements (favicon, chevron…)
-    // are positioned based on this layout, to be verticaly aligned and
-    // horizontaly placed.
-    UILayoutGuide* textAlignmentLayoutGuide = [[UILayoutGuide alloc] init];
-    [self addLayoutGuide:textAlignmentLayoutGuide];
-    // This layout guide is used to compute the height of the title and snippet.
-    // Not used with `kNone`.
-    UILayoutGuide* textHeightLayoutGuideWithCurrentDefault = nil;
-    // This layout guide is used to compute the height of the current default,
-    // title and snippet.
-    // Not used with `kIsDefault`.
-    UILayoutGuide* textHeightLayoutGuideWithoutCurrentDefault = nil;
-    switch (_currentDefaultState) {
+    const ButtonLayout* buttonLayout = nil;
+    switch (currentDefaultState) {
       case SearchEngineCurrentDefaultState::kNone:
-        textHeightLayoutGuideWithoutCurrentDefault =
-            [[UILayoutGuide alloc] init];
-        [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
+        buttonLayout = &kNoCurrentDefaultButtonLayout;
         break;
       case SearchEngineCurrentDefaultState::kOtherIsDefault:
-        textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
-        [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
-        textHeightLayoutGuideWithoutCurrentDefault =
-            [[UILayoutGuide alloc] init];
-        [self addLayoutGuide:textHeightLayoutGuideWithoutCurrentDefault];
+        buttonLayout = &kWithCurrentDefaultButtonLayout;
         break;
       case SearchEngineCurrentDefaultState::kIsDefault:
-        textHeightLayoutGuideWithCurrentDefault = [[UILayoutGuide alloc] init];
-        [self addLayoutGuide:textHeightLayoutGuideWithCurrentDefault];
+        buttonLayout = &kWithCurrentDefaultButtonLayout;
         break;
     }
-
-    // Constraint when the snippet is expanded.
-    _snippetLabelExpandedConstraint = [_snippetLabelExpanded.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor
-                       constant:-buttonLayout->lower_vertical_margin];
-    // Constraint when the snippet is only one line.
-    _snippetLabelOneLineConstraint = [textAlignmentLayoutGuide.bottomAnchor
-        constraintEqualToAnchor:self.bottomAnchor
-                       constant:-buttonLayout->lower_vertical_margin];
-
-    if (textHeightLayoutGuideWithoutCurrentDefault) {
-      NSArray* constraints = @[
-        [_nameLabel.topAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
-                                        .topAnchor],
-        [_snippetLabelOneLine.bottomAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
-                                        .bottomAnchor],
-      ];
-      [NSLayoutConstraint activateConstraints:constraints];
-    }
-    if (textHeightLayoutGuideWithCurrentDefault) {
-      NSArray* constraints = @[
-        [currentDefaultPill.topAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
-                                        .topAnchor],
-        [_nameLabel.topAnchor
-            constraintEqualToAnchor:currentDefaultPill.bottomAnchor
-                           constant:0],
-        [_snippetLabelOneLine.bottomAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
-                                        .bottomAnchor],
-        [currentDefaultPill.leadingAnchor
-            constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
-        [currentDefaultPill.trailingAnchor
-            constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
-                                                  .trailingAnchor],
-      ];
-      [NSLayoutConstraint activateConstraints:constraints];
-    }
-    switch (_currentDefaultState) {
-      case SearchEngineCurrentDefaultState::kNone:
-        [textAlignmentLayoutGuide.heightAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
-                                        .heightAnchor]
-            .active = YES;
-        [textAlignmentLayoutGuide.centerYAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
-                                        .centerYAnchor]
-            .active = YES;
-        break;
-      case SearchEngineCurrentDefaultState::kOtherIsDefault:
-        [textAlignmentLayoutGuide.heightAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
-                                        .heightAnchor]
-            .active = YES;
-        [textAlignmentLayoutGuide.centerYAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithoutCurrentDefault
-                                        .centerYAnchor]
-            .active = YES;
-        break;
-      case SearchEngineCurrentDefaultState::kIsDefault:
-        [textAlignmentLayoutGuide.heightAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
-                                        .heightAnchor]
-            .active = YES;
-        [textAlignmentLayoutGuide.centerYAnchor
-            constraintEqualToAnchor:textHeightLayoutGuideWithCurrentDefault
-                                        .centerYAnchor]
-            .active = YES;
-        break;
-    }
+    CHECK(buttonLayout);
     NSArray* constraints = @[
       // Constraints for avicon and favicon container.
       [_faviconContainerView.leadingAnchor
           constraintEqualToAnchor:self.leadingAnchor
                          constant:kBorderHorizontalMargin],
       [_faviconContainerView.centerYAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
+          constraintEqualToAnchor:_textView.oneLineCenterVerticalLayoutGuide],
       [_faviconContainerView.widthAnchor
           constraintEqualToConstant:kFaviconContainerViewSize],
       [_faviconContainerView.heightAnchor
@@ -348,53 +183,32 @@ UIColor* GetCheckedTintColor() {
       [_faviconImageView.heightAnchor
           constraintEqualToConstant:kFaviconImageViewSize],
       // Constraints for layout guide for _nameLabel and _snippetLabelOneLine.
-      [textAlignmentLayoutGuide.topAnchor
+      [_textView.topAnchor
           constraintEqualToAnchor:self.topAnchor
                          constant:buttonLayout->upper_vertical_margin],
-      _snippetLabelOneLineConstraint,
-      [textAlignmentLayoutGuide.leadingAnchor
+      [_textView.bottomAnchor
+          constraintEqualToAnchor:self.bottomAnchor
+                         constant:-buttonLayout->lower_vertical_margin],
+      [_textView.leadingAnchor
           constraintEqualToAnchor:_faviconContainerView.trailingAnchor
                          constant:kInnerHorizontalMargin],
-      [textAlignmentLayoutGuide.trailingAnchor
+      [_textView.trailingAnchor
           constraintEqualToAnchor:_chevronButton.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
-      // Constraints for name label.
-      [_nameLabel.leadingAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
-      [_nameLabel.trailingAnchor
-          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
-                                                .trailingAnchor],
-      [_nameLabel.bottomAnchor
-          constraintEqualToAnchor:_snippetLabelOneLine.topAnchor
-                         constant:-buttonLayout->name_snippet_label_margin],
-      // Constraints for _snippetLabelOneLine.
-      [_snippetLabelOneLine.leadingAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
-      [_snippetLabelOneLine.trailingAnchor
-          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
-                                                .trailingAnchor],
-      // Constraints for _snippetLabelExpanded.
-      [_snippetLabelExpanded.topAnchor
-          constraintEqualToAnchor:_snippetLabelOneLine.topAnchor],
-      [_snippetLabelExpanded.leadingAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
-      [_snippetLabelExpanded.trailingAnchor
-          constraintLessThanOrEqualToAnchor:textAlignmentLayoutGuide
-                                                .trailingAnchor],
       // Constraints for chevron.
       [_chevronButton.heightAnchor
           constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.widthAnchor constraintEqualToConstant:kChevronButtonSize],
       [_chevronButton.centerYAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
+          constraintEqualToAnchor:_textView.oneLineCenterVerticalLayoutGuide],
       [_chevronButton.trailingAnchor
           constraintEqualToAnchor:verticalSeparator.leadingAnchor
                          constant:-kChevronButtonHorizontalMargin],
       // Constraints for vertical separator.
       [verticalSeparator.heightAnchor
-          constraintEqualToAnchor:_nameLabel.heightAnchor],
+          constraintEqualToAnchor:_textView.searchEngineNameLabelHeight],
       [verticalSeparator.centerYAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
+          constraintEqualToAnchor:_textView.oneLineCenterVerticalLayoutGuide],
       [verticalSeparator.widthAnchor
           constraintEqualToConstant:kSeparatorThickness],
       [verticalSeparator.trailingAnchor
@@ -402,7 +216,7 @@ UIColor* GetCheckedTintColor() {
                          constant:-kInnerHorizontalMargin],
       // Constraints for radio button.
       [_radioButtonImageView.centerYAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.centerYAnchor],
+          constraintEqualToAnchor:_textView.oneLineCenterVerticalLayoutGuide],
       [_radioButtonImageView.widthAnchor
           constraintEqualToConstant:kRadioButtonSize],
       [_radioButtonImageView.heightAnchor
@@ -412,7 +226,7 @@ UIColor* GetCheckedTintColor() {
                          constant:-kBorderHorizontalMargin],
       // Constraints for horizontal separator.
       [_horizontalSeparator.leadingAnchor
-          constraintEqualToAnchor:textAlignmentLayoutGuide.leadingAnchor],
+          constraintEqualToAnchor:_textView.leadingAnchor],
       [_horizontalSeparator.trailingAnchor
           constraintEqualToAnchor:self.trailingAnchor],
       [_horizontalSeparator.bottomAnchor
@@ -421,7 +235,7 @@ UIColor* GetCheckedTintColor() {
           constraintEqualToConstant:kSeparatorThickness],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
-    [self updateCellWithSnippetSate:SnippetButtonState::kOneLine animate:NO];
+    [self updateCellWithExpanded:NO animate:NO];
     [self updateCircleImageView];
     self.userInteractionEnabled = YES;
     self.accessibilityTraits = UIAccessibilityTraitButton;
@@ -457,12 +271,7 @@ UIColor* GetCheckedTintColor() {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  // To know if the chevron is needed, we need to compare
-  // `_snippetLabelExpanded` height and `_snippetLabelOneLine` height. To avoid
-  // any issues with float approximations, there is one pixel margin.
-  _isChevronButtonEnabled = _snippetLabelExpanded.frame.size.height -
-                                _snippetLabelOneLine.frame.size.height >
-                            1.;
+  _isChevronButtonEnabled = _textView.isSnippetExpandable;
   _chevronButton.alpha = (_isChevronButtonEnabled) ? 1. : .4;
 }
 
@@ -501,24 +310,26 @@ UIColor* GetCheckedTintColor() {
 }
 
 - (void)setSearchEngineName:(NSString*)name {
-  _nameLabel.text = name;
+  _textView.searchEngineName = name;
   [self updateChevronIdentifier];
 }
 
 - (NSString*)searchEngineName {
-  return _nameLabel.text;
+  return _textView.searchEngineName;
 }
 
-- (void)setSnippetButtonState:(SnippetButtonState)snippetButtonState {
+- (void)setExpanded:(BOOL)expanded {
   // This method should be called only when being configured, before to be
   // added to the view. Therefore there should be no animation.
-  [self updateCellWithSnippetSate:snippetButtonState animate:NO];
+  [self updateCellWithExpanded:expanded animate:NO];
 }
 
 - (void)setSnippetText:(NSString*)snippetText {
-  _snippetText = [snippetText copy];
-  _snippetLabelExpanded.text = _snippetText;
-  _snippetLabelOneLine.text = _snippetText;
+  _textView.snippetText = snippetText;
+}
+
+- (NSString*)snippetText {
+  return _textView.snippetText;
 }
 
 - (void)setHorizontalSeparatorHidden:(BOOL)hidden {
@@ -536,60 +347,37 @@ UIColor* GetCheckedTintColor() {
   if (!_isChevronButtonEnabled) {
     return;
   }
-  switch (_snippetButtonState) {
-    case SnippetButtonState::kExpanded: {
-      [self updateCellWithSnippetSate:SnippetButtonState::kOneLine animate:YES];
-      NSString* collapsedFeedback = l10n_util::GetNSString(
-          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_SNIPPET_COLLAPSED);
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                      collapsedFeedback);
-      break;
-    }
-    case SnippetButtonState::kOneLine: {
-      [self updateCellWithSnippetSate:SnippetButtonState::kExpanded
-                              animate:YES];
-      UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
-                                      self.snippetText);
-      break;
-    }
+  [self updateCellWithExpanded:!_snippetExpanded animate:YES];
+  if (_snippetExpanded) {
+    NSString* collapsedFeedback = l10n_util::GetNSString(
+        IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_SNIPPET_COLLAPSED);
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    collapsedFeedback);
+  } else {
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification,
+                                    self.snippetText);
   }
 }
 
 // Updates the UI according to the new snippet state.
-- (void)updateCellWithSnippetSate:(SnippetButtonState)newSnippetButtonState
-                          animate:(BOOL)animate {
-  // Need to avoid `if (_snippetButtonState == newSnippetButtonState) return;`,
-  // so this method can be used by init method to setup the cell.
-  _snippetButtonState = newSnippetButtonState;
+- (void)updateCellWithExpanded:(BOOL)newSnippetExpanded animate:(BOOL)animate {
+  // Need to avoid `if (_snippetExpanded == newSnippetExpanded) return;`, so
+  // this method can be used by init method to setup the cell.
+  _snippetExpanded = newSnippetExpanded;
   const float downRotation = 0;
   const float upRotation = downRotation + M_PI;
   UIButton* chevronButton = _chevronButton;
-  UILabel* snippetLabelOneLine = _snippetLabelOneLine;
-  UILabel* snippetLabelExpanded = _snippetLabelExpanded;
-  NSLayoutConstraint* snippetLabelOneLineConstraint =
-      _snippetLabelOneLineConstraint;
-  NSLayoutConstraint* snippetLabelExpandedConstraint =
-      _snippetLabelExpandedConstraint;
+  SnippetSearchEngineTextView* textView = _textView;
   [self updateChevronIdentifier];
   ProceduralBlock changesBlock = ^{
-    switch (newSnippetButtonState) {
-      case SnippetButtonState::kOneLine:
-        chevronButton.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, downRotation);
-        snippetLabelOneLine.alpha = 1;
-        snippetLabelExpanded.alpha = 0;
-        snippetLabelOneLineConstraint.active = YES;
-        snippetLabelExpandedConstraint.active = NO;
-        break;
-      case SnippetButtonState::kExpanded:
-        chevronButton.transform =
-            CGAffineTransformRotate(CGAffineTransformIdentity, upRotation);
-        snippetLabelOneLine.alpha = 0;
-        snippetLabelExpanded.alpha = 1;
-        snippetLabelOneLineConstraint.active = NO;
-        snippetLabelExpandedConstraint.active = YES;
-        break;
+    if (newSnippetExpanded) {
+      chevronButton.transform =
+          CGAffineTransformRotate(CGAffineTransformIdentity, upRotation);
+    } else {
+      chevronButton.transform =
+          CGAffineTransformRotate(CGAffineTransformIdentity, downRotation);
     }
+    textView.snippetExpanded = newSnippetExpanded;
     if (animate) {
       // Layout all the view to have a smooth transition.
       [self.animatedLayoutView layoutIfNeeded];
@@ -619,21 +407,18 @@ UIColor* GetCheckedTintColor() {
 }
 
 - (void)updateChevronIdentifier {
-  switch (_snippetButtonState) {
-    case SnippetButtonState::kOneLine:
-      _chevronButton.accessibilityIdentifier = [NSString
-          stringWithFormat:@"%@%@",
-                           kSnippetSearchEngineOneLineChevronIdentifierPrefix,
-                           self.searchEngineName];
-      break;
-    case SnippetButtonState::kExpanded:
-      base::RecordAction(
-          base::UserMetricsAction(kExpandSearchEngineDescriptionUserAction));
-      _chevronButton.accessibilityIdentifier = [NSString
-          stringWithFormat:@"%@%@",
-                           kSnippetSearchEngineExpandedChevronIdentifierPrefix,
-                           self.searchEngineName];
-      break;
+  if (_snippetExpanded) {
+    base::RecordAction(
+        base::UserMetricsAction(kExpandSearchEngineDescriptionUserAction));
+    _chevronButton.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@",
+                         kSnippetSearchEngineExpandedChevronIdentifierPrefix,
+                         self.searchEngineName];
+  } else {
+    _chevronButton.accessibilityIdentifier = [NSString
+        stringWithFormat:@"%@%@",
+                         kSnippetSearchEngineOneLineChevronIdentifierPrefix,
+                         self.searchEngineName];
   }
 }
 
@@ -644,7 +429,7 @@ UIColor* GetCheckedTintColor() {
       << base::SysNSStringToUTF8(self.searchEngineKeyword);
   CHECK_NE(self.snippetText.length, 0ul)
       << base::SysNSStringToUTF8(self.searchEngineKeyword);
-  switch (_currentDefaultState) {
+  switch (_textView.currentDefaultState) {
     case SearchEngineCurrentDefaultState::kNone:
     case SearchEngineCurrentDefaultState::kOtherIsDefault:
       return l10n_util::GetNSStringF(
@@ -686,17 +471,14 @@ UIColor* GetCheckedTintColor() {
     return [super accessibilityCustomActions];
   }
   NSString* actionName = nil;
-  switch (_snippetButtonState) {
-    case SnippetButtonState::kOneLine:
-      actionName = l10n_util::GetNSStringF(
-          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET,
-          base::SysNSStringToUTF16(self.searchEngineName));
-      break;
-    case SnippetButtonState::kExpanded:
-      actionName = l10n_util::GetNSStringF(
-          IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET,
-          base::SysNSStringToUTF16(self.searchEngineName));
-      break;
+  if (_snippetExpanded) {
+    actionName = l10n_util::GetNSStringF(
+        IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_COLLAPSE_SNIPPET,
+        base::SysNSStringToUTF16(self.searchEngineName));
+  } else {
+    actionName = l10n_util::GetNSStringF(
+        IDS_IOS_SEARCH_ENGINE_ACCESSIBILITY_EXPAND_SNIPPET,
+        base::SysNSStringToUTF16(self.searchEngineName));
   }
   UIAccessibilityCustomAction* action = [[UIAccessibilityCustomAction alloc]
       initWithName:actionName
