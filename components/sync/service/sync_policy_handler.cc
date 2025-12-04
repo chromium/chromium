@@ -34,15 +34,13 @@ void DisableSyncType(const std::string& type_name, PrefValueMap* prefs) {
     }
 
     // If tabs are disabled, also disable saved tab groups, and vice-versa.
-    if (base::FeatureList::IsEnabled(kSyncLinkTabsAndTabGroupsPolicy)) {
-      if (*type == UserSelectableType::kTabs) {
-        syncer::SyncPrefs::SetTypeDisabledByPolicy(
-            prefs, UserSelectableType::kSavedTabGroups);
-      }
-      if (*type == UserSelectableType::kSavedTabGroups) {
-        syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
-                                                   UserSelectableType::kTabs);
-      }
+    if (*type == UserSelectableType::kTabs) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(
+          prefs, UserSelectableType::kSavedTabGroups);
+    }
+    if (*type == UserSelectableType::kSavedTabGroups) {
+      syncer::SyncPrefs::SetTypeDisabledByPolicy(prefs,
+                                                 UserSelectableType::kTabs);
     }
   }
 

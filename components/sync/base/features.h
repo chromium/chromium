@@ -48,10 +48,6 @@ BASE_DECLARE_FEATURE(kSyncAIThread);
 // Enables syncing of contextual tasks.
 BASE_DECLARE_FEATURE(kSyncContextualTask);
 
-// If enabled, SyncTypesListDisabled policy for tabs and saved tab groups is
-// linked.
-BASE_DECLARE_FEATURE(kSyncLinkTabsAndTabGroupsPolicy);
-
 #if !BUILDFLAG(IS_CHROMEOS)
 // Flag that controls Uno fast-follow features which are:
 // On Android:
