@@ -458,9 +458,12 @@ SigninInterceptFirstRunExperienceDialog::
 
 void SigninInterceptFirstRunExperienceDialog::Show() {
   RecordDialogEvent(DialogEvent::kStart);
-  Step next_step = base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
-                       ? Step::kStartHistorySyncOptin
-                       : Step::kTurnOnSync;
+  Step next_step =
+      base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos) &&
+              base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
+          ? Step::kStartHistorySyncOptin
+          : Step::kTurnOnSync;
   DoNextStep(Step::kStart, next_step);
 }
 

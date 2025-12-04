@@ -969,57 +969,74 @@ INSTANTIATE_TEST_SUITE_P(
     SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTest,
     ::testing::Bool());
 
-struct AutoAcceptManagementTestParam {
-  bool replace_sync_with_signin_promo;
-  bool uno_phase2_follow_ups;
-  bool enforce_managed_disclaimer;
-
-  AutoAcceptManagementTestParam(bool replace_sync_with_signin_promo,
-                                bool uno_phase2_follow_ups,
-                                bool enforce_managed_disclaimer)
-      : replace_sync_with_signin_promo(replace_sync_with_signin_promo),
-        uno_phase2_follow_ups(uno_phase2_follow_ups),
-        enforce_managed_disclaimer(enforce_managed_disclaimer) {
-    if (uno_phase2_follow_ups) {
-      CHECK(replace_sync_with_signin_promo);
-    }
-  }
-};
-
 class
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest
     : public SigninInterceptFirstRunExperienceDialogEnterpriseUserBrowserTestBase,
       public ::testing::WithParamInterface<
-          std::tuple<AutoAcceptManagementTestParam, bool>> {
+          std::tuple</*replace_sync_with_signin_promo=*/bool,
+                     /*uno_phase2_follow_ups=*/bool,
+                     /*enforce_managed_disclaimer=*/bool,
+                     /*with_policies=*/bool>> {
  public:
   SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
-    if (std::get<0>(GetParam()).replace_sync_with_signin_promo) {
+    if (std::get<0>(GetParam())) {
       enabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     } else {
       disabled_features.push_back(syncer::kReplaceSyncPromosWithSignInPromos);
     }
-    if (std::get<0>(GetParam()).uno_phase2_follow_ups) {
+    if (std::get<1>(GetParam())) {
       enabled_features.push_back(syncer::kUnoPhase2FollowUp);
     } else {
       disabled_features.push_back(syncer::kUnoPhase2FollowUp);
     }
-    if (std::get<0>(GetParam()).enforce_managed_disclaimer) {
+    if (std::get<2>(GetParam())) {
       enabled_features.push_back(switches::kEnforceManagementDisclaimer);
     } else {
       disabled_features.push_back(switches::kEnforceManagementDisclaimer);
     }
-    disabled_features.push_back(syncer::kUnoPhase2FollowUp);
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    if (std::get<1>(GetParam())) {
+    if (std::get<3>(GetParam())) {
+      // Set a policy not affecting the interception dialog's flow.
       policy::PolicyMap policy_map;
-      policy_map.Set(policy::key::kBrowserThemeColor,
-                     policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-                     policy::POLICY_SOURCE_CLOUD, base::Value("#000000"),
-                     /*external_data_fetcher=*/nullptr);
+      policy_map.Set(policy::key::kCloudReportingEnabled,
+                     policy::POLICY_LEVEL_MANDATORY,
+                     policy::POLICY_SCOPE_MACHINE, policy::POLICY_SOURCE_CLOUD,
+                     base::Value(true), nullptr);
       UpdateChromePolicy(policy_map);
+    }
+  }
+
+  bool InUnoPhase2ModelNoFastFollows() {
+    return base::FeatureList::IsEnabled(
+               syncer::kReplaceSyncPromosWithSignInPromos) &&
+           !base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp);
+  }
+
+  void WaitForNextScreen() {
+    if (InUnoPhase2ModelWithFastFollows()) {
+      history_sync_observer_->Wait();
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kHistorySyncUrl);
+    } else if (InUnoPhase2ModelNoFastFollows()) {
+      theme_service()->GetThemeSyncableService()->NotifyOnSyncStartedForTesting(
+          ThemeSyncableService::ThemeSyncState::kApplied);
+      profile_customization_observer_->Wait();
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kProfileCustomizationUrl);
+    } else {
+      // Dice model, regardless of the status of the kUnoPhase2FollowUp flag.
+      sync_confirmation_observer_->Wait();
+      EXPECT_EQ(dialog()
+                    ->GetModalDialogWebContentsForTesting()
+                    ->GetLastCommittedURL(),
+                kSyncConfirmationUrl);
     }
   }
 
@@ -1034,6 +1051,9 @@ IN_PROC_BROWSER_TEST_P(
     ManagementIsAutoAccepted) {
   SignIn(/*update_extended_account_info=*/false);
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+  sync_confirmation_observer_->StartWatchingNewWebContents();
+  history_sync_observer_->StartWatchingNewWebContents();
+  profile_customization_observer_->StartWatchingNewWebContents();
 
   controller()->ShowModalInterceptFirstRunExperienceDialog(
       account_id(), /*is_forced_intercept=*/false);
@@ -1053,31 +1073,34 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return fake_policy_service->policy_fetched(); }));
   ExpectPrimaryAccountWithExactConsentLevel(signin::ConsentLevel::kSignin);
+
+  // Ensures that the right screen is shown depending on the enabled features.
+  WaitForNextScreen();
+
+  if (!InUnoPhase2ModelWithFastFollows()) {
+    // In the Dice model close the dialog to avoid a potential test flakiness
+    // issue on the test's teardown.
+    // In the Uno model keep the dialog open on purpose to ensure the browser's
+    // teardown happens smoothly when a dialog is showing.
+    controller()->CloseModalSignin();
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     SigninInterceptFirstRunExperienceDialogEnterpriseManagementHandlingBrowserTest,
-    ::testing::Combine(
-        ::testing::Values(AutoAcceptManagementTestParam(false, false, false),
-                          AutoAcceptManagementTestParam(true, false, false),
-                          AutoAcceptManagementTestParam(true, true, false),
-                          AutoAcceptManagementTestParam(false, false, true),
-                          AutoAcceptManagementTestParam(true, false, true),
-                          AutoAcceptManagementTestParam(true, true, true)),
-        ::testing::Bool()),
+    ::testing::Combine(::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::Bool(),
+                       ::testing::Bool()),
     [](const auto& info) {
-      return std::string(std::get<0>(info.param).replace_sync_with_signin_promo
-                             ? "InUnoModel"
-                             : "InDiceModel") +
-             std::string(
-                 std::get<0>(info.param).uno_phase2_follow_ups &&
-                         std::get<0>(info.param).replace_sync_with_signin_promo
-                     ? "WithFollowups"
-                     : "") +
-             std::string(std::get<0>(info.param).enforce_managed_disclaimer
-                             ? "WithEnforcedManagedDisclaimerEnabled"
-                             : "WithEnforcedManagedDisclaimerDisabled") +
-             std::string(std::get<1>(info.param) ? "WithPolicies"
+      return std::string(std::get<0>(info.param) ? "InUnoModel"
+                                                 : "InDiceModel") +
+             std::string(std::get<1>(info.param) ? "WithUno2Followups"
+                                                 : "WithoutUno2Followups") +
+             std::string(std::get<2>(info.param)
+                             ? "WithEnforcedManagedDisclaimer"
+                             : "WithoutEnforcedManagedDisclaimer") +
+             std::string(std::get<3>(info.param) ? "WithPolicies"
                                                  : "NoPolicies");
     });
