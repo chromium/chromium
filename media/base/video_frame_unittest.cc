@@ -561,7 +561,7 @@ TEST(VideoFrame, WrapMappableSharedImage) {
   EXPECT_EQ(frame->HasSharedImage(), true);
   EXPECT_EQ(frame->HasReleaseMailboxCB(), true);
   EXPECT_EQ(frame->shared_image()->mailbox(), mailbox);
-  EXPECT_TRUE(frame->is_mappable_si_enabled());
+  EXPECT_TRUE(frame->IsMappableSharedImageEnabled());
 
   // Wrapped MappableSI frames must propagate the information of the wrappee.
   auto wrapped_frame = VideoFrame::WrapVideoFrame(
@@ -575,7 +575,7 @@ TEST(VideoFrame, WrapMappableSharedImage) {
   EXPECT_EQ(wrapped_frame->HasSharedImage(), true);
   EXPECT_EQ(wrapped_frame->HasReleaseMailboxCB(), true);
   EXPECT_EQ(wrapped_frame->shared_image()->mailbox(), mailbox);
-  EXPECT_TRUE(wrapped_frame->is_mappable_si_enabled());
+  EXPECT_TRUE(wrapped_frame->IsMappableSharedImageEnabled());
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

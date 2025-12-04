@@ -115,7 +115,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  bool is_mappable_si_enabled = input->is_mappable_si_enabled();
+  bool is_mappable_si_enabled = input->IsMappableSharedImageEnabled();
   if (input->HasMappableGpuBuffer()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
