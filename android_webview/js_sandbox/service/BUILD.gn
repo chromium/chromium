@@ -20,6 +20,7 @@ source_set("js_sandbox") {
     "//android_webview/common",
     "//android_webview/js_sandbox:js_sandbox_jni_headers",
     "//base",
+    "//base:i18n",
   ]
 
   public_deps = [ "//gin" ]

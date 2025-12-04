@@ -25,6 +25,7 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/i18n/icu_util.h"
 #include "base/immediate_crash.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -1206,6 +1207,11 @@ JsSandboxIsolate::GetIsolateTaskRunner() {
 
 static void JNI_JsSandboxIsolate_InitializeEnvironment(JNIEnv* env) {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("JsSandboxIsolate");
+#if ICU_UTIL_DATA_IMPL == ICU_UTIL_DATA_FILE
+  // Since we don't go through ContentMain, and we aren't a "browser" process,
+  // we don't get ICU initialized for us, so we must do this ourselves.
+  CHECK(base::i18n::InitializeICU());
+#endif
 #ifdef V8_USE_EXTERNAL_STARTUP_DATA
   gin::V8Initializer::LoadV8Snapshot();
 #endif
