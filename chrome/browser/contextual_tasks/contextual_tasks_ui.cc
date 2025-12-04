@@ -50,11 +50,16 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   // Add strings.js
   source->UseStringsJs();
 
+  source->AddLocalizedString(
+      "lensSearchButtonLabel",
+      IDS_TOOLTIP_LENS_REINVOKE_VISUAL_SELECTION_A11Y_LABEL);
+
   // Support no file types.
   source->AddString("composeboxImageFileTypes", "");
   source->AddString("composeboxAttachmentFileTypes", "");
   source->AddInteger("composeboxFileMaxSize", 0);
   source->AddInteger("composeboxFileMaxCount", 0);
+
   source->AddBoolean("composeboxNoFlickerSuggestionsFix", false);
   // Disable typed suggest.
   source->AddBoolean("composeboxShowTypedSuggest", false);
