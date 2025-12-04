@@ -1134,5 +1134,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("SuppressMemoryListeners"),
         Flag.baseFeature("SuppressMemoryMonitor"),
         Flag.baseFeature("CompressParkableStrings"),
+        Flag.baseFeature(
+                ContentFeatures.ANDROID_MEDIA_INSERTION,
+                "When enabled, IMEs should be able to insert media content such as images, gifs and"
+                        + " stickers.")
     };
 }
