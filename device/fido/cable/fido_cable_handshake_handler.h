@@ -16,10 +16,10 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/fido_device.h"
+#include "device/fido/public/cable_discovery_data.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace device {

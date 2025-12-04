@@ -17,7 +17,7 @@
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/random.h"
-#include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/cable/pairing.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"

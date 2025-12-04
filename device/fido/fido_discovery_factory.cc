@@ -10,6 +10,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/fido/cable/fido_cable_discovery.h"
+#include "device/fido/cable/pairing.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/enclave/enclave_discovery.h"
 #include "device/fido/fido_discovery_base.h"

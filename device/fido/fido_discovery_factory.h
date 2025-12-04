@@ -15,7 +15,6 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/fido_discovery_base.h"
@@ -33,6 +32,10 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 namespace device {
+
+namespace cablev2 {
+struct Pairing;
+}
 
 namespace enclave {
 struct CredentialRequest;

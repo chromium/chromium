@@ -11,8 +11,8 @@
 
 #include "base/containers/flat_tree.h"
 #include "base/notreached.h"
-#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/public/authenticator_selection_criteria.h"
+#include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
 #include "device/fido/public/public_key_credential_descriptor.h"

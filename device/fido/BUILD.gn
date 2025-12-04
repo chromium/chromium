@@ -54,10 +54,10 @@ component("fido") {
 
   if (use_blink) {
     sources += [
-      "cable/cable_discovery_data.cc",
-      "cable/cable_discovery_data.h",
       "cable/noise.cc",
       "cable/noise.h",
+      "cable/pairing.cc",
+      "cable/pairing.h",
       "cable/v2_constants.h",
       "cable/v2_handshake.cc",
       "cable/v2_handshake.h",

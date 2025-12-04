@@ -10,6 +10,8 @@ component("public") {
   sources = [
     "authenticator_selection_criteria.cc",
     "authenticator_selection_criteria.h",
+    "cable_discovery_data.cc",
+    "cable_discovery_data.h",
     "features.cc",
     "features.h",
     "fido_constants.cc",
