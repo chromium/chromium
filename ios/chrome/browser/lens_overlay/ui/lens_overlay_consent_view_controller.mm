@@ -194,24 +194,13 @@ const CGFloat kDialogWidthInRegularDisplaySize = 540;
 
 - (UIAction*)textView:(UITextView*)textView
     primaryActionForTextItem:(UITextItem*)textItem
-               defaultAction:(UIAction*)defaultAction API_AVAILABLE(ios(17.0)) {
+               defaultAction:(UIAction*)defaultAction {
   if (textItem.contentType == UITextItemContentTypeLink) {
     [self.delegate didPressLearnMore];
   }
 
   return nil;
 }
-
-#if __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (BOOL)textView:(UITextView*)textView
-    shouldInteractWithURL:(NSURL*)URL
-                  inRange:(NSRange)characterRange
-              interaction:(UITextItemInteraction)interaction {
-  [self.delegate didPressLearnMore];
-  // Prevent the system from executing the default URL open action.
-  return NO;
-}
-#endif
 
 - (void)textViewDidChangeSelection:(UITextView*)textView {
   // Make the textView not selectable while allowing interactions with the
