@@ -82,11 +82,16 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
     private static final long LOADING_ANIMATION_DURATION_MS = 3000;
     private static final long FINISH_ANIMATION_DURATION_MS = 1000;
 
+    @Nullable private Integer mCachedFpsCap;
+
     /** Whether or not the progress bar has started processing updates. */
     private boolean mIsStarted;
 
     /** The target progress the smooth animation should move to (when animating smoothly). */
     private float mTargetProgress;
+
+    private long mTimeSinceLastFrameMs;
+    private long mLastUpdateTimeMs;
 
     /** The current progress displayed by the animation. */
     private float mAnimatedProgress;
@@ -184,6 +189,17 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                         mCompositedProgressBarAnimation.cancel();
                     }
 
+                    // deltaTimeMs is always 0 on the first frame
+                    if (deltaTimeMs != 0) {
+                        mTimeSinceLastFrameMs += deltaTimeMs;
+                        long fps = (long) (1000 * 1.0f / mTimeSinceLastFrameMs);
+                        long fpsCap = getCompositedAnimationFpsCap();
+                        if (fpsCap > 0 && fps > fpsCap) {
+                            return;
+                        }
+                        mTimeSinceLastFrameMs = 0;
+                    }
+
                     // TODO(peilinwang): Maybe introduce a max increment to reduce jank?
                     mAnimatedProgress += (deltaTimeMs / ((float) LOADING_ANIMATION_DURATION_MS));
                     mAnimatedProgress = Math.min(mAnimatedProgress, mTargetProgress);
@@ -199,8 +215,24 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                 public void onAnimationUpdate(ValueAnimator animation) {
                     float progress = (float) animation.getAnimatedValue();
                     mAnimatedProgress = progress;
-                    ToolbarProgressBar.super.setProgress(mAnimatedProgress);
-                    if (MathUtils.areFloatsEqual(getProgress(), 1.f)) finish(true);
+                    if (MathUtils.areFloatsEqual(mAnimatedProgress, 1.f)) {
+                        ToolbarProgressBar.super.setProgress(mAnimatedProgress);
+                        finish(true);
+                    } else {
+                        long currentTime = animation.getCurrentPlayTime();
+                        // currentTime is always 0 on the first frame
+                        if (currentTime != 0) {
+                            mTimeSinceLastFrameMs = currentTime - mLastUpdateTimeMs;
+                            long fps = (long) (1000 * 1.0f / mTimeSinceLastFrameMs);
+                            long fpsCap = getCompositedAnimationFpsCap();
+                            if (fpsCap > 0 && fps > fpsCap) {
+                                return;
+                            }
+                            mTimeSinceLastFrameMs = 0;
+                        }
+                        ToolbarProgressBar.super.setProgress(mAnimatedProgress);
+                        mLastUpdateTimeMs = currentTime;
+                    }
                 }
             };
 
@@ -354,6 +386,7 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
                     && shouldAnimateCompositedLayer()
                     && !mProgressBarAnimationBc25.isRunning()) {
                 mCompositedProgressBarAnimation.cancel();
+                mLastUpdateTimeMs = 0;
                 mProgressBarAnimationBc25.setFloatValues(mAnimatedProgress, 1.0f);
                 mProgressBarAnimationBc25.start();
             }
@@ -495,6 +528,13 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar
         } else {
             setThemeColor(ChromeColors.getDefaultThemeColor(getContext(), false), false);
         }
+    }
+
+    private int getCompositedAnimationFpsCap() {
+        if (mCachedFpsCap == null) {
+            mCachedFpsCap = ChromeFeatureList.sAndroidAnimatedProgressBarFpsCap.getValue();
+        }
+        return mCachedFpsCap;
     }
 
     @Override

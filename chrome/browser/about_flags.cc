@@ -5139,6 +5139,20 @@ const FeatureEntry::FeatureVariation kContextualTaskContextVariations[] = {
     {" - Tab scoped side panel", kTabScopedSidePanel,
      std::size(kTabScopedSidePanel), nullptr}};
 
+#if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAnimatedProgressBar30FpsCap[] = {
+    {"fps_cap", "30"}};
+const FeatureEntry::FeatureParam kAnimatedProgressBar60FpsCap[] = {
+    {"fps_cap", "60"}};
+
+const FeatureEntry::FeatureVariation
+    kAndroidAnimatedProgressBarInBrowserVariations[] = {
+        {"with 30fps cap", kAnimatedProgressBar30FpsCap,
+         std::size(kAnimatedProgressBar30FpsCap), nullptr},
+        {"with 60fsp cap", kAnimatedProgressBar60FpsCap,
+         std::size(kAnimatedProgressBar60FpsCap), nullptr}};
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -12996,7 +13010,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserName,
      flag_descriptions::kAndroidAnimatedProgressBarInBrowserDescription,
      kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kAndroidAnimatedProgressBarInBrowser)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kAndroidAnimatedProgressBarInBrowser,
+         kAndroidAnimatedProgressBarInBrowserVariations,
+         "AndroidAnimatedProgressBarInBrowser")},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"enable-cross-device-pref-tracker",
