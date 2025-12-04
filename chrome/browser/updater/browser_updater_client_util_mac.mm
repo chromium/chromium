@@ -206,7 +206,7 @@ void SetActive() {
       base::GetHomeDir()
           .AppendASCII("Library")
           .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING))
-          .Append(FILE_PATH_LITERAL(COMPANY_SHORTNAME_STRING "SoftwareUpdate"))
+          .Append(FILE_PATH_LITERAL(KEYSTONE_NAME))
           .AppendASCII("Actives");
   if (!CreateDirectory(actives_dir)) {
     return;
