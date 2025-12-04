@@ -626,6 +626,61 @@ TEST_F(ContextualSearchboxHandlerTestTabsTest, DeleteContext_DelayUpload) {
   ASSERT_FALSE(handler().context_input_data().has_value());
 }
 
+// Tests that context input data is set when there is delayed
+// context, and cleared when in multi-context mode.
+TEST_F(ContextualSearchboxHandlerTestTabsTest,
+       ContextInputDataChangesOnMultiContext) {
+  // Add delayed context and ensure context input data is set.
+  auto url1 = GURL("https://www.google.com");
+  tabs::TabInterface* tab1 = AddTab(url1);
+  const int tab_id1 = tab1->GetHandle().raw_value();
+
+  MockTabContextualizationController* tab_contextualization_controller1 =
+      static_cast<MockTabContextualizationController*>(
+          tab1->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*tab_contextualization_controller1, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+
+  base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
+  handler().AddTabContext(tab_id1, /*delay_upload=*/true, callback.Get());
+  // Flush the mojo pipe to ensure the callback is run.
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(handler().context_input_data().has_value());
+
+  // Add non-delayed context and ensure context input data has no value.
+  auto url2 = GURL("https://www.wikipedia.com");
+  tabs::TabInterface* tab2 = AddTab(url2);
+  const int tab_id2 = tab2->GetHandle().raw_value();
+  MockTabContextualizationController* tab_contextualization_controller2 =
+      static_cast<MockTabContextualizationController*>(
+          tab2->GetTabFeatures()->tab_contextualization_controller());
+  EXPECT_CALL(*tab_contextualization_controller2, GetPageContext(testing::_))
+      .WillOnce([](lens::TabContextualizationController::GetPageContextCallback
+                       callback) {
+        std::move(callback).Run(std::make_unique<lens::ContextualInputData>());
+      });
+
+  EXPECT_CALL(query_controller(),
+              StartFileUploadFlow(testing::_, testing::NotNull(), testing::_))
+      .Times(1);
+  base::test::TestFuture<const std::optional<base::UnguessableToken>&> future;
+  handler().AddTabContext(tab_id2, /*delay_upload=*/false,
+                          future.GetCallback());
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_FALSE(handler().context_input_data().has_value());
+
+  // Delete the non-delayed context and ensure context input data now has a
+  // value again because the only context left is of delayed type.
+  auto token = future.Get().value();
+  handler().DeleteContext(token);
+  mock_searchbox_page_.FlushForTesting();
+  mock_searchbox_page_.FlushForTesting();
+  ASSERT_TRUE(handler().context_input_data().has_value());
+}
+
 TEST_F(ContextualSearchboxHandlerTestTabsTest, AddTabContextNotFound) {
   base::MockCallback<ComposeboxHandler::AddTabContextCallback> callback;
   EXPECT_CALL(callback, Run).Times(1);
