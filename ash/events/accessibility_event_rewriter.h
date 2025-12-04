@@ -11,6 +11,7 @@
 #include <set>
 
 #include "ash/ash_export.h"
+#include "base/cancelable_callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -183,6 +184,10 @@ class ASH_EXPORT AccessibilityEventRewriter
   // Pending key events. These events are either canceled or propagated after
   // the ChromeVox extension decides what to do with each event.
   std::queue<PendingEventInfo> pending_key_events_;
+
+  // The callback for in-flight async request to send all pending events.
+  // Used to cancel the request if a new request is received.
+  base::CancelableOnceCallback<void()> send_all_pending_events_callback_;
 
   // Used to monitor input method changes.
   base::ScopedObservation<input_method::InputMethodManager,

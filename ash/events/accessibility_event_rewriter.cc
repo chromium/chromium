@@ -67,6 +67,16 @@ void MaybeLogEventDispatchError(
 }
 #endif
 
+void DumpWithoutCrashingHelper(const std::string& message) {
+  std::ostringstream errorStream;
+  errorStream << message;
+  LOG(ERROR) << errorStream.str();
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "chromevox_mv3_key_events", base::debug::CrashKeySize::Size1024);
+  base::debug::SetCrashKeyString(crash_key, errorStream.str());
+  base::debug::DumpWithoutCrashing();
+}
+
 }  // namespace
 
 AccessibilityEventRewriter::PendingEventInfo::PendingEventInfo(
@@ -120,7 +130,14 @@ void AccessibilityEventRewriter::ProcessPendingSpokenFeedbackEvent(
   CHECK(Shell::Get()->accessibility_controller()->spoken_feedback().enabled());
   CHECK(::features::IsAccessibilityManifestV3EnabledForChromeVox());
   CHECK(chromevox_mv3_key_handling_enabled_);
-  CHECK(!pending_key_events_.empty());
+  if (pending_key_events_.empty()) {
+    // The queue can be empty in edge cases where ChromeVox is toggled off and
+    // back on in quick succession.
+    DumpWithoutCrashingHelper(
+        "Couldn't process pending key event because "
+        "the queue is empty");
+    return;
+  }
 
   const auto& pending_event_info = pending_key_events_.front();
   CHECK_EQ(id, pending_event_info.id);
@@ -184,18 +201,18 @@ void AccessibilityEventRewriter::SetSpokenFeedbackMv3KeyHandlingEnabled(
 
   if (enabled) {
     // Ensure we are starting with a clean state.
-    CHECK_EQ(0u, next_pending_event_id_);
     CHECK(pending_key_events_.empty());
   } else {
     // Post a task to propagate all pending events. We can't immediately
     // propagate them here because there is a chance that the front-most event
     // is still in-use; this happens if ChromeVox is disabled with the keyboard
-    // accelerator.
+    // accelerator. We use a cancelable callback to prevent repeatedly clearing
+    // the event queue.
+    send_all_pending_events_callback_.Reset(base::BindOnce(
+        &AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents,
+        GetWeakPtr()));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents,
-            GetWeakPtr()));
+        FROM_HERE, send_all_pending_events_callback_.callback());
   }
   chromevox_mv3_key_handling_enabled_ = enabled;
 }
@@ -246,16 +263,9 @@ bool AccessibilityEventRewriter::RewriteEventForChromeVox(
   if (::features::IsAccessibilityManifestV3EnabledForChromeVox() &&
       chromevox_mv3_key_handling_enabled_) {
     if (pending_key_events_.size() >= kMaxPendingEvents) {
-      std::ostringstream errorStream;
-      errorStream
-          << "AccessibilityEventRewriter: dropping key event due to full "
-             "queue"
-          << rewritten_key_event->ToString();
-      LOG(ERROR) << errorStream.str();
-      static auto* const crash_key = base::debug::AllocateCrashKeyString(
-          "chromevox_mv3_key_events", base::debug::CrashKeySize::Size1024);
-      base::debug::SetCrashKeyString(crash_key, errorStream.str());
-      base::debug::DumpWithoutCrashing();
+      DumpWithoutCrashingHelper(std::string(
+          "AccessibilityEventRewriter: dropping key event due to full queue: " +
+          rewritten_key_event->ToString()));
       return true;
     }
 
@@ -486,8 +496,6 @@ void AccessibilityEventRewriter::SendAllPendingSpokenFeedbackEvents() {
                     pending_event_info.event.get());
     pending_key_events_.pop();
   }
-
-  next_pending_event_id_ = 0;
 }
 
 }  // namespace ash

@@ -603,11 +603,11 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, NextPendingEventId) {
   generator().ReleaseKey(ui::VKEY_A, ui::EF_NONE);
   EXPECT_EQ(2u, next_pending_event_id());
 
-  // Turning ChromeVox off will reset the counter.
+  // The unique ID counter will never be reset, even if ChromeVox is toggled
+  // off.
   controller->SetSpokenFeedbackEnabled(false, A11Y_NOTIFICATION_NONE);
   EXPECT_FALSE(controller->spoken_feedback().enabled());
-  EXPECT_TRUE(
-      base::test::RunUntil([this]() { return next_pending_event_id() == 0u; }));
+  EXPECT_EQ(2u, next_pending_event_id());
 }
 
 TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, TabKey) {
@@ -859,6 +859,22 @@ TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest, TearDownWithPendingEvents) {
 
   // If there are problems with teardown while there is a pending event, it
   // will be caught by memory sanitizers.
+}
+
+TEST_F(ChromeVoxMv3AccessibilityEventRewriterTest,
+       ProcessPendingEventEmptyQueue) {
+  AccessibilityController* controller = GetAccessibilityController();
+  controller->SetSpokenFeedbackEnabled(true, A11Y_NOTIFICATION_NONE);
+  EXPECT_TRUE(controller->spoken_feedback().enabled());
+  accessibility_event_rewriter().SetSpokenFeedbackMv3KeyHandlingEnabled(true);
+
+  // Attempt to propagate an event when the pending queue is empty. This can
+  // theoretically happen in edge cases where ChromeVox is toggled off and back
+  // on in quick succession.
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
+  accessibility_event_rewriter().ProcessPendingSpokenFeedbackEvent(123, true);
+  EXPECT_EQ(0, event_recorder().events_seen());
+  EXPECT_EQ(0U, GetPendingKeyEventsSize());
 }
 
 class MouseKeysAccessibilityEventRewriterTest
