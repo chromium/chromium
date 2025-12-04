@@ -1085,6 +1085,10 @@ class MediaCodecBridge {
     @CalledByNative
     private boolean setSurface(Surface surface) {
         try {
+            if (surface == null || !surface.isValid()) {
+                Log.e(TAG, "Refusing to set an invalid surface.");
+                return false;
+            }
             mMediaCodec.setOutputSurface(surface);
         } catch (IllegalArgumentException | IllegalStateException e) {
             Log.e(TAG, "Cannot set output surface", e);
