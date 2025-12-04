@@ -142,6 +142,7 @@
 //!     * [stderrlog]
 //!     * [flexi_logger]
 //!     * [call_logger]
+//!     * [std-logger]
 //!     * [structured-logger]
 //!     * [clang_log]
 //!     * [ftail]
@@ -166,6 +167,7 @@
 //! * Utilities:
 //!     * [log_err]
 //!     * [log-reload]
+//!     * [alterable_logger]
 //!
 //! # Implementing a Logger
 //!
@@ -322,6 +324,7 @@
 //! [stderrlog]: https://docs.rs/stderrlog/*/stderrlog/
 //! [flexi_logger]: https://docs.rs/flexi_logger/*/flexi_logger/
 //! [call_logger]: https://docs.rs/call_logger/*/call_logger/
+//! [std-logger]: https://docs.rs/std-logger/*/std_logger/
 //! [syslog]: https://docs.rs/syslog/*/syslog/
 //! [slog-stdlog]: https://docs.rs/slog-stdlog/*/slog_stdlog/
 //! [log4rs]: https://docs.rs/log4rs/*/log4rs/
@@ -338,13 +341,14 @@
 //! [logcontrol-log]: https://docs.rs/logcontrol-log/*/logcontrol_log/
 //! [log_err]: https://docs.rs/log_err/*/log_err/
 //! [log-reload]: https://docs.rs/log-reload/*/log_reload/
+//! [alterable_logger]: https://docs.rs/alterable_logger/*/alterable_logger
 //! [clang_log]: https://docs.rs/clang_log/latest/clang_log
 //! [ftail]: https://docs.rs/ftail/latest/ftail
 
 #![doc(
-    html_logo_url = "https://www.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
-    html_favicon_url = "https://www.rust-lang.org/favicon.ico",
-    html_root_url = "https://docs.rs/log/0.4.28"
+    html_logo_url = "https://prev.rust-lang.org/logos/rust-logo-128x128-blk-v2.png",
+    html_favicon_url = "https://prev.rust-lang.org/favicon.ico",
+    html_root_url = "https://docs.rs/log/0.4.29"
 )]
 #![warn(missing_docs)]
 #![deny(missing_debug_implementations, unconditional_recursion)]
@@ -511,14 +515,13 @@ impl PartialOrd<LevelFilter> for Level {
 impl FromStr for Level {
     type Err = ParseLevelError;
     fn from_str(level: &str) -> Result<Level, Self::Err> {
-        LOG_LEVEL_NAMES
-            .iter()
-            .position(|&name| name.eq_ignore_ascii_case(level))
-            .into_iter()
-            .filter(|&idx| idx != 0)
-            .map(|idx| Level::from_usize(idx).unwrap())
-            .next()
-            .ok_or(ParseLevelError(()))
+        // iterate from 1, excluding "OFF"
+        for idx in 1..LOG_LEVEL_NAMES.len() {
+            if LOG_LEVEL_NAMES[idx].eq_ignore_ascii_case(level) {
+                return Ok(Level::from_usize(idx).unwrap());
+            }
+        }
+        Err(ParseLevelError(()))
     }
 }
 
@@ -662,11 +665,13 @@ impl PartialOrd<Level> for LevelFilter {
 impl FromStr for LevelFilter {
     type Err = ParseLevelError;
     fn from_str(level: &str) -> Result<LevelFilter, Self::Err> {
-        LOG_LEVEL_NAMES
-            .iter()
-            .position(|&name| name.eq_ignore_ascii_case(level))
-            .map(|p| LevelFilter::from_usize(p).unwrap())
-            .ok_or(ParseLevelError(()))
+        // iterate from 0, including "OFF"
+        for idx in 0..LOG_LEVEL_NAMES.len() {
+            if LOG_LEVEL_NAMES[idx].eq_ignore_ascii_case(level) {
+                return Ok(LevelFilter::from_usize(idx).unwrap());
+            }
+        }
+        Err(ParseLevelError(()))
     }
 }
 
@@ -938,7 +943,7 @@ impl<'a> Record<'a> {
     /// Create a new [`RecordBuilder`](struct.RecordBuilder.html) based on this record.
     #[cfg(feature = "kv")]
     #[inline]
-    pub fn to_builder(&self) -> RecordBuilder {
+    pub fn to_builder(&self) -> RecordBuilder<'_> {
         RecordBuilder {
             record: Record {
                 metadata: Metadata {

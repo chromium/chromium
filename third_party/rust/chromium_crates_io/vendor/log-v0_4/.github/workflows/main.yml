@@ -35,11 +35,10 @@ jobs:
             rust: stable-x86_64-pc-windows-gnu
     steps:
     - uses: actions/checkout@v4
-    - name: Install toolchain
-      run: |
-        rustup update ${{ matrix.rust }} --no-self-update
-        rustup default ${{ matrix.rust }}
-        cargo +stable install cargo-hack --locked
+    - uses: dtolnay/rust-toolchain@master
+      with:
+        toolchain: ${{ matrix.rust }}
+    - uses: taiki-e/install-action@cargo-hack
     - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
     - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
@@ -49,11 +48,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install toolchain
-      run: |
-        rustup update stable --no-self-update
-        rustup default stable
-        rustup component add clippy rustfmt
+    - uses: dtolnay/rust-toolchain@stable
+      with:
+        components: clippy
     - run: cargo fmt -- --check
     - run: cargo fmt --manifest-path test_max_level_features/Cargo.toml -- --check
     - run: cargo clippy --verbose
@@ -64,25 +61,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Install toolchain
-      run: |
-        rustup update stable --no-self-update
-        rustup default stable
-        rustup component add rust-docs
+    - uses: dtolnay/rust-toolchain@stable
     - name: Run rustdoc
       env:
         RUSTDOCFLAGS: "-D warnings"
-      run: cargo doc --verbose --features std,serde,sval,sval_ref,value-bag,kv,kv_std,kv_sval,kv_serde
+      run: cargo doc --verbose --features std,kv,kv_std,kv_sval,kv_serde
 
   features:
     name: Feature check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install toolchain
-        run: |
-          rustup update nightly --no-self-update
-          rustup default nightly
+      - uses: dtolnay/rust-toolchain@nightly
       - run: cargo build --verbose -Z avoid-dev-deps --features kv
       - run: cargo build --verbose -Z avoid-dev-deps --features "kv std"
       - run: cargo build --verbose -Z avoid-dev-deps --features "kv kv_sval"
@@ -95,10 +85,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install toolchain
-        run: |
-          rustup update nightly --no-self-update
-          rustup default nightly
+      - uses: dtolnay/rust-toolchain@nightly
       - run: cargo build --verbose -Z minimal-versions --features kv
       - run: cargo build --verbose -Z minimal-versions --features "kv std"
       - run: cargo build --verbose -Z minimal-versions --features "kv kv_sval"
@@ -111,11 +98,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install toolchain
-        run: |
-          rustup update 1.61.0 --no-self-update
-          rustup default 1.61.0
-          cargo +stable install cargo-hack --locked
+      - uses: dtolnay/rust-toolchain@1.68.0
+        with:
+          components: clippy
+      - uses: taiki-e/install-action@cargo-hack
       - run: cargo hack test --feature-powerset --exclude-features max_level_off,max_level_error,max_level_warn,max_level_info,max_level_debug,max_level_trace,release_max_level_off,release_max_level_error,release_max_level_warn,release_max_level_info,release_max_level_debug,release_max_level_trace
       - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml
       - run: cargo run --verbose --manifest-path test_max_level_features/Cargo.toml --release
@@ -125,10 +111,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install toolchain
-        run: |
-          rustup update stable --no-self-update
-          rustup default stable
+      - uses: dtolnay/rust-toolchain@stable
       - run: rustup target add thumbv6m-none-eabi riscv32imc-unknown-none-elf
       - run: cargo build --verbose --target=thumbv6m-none-eabi
       - run: cargo build --verbose --target=riscv32imc-unknown-none-elf

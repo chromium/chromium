@@ -191,7 +191,7 @@
 //!
 //! ```
 //! # fn main() -> Result<(), Box<dyn std::error::Error>> {
-//! # #[cfg(feature = "serde")]
+//! # #[cfg(feature = "kv_serde")]
 //! # {
 //! # use log::kv::Key;
 //! #[derive(serde::Serialize)]

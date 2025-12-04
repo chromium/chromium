@@ -11,9 +11,9 @@
 
 [package]
 edition = "2021"
-rust-version = "1.61.0"
+rust-version = "1.68.0"
 name = "log"
-version = "0.4.28"
+version = "0.4.29"
 authors = ["The Rust Project Developers"]
 build = false
 exclude = ["rfcs/**/*"]
@@ -87,6 +87,7 @@ release_max_level_info = []
 release_max_level_off = []
 release_max_level_trace = []
 release_max_level_warn = []
+serde = ["serde_core"]
 std = []
 
 [lib]
@@ -105,23 +106,23 @@ path = "tests/macros.rs"
 name = "value"
 path = "benches/value.rs"
 
-[dependencies.serde]
+[dependencies.serde_core]
 version = "1.0"
 optional = true
 default-features = false
 
 [dependencies.sval]
-version = "2.14.1"
+version = "2.16"
 optional = true
 default-features = false
 
 [dependencies.sval_ref]
-version = "2.1"
+version = "2.16"
 optional = true
 default-features = false
 
 [dependencies.value-bag]
-version = "1.7"
+version = "1.12"
 features = ["inline-i128"]
 optional = true
 default-features = false
@@ -141,11 +142,11 @@ version = "1.0"
 version = "1.0"
 
 [dev-dependencies.sval]
-version = "2.1"
+version = "2.16"
 
 [dev-dependencies.sval_derive]
-version = "2.1"
+version = "2.16"
 
 [dev-dependencies.value-bag]
-version = "1.7"
+version = "1.12"
 features = ["test"]

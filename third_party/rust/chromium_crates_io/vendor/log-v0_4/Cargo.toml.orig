@@ -1,7 +1,7 @@
 [package]
 
 name = "log"
-version = "0.4.28" # remember to update html_root_url
+version = "0.4.29" # remember to update html_root_url
 authors = ["The Rust Project Developers"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -13,7 +13,7 @@ A lightweight logging facade for Rust
 categories = ["development-tools::debugging"]
 keywords = ["logging"]
 exclude = ["rfcs/**/*"]
-rust-version = "1.61.0"
+rust-version = "1.68.0"
 edition = "2021"
 
 [package.metadata.docs.rs]
@@ -41,6 +41,11 @@ kv_sval = ["kv", "value-bag/sval", "sval", "sval_ref"]
 kv_std = ["std", "kv", "value-bag/error"]
 kv_serde = ["kv_std", "value-bag/serde", "serde"]
 
+# This is here to not break backwards compatibility with the implicit feature
+# that enables support for serde based on the dependency name. Since we're now
+# using serde_core, the implicit feature was renamed, this adds back an alias.
+serde = ["serde_core"]
+
 # Deprecated: use `kv_*` instead
 # These `*_unstable` features will be removed in a future release
 kv_unstable = ["kv", "value-bag"]
@@ -49,18 +54,18 @@ kv_unstable_std = ["kv_std", "kv_unstable"]
 kv_unstable_serde = ["kv_serde", "kv_unstable_std"]
 
 [dependencies]
-serde = { version = "1.0", optional = true, default-features = false }
-sval = { version = "2.14.1", optional = true, default-features = false }
-sval_ref = { version = "2.1", optional = true, default-features = false }
-value-bag = { version = "1.7", optional = true, default-features = false, features = ["inline-i128"] }
+serde_core = { version = "1.0", optional = true, default-features = false }
+sval = { version = "2.16", optional = true, default-features = false }
+sval_ref = { version = "2.16", optional = true, default-features = false }
+value-bag = { version = "1.12", optional = true, default-features = false, features = ["inline-i128"] }
 
 [dev-dependencies]
 serde = { version = "1.0", features = ["derive"] }
 serde_json = { version = "1.0" }
 serde_test = { version = "1.0" }
-sval = { version = "2.1" }
-sval_derive = { version = "2.1" }
-value-bag = { version = "1.7", features = ["test"] }
+sval = { version = "2.16" }
+sval_derive = { version = "2.16" }
+value-bag = { version = "1.12", features = ["test"] }
 
 # NOTE: log doesn't actually depend on this crate. However, our dependencies,
 # serde and sval, dependent on version 1.0 of the crate, which has problem fixed

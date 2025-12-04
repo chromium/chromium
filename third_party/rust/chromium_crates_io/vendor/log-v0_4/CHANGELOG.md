@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [0.4.29] - 2025-12-02
+
+## What's Changed
+* perf: reduce llvm-lines of FromStr for `Level` and `LevelFilter` by @dishmaker in https://github.com/rust-lang/log/pull/709
+* Replace serde with serde_core by @Thomasdezeeuw in https://github.com/rust-lang/log/pull/712
+
+## New Contributors
+* @AldaronLau made their first contribution in https://github.com/rust-lang/log/pull/703
+* @dishmaker made their first contribution in https://github.com/rust-lang/log/pull/709
+
+**Full Changelog**: https://github.com/rust-lang/log/compare/0.4.28...0.4.29
+
 ## [0.4.28] - 2025-09-02
 
 ## What's Changed
@@ -377,7 +389,8 @@ version using log 0.4.x to avoid losing module and file information.
 
 Look at the [release tags] for information about older releases.
 
-[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.28...HEAD
+[Unreleased]: https://github.com/rust-lang-nursery/log/compare/0.4.29...HEAD
+[0.4.29]: https://github.com/rust-lang/log/compare/0.4.28...0.4.29
 [0.4.28]: https://github.com/rust-lang/log/compare/0.4.27...0.4.28
 [0.4.27]: https://github.com/rust-lang/log/compare/0.4.26...0.4.27
 [0.4.26]: https://github.com/rust-lang/log/compare/0.4.25...0.4.26
