@@ -786,6 +786,7 @@ void FillInTabObservation(
 namespace {
 
 void FetchCallback(
+    TabHandle tab_handle,
     base::WeakPtr<Profile> profile,
     TaskId task_id,
     base::RepeatingClosure barrier,
@@ -804,8 +805,32 @@ void FetchCallback(
     return;
   }
 
+  auto* actor_service = actor::ActorKeyedService::Get(profile.get());
+  TabInterface* const tab = tab_handle.Get();
+
+  if (!tab || !tab->GetContents()) {
+    actor_service->GetJournal().Log(GURL(), task_id, "FetchCallback",
+                                    JournalDetailsBuilder()
+                                        .Add("tabId", tab_observation->id())
+                                        .AddError("TabWentAway")
+                                        .Build());
+    tab_observation->set_result(
+        apc::TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY);
+    return;
+  }
+
+  if (tab->GetContents()->IsCrashed()) {
+    actor_service->GetJournal().Log(GURL(), task_id, "FetchCallback",
+                                    JournalDetailsBuilder()
+                                        .Add("tabId", tab_observation->id())
+                                        .AddError("Page crashed")
+                                        .Build());
+    tab_observation->set_result(
+        apc::TabObservation::TAB_OBSERVATION_PAGE_CRASHED);
+    return;
+  }
+
   if (!result.has_value()) {
-    auto* actor_service = actor::ActorKeyedService::Get(profile.get());
     actor_service->GetJournal().Log(
         GURL(), task_id, result.error(),
         JournalDetailsBuilder().Add("tabId", tab_observation->id()).Build());
@@ -1019,8 +1044,8 @@ void BuildActionsResultWithObservations(
     // by the barrier which is ref-counted.
     actor_service->RequestTabObservation(
         *tab, task.id(),
-        base::BindOnce(FetchCallback, profile->GetWeakPtr(), task.id(), barrier,
-                       base::Unretained(tab_observation),
+        base::BindOnce(FetchCallback, tab->GetHandle(), profile->GetWeakPtr(),
+                       task.id(), barrier, base::Unretained(tab_observation),
                        action_results, actions_start_time,
                        base::TimeTicks::Now(), base::Unretained(latency_info)));
   }
