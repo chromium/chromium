@@ -165,12 +165,12 @@ BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetMaxWidth,
                    &kSideBySide,
                    "drop_target_max_width",
-                   360);
+                   420);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetTargetWidthPercentage,
                    &kSideBySide,
                    "drop_target_width_percentage",
-                   15);
+                   30);
 BASE_FEATURE_PARAM(int,
                    kSideBySideDropTargetForLinkTargetWidthPercentage,
                    &kSideBySide,
