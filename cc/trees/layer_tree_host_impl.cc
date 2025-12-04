@@ -140,6 +140,7 @@
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_feature_info.h"
 #include "gpu/ipc/client/client_shared_image_interface.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
@@ -3557,6 +3558,7 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   const auto& context_caps = worker_context_provider->ContextCapabilities();
   const auto& shared_image_caps =
       worker_context_provider->SharedImageInterface()->GetCapabilities();
+  const auto& gpu_feature_info = worker_context_provider->GetGpuFeatureInfo();
 
   raster_caps_.max_texture_size = context_caps.max_texture_size;
   raster_caps_.ui_rgba_format =
@@ -3566,7 +3568,10 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
       settings_.use_gpu_memory_buffer_resources &&
       shared_image_caps.supports_scanout_shared_images;
 
-  if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+  if (settings_.gpu_rasterization_disabled ||
+      gpu_feature_info
+              .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] !=
+          gpu::kGpuFeatureStatusEnabled) {
     // This is the GPU compositing but software rasterization path. Pick the
     // best format for GPU textures to be uploaded to.
     raster_caps_.tile_format =
