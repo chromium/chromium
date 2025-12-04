@@ -4,7 +4,7 @@
 
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(is_mac || is_win)
+assert(is_mac || is_win || is_linux)
 
 build_webui("build") {
   grd_prefix = "updater"

@@ -599,7 +599,7 @@ template("chrome_extra_paks") {
       ]
     }
 
-    if (is_mac || is_win) {
+    if (is_mac || is_win || is_linux) {
       sources += [ "$root_gen_dir/chrome/updater_resources.pak" ]
       deps += [ "//chrome/browser/resources/updater:resources" ]
     }

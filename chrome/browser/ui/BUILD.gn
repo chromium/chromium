@@ -2980,6 +2980,8 @@ static_library("ui") {
       "webui/settings/settings_manage_profile_handler.h",
       "webui/settings/system_handler.cc",
       "webui/settings/system_handler.h",
+      "webui/updater/updater_ui.cc",
+      "webui/updater/updater_ui.h",
     ]
 
     deps += [
@@ -3065,10 +3067,6 @@ static_library("ui") {
   }
 
   if (is_win || is_mac) {
-    sources += [
-      "webui/updater/updater_ui.cc",
-      "webui/updater/updater_ui.h",
-    ]
     deps += [
       "//chrome/browser/ui/pdf/infobar",
       "//chrome/browser/ui/startup/default_browser_prompt/pin_infobar",

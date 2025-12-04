@@ -137,7 +137,7 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUITermsHost,
 #endif
       kChromeUITranslateInternalsHost,
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
       kChromeUIUpdaterHost,
 #endif
       kChromeUIUsbInternalsHost,
