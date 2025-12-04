@@ -1320,9 +1320,19 @@ class TabImpl implements Tab {
      */
     @Deprecated
     @Nullable ChromeActivity getActivity() {
-        if (getWindowAndroid() == null) return null;
+        if (getWindowAndroid() == null) {
+            Log.e(TAG, "WindowAndroid is null when requesting activity.");
+            return null;
+        }
         Activity activity = ContextUtils.activityFromContext(getWindowAndroid().getContext().get());
-        if (activity instanceof ChromeActivity) return (ChromeActivity) activity;
+        if (activity instanceof ChromeActivity chromeActivity) {
+            return chromeActivity;
+        }
+        if (activity == null) {
+            Log.e(TAG, "Activity is null when requesting activity.");
+        } else {
+            Log.e(TAG, "Activity is not a ChromeActivity when requesting activity.");
+        }
         return null;
     }
 
