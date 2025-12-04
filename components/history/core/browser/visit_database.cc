@@ -375,7 +375,7 @@ bool VisitDatabase::FillVisitVectorWithOptions(sql::Statement& statement,
   return false;
 }
 
-VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
+VisitID VisitDatabase::AddVisit(VisitRow* visit) {
   sql::Statement statement(GetDB().GetCachedStatement(
       SQL_FROM_HERE,
       "INSERT INTO visits "
@@ -413,12 +413,12 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
 
   visit->visit_id = GetDB().GetLastInsertRowId();
 
-  if (source != SOURCE_BROWSED) {
+  if (visit->source != SOURCE_BROWSED) {
     // Record the source of this visit when it is not browsed.
     sql::Statement statement1(GetDB().GetCachedStatement(
         SQL_FROM_HERE, "INSERT INTO visit_source (id, source) VALUES (?,?)"));
     statement1.BindInt64(0, visit->visit_id);
-    statement1.BindInt64(1, source);
+    statement1.BindInt64(1, visit->source);
 
     if (!statement1.Run()) {
       DVLOG(0) << "Failed to execute visit_source insert statement:  "

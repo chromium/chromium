@@ -191,6 +191,7 @@ class VisitRow {
   // launched it; otherwise remains null.
   std::optional<std::string> app_id;
   // The source of the visit
+  // TODO(crbug.com/464528977): Wrap source with std::optional.
   history::VisitSource source = history::SOURCE_BROWSED;
   // We allow the implicit copy constructor and operator=.
 };
