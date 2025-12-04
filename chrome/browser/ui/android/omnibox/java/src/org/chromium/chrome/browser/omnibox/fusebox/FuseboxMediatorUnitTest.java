@@ -206,13 +206,14 @@ public class FuseboxMediatorUnitTest {
                     .thenReturn(null); // This will trigger addTabContextFromCache path
             when(mComposeBoxQueryControllerBridge.addTabContext(mockTab)).thenReturn(token);
             when(mComposeBoxQueryControllerBridge.addTabContextFromCache(0)).thenReturn(token);
-            mAttachments.add(FuseboxAttachment.forTab(mockTab, mResources));
+            mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(mockTab, mResources));
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_FILE) {
             doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
-            mAttachments.add(FuseboxAttachment.forFile(null, title, "image/", new byte[0]));
+            mMediator.uploadAndAddAttachment(
+                    FuseboxAttachment.forFile(null, title, "image/", new byte[0]));
         } else if (attachmentType == FuseboxAttachmentType.ATTACHMENT_IMAGE) {
             doReturn(token).when(mComposeBoxQueryControllerBridge).addFile(eq(title), any(), any());
-            mAttachments.add(
+            mMediator.uploadAndAddAttachment(
                     FuseboxAttachment.forCameraImage(
                             /* thumbnail= */ null, title, "image/", new byte[0]));
         } else {
@@ -221,7 +222,7 @@ public class FuseboxMediatorUnitTest {
     }
 
     private void addTabAttachment(Tab tab) {
-        mAttachments.add(FuseboxAttachment.forTab(tab, mResources));
+        mMediator.uploadAndAddAttachment(FuseboxAttachment.forTab(tab, mResources));
     }
 
     private Tab mockTab(int id, boolean webContentsReady) {
@@ -407,6 +408,18 @@ public class FuseboxMediatorUnitTest {
         FuseboxAttachment attachment = FuseboxAttachment.forFile(null, "title", "image", byteArray);
         mMediator.uploadAndAddAttachment(attachment);
         assertFalse(mModel.get(FuseboxProperties.ATTACHMENTS_VISIBLE));
+    }
+
+    @Test
+    public void testAddAttachment_replacesDuringCreateImage() {
+        addAttachment("title1", "token1", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(1, mAttachments.size());
+
+        mModel.get(FuseboxProperties.POPUP_CREATE_IMAGE_CLICKED).run();
+
+        addAttachment("title2", "token2", FuseboxAttachmentType.ATTACHMENT_IMAGE);
+        assertEquals(1, mAttachments.size());
+        assertEquals("token2", mAttachments.get(0).getToken());
     }
 
     @Test
