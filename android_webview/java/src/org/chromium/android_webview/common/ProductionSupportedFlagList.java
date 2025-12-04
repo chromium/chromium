@@ -1117,6 +1117,9 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "HttpCacheInitializeDiskCacheBackendEarly",
                 "If true, Initialize disk cache backend early for HTTP cache."),
+        Flag.baseFeature(
+                "PartitionAllocLockTuneSpin",
+                "When enabled, PartitionAlloc's SpinningMutex will use a different spin count."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
 
