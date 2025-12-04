@@ -346,6 +346,9 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     }
     gfx::Rect visible_geometry_rect =
         scaled_occlusion.GetUnoccludedContentRect(geometry_rect);
+    if (visible_geometry_rect.IsEmpty()) {
+      continue;
+    }
 
     gfx::Rect offset_geometry_rect = geometry_rect;
     offset_geometry_rect.Offset(quad_offset);
@@ -353,8 +356,6 @@ void PictureLayerImpl::AppendQuadsSpecialization(
     offset_visible_geometry_rect.Offset(quad_offset);
 
     bool needs_blending = !contents_opaque();
-    if (visible_geometry_rect.IsEmpty())
-      continue;
 
     uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
     append_quads_data->visible_layer_area += visible_geometry_area;
