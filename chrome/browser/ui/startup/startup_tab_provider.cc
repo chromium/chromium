@@ -78,9 +78,6 @@ namespace {
 // `kGoogleChromeScheme` feature is enabled. Returns true if the prefix was
 // stripped.
 bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
-#if BUILDFLAG(CHROME_FOR_TESTING)
-  return false;
-#else
   const base::FilePath kFullPrefixPath = base::FilePath::FromASCII(
       base::StrCat({shell_integration::GetDirectLaunchUrlScheme(),
                     url::kStandardSchemeSeparator}));
@@ -95,7 +92,6 @@ bool StripGoogleChromeScheme(base::FilePath::StringViewType& arg) {
     return true;
   }
   return false;
-#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 }
 
 // Attempts to find an existing, non-empty tabbed browser for this profile.
