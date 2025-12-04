@@ -282,7 +282,7 @@ void LocalBinaryUploadService::MaybeCancelRequests(
       // This does not calls the `FinishRequest()` method because it would
       // invalidate the iterator.
       it->request->FinishRequest(
-          enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+          enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
           ContentAnalysisResponse());
       it = pending_requests_.erase(it);
     } else {
@@ -522,7 +522,7 @@ void LocalBinaryUploadService::HandleResponse(
 #endif
 
     auto response = ConvertSDKResponseToChromeResponse(sdk_response.value());
-    FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+    FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::kSuccess,
                   std::move(response));
     ProcessNextPendingRequest();
   } else {
@@ -710,7 +710,7 @@ void LocalBinaryUploadService::OnTimeout(Request::Id id) {
   if (active_requests_.count(id) > 0) {
     const auto& info = active_requests_.at(id);
     RecordRequestMetrics(
-        info, enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
+        info, enterprise_connectors::ScanRequestUploadResult::kTimeout,
         ContentAnalysisResponse());
 
     std::unique_ptr<Ack> ack =
@@ -723,7 +723,7 @@ void LocalBinaryUploadService::OnTimeout(Request::Id id) {
               std::move(ack));
   }
 
-  FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
+  FinishRequest(id, enterprise_connectors::ScanRequestUploadResult::kTimeout,
                 ContentAnalysisResponse());
   ProcessNextPendingRequest();
 }
@@ -762,7 +762,7 @@ void LocalBinaryUploadService::RetryActiveRequestsSoonOrFailAllRequests(
          it = pending_requests_.begin()) {
       FinishRequest(
           it->request->id(),
-          enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+          enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
           ContentAnalysisResponse());
     }
   } else {

@@ -153,7 +153,7 @@ ResumableUploadRequestBase::ResumableUploadRequestBase(
                              ui_task_runner),
       verdict_received_callback_(std::move(verdict_received_callback)),
       content_uploaded_callback_(std::move(content_uploaded_callback)),
-      get_data_result_(ScanRequestUploadResult::SUCCESS),
+      get_data_result_(ScanRequestUploadResult::kSuccess),
       force_sync_upload_(force_sync_upload) {
   AssertCalledOnUIThread();
 }
@@ -416,8 +416,8 @@ void ResumableUploadRequestBase::OnMetadataUploadCompleted(
 
   // If chrome is being told to upload the content but the content is too large
   // or is encrypted and encrypted file upload is not enabled, fail now.
-  if (get_data_result_ == ScanRequestUploadResult::FILE_TOO_LARGE ||
-      (get_data_result_ == ScanRequestUploadResult::FILE_ENCRYPTED &&
+  if (get_data_result_ == ScanRequestUploadResult::kFileTooLarge ||
+      (get_data_result_ == ScanRequestUploadResult::kFileEncrypted &&
        !ShouldUploadEncryptedFile())) {
     Finish(net::ERR_FAILED, net::HTTP_BAD_REQUEST, std::move(response_body));
     return;

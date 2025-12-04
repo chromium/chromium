@@ -22,14 +22,14 @@ namespace {
 
 constexpr enterprise_connectors::ScanRequestUploadResult
     kAllBinaryUploadServiceResults[]{
-        enterprise_connectors::ScanRequestUploadResult::UNKNOWN,
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
-        enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
-        enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
-        enterprise_connectors::ScanRequestUploadResult::FAILED_TO_GET_TOKEN,
-        enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED,
-        enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED,
+        enterprise_connectors::ScanRequestUploadResult::kUnknown,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
+        enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
+        enterprise_connectors::ScanRequestUploadResult::kTimeout,
+        enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
+        enterprise_connectors::ScanRequestUploadResult::kFailedToGetToken,
+        enterprise_connectors::ScanRequestUploadResult::kUnauthorized,
+        enterprise_connectors::ScanRequestUploadResult::kFileEncrypted,
     };
 
 #if !BUILDFLAG(USE_CRASH_KEY_STUBS)
@@ -75,7 +75,7 @@ class DeepScanningUtilsUMATest
   }
 
   bool success() const {
-    return result() == enterprise_connectors::ScanRequestUploadResult::SUCCESS;
+    return result() == enterprise_connectors::ScanRequestUploadResult::kSuccess;
   }
 
   std::string result_value(bool success) const {
@@ -137,7 +137,7 @@ TEST_P(DeepScanningUtilsUMATest, SuccessfulScanVerdicts) {
   }
 
   if (result() ==
-      enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED) {
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     // We expect at least 2 histograms (<access-point>.Duration and
@@ -176,7 +176,7 @@ TEST_P(DeepScanningUtilsUMATest, UnsuccessfulDlpScanVerdicts) {
   }
 
   if (result() ==
-      enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED) {
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     auto recorded = histograms().GetTotalCountsForPrefix(metric_prefix());
@@ -205,7 +205,7 @@ TEST_P(DeepScanningUtilsUMATest, UnsuccessfulMalwareScanVerdict) {
   }
 
   if (result() ==
-      enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED) {
+      enterprise_connectors::ScanRequestUploadResult::kUnauthorized) {
     EXPECT_EQ(0u, histograms().GetTotalCountsForPrefix(metric_prefix()).size());
   } else {
     auto recorded = histograms().GetTotalCountsForPrefix(metric_prefix());

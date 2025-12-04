@@ -88,13 +88,13 @@ GetFileDataBlocking(const base::FilePath& path,
 
   if (!file.IsValid()) {
     return std::make_pair(
-        enterprise_connectors::ScanRequestUploadResult::UNKNOWN, file_data);
+        enterprise_connectors::ScanRequestUploadResult::kUnknown, file_data);
   }
 
   file_data.size = file.GetLength();
   if (file_data.size == 0) {
     return std::make_pair(
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS, file_data);
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, file_data);
   }
 
   std::unique_ptr<crypto::SecureHash> secure_hash =
@@ -109,7 +109,7 @@ GetFileDataBlocking(const base::FilePath& path,
       // Reset the size to zero since some code assumes an UNKNOWN result is
       // matched with a zero size.
       file_data.size = 0;
-      return {enterprise_connectors::ScanRequestUploadResult::UNKNOWN,
+      return {enterprise_connectors::ScanRequestUploadResult::kUnknown,
               file_data};
     }
 
@@ -154,8 +154,8 @@ GetFileDataBlocking(const base::FilePath& path,
         1024 * 1024 * enterprise_connectors::kMaxContentAnalysisFileSizeMB.Get();
   }
   return {file_data.size <= max_file_size_bytes
-              ? enterprise_connectors::ScanRequestUploadResult::SUCCESS
-              : enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
+              ? enterprise_connectors::ScanRequestUploadResult::kSuccess
+              : enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
           std::move(file_data)};
 }
 
@@ -248,7 +248,7 @@ void FileAnalysisRequest::OnGotFileData(
 
   scoped_file_access_.reset();
   if (result_and_data.first !=
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+      enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     CacheResultAndData(result_and_data.first,
                        std::move(result_and_data.second));
     RunCallback();
@@ -279,7 +279,7 @@ void FileAnalysisRequest::OnGotFileData(
         LaunchFileUtilService());
     rar_analyzer_->Start();
   } else {
-    CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+    CacheResultAndData(enterprise_connectors::ScanRequestUploadResult::kSuccess,
                        std::move(result_and_data.second));
     RunCallback();
   }
@@ -293,8 +293,8 @@ void FileAnalysisRequest::OnCheckedForEncryption(
                        EncryptionInfo::kKnownIncorrect;
 
   enterprise_connectors::ScanRequestUploadResult result =
-      encrypted ? enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED
-                : enterprise_connectors::ScanRequestUploadResult::SUCCESS;
+      encrypted ? enterprise_connectors::ScanRequestUploadResult::kFileEncrypted
+                : enterprise_connectors::ScanRequestUploadResult::kSuccess;
   CacheResultAndData(result, std::move(data));
   RunCallback();
 }

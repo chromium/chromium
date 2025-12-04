@@ -808,7 +808,7 @@ class FileTransferConnectorFilesAppBrowserTestBase {
     // Simulate a response.
     base::OnceClosure response =
         base::BindOnce(std::move(callback), path,
-                       enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+                       enterprise_connectors::ScanRequestUploadResult::kSuccess,
                        ConnectorStatusCallback(path));
     if (save_response_for_later_) {
       // We save the responses for later such that we can check the scanning

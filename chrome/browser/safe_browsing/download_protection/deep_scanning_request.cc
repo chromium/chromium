@@ -587,7 +587,7 @@ void DeepScanningRequest::OnDownloadRequestReady(
         std::move(deep_scan_request));
   } else {
     OnScanComplete(current_path,
-                   enterprise_connectors::ScanRequestUploadResult::UNKNOWN,
+                   enterprise_connectors::ScanRequestUploadResult::kUnknown,
                    enterprise_connectors::ContentAnalysisResponse());
   }
 }
@@ -618,12 +618,12 @@ void DeepScanningRequest::OnConsumerScanComplete(
     enterprise_connectors::ContentAnalysisResponse response) {
   bool is_invalid_password =
       result ==
-          enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED ||
-      (result == enterprise_connectors::ScanRequestUploadResult::SUCCESS &&
+          enterprise_connectors::ScanRequestUploadResult::kFileEncrypted ||
+      (result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
        metadata_->IsTopLevelEncryptedArchive() &&
        HasDecryptionFailedResult(response));
   bool is_success =
-      result == enterprise_connectors::ScanRequestUploadResult::SUCCESS &&
+      result == enterprise_connectors::ScanRequestUploadResult::kSuccess &&
       !is_invalid_password;
   CHECK(IsConsumerTriggered());
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
@@ -660,24 +660,23 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
 
   DownloadCheckResult download_result = DownloadCheckResult::UNKNOWN;
 
-  if (result ==
-          enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE &&
+  if (result == enterprise_connectors::ScanRequestUploadResult::kFileTooLarge &&
       analysis_settings_.block_large_files) {
     download_result = DownloadCheckResult::BLOCKED_TOO_LARGE;
   } else if (result == enterprise_connectors::ScanRequestUploadResult::
-                           FILE_ENCRYPTED &&
+                           kFileEncrypted &&
              analysis_settings_.block_password_protected_files) {
     download_result = DownloadCheckResult::BLOCKED_PASSWORD_PROTECTED;
     // WebProtect could still issue a block or warn verdict based on the
     // metadata of large or encrypted files. Therefore we should check the
     // `response` for these two cases as well.
   } else if (result == enterprise_connectors::ScanRequestUploadResult::
-                           FILE_TOO_LARGE ||
+                           kFileTooLarge ||
              result == enterprise_connectors::ScanRequestUploadResult::
-                           FILE_ENCRYPTED) {
+                           kFileEncrypted) {
     MaybeUpdateDownloadCheckResult(response, download_result);
   } else if (result ==
-             enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+             enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     request_tokens_.push_back(response.request_token());
     download_result = ResponseToDownloadCheckResult(response);
     if (download_result == DownloadCheckResult::FORCE_SAVE_TO_GDRIVE) {
@@ -1029,7 +1028,7 @@ bool DeepScanningRequest::ShouldTerminateEarly(
                    result, analysis_settings_.block_large_files,
                    analysis_settings_.block_password_protected_files)
              : result !=
-                   enterprise_connectors::ScanRequestUploadResult::SUCCESS;
+                   enterprise_connectors::ScanRequestUploadResult::kSuccess;
 }
 
 void DeepScanningRequest::OpenDownload() {

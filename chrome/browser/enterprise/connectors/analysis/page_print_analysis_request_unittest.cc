@@ -26,8 +26,8 @@ static base::ReadOnlySharedMemoryRegion CreateFakePage(size_t page_size) {
 }
 
 constexpr std::pair<ScanRequestUploadResult, size_t> kTestValues[] = {
-    {ScanRequestUploadResult::SUCCESS, 1024},
-    {ScanRequestUploadResult::FILE_TOO_LARGE, 50 * 1024 * 1024}};
+    {ScanRequestUploadResult::kSuccess, 1024},
+    {ScanRequestUploadResult::kFileTooLarge, 50 * 1024 * 1024}};
 
 class PagePrintAnalysisRequestTest
     : public testing::TestWithParam<
@@ -88,7 +88,7 @@ TEST_P(PagePrintAnalysisRequestTest, LocalSizes) {
         ASSERT_TRUE(data.mime_type.empty());
         ASSERT_TRUE(data.path.empty());
 
-        ASSERT_EQ(result, ScanRequestUploadResult::SUCCESS);
+        ASSERT_EQ(result, ScanRequestUploadResult::kSuccess);
         ASSERT_EQ(data.size, page_size());
         ASSERT_EQ(data.page.GetSize(), page_size());
         ASSERT_TRUE(data.page.IsValid());

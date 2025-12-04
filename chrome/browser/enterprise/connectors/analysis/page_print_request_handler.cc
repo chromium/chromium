@@ -205,10 +205,10 @@ void PagePrintRequestHandler::FinishLargeDataRequestEarly(
       ->AddToDeepScanResponses(
           /*token=*/"",
           ScanRequestUploadResultToString(
-              ScanRequestUploadResult::FILE_TOO_LARGE),
+              ScanRequestUploadResult::kFileTooLarge),
           enterprise_connectors::ContentAnalysisResponse());
 
-  request->FinishRequest(ScanRequestUploadResult::FILE_TOO_LARGE,
+  request->FinishRequest(ScanRequestUploadResult::kFileTooLarge,
                          enterprise_connectors::ContentAnalysisResponse());
 }
 

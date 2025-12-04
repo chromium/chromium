@@ -812,7 +812,7 @@ class FileTransferAnalysisDelegateAuditOnlyTest : public BaseTest {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(std::move(callback), path,
-                       ScanRequestUploadResult::SUCCESS,
+                       ScanRequestUploadResult::kSuccess,
                        ConnectorStatusCallback(path)),
         kResponseDelay);
   }

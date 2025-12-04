@@ -30,7 +30,7 @@ class ClipboardAnalysisRequest
 
  private:
   Data data_;
-  ScanRequestUploadResult result_ = ScanRequestUploadResult::FILE_TOO_LARGE;
+  ScanRequestUploadResult result_ = ScanRequestUploadResult::kFileTooLarge;
 };
 
 }  // namespace enterprise_connectors

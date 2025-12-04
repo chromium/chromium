@@ -85,7 +85,7 @@ class TestDragDropRequestHandler
         FROM_HERE,
         base::BindOnce(&TestDragDropRequestHandler::OnContentAnalysisResponse,
                        base::Unretained(this),
-                       enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+                       enterprise_connectors::ScanRequestUploadResult::kSuccess,
                        delegate_->GetStatus(data.contents, base::FilePath())));
   }
 };

@@ -191,9 +191,9 @@ bool IgnoreErrorResultForResumableUpload(
     enterprise_connectors::ScanRequestUploadResult result) {
   return enterprise_connectors::IsResumableUpload(*request) &&
          (result ==
-              enterprise_connectors::ScanRequestUploadResult ::FILE_TOO_LARGE ||
+              enterprise_connectors::ScanRequestUploadResult ::kFileTooLarge ||
           result ==
-              enterprise_connectors::ScanRequestUploadResult ::FILE_ENCRYPTED);
+              enterprise_connectors::ScanRequestUploadResult ::kFileEncrypted);
 }
 
 }  // namespace
@@ -246,8 +246,8 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     const enterprise_connectors::ScanRequestUploadResult
         is_deep_scan_authorized =
             is_advanced_protection || is_enhanced_protection
-                ? enterprise_connectors::ScanRequestUploadResult ::SUCCESS
-                : enterprise_connectors::ScanRequestUploadResult ::UNAUTHORIZED;
+                ? enterprise_connectors::ScanRequestUploadResult::kSuccess
+                : enterprise_connectors::ScanRequestUploadResult::kUnauthorized;
     MaybeUploadForDeepScanningCallback(
         std::move(request),
         /*auth_check_result=*/is_deep_scan_authorized);
@@ -263,7 +263,7 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
     MaybeUploadForDeepScanningCallback(
         std::move(request),
         /*authorized*/ enterprise_connectors::ScanRequestUploadResult::
-            UNAUTHORIZED);
+            kUnauthorized);
     return;
   }
 
@@ -271,7 +271,7 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanning(
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
       can_upload_enterprise_data_[token_and_connector] !=
-          enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     // Get data from `request` before calling `IsAuthorized` since it is about
     // to move.
     GURL url = request->GetUrlWithParams();
@@ -309,7 +309,7 @@ void CloudBinaryUploadService::MaybeUploadForDeepScanningCallback(
     enterprise_connectors::ScanRequestUploadResult auth_check_result) {
   // Ignore the request if the browser cannot upload data.
   if (auth_check_result !=
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+      enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     // TODO(crbug.com/40660637): Add extra logic to handle UX for non-authorized
     // users.
     request->FinishRequest(auth_check_result,
@@ -376,7 +376,7 @@ void CloudBinaryUploadService::PrepareRequestForUpload(Request::Id request_id) {
       FROM_HERE, request->IsAuthRequest() ? kAuthTimeout : kScanningTimeout,
       base::BindOnce(&CloudBinaryUploadService::FinishIfActive,
                      weakptr_factory_.GetWeakPtr(), request_id,
-                     enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
+                     enterprise_connectors::ScanRequestUploadResult::kTimeout,
                      enterprise_connectors::ContentAnalysisResponse()));
 }
 
@@ -440,7 +440,7 @@ void CloudBinaryUploadService::OnGetRequestData(
     return;
   }
 
-  if (result != enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+  if (result != enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     if (!IgnoreErrorResultForResumableUpload(request, result)) {
       FinishAndCleanupRequest(request, result,
                               enterprise_connectors::ContentAnalysisResponse());
@@ -454,11 +454,11 @@ void CloudBinaryUploadService::OnGetRequestData(
     // If the file is encrypted, let the service know that the file is
     // encrypted.
     if (result ==
-        enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED) {
+        enterprise_connectors::ScanRequestUploadResult::kFileEncrypted) {
       request->set_is_content_encrypted(true);
     }
     if (result ==
-        enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE) {
+        enterprise_connectors::ScanRequestUploadResult::kFileTooLarge) {
       request->set_is_content_too_large(true);
     }
   }
@@ -468,7 +468,7 @@ void CloudBinaryUploadService::OnGetRequestData(
     // such a case, the file doesn't need to scan so the request can simply
     // finish early.
     FinishAndCleanupRequest(
-        request, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        request, enterprise_connectors::ScanRequestUploadResult::kSuccess,
         enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -588,7 +588,7 @@ void CloudBinaryUploadService::OnGetContentAnalysisResponse(
 
   if (http_status == net::HTTP_UNAUTHORIZED) {
     FinishRequest(request,
-                  enterprise_connectors::ScanRequestUploadResult::UNAUTHORIZED,
+                  enterprise_connectors::ScanRequestUploadResult::kUnauthorized,
                   enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -596,14 +596,14 @@ void CloudBinaryUploadService::OnGetContentAnalysisResponse(
   if (http_status == net::HTTP_TOO_MANY_REQUESTS) {
     FinishRequest(
         request,
-        enterprise_connectors::ScanRequestUploadResult::TOO_MANY_REQUESTS,
+        enterprise_connectors::ScanRequestUploadResult::kTooManyRequests,
         enterprise_connectors::ContentAnalysisResponse());
     return;
   }
 
   if (!success) {
     FinishRequest(
-        request, enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+        request, enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
         enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -611,7 +611,7 @@ void CloudBinaryUploadService::OnGetContentAnalysisResponse(
   enterprise_connectors::ContentAnalysisResponse response;
   if (!response.ParseFromString(response_data)) {
     FinishRequest(
-        request, enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+        request, enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
         enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -656,14 +656,14 @@ void CloudBinaryUploadService::MaybeFinishRequest(Request::Id request_id) {
   // Set `result` to be INCOMPLETE_RESPONSE, if the request is terminated with incomplete
   // response.
   enterprise_connectors::ScanRequestUploadResult result =
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS;
+      enterprise_connectors::ScanRequestUploadResult::kSuccess;
   if (!ResponseIsComplete(request_id)) {
     result =
-        enterprise_connectors::ScanRequestUploadResult::INCOMPLETE_RESPONSE;
+        enterprise_connectors::ScanRequestUploadResult::kIncompleteResponse;
   } else if (request->is_content_too_large()) {
-    result = enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE;
+    result = enterprise_connectors::ScanRequestUploadResult::kFileTooLarge;
   } else if (request->is_content_encrypted()) {
-    result = enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED;
+    result = enterprise_connectors::ScanRequestUploadResult::kFileEncrypted;
   }
 
   FinishRequest(request, result, std::move(response));
@@ -847,7 +847,7 @@ class ValidateDataUploadRequest : public CloudBinaryUploadService::Request {
 
 inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      enterprise_connectors::ScanRequestUploadResult::kSuccess,
       CloudBinaryUploadService::Request::Data());
 }
 
@@ -875,7 +875,7 @@ void CloudBinaryUploadService::IsAuthorized(
   // the first time or the previous check failed.
   if (!can_upload_enterprise_data_.contains(token_and_connector) ||
       can_upload_enterprise_data_[token_and_connector] !=
-          enterprise_connectors::ScanRequestUploadResult::SUCCESS) {
+          enterprise_connectors::ScanRequestUploadResult::kSuccess) {
     // Send a request to check if the browser can upload data.
     auto [iter, inserted] = authorization_callbacks_.try_emplace(
         token_and_connector,

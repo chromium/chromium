@@ -214,7 +214,7 @@ TEST_F(ResumableUploadRequestBaseTest,
        GeneratesCorrectMetadataHeaders_FileRequest) {
   network::ResourceRequest resource_request;
   auto request = std::make_unique<MockResumableUploadRequestBase>(
-      nullptr, GURL(), "metadata", ScanRequestUploadResult::SUCCESS,
+      nullptr, GURL(), "metadata", ScanRequestUploadResult::kSuccess,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -227,7 +227,7 @@ TEST_F(ResumableUploadRequestBaseTest,
        GeneratesCorrectMetadataHeaders_FileRequest_TooLarge) {
   network::ResourceRequest resource_request;
   auto request = std::make_unique<MockResumableUploadRequestBase>(
-      nullptr, GURL(), "metadata", ScanRequestUploadResult::FILE_TOO_LARGE,
+      nullptr, GURL(), "metadata", ScanRequestUploadResult::kFileTooLarge,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -240,7 +240,7 @@ TEST_F(ResumableUploadRequestBaseTest,
        GeneratesCorrectMetadataHeaders_FileRequest_Encrypted) {
   network::ResourceRequest resource_request;
   auto request = std::make_unique<MockResumableUploadRequestBase>(
-      nullptr, GURL(), "metadata", ScanRequestUploadResult::FILE_ENCRYPTED,
+      nullptr, GURL(), "metadata", ScanRequestUploadResult::kFileEncrypted,
       CreateFile("my_file_name.foo", "file_data"), 9, false, "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -253,7 +253,7 @@ TEST_F(ResumableUploadRequestBaseTest,
        GeneratesCorrectMetadataHeaders_PageRequest) {
   network::ResourceRequest resource_request;
   auto request = std::make_unique<MockResumableUploadRequestBase>(
-      nullptr, GURL(), "metadata", ScanRequestUploadResult::SUCCESS,
+      nullptr, GURL(), "metadata", ScanRequestUploadResult::kSuccess,
       CreatePage("print_data"), "histogram_suffix",
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing(), base::DoNothing(), false,
       base::SingleThreadTaskRunner::GetCurrentDefault());
@@ -311,7 +311,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, SendsCorrectRequest) {
       [&run_loop](bool success, int http_status,
                   const std::string& response_data) { run_loop.Quit(); });
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
-      ScanRequestUploadResult::SUCCESS, std::move(callback), base::DoNothing(),
+      ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
       false);
   mock_request->Start();
 
@@ -337,7 +337,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest, HandlesFailedMetadataScan) {
         run_loop.Quit();
       });
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
-      ScanRequestUploadResult::SUCCESS, std::move(callback), base::DoNothing(),
+      ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
       false);
   mock_request->Start();
 
@@ -373,7 +373,7 @@ TEST_P(ResumableUploadSendMetadataRequestTest,
       });
 
   auto mock_request = CreateRequest<MockResumableUploadRequestBase>(
-      ScanRequestUploadResult::SUCCESS, std::move(callback), base::DoNothing(),
+      ScanRequestUploadResult::kSuccess, std::move(callback), base::DoNothing(),
       false);
   mock_request->Start();
 
@@ -476,7 +476,7 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
       });
 
   auto connector_request =
-      CreateTestRequest(ScanRequestUploadResult::SUCCESS, std::move(callback),
+      CreateTestRequest(ScanRequestUploadResult::kSuccess, std::move(callback),
                         base::DoNothing(), false);
   auto* request =
       static_cast<ResumableUploadRequestBase*>(connector_request.get());
@@ -551,7 +551,7 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFileTooLarge) {
       });
 
   auto mock_request =
-      CreateTestRequest(ScanRequestUploadResult::FILE_TOO_LARGE,
+      CreateTestRequest(ScanRequestUploadResult::kFileTooLarge,
                         std::move(callback), base::DoNothing(), false);
 
   test_url_loader_factory_.SetInterceptor(
@@ -596,7 +596,7 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesEncryptedFile) {
       });
 
   auto mock_request =
-      CreateTestRequest(ScanRequestUploadResult::FILE_ENCRYPTED,
+      CreateTestRequest(ScanRequestUploadResult::kFileEncrypted,
                         std::move(callback), base::DoNothing(), false);
 
   test_url_loader_factory_.SetInterceptor(
@@ -642,7 +642,7 @@ TEST_P(ResumableUploadSendContentRequestBaseTest, HandlesFailedContentScan) {
         run_loop.Quit();
       });
   auto connector_request =
-      CreateTestRequest(ScanRequestUploadResult::SUCCESS, std::move(callback),
+      CreateTestRequest(ScanRequestUploadResult::kSuccess, std::move(callback),
                         base::DoNothing(), false);
   auto* request =
       static_cast<ResumableUploadRequestBase*>(connector_request.get());
@@ -721,7 +721,7 @@ TEST_P(ResumableUploadSendContentRequestBaseTest,
         async_content_upload_run_loop.Quit();
       });
 
-  auto mock_request = CreateTestRequest(ScanRequestUploadResult::FILE_ENCRYPTED,
+  auto mock_request = CreateTestRequest(ScanRequestUploadResult::kFileEncrypted,
                                         std::move(verdict_callback),
                                         std::move(content_callback), false);
 
@@ -862,7 +862,7 @@ TEST_P(ResumableUploadSendContentAsyncBaseTest,
   base::RunLoop run_loop;
 
   auto mock_request = CreateRequest<MockResumableUploadRequestForAsync>(
-      ScanRequestUploadResult::SUCCESS,
+      ScanRequestUploadResult::kSuccess,
       base::BindLambdaForTesting(
           [&](bool success, int http_status, const std::string& response_data) {
             std::string decoded_response;

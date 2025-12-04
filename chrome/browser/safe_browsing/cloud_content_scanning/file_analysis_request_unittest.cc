@@ -116,7 +116,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     request->GetRequestData(future.GetCallback());
 
     auto [result, data] = future.Take();
-    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::UNKNOWN);
+    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kUnknown);
     EXPECT_EQ(data.size, 0u);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_TRUE(data.hash.empty());
@@ -136,7 +136,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     request->GetRequestData(future.GetCallback());
 
     auto [result, data] = future.Take();
-    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::UNKNOWN);
+    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kUnknown);
     EXPECT_EQ(data.size, 0u);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_TRUE(data.hash.empty());
@@ -156,7 +156,7 @@ TEST_F(FileAnalysisRequestTest, InvalidFiles) {
     request->GetRequestData(future.GetCallback());
 
     auto [result, data] = future.Take();
-    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+    EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
     EXPECT_EQ(data.size, 0u);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_TRUE(data.hash.empty());
@@ -172,7 +172,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
 
   std::string normal_contents = "Normal file contents";
   GetResultsForFileContents(normal_contents, &result, &data);
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, normal_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
@@ -184,7 +184,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
   std::string long_contents =
       std::string(BinaryUploadService::kMaxUploadSizeBytes, 'a');
   GetResultsForFileContents(long_contents, &result, &data);
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, long_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // python3 -c "print('a' * (50 * 1024 * 1024), end='')" | sha256sum | tr
@@ -211,7 +211,7 @@ TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
 
   std::string normal_contents = "Normal file contents";
   GetResultsForFileContents(normal_contents, &result, &data);
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, normal_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum |  tr '[:lower:]' '[:upper:]'
@@ -223,7 +223,7 @@ TEST_F(FileAnalysisRequestTest, NormalFilesDataControls) {
   std::string long_contents =
       std::string(BinaryUploadService::kMaxUploadSizeBytes, 'a');
   GetResultsForFileContents(long_contents, &result, &data);
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, long_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // python3 -c "print('a' * (50 * 1024 * 1024), end='')" | sha256sum | tr
@@ -244,7 +244,7 @@ TEST_F(FileAnalysisRequestTest, LargeFiles) {
                                   'a');
   GetResultsForFileContents(large_file_contents, &result, &data);
   EXPECT_EQ(result,
-            enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE);
+            enterprise_connectors::ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // python3 -c "print('a' * (50 * 1024 * 1024 + 1), end='')" | sha256sum | tr
@@ -258,7 +258,7 @@ TEST_F(FileAnalysisRequestTest, LargeFiles) {
       2 * BinaryUploadService::kMaxUploadSizeBytes, 'a');
   GetResultsForFileContents(very_large_file_contents, &result, &data);
   EXPECT_EQ(result,
-            enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE);
+            enterprise_connectors::ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, very_large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // python3 -c "print('a' * (100 * 1024 * 1024), end='')" | sha256sum | tr
@@ -284,7 +284,7 @@ TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
   // Lower than the new limit of 100MB.
   std::string small_file_contents(100 * 1024 * 1024 - 1, 'a');
   GetResultsForFileContents(small_file_contents, &result, &data);
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, small_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
 
@@ -292,7 +292,7 @@ TEST_F(FileAnalysisRequestTest, NewFileLimitSet) {
   std::string large_file_contents(100 * 1024 * 1024 + 1, 'a');
   GetResultsForFileContents(large_file_contents, &result, &data);
   EXPECT_EQ(result,
-            enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE);
+            enterprise_connectors::ScanRequestUploadResult::kFileTooLarge);
   EXPECT_EQ(data.size, large_file_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // python3 -c "print('a' * (100 * 1024 * 1024 + 1), end='')" | sha256sum | tr
@@ -402,7 +402,7 @@ TEST_F(FileAnalysisRequestTest, CachesResultsWithKnownMimetype) {
 
   auto [result, data] = future.Take();
 
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
   EXPECT_EQ(data.size, normal_contents.size());
   EXPECT_TRUE(data.contents.empty());
   // printf "Normal file contents" | sha256sum | tr '[:lower:]' '[:upper:]'
@@ -436,7 +436,7 @@ TEST_F(FileAnalysisRequestTest, DelayedFileOpening) {
         run_loop.Quit();
 
         EXPECT_EQ(result,
-                  enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+                  enterprise_connectors::ScanRequestUploadResult::kSuccess);
         EXPECT_EQ(data.size, file_contents.size());
         EXPECT_TRUE(data.contents.empty());
         // printf "Normal file contents" | sha256sum |\
@@ -477,7 +477,7 @@ TEST_F(FileAnalysisRequestTest, SuccessWithCorrectPassword) {
 
   auto [result, data] = future.Take();
 
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
 }
 
 TEST_F(FileAnalysisRequestTest, FileEncryptedWithIncorrectPassword) {
@@ -501,7 +501,7 @@ TEST_F(FileAnalysisRequestTest, FileEncryptedWithIncorrectPassword) {
   auto [result, data] = future.Take();
 
   EXPECT_EQ(result,
-            enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED);
+            enterprise_connectors::ScanRequestUploadResult::kFileEncrypted);
 }
 
 // Class used to validate that an archive file is correctly detected and checked
@@ -543,7 +543,7 @@ TEST_P(FileAnalysisRequestZipTest, Encrypted) {
   // encrypted_zip_no_extension is a copy of encrypted.zip, so the same
   // assertions hold and the same commands can be used to get its size/hash.
   EXPECT_EQ(result,
-            enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED);
+            enterprise_connectors::ScanRequestUploadResult::kFileEncrypted);
   // du chrome/test/data/safe_browsing/download_protection/<file> -b
   EXPECT_EQ(data.size, 20015u);
   // sha256sum < chrome/test/data/safe_browsing/download_protection/<file> \
@@ -587,7 +587,7 @@ TEST_F(FileAnalysisRequestTest, ObfuscatedFile) {
   obfuscated_request->GetRequestData(future.GetCallback());
   auto [result, data] = future.Take();
 
-  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::SUCCESS);
+  EXPECT_EQ(result, enterprise_connectors::ScanRequestUploadResult::kSuccess);
 
   // Check if size has been updated to use the calculated unobfuscated content
   // size.

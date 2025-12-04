@@ -3559,7 +3559,7 @@ TEST_F(DeepScanningDownloadTest, PasswordProtectedArchivesBlockedByPreference) {
       static_cast<TestBinaryUploadService*>(
           CloudBinaryUploadServiceFactory::GetForProfile(profile()));
   test_upload_service->SetResponse(
-      enterprise_connectors::ScanRequestUploadResult::FILE_ENCRYPTED,
+      enterprise_connectors::ScanRequestUploadResult::kFileEncrypted,
       enterprise_connectors::ContentAnalysisResponse());
 
   {
@@ -3647,7 +3647,7 @@ TEST_F(DeepScanningDownloadTest, LargeFileBlockedByPreference) {
       static_cast<TestBinaryUploadService*>(
           CloudBinaryUploadServiceFactory::GetForProfile(profile()));
   test_upload_service->SetResponse(
-      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
       enterprise_connectors::ContentAnalysisResponse());
 
   {
@@ -4625,7 +4625,7 @@ TEST_F(DeepScanningDownloadTest, PolicyEnabled) {
   {
     PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
     test_upload_service->SetResponse(
-        enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
+        enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
         enterprise_connectors::ContentAnalysisResponse());
 
     RunLoop run_loop;
@@ -4754,7 +4754,7 @@ TEST_F(DeepScanningDownloadTest, SafeVerdictPrecedence) {
 
     PrepareResponse(response.first, net::HTTP_OK, net::OK);
     test_upload_service->SetResponse(
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
         enterprise_connectors::ContentAnalysisResponse());
 
     RunLoop run_loop;
@@ -5195,7 +5195,7 @@ TEST_F(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
 
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   test_upload_service->SetResponse(
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      enterprise_connectors::ScanRequestUploadResult::kSuccess,
       enterprise_connectors::ContentAnalysisResponse());
 
   RunLoop run_loop;
@@ -5243,7 +5243,7 @@ TEST_F(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
 
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   test_upload_service->SetResponse(
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      enterprise_connectors::ScanRequestUploadResult::kSuccess,
       enterprise_connectors::ContentAnalysisResponse());
 
   RunLoop run_loop;
@@ -5301,7 +5301,7 @@ TEST_F(EnterpriseCsdDownloadTest, StillDoesMetadataCheckForLargeFile) {
 
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   test_upload_service->SetResponse(
-      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE,
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge,
       enterprise_connectors::ContentAnalysisResponse());
 
   RunLoop run_loop;

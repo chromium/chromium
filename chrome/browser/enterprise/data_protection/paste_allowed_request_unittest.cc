@@ -105,7 +105,7 @@ class TestClipboardRequestHandler
         base::BindOnce(
             &TestClipboardRequestHandler::OnContentAnalysisResponse,
             base::Unretained(this),
-            enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+            enterprise_connectors::ScanRequestUploadResult::kSuccess,
             CreateResponse(enterprise_connectors::ContentAnalysisResponse::
                                Result::TriggeredRule::BLOCK)));
   }

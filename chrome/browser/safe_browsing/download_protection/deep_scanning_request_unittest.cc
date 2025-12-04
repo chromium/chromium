@@ -828,8 +828,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     dlp_rule->set_rule_id("0");
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
@@ -909,8 +909,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     dlp_rule->set_rule_id("0");
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
@@ -982,8 +982,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     dlp_rule->set_rule_id("0");
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
@@ -1053,8 +1053,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     dlp_rule->set_rule_id("0");
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::WARN);
@@ -1128,8 +1128,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
     dlp_rule2->set_rule_id("0");
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
@@ -1194,8 +1194,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
@@ -1259,8 +1259,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
@@ -1329,8 +1329,8 @@ TEST_P(DeepScanningReportingSourceTypeTest,
         enterprise_connectors::ContentAnalysisResponse::Result::FAILURE);
 
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-        download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
-        response);
+        download_path_,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
 
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
@@ -1404,7 +1404,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveSuccess) {
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
       response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
@@ -1450,7 +1450,7 @@ TEST_F(DeepScanningReportingTest, ConsumerEncryptedArchiveFailed) {
           DECRYPTION_FAILED);
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
       response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
@@ -1493,7 +1493,7 @@ TEST_F(DeepScanningReportingTest, ConsumerUnencryptedArchive) {
       enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS);
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
       response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
@@ -1530,7 +1530,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         metadata->GetTargetFilePath(),
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS, response);
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
@@ -1544,7 +1544,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
 
       download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
           secondary_files_targets_[i],
-          enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+          enterprise_connectors::ScanRequestUploadResult::kSuccess,
           response_copy);
     }
 
@@ -1597,7 +1597,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         metadata->GetTargetFilePath(),
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS, response);
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     download_protection_service_.GetFakeBinaryUploadService()
         ->SetExpectedFinalAction(
             enterprise_connectors::ContentAnalysisAcknowledgement::ALLOW);
@@ -1616,7 +1616,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
 
       download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
           secondary_files_targets_[i],
-          enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+          enterprise_connectors::ScanRequestUploadResult::kSuccess,
           response_copy);
     }
 
@@ -1691,7 +1691,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
         metadata->GetTargetFilePath();
     download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
         metadata->GetTargetFilePath(),
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS, response);
+        enterprise_connectors::ScanRequestUploadResult::kSuccess, response);
     std::vector<enterprise_connectors::ContentAnalysisResponse::Result>
         expected_dlp_verdicts;
     for (size_t i = 0; i < secondary_files_.size(); ++i) {
@@ -1720,7 +1720,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, MultipleFiles) {
 
       download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
           secondary_files_targets_[i],
-          enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+          enterprise_connectors::ScanRequestUploadResult::kSuccess,
           response_copy);
     }
 
@@ -1811,7 +1811,7 @@ TEST_P(DeepScanningReportingSourceTypeTest, Timeout) {
       /*password=*/std::nullopt);
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kTimeout,
       enterprise_connectors::ContentAnalysisResponse());
 
   enterprise_connectors::test::EventReportValidator validator(client_.get());
@@ -1874,11 +1874,11 @@ INSTANTIATE_TEST_SUITE_P(
     DeepScanningDownloadFailClosedTest,
     testing::Combine(
         testing::Values(
-            enterprise_connectors::ScanRequestUploadResult::UPLOAD_FAILURE,
-            enterprise_connectors::ScanRequestUploadResult::TIMEOUT,
-            enterprise_connectors::ScanRequestUploadResult::FAILED_TO_GET_TOKEN,
-            enterprise_connectors::ScanRequestUploadResult::TOO_MANY_REQUESTS,
-            enterprise_connectors::ScanRequestUploadResult::UNKNOWN),
+            enterprise_connectors::ScanRequestUploadResult::kUploadFailure,
+            enterprise_connectors::ScanRequestUploadResult::kTimeout,
+            enterprise_connectors::ScanRequestUploadResult::kFailedToGetToken,
+            enterprise_connectors::ScanRequestUploadResult::kTooManyRequests,
+            enterprise_connectors::ScanRequestUploadResult::kUnknown),
         testing::Bool()));
 
 TEST_P(DeepScanningDownloadFailClosedTest, HandlesDefaultActionCorrectly) {
@@ -2026,7 +2026,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
   malware_rule->set_rule_name("malware");
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
       response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(expected_final_action());
@@ -2095,7 +2095,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
   malware_rule->set_rule_name("uws");
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
-      download_path_, enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+      download_path_, enterprise_connectors::ScanRequestUploadResult::kSuccess,
       response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
@@ -2158,7 +2158,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
       download_path_,
-      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE, response);
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge, response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
@@ -2227,7 +2227,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
       download_path_,
-      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE, response);
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge, response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);
@@ -2294,7 +2294,7 @@ TEST_P(DeepScanningDownloadRestrictionsTest,
 
   download_protection_service_.GetFakeBinaryUploadService()->SetResponse(
       download_path_,
-      enterprise_connectors::ScanRequestUploadResult::FILE_TOO_LARGE, response);
+      enterprise_connectors::ScanRequestUploadResult::kFileTooLarge, response);
   download_protection_service_.GetFakeBinaryUploadService()
       ->SetExpectedFinalAction(
           enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK);

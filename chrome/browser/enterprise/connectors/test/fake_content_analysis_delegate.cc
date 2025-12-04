@@ -62,7 +62,7 @@ class FakePagePrintRequestHandler : public PagePrintRequestHandler {
 }  // namespace
 
 ScanRequestUploadResult FakeContentAnalysisDelegate::result_ =
-    ScanRequestUploadResult::SUCCESS;
+    ScanRequestUploadResult::kSuccess;
 bool FakeContentAnalysisDelegate::dialog_shown_ = false;
 bool FakeContentAnalysisDelegate::dialog_canceled_ = false;
 int64_t FakeContentAnalysisDelegate::total_analysis_requests_count_ = 0;
@@ -232,7 +232,7 @@ void FakeContentAnalysisDelegate::Response(
         file_request_callback,
     bool is_image_request) {
   auto response = (status_callback_.is_null() ||
-                   result_ != ScanRequestUploadResult::SUCCESS)
+                   result_ != ScanRequestUploadResult::kSuccess)
                       ? ContentAnalysisResponse()
                       : status_callback_.Run(contents, path);
   if (request->IsAuthRequest()) {

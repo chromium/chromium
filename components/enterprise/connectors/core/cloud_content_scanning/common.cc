@@ -10,25 +10,25 @@ namespace enterprise_connectors {
 
 std::string ScanRequestUploadResultToString(ScanRequestUploadResult result) {
   switch (result) {
-    case ScanRequestUploadResult::UNKNOWN:
+    case ScanRequestUploadResult::kUnknown:
       return "UNKNOWN";
-    case ScanRequestUploadResult::SUCCESS:
+    case ScanRequestUploadResult::kSuccess:
       return "SUCCESS";
-    case ScanRequestUploadResult::UPLOAD_FAILURE:
+    case ScanRequestUploadResult::kUploadFailure:
       return "UPLOAD_FAILURE";
-    case ScanRequestUploadResult::TIMEOUT:
+    case ScanRequestUploadResult::kTimeout:
       return "TIMEOUT";
-    case ScanRequestUploadResult::FILE_TOO_LARGE:
+    case ScanRequestUploadResult::kFileTooLarge:
       return "FILE_TOO_LARGE";
-    case ScanRequestUploadResult::FAILED_TO_GET_TOKEN:
+    case ScanRequestUploadResult::kFailedToGetToken:
       return "FAILED_TO_GET_TOKEN";
-    case ScanRequestUploadResult::UNAUTHORIZED:
+    case ScanRequestUploadResult::kUnauthorized:
       return "UNAUTHORIZED";
-    case ScanRequestUploadResult::FILE_ENCRYPTED:
+    case ScanRequestUploadResult::kFileEncrypted:
       return "FILE_ENCRYPTED";
-    case ScanRequestUploadResult::TOO_MANY_REQUESTS:
+    case ScanRequestUploadResult::kTooManyRequests:
       return "TOO_MANY_REQUESTS";
-    case ScanRequestUploadResult::INCOMPLETE_RESPONSE:
+    case ScanRequestUploadResult::kIncompleteResponse:
       return "INCOMPLETE_RESPONSE";
   }
   NOTREACHED();

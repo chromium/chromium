@@ -407,7 +407,7 @@ class DownloadDeepScanningBrowserTestBase
         CloudBinaryUploadServiceFactory::GetForProfile(browser()->profile()))
         ->SetAuthForTesting("dm_token",
                             /*auth_check_result=*/enterprise_connectors::
-                                ScanRequestUploadResult::SUCCESS);
+                                ScanRequestUploadResult::kSuccess);
   }
 
   bool connectors_machine_scope() const { return connectors_machine_scope_; }
@@ -947,7 +947,7 @@ IN_PROC_BROWSER_TEST_P(DownloadDeepScanningBrowserTest,
   // UMAs for this request should only be recorded once.
   histograms.ExpectUniqueSample(
       "SafeBrowsingBinaryUploadRequest.Result",
-      enterprise_connectors::ScanRequestUploadResult::SUCCESS, 1);
+      enterprise_connectors::ScanRequestUploadResult::kSuccess, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.DlpResult",
                                 true, 1);
   histograms.ExpectUniqueSample("SafeBrowsingBinaryUploadRequest.MalwareResult",

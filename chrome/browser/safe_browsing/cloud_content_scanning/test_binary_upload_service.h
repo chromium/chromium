@@ -36,7 +36,7 @@ class TestBinaryUploadService : public BinaryUploadService {
  private:
   enterprise_connectors::ContentAnalysisRequest last_request_;
   enterprise_connectors::ScanRequestUploadResult saved_result_ =
-      enterprise_connectors::ScanRequestUploadResult::UNKNOWN;
+      enterprise_connectors::ScanRequestUploadResult::kUnknown;
   enterprise_connectors::ContentAnalysisResponse saved_response_;
   bool was_called_ = false;
   base::WeakPtrFactory<TestBinaryUploadService> weak_ptr_factory_{this};

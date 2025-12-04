@@ -157,7 +157,7 @@ class TestPagePrintRequestHandler
       override {
     ASSERT_EQ(request->printer_name(), kPrinterName);
     OnContentAnalysisResponse(
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
         CreateResponse(action_));
   }
 

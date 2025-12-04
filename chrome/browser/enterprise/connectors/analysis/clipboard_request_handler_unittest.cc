@@ -123,7 +123,7 @@ class ClipboardRequestHandlerTest : public testing::Test {
     *response.add_results() =
         CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
     binary_upload_service_.SetResponse(
-        enterprise_connectors::ScanRequestUploadResult::SUCCESS,
+        enterprise_connectors::ScanRequestUploadResult::kSuccess,
         std::move(response));
   }
 

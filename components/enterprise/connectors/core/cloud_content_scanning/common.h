@@ -13,45 +13,42 @@ namespace enterprise_connectors {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class ScanRequestUploadResult {
-  // TODO(crbug.com/460492101): Change the enum values from `FOO` to
-  // `kFoo`.
-  //
   // Unknown result.
-  UNKNOWN = 0,
+  kUnknown = 0,
 
   // The request succeeded.
-  SUCCESS = 1,
+  kSuccess = 1,
 
   // The upload failed, for an unspecified reason.
-  UPLOAD_FAILURE = 2,
+  kUploadFailure = 2,
 
   // The upload succeeded, but a response was not received before timing out.
-  TIMEOUT = 3,
+  kTimeout = 3,
 
   // The file was too large to upload.
-  FILE_TOO_LARGE = 4,
+  kFileTooLarge = 4,
 
   // The BinaryUploadService failed to get an InstanceID token.
-  FAILED_TO_GET_TOKEN = 5,
+  kFailedToGetToken = 5,
 
   // The user is unauthorized to make the request.
-  UNAUTHORIZED = 6,
+  kUnauthorized = 6,
 
   // Some or all parts of the file are encrypted.
-  FILE_ENCRYPTED = 7,
+  kFileEncrypted = 7,
 
   // Deprecated: The file's type is not supported and the file was not
   // uploaded.
-  // DLP_SCAN_UNSUPPORTED_FILE_TYPE = 8,
+  // kDlpScanUnsupportedFileType = 8,
 
   // The server returned a 429 HTTP status indicating too many requests are
   // being sent.
-  TOO_MANY_REQUESTS = 9,
+  kTooManyRequests = 9,
 
   // The server did not return all the results for the synchronous requests
-  INCOMPLETE_RESPONSE = 10,
+  kIncompleteResponse = 10,
 
-  kMaxValue = INCOMPLETE_RESPONSE,
+  kMaxValue = kIncompleteResponse,
 };
 
 std::string ScanRequestUploadResultToString(ScanRequestUploadResult result);

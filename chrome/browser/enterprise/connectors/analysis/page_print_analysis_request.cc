@@ -46,8 +46,8 @@ void PagePrintAnalysisRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(
       // Only enforce a max size for cloud scans.
       data.size >= kMaxPageSize && cloud_or_local_settings().is_cloud_analysis()
-          ? ScanRequestUploadResult::FILE_TOO_LARGE
-          : ScanRequestUploadResult::SUCCESS,
+          ? ScanRequestUploadResult::kFileTooLarge
+          : ScanRequestUploadResult::kSuccess,
       std::move(data));
 }
 

@@ -263,7 +263,7 @@ void FilesRequestHandler::OnGotFileInfo(
 
   // Don't bother sending empty files for deep scanning.
   if (data.size == 0) {
-    FinishRequestEarly(std::move(request), ScanRequestUploadResult::SUCCESS);
+    FinishRequestEarly(std::move(request), ScanRequestUploadResult::kSuccess);
     return;
   }
 
@@ -271,7 +271,7 @@ void FilesRequestHandler::OnGotFileInfo(
   // is receiving too many requests.
   if (throttled_) {
     FinishRequestEarly(std::move(request),
-                       ScanRequestUploadResult::TOO_MANY_REQUESTS);
+                       ScanRequestUploadResult::kTooManyRequests);
     return;
   }
 
@@ -320,14 +320,14 @@ void FilesRequestHandler::FileRequestCallback(
   // to be empty and have no request token.  This may happen if Chrome decides
   // to allow the file without uploading with the binary upload service.  For
   // example, zero length files.
-  if (upload_result == ScanRequestUploadResult::SUCCESS &&
+  if (upload_result == ScanRequestUploadResult::kSuccess &&
       response.has_request_token()) {
     request_tokens_to_ack_final_actions_[response.request_token()] =
         GetAckFinalAction(response);
   }
 
   DCHECK_EQ(results_.size(), paths_.size());
-  if (upload_result == ScanRequestUploadResult::TOO_MANY_REQUESTS) {
+  if (upload_result == ScanRequestUploadResult::kTooManyRequests) {
     throttled_ = true;
   }
 

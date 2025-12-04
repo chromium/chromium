@@ -118,7 +118,7 @@ class PagePrintRequestHandlerTest : public testing::Test {
     ContentAnalysisResponse response;
     *response.add_results() =
         CreateResult(ContentAnalysisResponse::Result::TriggeredRule::BLOCK);
-    binary_upload_service_.SetResponse(ScanRequestUploadResult::SUCCESS,
+    binary_upload_service_.SetResponse(ScanRequestUploadResult::kSuccess,
                                        std::move(response));
 
     scoped_feature_list_.InitAndEnableFeature(
