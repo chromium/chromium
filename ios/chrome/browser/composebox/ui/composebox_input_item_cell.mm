@@ -38,7 +38,7 @@ const CGFloat kCloseButtonAlpha = 0.9;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.layer.cornerRadius = composeboxAttachments::kAttachmentHeight / 2;
+    self.layer.cornerRadius = composeboxAttachments::kAttachmentCornerRadius;
     self.clipsToBounds = YES;
 
     [self setupInputItemView];
