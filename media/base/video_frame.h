@@ -511,8 +511,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // memory which allows for hardware acceleration.
   bool HasNativeGpuMemoryBuffer() const;
 
-  // Returns true if |is_mappable_si_enabled_| is true, means MappableSI is
-  // enabled for this frame.
+  // Synonym for HasMappableGpuBuffer().
+  // TODO(crbug.com/40263579): Eliminate this method.
   bool IsMappableSharedImageEnabled() const;
 
   // Gets the ScopedMapping object which clients can use to access the CPU
@@ -874,10 +874,6 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // In that case, shm_region_ will refer to this region.
   base::ReadOnlySharedMemoryRegion owned_shm_region_;
   base::ReadOnlySharedMemoryMapping owned_shm_mapping_;
-
-  // This field will be set by clients when using MappableSI instead of
-  // GpuMemoryBuffers. Clients will set this flag while creating a VideoFrame.
-  bool is_mappable_si_enabled_ = false;
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Dmabufs for the frame, used when storage is STORAGE_DMABUFS. Size is either

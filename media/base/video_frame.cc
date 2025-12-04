@@ -468,7 +468,6 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
     return nullptr;
   }
   frame->mailbox_holder_release_cb_ = std::move(mailbox_holder_release_cb);
-  frame->is_mappable_si_enabled_ = true;
   frame->acquire_sync_token_ = sync_token;
 
   // Note that we can not use |shared_image|->MakeUnOwned() here since that
@@ -1177,14 +1176,13 @@ bool VideoFrame::HasMappableGpuBuffer() const {
 }
 
 bool VideoFrame::IsMappableSharedImageEnabled() const {
-  return wrapped_frame_ ? wrapped_frame_->IsMappableSharedImageEnabled()
-                        : is_mappable_si_enabled_;
+  return HasMappableGpuBuffer();
 }
 
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();
-  } else if (is_mappable_si_enabled_) {
+  } else if (HasMappableGpuBuffer()) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
   }
@@ -1198,7 +1196,7 @@ void VideoFrame::MapSharedImageAsync(
     wrapped_frame_->MapSharedImageAsync(std::move(result_cb));
     return;
   }
-  if (is_mappable_si_enabled_) {
+  if (HasMappableGpuBuffer()) {
     CHECK(HasSharedImage());
     // `base::Unretained()` is safe because of the requirement for callers to
     // keep the VideoFrame alive until the callback executes.
@@ -1215,18 +1213,15 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
     return wrapped_frame_->AsyncMappingIsNonBlocking();
   }
   CHECK(HasMappableGpuBuffer());
-  if (is_mappable_si_enabled_) {
-    CHECK(shared_image_);
-    return shared_image_->AsyncMappingIsNonBlocking();
-  }
-  NOTREACHED();
+  CHECK(shared_image_);
+  return shared_image_->AsyncMappingIsNonBlocking();
 }
 
 gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   if (wrapped_frame_) {
     return wrapped_frame_->GetGpuMemoryBufferHandle();
   }
-  if (is_mappable_si_enabled_) {
+  if (HasMappableGpuBuffer()) {
     // If MappableSI is used, there must be a shared image.
     CHECK(HasSharedImage());
     return shared_image_->CloneGpuMemoryBufferHandle();
@@ -1775,7 +1770,7 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapSharedImage() const {
   if (wrapped_frame_) {
     return wrapped_frame_->MapSharedImage();
   }
-  if (is_mappable_si_enabled_) {
+  if (HasMappableGpuBuffer()) {
     // If MappableSI is used, there must be a shared image.
     CHECK(HasSharedImage());
     if (auto mapping = shared_image_->Map()) {
