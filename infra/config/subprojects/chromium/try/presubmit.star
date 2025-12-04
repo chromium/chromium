@@ -88,6 +88,9 @@ try_.presubmit_builder(
 try_.presubmit_builder(
     name = "reclient-config-deployment-verifier",
     executable = "recipe:reclient_config_deploy_check/tester",
+    # TODO: crbug.com/383375912 - If the checkout can be sped up, switch back to
+    # using the default
+    execution_timeout = 25 * time.minute,
     properties = {
         "fetch_script": "buildtools/reclient_cfgs/configure_reclient_cfgs.py",
         "rbe_project": [
