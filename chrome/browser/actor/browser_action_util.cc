@@ -1022,7 +1022,7 @@ void BuildActionsResultWithObservations(
   }
 
   actor_service->GetJournal().Log(
-      GURL(), TaskId(), "Observing Tabs",
+      GURL(), task.id(), "Observing Tabs",
       JournalDetailsBuilder()
           .Add("tab_observations", last_acted_tabs.size())
           .Add("tabs_to_fetch", tabs_to_fetch.size())

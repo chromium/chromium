@@ -411,7 +411,7 @@ void ActorKeyedService::PerformActions(
   std::vector<ActionResultWithLatencyInfo> empty_results;
   auto* task = GetTask(task_id);
   if (!task) {
-    GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::PerformActions",
+    GetJournal().Log(GURL(), task_id, "ActorKeyedService::PerformActions",
                      JournalDetailsBuilder()
                          .Add("task_id", task_id)
                          .AddError("Invalid Task")
@@ -424,7 +424,7 @@ void ActorKeyedService::PerformActions(
 
   if (actions.empty()) {
     GetJournal().Log(
-        GURL(), TaskId(), "ActorKeyedService::PerformActions",
+        GURL(), task_id, "ActorKeyedService::PerformActions",
         JournalDetailsBuilder().AddError("Empty Actions List").Build());
     RunLater(base::BindOnce(std::move(callback),
                             mojom::ActionResultCode::kEmptyActionSequence,
@@ -464,7 +464,7 @@ void ActorKeyedService::StopAllTasks(ActorTask::StoppedReason stop_reason) {
 void ActorKeyedService::StopTask(TaskId task_id,
                                  ActorTask::StoppedReason stop_reason) {
   TRACE_EVENT0("actor", "ActorKeyedService::StopTask");
-  GetJournal().Log(GURL(), TaskId(), "ActorKeyedService::StopTask",
+  GetJournal().Log(GURL(), task_id, "ActorKeyedService::StopTask",
                    JournalDetailsBuilder()
                        .Add("task_id", task_id)
                        .Add("stop_reason", stop_reason)
