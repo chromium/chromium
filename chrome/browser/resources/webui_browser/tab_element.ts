@@ -55,13 +55,9 @@ export class TabElement extends CrLitElement {
   }
 
   updateData(tab: TabData) {
-    /* TODO(webium): tab.favicon is an Image now, not a URL
-    if (this.active && tab.activeFaviconUrl) {
-      this.faviconUrl = tab.activeFaviconUrl.url;
-    } else if (tab.faviconUrl) {
-      this.faviconUrl = tab.faviconUrl.url;
+    if (tab.favicon.dataUrl) {
+        this.faviconUrl = tab.favicon.dataUrl.url;
     }
-    */
     this.tabTitle = tab.title;
     this.requestUpdate();
   }
