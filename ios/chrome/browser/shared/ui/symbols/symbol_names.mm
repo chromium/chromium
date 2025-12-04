@@ -115,6 +115,7 @@ NSString* const kIncognitoRectangle = @"incognito_rectangle";
 NSString* const kTextSparkSymbol = @"text_spark";
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";
 NSString* const kPlusCircleFillSymbol = @"plus_circle_fill";
+NSString* const kPDFFillSymbol = @"pdf_fill";
 
 // Use custom symbol for camera because the default video icon in iOS should
 // always represent “Apple Facetime”.

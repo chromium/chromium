@@ -93,10 +93,16 @@
   return [[UIColor colorNamed:kSolidWhiteColor] colorWithAlphaComponent:alpha];
 }
 
-// The background color for the send button.
 - (UIColor*)sendButtonBackgroundColorHighlighted:(BOOL)highlighted {
   CGFloat alpha = highlighted ? 0.6 : 1;
   return [[UIColor colorNamed:kBlue600Color] colorWithAlphaComponent:alpha];
+}
+
+- (UIColor*)pdfSymbolColor {
+  UITraitCollection* lightStyle = [UITraitCollection
+      traitCollectionWithUserInterfaceStyle:UIUserInterfaceStyleLight];
+  return [[UIColor colorNamed:kRed500Color]
+      resolvedColorWithTraitCollection:lightStyle];
 }
 
 @end
