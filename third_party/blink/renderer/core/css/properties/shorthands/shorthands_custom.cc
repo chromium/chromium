@@ -1207,9 +1207,10 @@ bool RuleBreak::ParseShorthand(
     const CSSParserLocalContext&,
     HeapVector<CSSPropertyValue, 64>& properties) const {
   DCHECK_EQ(ruleBreakShorthand().length(), 2u);
-  CSSValue* rule_break = css_parsing_utils::ConsumeIdent<
-      CSSValueID::kNone, CSSValueID::kIntersection, CSSValueID::kSpanningItem>(
-      stream);
+  CSSValue* rule_break =
+      css_parsing_utils::ConsumeIdent<CSSValueID::kAuto, CSSValueID::kNone,
+                                      CSSValueID::kIntersection,
+                                      CSSValueID::kSpanningItem>(stream);
 
   if (!rule_break) {
     return false;

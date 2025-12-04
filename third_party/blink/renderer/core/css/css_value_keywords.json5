@@ -1296,11 +1296,13 @@
     "column-over-row",
 
     // column-rule-break
+    // auto
     // none
     "intersection",
     "spanning-item",
 
     // row-rule-break
+    // auto
     // none
     // intersection
     // spanning-item

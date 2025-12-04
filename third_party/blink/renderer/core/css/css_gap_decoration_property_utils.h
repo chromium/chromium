@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GAP_DECORATION_PROPERTY_UTILS_H_
 
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/gap_data_list.h"
 #include "third_party/blink/renderer/core/style/grid_enums.h"
@@ -63,6 +64,11 @@ class CORE_EXPORT CSSGapDecorationUtils {
   static CSSValueList* GetExpandedCSSValueListForGapData(
       const CSSValueList& list,
       const StyleResolverState& state);
+
+  static RuleBreak ResolveRuleBreakValue(
+      const ComputedStyle& style,
+      GapGeometry::ContainerType container_type,
+      GridTrackSizingDirection direction);
 };
 
 }  // namespace blink

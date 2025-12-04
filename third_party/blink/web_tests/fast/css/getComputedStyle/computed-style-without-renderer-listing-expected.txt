@@ -137,7 +137,7 @@ color-rendering: auto
 column-count: auto
 column-gap: normal
 column-height: auto
-column-rule-break: spanning-item
+column-rule-break: auto
 column-rule-color: rgb(0, 0, 0)
 column-rule-edge-end-inset: 0px
 column-rule-edge-start-inset: 0px
@@ -337,7 +337,7 @@ resize: none
 right: auto
 rotate: none
 row-gap: normal
-row-rule-break: spanning-item
+row-rule-break: auto
 row-rule-color: rgb(0, 0, 0)
 row-rule-edge-end-inset: 0px
 row-rule-edge-start-inset: 0px

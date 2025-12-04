@@ -177,6 +177,32 @@ CSSGapDecorationUtils::GetExpandedGapDataList(
   return expanded_values;
 }
 
+RuleBreak CSSGapDecorationUtils::ResolveRuleBreakValue(
+    const ComputedStyle& style,
+    GapGeometry::ContainerType container_type,
+    GridTrackSizingDirection direction) {
+  RuleBreak rule_break =
+      direction == kForColumns ? style.ColumnRuleBreak() : style.RowRuleBreak();
+  if (rule_break != RuleBreak::kAuto) {
+    return rule_break;
+  }
+
+  // Resolve `auto` value based on thecontainer type.
+  //
+  // TODO(javiercon): For now, `auto` will always resolve to `none` for flex and
+  // multicol. This may change in the future depending on the resolution to
+  // https://github.com/w3c/csswg-drafts/issues/13127
+  //
+  // https://drafts.csswg.org/css-gaps-1/#break
+  switch (container_type) {
+    case GapGeometry::ContainerType::kGrid:
+      return RuleBreak::kSpanningItem;
+    case GapGeometry::ContainerType::kFlex:
+    case GapGeometry::ContainerType::kMultiColumn:
+      return RuleBreak::kNone;
+  }
+}
+
 // Explicit template instantiations
 template GapDataList<StyleColor>::GapDataVector
 CSSGapDecorationUtils::GetExpandedGapDataList(
