@@ -14,6 +14,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/read_anything/read_anything_enums.h"
 #include "chrome/browser/ui/read_anything/read_anything_lifecycle_observer.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_controller.h"
@@ -287,9 +288,17 @@ class ReadAnythingUntrustedPageHandler :
       GetDependencyParserModelCallback callback,
       bool is_available);
 
+  // The Reading Mode controller for both immersive and side-panel reading mode,
+  // used when the immersive reading mode flag is enabled.
+  raw_ptr<ReadAnythingController> read_anything_controller_;
+  // Legacy side-panel reading mode controller, only to be used when the
+  // immersive reading mode flag is disabled.
+  // TODO: (crbug.com/449162079) Remove this when immersive reading mode flag is
+  // fully rolled out.
   raw_ptr<ReadAnythingSidePanelController> side_panel_controller_;
   const raw_ptr<Profile> profile_;
   const raw_ptr<content::WebUI> web_ui_;
+  raw_ptr<tabs::TabInterface> tab_;
 
   std::unique_ptr<ReadAnythingWebContentsObserver> main_observer_;
 

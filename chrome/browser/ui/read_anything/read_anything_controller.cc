@@ -20,6 +20,14 @@
 
 DEFINE_USER_DATA(ReadAnythingController);
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ReadAnythingControllerGlue);
+
+ReadAnythingControllerGlue::ReadAnythingControllerGlue(
+    content::WebContents* contents,
+    ReadAnythingController* controller)
+    : content::WebContentsUserData<ReadAnythingControllerGlue>(*contents),
+      controller_(controller) {}
+
 ReadAnythingController* ReadAnythingController::From(tabs::TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
@@ -42,11 +50,16 @@ ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
 }
 
 ReadAnythingController::~ReadAnythingController() {
+  observers_.Notify(&Observer::OnDestroyed);
+
   if (tab_->GetBrowserWindowInterface() &&
       tab_->GetBrowserWindowInterface()->GetTabStripModel()) {
     tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
   }
-  observers_.Notify(&Observer::OnDestroyed);
+
+  if (web_contents()) {
+    web_contents()->RemoveUserData(ReadAnythingControllerGlue::UserDataKey());
+  }
 }
 
 void ReadAnythingController::AddObserver(Observer* observer) {
@@ -120,6 +133,8 @@ ReadAnythingController::GetOrCreateWebUIWrapper() {
             IDS_READING_MODE_TITLE,
             /*esc_closes_ui=*/false);
     Observe(web_ui_wrapper_->web_contents());
+    ReadAnythingControllerGlue::CreateForWebContents(
+        web_ui_wrapper_->web_contents(), this);
   }
   return std::move(web_ui_wrapper_);
 }
@@ -179,6 +194,5 @@ void ReadAnythingController::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
     has_shown_ui_ = true;
-    Observe(nullptr);
   }
 }

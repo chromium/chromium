@@ -21,7 +21,28 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
+class ReadAnythingController;
 class TabStripModel;
+
+// Allows the Reading Mode WebUI (namely, the ReadAnythingUntrustedPageHandler)
+// to lookup the ReadAnythingController from the WebUI's WebContents.
+class ReadAnythingControllerGlue
+    : public content::WebContentsUserData<ReadAnythingControllerGlue> {
+ public:
+  ~ReadAnythingControllerGlue() override = default;
+
+  ReadAnythingController* controller() { return controller_; }
+
+ private:
+  friend class content::WebContentsUserData<ReadAnythingControllerGlue>;
+
+  ReadAnythingControllerGlue(content::WebContents* contents,
+                             ReadAnythingController* controller);
+
+  const raw_ptr<ReadAnythingController> controller_;
+
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+};
 
 // Manages the core logic for the Reading Mode feature.
 //
