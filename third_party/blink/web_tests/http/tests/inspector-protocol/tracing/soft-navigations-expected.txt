@@ -22,7 +22,7 @@ Tracing complete
    performanceTimelineNavigationId: id_2
    initialURL: http://127.0.0.1:8000/greeting
    mostRecentURL: http://127.0.0.1:8000/greeting
--> LCP candidate event
+-> LCP candidate for soft navigation event
    ts: 3
    frame: id_0
    performanceTimelineNavigationId: id_2
@@ -61,6 +61,30 @@ Object: {
 			isMainFrame: boolean
 			isOutermostMainFrame: boolean
 			navigationId: string
+			nodeId: number
+			nodeName: string
+			performanceTimelineNavigationId: number
+			size: number
+			type: string
+		}
+		frame: string
+	}
+	cat: string
+	name: string
+	ph: string
+	pid: number
+	s: string
+	tid: number
+	ts: number
+}
+
+LCP candidate for soft navigation event shape:
+Object: {
+	args: {
+		data: {
+			candidateIndex: number
+			isMainFrame: boolean
+			isOutermostMainFrame: boolean
 			nodeId: number
 			nodeName: string
 			performanceTimelineNavigationId: number

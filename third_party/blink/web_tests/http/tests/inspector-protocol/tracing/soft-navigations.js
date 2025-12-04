@@ -92,7 +92,8 @@
   // presentation time value to mark the timestamp, explicitly.
   const supportedTraceEventNames = [
     'SoftNavigationHeuristics::EmitSoftNavigationEntry',
-    'largestContentfulPaint::Candidate'
+    'largestContentfulPaint::Candidate',
+    'largestContentfulPaint::CandidateForSoftNavigation',
   ];
 
   let filteredEvents =
@@ -147,6 +148,7 @@
   const ids = new IdMapper();
   const softNavs = [];
   const lcpCandidates = [];
+  const lcpCandidatesForSoftNav = []
   for (const event of filteredEvents) {
     if (event.name === 'SoftNavigationHeuristics::EmitSoftNavigationEntry') {
       testRunner.log('-> SoftNavigation event');
@@ -164,6 +166,14 @@
       testRunner.log('   initialURL: ' + event.args.context.initialURL)
       testRunner.log('   mostRecentURL: ' + event.args.context.mostRecentURL)
       softNavs.push(event);
+    } else if (event.name === 'largestContentfulPaint::CandidateForSoftNavigation') {
+      testRunner.log('-> LCP candidate for soft navigation event');
+      testRunner.log('   ts: ' + timestamps.map(event.ts));
+      testRunner.log('   frame: ' + ids.map(event.args.frame));
+      testRunner.log(
+          '   performanceTimelineNavigationId: ' +
+          ids.map(event.args.data.performanceTimelineNavigationId));
+      lcpCandidatesForSoftNav.push(event);
     } else if (event.name === 'largestContentfulPaint::Candidate') {
       testRunner.log('-> LCP candidate event');
       testRunner.log('   ts: ' + timestamps.map(event.ts));
@@ -180,6 +190,9 @@
 
   testRunner.log('\nLCP candidate event shape:');
   tracingHelper.logEventShape(lcpCandidates[0]);
+
+  testRunner.log('\nLCP candidate for soft navigation event shape:');
+  tracingHelper.logEventShape(lcpCandidatesForSoftNav[0]);
 
   testRunner.completeTest();
 })

@@ -177,7 +177,12 @@
 
   const traceEntries = [];
   for (const event of unfilteredEvents.sort((a, b) => a.ts - b.ts)) {
-    if (event.name === 'largestContentfulPaint::Candidate') {
+    if (event.name === 'largestContentfulPaint::CandidateForSoftNavigation') {
+      traceEntries.push({
+        navigationId: event.args.data.performanceTimelineNavigationId,
+        name: 'LCP candidate for soft navigation (trace)'
+      });
+    } else if (event.name === 'largestContentfulPaint::Candidate') {
       traceEntries.push({
         navigationId: event.args.data.performanceTimelineNavigationId,
         name: 'LCP candidate (trace)'

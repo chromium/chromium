@@ -31,12 +31,8 @@ constexpr const char kTraceCategories[] = "loading,rail,devtools.timeline";
 
 constexpr const char kLCPCandidate[] = "largestContentfulPaint::Candidate";
 
-// A fixed navigationId for when we're emitting soft-navs related LCP trace
-// events; this is a valid UUIDv4. But, there is no corresponding navigation for
-// this ID, and therefore, DevTools will ignore these events.
-// TODO: Remove this once we introduce new trace events for soft-navs.
-constexpr const char kFixedNavigationIdForSoftNavs[] =
-    "deadbeef-dead-beef-dead-beefdeadbeef";
+constexpr const char kLCPCandidateForSoftNavs[] =
+    "largestContentfulPaint::CandidateForSoftNavigation";
 
 void PopulateFrameTraceData(TracedValue& value, const LocalFrame& frame) {
   value.SetBoolean("isMainFrame", frame.IsMainFrame());
@@ -136,7 +132,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories, kLCPCandidate, largest_image.PaintTime(), "data",
+        kTraceCategories,
+        delegate_->IsHardNavigation() ? kLCPCandidate
+                                      : kLCPCandidateForSoftNavs,
+        largest_image.PaintTime(), "data",
         CreateWebExposedCandidateTraceData(largest_image), "frame",
         GetFrameIdForTracing(window->GetFrame()));
   }
@@ -170,7 +169,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
 
   if (LocalDOMWindow* window = window_performance_->DomWindow()) {
     TRACE_EVENT_MARK_WITH_TIMESTAMP2(
-        kTraceCategories, kLCPCandidate, largest_text.PaintTime(), "data",
+        kTraceCategories,
+        delegate_->IsHardNavigation() ? kLCPCandidate
+                                      : kLCPCandidateForSoftNavs,
+        largest_text.PaintTime(), "data",
         CreateWebExposedCandidateTraceData(largest_text), "frame",
         GetFrameIdForTracing(window->GetFrame()));
   }
@@ -367,14 +369,10 @@ LargestContentfulPaintCalculator::CreateWebExposedCandidateTraceDataCommon(
   value->SetBoolean("isOutermostMainFrame",
                     window->GetFrame()->IsOutermostMainFrame());
   value->SetBoolean("isMainFrame", window->GetFrame()->IsMainFrame());
-  // Set navigationId to this fixed string for soft navs, to avoid that the
-  // event gets associated with the hard navigation (e.g., in DevTools).
-  value->SetString("navigationId", delegate_->IsHardNavigation()
-                                       ? IdentifiersFactory::LoaderId(
-                                             window->document()->Loader())
-                                       : kFixedNavigationIdForSoftNavs);
-  // TODO(crbug.com/426595418): Clean up this field once we support an
-  // event for soft lcp to be issued (Interaction Contentful Paint).
+  if (delegate_->IsHardNavigation()) {
+    value->SetString("navigationId", IdentifiersFactory::LoaderId(
+                                         window->document()->Loader()));
+  }
   value->SetInteger("performanceTimelineNavigationId",
                     window_performance_->NavigationId());
   if (Node* node = record.GetNode()) {
