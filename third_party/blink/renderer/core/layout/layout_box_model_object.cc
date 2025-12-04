@@ -321,6 +321,12 @@ void LayoutBoxModelObject::StyleDidChange(
       element->RemoveAnchorPositionScrollData();
     }
   }
+
+  // The backdrop-filter effect is clipped by the element's border radii, so we
+  // need to update properties when the border radii change.
+  if (HasNonInitialBackdropFilter() && diff.BorderRadiusChanged()) {
+    SetNeedsPaintPropertyUpdate();
+  }
 }
 
 void LayoutBoxModelObject::CreateLayerAfterStyleChange() {
