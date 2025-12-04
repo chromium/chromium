@@ -168,6 +168,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       toastSource_: {type: Number, state: true},
 
       expandableTilesEnabled: {type: Boolean, reflect: true},
+      maxTilesBeforeShowMore: {type: Number, reflect: true},
       showAll_: {type: Boolean, state: true},
       showShowMore_: {type: Boolean, state: true},
       showShowLess_: {type: Boolean, state: true},
@@ -183,6 +184,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
   accessor reflowOnOverflow: boolean = false;
   accessor singleRow: boolean = false;
   accessor expandableTilesEnabled: boolean = false;
+  accessor maxTilesBeforeShowMore: number = 0;
   private accessor showAll_: boolean = false;
   protected accessor showShowMore_: boolean = false;
   protected accessor showShowLess_: boolean = false;
@@ -211,7 +213,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
   protected accessor tiles_: MostVisitedTile[] = [];
   protected accessor toastSource_: TileSource = TileSource.CUSTOM_LINKS;
   protected accessor visible_: boolean = false;
-  private maxTilesBeforeShowMore_: number = 5;
   private adding_: boolean = false;
   private callbackRouter_: MostVisitedPageCallbackRouter;
   private pageHandler_: MostVisitedPageHandlerRemote;
@@ -339,10 +340,6 @@ export class MostVisitedElement extends MostVisitedElementBase {
         changedPrivateProperties.has('dialogTileUrl_')) {
       this.dialogSaveDisabled_ = this.computeDialogSaveDisabled_();
     }
-
-    if (changedPrivateProperties.has('expandableTilesEnabled')) {
-      this.maxTilesBeforeShowMore_ = this.computeMaxTilesBeforeShowMore_();
-    }
   }
 
   override firstUpdated() {
@@ -397,7 +394,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const canShowShowMore = this.expandableTilesEnabled && this.showShowMore_;
     const canShowShowLess = this.expandableTilesEnabled && this.showShowLess_;
     const visibleShortcutCount =
-        canShowShowMore ? this.maxTilesBeforeShowMore_ + 1 : shortcutCount;
+        canShowShowMore ? this.maxTilesBeforeShowMore + 1 : shortcutCount;
     const totalTileCount = visibleShortcutCount + (canShowAdd ? 1 : 0) +
         (canShowShowMore || canShowShowLess ? 1 : 0);
     const columnCount = totalTileCount <= this.maxVisibleColumnCount_ ?
@@ -416,7 +413,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (this.reflowOnOverflow && this.tiles_) {
       const visibleShortcutCount =
           this.expandableTilesEnabled && this.showShowMore_ ?
-          this.maxTilesBeforeShowMore_ + 1 :
+          this.maxTilesBeforeShowMore + 1 :
           this.tiles_.length;
       return Math.ceil(
           (visibleShortcutCount + (this.showAdd_ ? 1 : 0) +
@@ -434,7 +431,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
 
   private computeMaxVisibleTiles_(): number {
     if (this.expandableTilesEnabled && this.showShowMore_) {
-      return this.maxTilesBeforeShowMore_ + 1;
+      return this.maxTilesBeforeShowMore + 1;
     }
 
     if (this.reflowOnOverflow) {
@@ -460,20 +457,14 @@ export class MostVisitedElement extends MostVisitedElementBase {
         customLinkTilesCount < MAX_TILES_FOR_CUSTOM_LINKS;
   }
 
-  private computeMaxTilesBeforeShowMore_(): number {
-    return this.expandableTilesEnabled ?
-        loadTimeData.getInteger('maxTilesBeforeShowMore') :
-        5;
-  }
-
   private computeShowShowMore_(): boolean {
     return this.expandableTilesEnabled && !this.showAll_ && this.tiles_ &&
-        this.tiles_.length > this.maxTilesBeforeShowMore_;
+        this.tiles_.length > this.maxTilesBeforeShowMore;
   }
 
   private computeShowShowLess_(): boolean {
     return this.expandableTilesEnabled && this.showAll_ && this.tiles_ &&
-        this.tiles_.length > this.maxTilesBeforeShowMore_;
+        this.tiles_.length > this.maxTilesBeforeShowMore;
   }
 
   protected onShowMoreClick_() {
