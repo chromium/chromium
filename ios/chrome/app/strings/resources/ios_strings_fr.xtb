@@ -449,10 +449,10 @@
 <translation id="2688535388040882469">Bannières</translation>
 <translation id="2690858294534178585">Caméra en cours d'utilisation</translation>
 <translation id="2691653761409724435">Indisponible hors connexion</translation>
-<translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. D'<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
+<translation id="2696180352517415858">Vous ne serez pas déconnecté de votre compte Google. D’<ph name="BEGIN_LINK" />autres formes d'activité<ph name="END_LINK" /> peuvent y être enregistrées lorsque vous êtes connecté. Vous pouvez les supprimer à tout moment.
 
 
-Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l'historique de vos recherches, le cas échéant.</translation>
+Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pour supprimer l’historique de vos recherches, le cas échéant.</translation>
 <translation id="269819437389494246">Vous pouvez voir les pages que vous avez consultées ou les supprimer de votre historique</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2708051474374549906">Protection proactive en temps réel contre les extensions, sites et téléchargements dangereux, basée sur vos données de navigation envoyées à Google.</translation>
@@ -1614,7 +1614,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="7173114856073700355">Paramètres</translation>
 <translation id="7173721738069475737">{count,plural, =1{Favori enregistré}one{{count} favori enregistré}other{{count} favoris enregistrés}}</translation>
 <translation id="7176183551031110427">Faire un zoom arrière</translation>
-<translation id="7186568385131859684">Contrôlez la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
+<translation id="7186568385131859684">Contrôler la façon dont l'historique de navigation est utilisé avec vos autres données dans l'ensemble des services Google</translation>
 <translation id="719133302483559673">Gérez vos centres d'intérêt et préférences.</translation>
 <translation id="7191382490098297347">Image de la pellicule</translation>
 <translation id="7203496777391039568">Les données de votre organisation sont privées et sécurisées</translation>

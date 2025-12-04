@@ -243,7 +243,7 @@
 <translation id="1901366738768303267">Как использовать функцию</translation>
 <translation id="1901600657316773839">Сохранить выбор</translation>
 <translation id="1902277226107477495">Обнаружение адресов выключено. Снова включить его можно в настройках.</translation>
-<translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
+<translation id="1904580727789512086">URL посещаемых сайтов будут сохраняться в аккаунте Google.</translation>
 <translation id="1911619930368729126">Загрузить на Google Диск</translation>
 <translation id="1925706052394657380">Откройте <ph name="BEGIN_BOLD" />Приложения по умолчанию<ph name="END_BOLD" /> в настройках iOS.</translation>
 <translation id="1941314575388338491">Чтобы копировать, нажмите дважды.</translation>
@@ -1567,7 +1567,7 @@
 <translation id="6964760285928603117">Удалить из группы</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6973630695168034713">Папки</translation>
-<translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
+<translation id="69739764870135975">Если в качестве поисковой системы по умолчанию вы выбрали Google, вы будете видеть более подходящие по контексту подсказки.</translation>
 <translation id="6979158407327259162">Google Диск</translation>
 <translation id="6979737339423435258">Все время</translation>
 <translation id="6980507581230208647">Розовая тема</translation>
@@ -2154,7 +2154,7 @@
 <translation id="9144152097013965297">Включить режим чтения</translation>
 <translation id="9144230693397287797">Получать уведомления с напоминаниями о вкладках, в том числе с других устройств</translation>
 <translation id="914781932147356857">Отметить все…</translation>
-<translation id="9148126808321036104">Повторите вход</translation>
+<translation id="9148126808321036104">Войти снова</translation>
 <translation id="9149866541089851383">Изменить...</translation>
 <translation id="9159628751968616911">Отправка веб-страницы</translation>
 <translation id="9162432979321511934">Включите параметр "Автозаполнение паролей".</translation>

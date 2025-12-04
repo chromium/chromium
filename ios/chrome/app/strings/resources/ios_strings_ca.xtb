@@ -1847,7 +1847,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8035133914807600019">Carpeta nova…</translation>
 <translation id="8035412398498507358">Fotos</translation>
 <translation id="8040407350301524547">Per veure les opcions de ruta, toca Obtén indicacions.</translation>
-<translation id="804225253087497565">És possible que l'<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
+<translation id="804225253087497565">És possible que l‘<ph name="BEGIN_LINK" />historial de cerques<ph name="END_LINK" /> i <ph name="BEGIN_LINK" />altres tipus d'activitats<ph name="END_LINK" /> es desin al teu Compte de Google quan tinguis la sessió iniciada. Les pots suprimir en qualsevol moment.</translation>
 <translation id="804427445359061970">Trobaràs les teves pestanyes d'altres dispositius aquí</translation>
 <translation id="8058655154417507695">Any de caducitat</translation>
 <translation id="8059312861912872211">{count,plural, =1{{count} adreça d'interès}other{{count} adreces d'interès}}</translation>

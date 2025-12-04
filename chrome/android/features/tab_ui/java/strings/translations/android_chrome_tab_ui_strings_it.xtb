@@ -62,7 +62,7 @@
 <translation id="2894757982205307093">Nuova scheda nel gruppo</translation>
 <translation id="2918484639460781603">Passa alle impostazioni</translation>
 <translation id="2928243913527329289">Google | Informazioni su questo negozio</translation>
-<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> selezionato}other{<ph name="ITEMS_COUNT_MANY" /> selezionati}}</translation>
+<translation id="2978860912612699943">{ITEMS_COUNT,plural, =1{<ph name="ITEMS_COUNT_ONE" /> selezionata}other{<ph name="ITEMS_COUNT_MANY" /> selezionate}}</translation>
 <translation id="3008554597174452548">Interrompi il monitoraggio del prodotto</translation>
 <translation id="3026391124054406831">Crea gruppi per organizzare le tue schede.</translation>
 <translation id="3051031624272448591">Puoi ripristinarle nella cronologia in qualsiasi momento</translation>

@@ -1333,7 +1333,7 @@
 <translation id="1901213235765457754">Попросите администратора обновить это приложение</translation>
 <translation id="1901303067676059328">Выделить &amp;все</translation>
 <translation id="1901760057081700494">Ваш текущий часовой пояс – <ph name="TIME_ZONE_ENTRY" />. Чтобы изменять его автоматически, <ph name="BEGIN_LINK" />разрешите доступ к данным о местоположении<ph name="END_LINK" />.</translation>
-<translation id="1904580727789512086">URL посещаемых сайтов сохраняются в аккаунте Google.</translation>
+<translation id="1904580727789512086">URL посещаемых сайтов будут сохраняться в аккаунте Google.</translation>
 <translation id="1906181697255754968">Обычно сайтам нужен доступ к файлам и папкам на устройстве, чтобы использовать некоторые функции, например автоматически сохранять вашу работу.</translation>
 <translation id="1906488504371069394">Ещё больше расширений и тем можно найти в <ph name="BEGIN_LINK" />интернет-магазине Chrome<ph name="END_LINK" /></translation>
 <translation id="1907044622262489040">Использовать голосовой ввод. Нажмите Поиск + D и продиктуйте текст.</translation>
@@ -4423,7 +4423,7 @@
 <translation id="3995138139523574647">Устройство USB-C (дальний порт справа)</translation>
 <translation id="3995963973192100066">Воспроизвести анимацию</translation>
 <translation id="399788104667917863">Закрепить на панели инструментов</translation>
-<translation id="3998780825367526465">Показывать предварительные изображения вкладок</translation>
+<translation id="3998780825367526465">Показывать изображения вкладок</translation>
 <translation id="3998976413398910035">Управление принтерами</translation>
 <translation id="4000360130639414007">Вы не сможете использовать Google Play и приложения для Android</translation>
 <translation id="4001540981461989979">Выделять указатель, когда он движется</translation>
@@ -8609,7 +8609,7 @@
 <translation id="6972754398087986839">Начать</translation>
 <translation id="697312151395002334">Разрешить сайтам показывать всплывающие окна или использовать переадресацию</translation>
 <translation id="6973611239564315524">Доступна версия Debian 10 (Buster).</translation>
-<translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
+<translation id="69739764870135975">Если в качестве поисковой системы по умолчанию вы выбрали Google, вы будете видеть более подходящие по контексту подсказки.</translation>
 <translation id="697508444536771064">Завершить работу Linux</translation>
 <translation id="6978121630131642226">Поисковые системы</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
@@ -11804,7 +11804,7 @@
 <translation id="9143922477019434797">Защитите свои пароли</translation>
 <translation id="9147392381910171771">&amp;Параметры</translation>
 <translation id="9148058034647219655">Выйти</translation>
-<translation id="9148126808321036104">Повторите вход</translation>
+<translation id="9148126808321036104">Войти снова</translation>
 <translation id="9148963623915467028">Этому сайту разрешено получать информацию о том, где вы находитесь.</translation>
 <translation id="9149866541089851383">Изменить...</translation>
 <translation id="9150045010208374699">Использование камеры</translation>

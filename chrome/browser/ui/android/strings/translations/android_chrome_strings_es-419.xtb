@@ -191,7 +191,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="189358972401248634">Otros idiomas</translation>
 <translation id="1899175549411605574">Hoja inferior de la información sobre precios</translation>
 <translation id="1900260903084164610">Si continúas, aceptas las <ph name="BEGIN_TOS_LINK" />Condiciones del Servicio<ph name="END_TOS_LINK" />.</translation>
-<translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
+<translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1910950723001426294">La lista de opciones para compartir está cerrada.</translation>
 <translation id="191726024256261717">Revisar permisos</translation>
 <translation id="1917766536967060661">Perderás de inmediato el acceso al grupo de pestañas “<ph name="GROUP_NAME" />”, y <ph name="BLOCKED_MEMBER_FULL_NAME" /> (<ph name="BLOCKED_MEMBER_EMAIL" />) ya no podrá interactuar contigo en los servicios de Google.</translation>
@@ -1094,7 +1094,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="6085886413119427067">Determina cómo conectarse a sitios web mediante una conexión segura</translation>
 <translation id="6087286598828478206">¿Quieres bloquear a ese miembro y salir del grupo?</translation>
 <translation id="60923314841986378"><ph name="HOURS" /> horas restantes</translation>
-<translation id="6095578583683628124">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relevantes según el contexto</translation>
+<translation id="6095578583683628124">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relacionadas con el contexto</translation>
 <translation id="6104768972315313991">Código QR generado</translation>
 <translation id="610630277578876674">Abre rápidamente vínculos en mensajes y mucho más</translation>
 <translation id="6108923351542677676">Configuración en curso…</translation>
@@ -1823,7 +1823,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="9131209053278896908">Los sitios que bloqueaste aparecen aquí</translation>
 <translation id="9133397713400217035">Explorar sin conexión</translation>
 <translation id="9143389653531441385">Regístrate con <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
-<translation id="9148126808321036104">Accede nuevamente</translation>
+<translation id="9148126808321036104">Volver a acceder</translation>
 <translation id="9157212632995922070">Elige una cuenta para continuar en <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="9158770349521403363">Compartir solo el contenido</translation>
 <translation id="9161172953291434881">¿Confías en este sitio con tus datos?</translation>

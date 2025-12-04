@@ -243,7 +243,7 @@
 <translation id="1901366738768303267">¿Cómo uso esta función?</translation>
 <translation id="1901600657316773839">Conservar la selección</translation>
 <translation id="1902277226107477495">La detección de direcciones está desactivada. Vuelve a activarla en Configuración.</translation>
-<translation id="1904580727789512086">Las URL que visitas se guardan en tu Cuenta de Google</translation>
+<translation id="1904580727789512086">Las URLs que visitas se guardan en tu Cuenta de Google</translation>
 <translation id="1911619930368729126">Cargar a Google Drive</translation>
 <translation id="1925706052394657380">Abrir la configuración de <ph name="BEGIN_BOLD" />Apps predeterminadas<ph name="END_BOLD" /> en iOS</translation>
 <translation id="1941314575388338491">Presiona dos veces para copiar.</translation>
@@ -1567,7 +1567,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="6964760285928603117">Quitar del grupo</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6973630695168034713">Carpetas</translation>
-<translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás sugerencias mejores y relevantes según el contexto</translation>
+<translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás mejores sugerencias, relacionadas con el contexto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Todos</translation>
 <translation id="6980507581230208647">Tema rosa</translation>
@@ -2154,7 +2154,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="9144152097013965297">Activar el Modo de lectura</translation>
 <translation id="9144230693397287797">Recibe actualizaciones de los recordatorios que configuraste y de las pestañas de otros dispositivos</translation>
 <translation id="914781932147356857">Marcar todas…</translation>
-<translation id="9148126808321036104">Accede nuevamente</translation>
+<translation id="9148126808321036104">Volver a acceder</translation>
 <translation id="9149866541089851383">Editar...</translation>
 <translation id="9159628751968616911">Envía la página web</translation>
 <translation id="9162432979321511934">Activa la función Autocompletar contraseñas.</translation>
