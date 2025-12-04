@@ -1124,6 +1124,7 @@ union AdditionalContextPart {
   AnnotatedPageData annotated_page_data;
   PdfDocumentData pdf_document_data;
   TabContext tab_context;
+  CapturedRegion region;
 };
 
 // An additional context object.

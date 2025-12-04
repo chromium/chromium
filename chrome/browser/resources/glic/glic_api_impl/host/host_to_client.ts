@@ -276,6 +276,8 @@ export class WebClientImpl implements WebClientInterface {
         part.pdf = pdfDocumentDataToClient(p.pdfDocumentData, extras);
       } else if (p.tabContext) {
         part.tabContext = tabContextToClient(p.tabContext, extras);
+      } else if (p.region) {
+        part.region = p.region;
       }
       return part;
     });

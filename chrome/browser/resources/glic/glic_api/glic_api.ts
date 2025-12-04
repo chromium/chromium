@@ -77,6 +77,7 @@ export declare interface AdditionalContextPart {
   annotatedPageData?: AnnotatedPageData;
   pdf?: PdfDocumentData;
   tabContext?: TabContextResult;
+  region?: CapturedRegion;
 }
 
 /**

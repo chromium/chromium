@@ -2182,7 +2182,7 @@ class ApiTests extends ApiTestFixtureBase {
         assertTrue(context.tabId!.length > 0);
         assertDefined(context.frameUrl);
         assertTrue(context.frameUrl!.length > 0);
-        assertEquals(context.parts.length, 6);
+        assertEquals(context.parts.length, 7);
 
         const part1 = context.parts[0]!;
         assertDefined(part1.data);
@@ -2221,6 +2221,14 @@ class ApiTests extends ApiTestFixtureBase {
         assertEquals(part6.tabContext!.tabData!.tabId, '1');
         assertEquals(part6.tabContext!.tabData!.windowId, '2');
         assertEquals(part6.tabContext!.tabData!.url, 'https://google.com/');
+
+        const part7 = context.parts[6]!;
+        assertDefined(part7.region);
+        assertDefined(part7.region!.rect);
+        assertEquals(part7.region!.rect!.x, 10);
+        assertEquals(part7.region!.rect!.y, 20);
+        assertEquals(part7.region!.rect!.width, 30);
+        assertEquals(part7.region!.rect!.height, 40);
         resolve();
       });
     });

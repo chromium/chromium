@@ -3237,6 +3237,12 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithOneTab, testAdditionalContext) {
     parts.push_back(
         mojom::AdditionalContextPart::NewTabContext(std::move(tab_context)));
   }
+
+  {
+    auto region = mojom::CapturedRegion::NewRect(gfx::Rect(10, 20, 30, 40));
+    parts.push_back(mojom::AdditionalContextPart::NewRegion(std::move(region)));
+  }
+
   context->parts = std::move(parts);
 
   GetService()->SendAdditionalContext(tabs::TabHandle(GetTabId(web_contents)),

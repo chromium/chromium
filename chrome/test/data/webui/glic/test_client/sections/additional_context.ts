@@ -60,6 +60,15 @@ client.getInitialized().then(async () => {
           if (part.pdf) {
             pre.innerText += `PDF: present\n`;
           }
+          if (part.region) {
+            if (part.region.rect) {
+              const rect = part.region.rect;
+              pre.innerText += `Region: ${rect.x}, ${rect.y}, ${rect.width}, ${
+                  rect.height}\n`;
+            } else {
+              pre.innerText += `Region: present but no rect\n`;
+            }
+          }
         }
       });
 });
