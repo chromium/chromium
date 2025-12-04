@@ -616,6 +616,9 @@ public class RootUiCoordinator
                         new PageZoomManagerDelegate() {
                             @Override
                             public WebContents getWebContents() {
+                                if (mActivityTabProvider.get() == null) {
+                                    return null;
+                                }
                                 return mActivityTabProvider.get().getWebContents();
                             }
 

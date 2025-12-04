@@ -73,7 +73,11 @@ public class PageZoomManager {
      */
     @VisibleForTesting
     public double getZoomLevel() {
-        return HostZoomMap.getZoomLevel(mDelegate.getWebContents());
+        WebContents webContents = mDelegate.getWebContents();
+        if (webContents == null) {
+            return 0.00;
+        }
+        return HostZoomMap.getZoomLevel(webContents);
     }
 
     /**
