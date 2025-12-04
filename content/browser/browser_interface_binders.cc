@@ -711,38 +711,6 @@ void BindRenderFrameHostImpl(RenderFrameHost* host,
 
 // Documents/frames
 void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
-  map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateWebUsbService, base::Unretained(host)));
-
-  map->Add<blink::mojom::WebSocketConnector>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateWebSocketConnector, base::Unretained(host)));
-
-  map->Add<blink::mojom::LockManager>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateLockManager, base::Unretained(host)));
-
-  map->Add<blink::mojom::IDBFactory>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateIDBFactory, base::Unretained(host)));
-
-  map->Add<blink::mojom::BucketManagerHost>(base::BindRepeating(
-      &RenderFrameHostImpl::CreateBucketManagerHost, base::Unretained(host)));
-
-  map->Add<blink::mojom::FileChooser>(
-      base::BindRepeating(&FileChooserImpl::Create, base::Unretained(host)));
-
-  map->Add<blink::mojom::FileUtilitiesHost>(
-      base::BindRepeating(FileUtilitiesHostImpl::Create,
-                          host->GetProcess()->GetDeprecatedID()),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
-
-  map->Add<device::mojom::GamepadMonitor>(&device::GamepadMonitor::Create);
-
-  map->Add<blink::mojom::WebSensorProvider>(base::BindRepeating(
-      &RenderFrameHostImpl::GetSensorProvider, base::Unretained(host)));
-
-  map->Add<payments::mojom::PaymentManager>(base::BindRepeating(
-      &RenderFrameHostImpl::CreatePaymentManager, base::Unretained(host)));
-
   map->Add<handwriting::mojom::HandwritingRecognitionService>(
       &CreateHandwritingRecognitionService);
 
@@ -1131,6 +1099,43 @@ void PopulateBinderMapWithContext(
       &BindRenderFrameHostImpl<
           &RenderFrameHostImpl::GetManagedConfigurationService>);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  map->Add<blink::mojom::WebUsbService>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateWebUsbService>);
+
+  map->Add<blink::mojom::WebSocketConnector>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateWebSocketConnector>);
+
+  map->Add<blink::mojom::LockManager>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateLockManager>);
+
+  map->Add<blink::mojom::IDBFactory>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateIDBFactory>);
+
+  map->Add<blink::mojom::BucketManagerHost>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreateBucketManagerHost>);
+
+  map->Add<blink::mojom::FileChooser>(&FileChooserImpl::Create);
+
+  map->Add<blink::mojom::FileUtilitiesHost>(
+      base::BindRepeating(
+          [](ChildProcessId id, RenderFrameHost*,
+             mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
+            // TODO(crbug.com/379869738) Remove GetUnsafeValue.
+            FileUtilitiesHostImpl::Create(id.GetUnsafeValue(),
+                                          std::move(receiver));
+          },
+          host->GetProcess()->GetID()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
+
+  map->Add<device::mojom::GamepadMonitor>(&device::GamepadMonitor::Create);
+
+  map->Add<blink::mojom::WebSensorProvider>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::GetSensorProvider>);
+
+  map->Add<payments::mojom::PaymentManager>(
+      &BindRenderFrameHostImpl<&RenderFrameHostImpl::CreatePaymentManager>);
 
   map->Add<blink::mojom::BackgroundFetchService>(
       &BackgroundFetchServiceImpl::CreateForFrame);

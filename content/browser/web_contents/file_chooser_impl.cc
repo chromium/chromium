@@ -121,10 +121,11 @@ void FileChooserImpl::FileSelectListenerImpl::
 
 // static
 void FileChooserImpl::Create(
-    RenderFrameHostImpl* render_frame_host,
+    RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<blink::mojom::FileChooser> receiver) {
   mojo::MakeSelfOwnedReceiver(
-      base::WrapUnique(new FileChooserImpl(render_frame_host)),
+      base::WrapUnique(
+          new FileChooserImpl(RenderFrameHostImpl::From(render_frame_host))),
       std::move(receiver));
 }
 

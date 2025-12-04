@@ -16,6 +16,7 @@
 
 namespace content {
 
+class RenderFrameHost;
 class RenderFrameHostImpl;
 
 // An implementation of blink::mojom::FileChooser and FileSelectListener
@@ -60,7 +61,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser {
 #endif
   };
 
-  static void Create(RenderFrameHostImpl* render_frame_host,
+  static void Create(RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<blink::mojom::FileChooser> receiver);
   static mojo::Remote<blink::mojom::FileChooser> CreateBoundForTesting(
       RenderFrameHostImpl* render_frame_host);

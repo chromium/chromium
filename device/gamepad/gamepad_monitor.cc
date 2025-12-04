@@ -23,6 +23,7 @@ GamepadMonitor::~GamepadMonitor() {
 
 // static
 void GamepadMonitor::Create(
+    content::RenderFrameHost*,  // Part of the BinderMapForContext interface.
     mojo::PendingReceiver<mojom::GamepadMonitor> receiver) {
   mojo::MakeSelfOwnedReceiver(std::make_unique<GamepadMonitor>(),
                               std::move(receiver));
