@@ -558,6 +558,13 @@ const base::TimeDelta kProgressBarEndAnimationDuration =
   UIMenu* emptyMenu = [UIMenu menuWithChildren:@[]];
   button.menu = emptyMenu;
 
+  // Fix the order of the New Tab button menu to ensure the menu and child menus
+  // are displayed in the correct visual order.
+  if (buttonType == AdaptiveToolbarButtonTypeNewTab) {
+    button.preferredMenuElementOrder =
+        UIContextMenuConfigurationElementOrderFixed;
+  }
+
   [button removeActionForIdentifier:kContextMenuActionIdentifier
                    forControlEvents:UIControlEventMenuActionTriggered];
 

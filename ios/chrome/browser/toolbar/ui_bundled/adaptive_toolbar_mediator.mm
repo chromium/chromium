@@ -546,6 +546,26 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
 
   NSMutableArray* staticActions = [[NSMutableArray alloc] init];
 
+  const bool useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::PlusButton, [self isGoogleDefaultSearchEngine]);
+
+  if (useLens) {
+    cameraSearch = [self.actionFactory
+        actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton];
+  } else {
+    cameraSearch = [self.actionFactory actionToShowQRScanner];
+  }
+
+  [staticActions addObjectsFromArray:@[
+    cameraSearch, voiceSearch, newIncognitoSearch, newSearch
+  ]];
+
+  if (experimental_flags::EnableAIPrototypingMenu()) {
+    UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
+    [staticActions addObject:openAIMenu];
+  }
+
   if (base::FeatureList::IsEnabled(kTabGroupInTabIconContextMenu)) {
     std::set<const TabGroup*> groups = self.webStateList->GetGroups();
     const TabGroup* currentGroup = self.webStateList->GetGroupOfWebStateAt(
@@ -556,7 +576,6 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     /// Otherwise, display the "Add Tab to Group" menu. If a user doesn't have
     /// any Tab Groups, the "Add Tab to Group" menu will just be a "Add Tab to
     /// New Group" button.
-
     if (currentGroup) {
       tabGroupMenu = [self.actionFactory menuToMoveTabToGroupWithGroups:groups
           currentGroup:currentGroup
@@ -577,28 +596,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
     [staticActions addObject:tabGroupMenu];
   }
 
-  const bool useLens =
-      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
-          LensEntrypoint::PlusButton, [self isGoogleDefaultSearchEngine]);
-
-  if (useLens) {
-    cameraSearch = [self.actionFactory
-        actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton];
-  } else {
-    cameraSearch = [self.actionFactory actionToShowQRScanner];
-  }
-
-  [staticActions addObjectsFromArray:@[
-    newSearch, newIncognitoSearch, voiceSearch, cameraSearch
-  ]];
-
-  if (experimental_flags::EnableAIPrototypingMenu()) {
-    UIAction* openAIMenu = [self.actionFactory actionToOpenAIMenu];
-    [staticActions addObject:openAIMenu];
-  }
-
   UIMenuElement* clipboardAction = [self menuElementForPasteboard];
-
   if (clipboardAction) {
     UIMenu* staticMenu = [UIMenu menuWithTitle:@""
                                          image:nil
@@ -606,7 +604,7 @@ std::optional<tab_groups::LocalTabGroupID> LocalTabGroupID(
                                        options:UIMenuOptionsDisplayInline
                                       children:staticActions];
 
-    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
+    return [UIMenu menuWithTitle:@"" children:@[ clipboardAction, staticMenu ]];
   }
   return [UIMenu menuWithTitle:@"" children:staticActions];
 }
