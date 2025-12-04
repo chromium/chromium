@@ -7014,10 +7014,14 @@ class LayerTreeHostTestGpuRasterizationEnabledWithMSAA : public LayerTreeTest {
   void SetUpUnboundContextProviders(
       viz::TestContextProvider* context_provider,
       viz::TestContextProvider* worker_provider) override {
-    auto* compositor = context_provider->UnboundTestRasterInterface();
-    compositor->set_gpu_rasterization(true);
-    auto* worker = worker_provider->UnboundTestRasterInterface();
-    worker->set_gpu_rasterization(true);
+    context_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
+    context_provider->GetWritableGpuFeatureInfo()
+        .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
+        gpu::kGpuFeatureStatusEnabled;
+    worker_provider->UnboundTestRasterInterface()->set_gpu_rasterization(true);
+    worker_provider->GetWritableGpuFeatureInfo()
+        .status_values[gpu::GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] =
+        gpu::kGpuFeatureStatusEnabled;
   }
 
   void InitializeSettings(LayerTreeSettings* settings) override {
