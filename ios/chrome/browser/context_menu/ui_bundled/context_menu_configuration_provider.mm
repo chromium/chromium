@@ -24,6 +24,8 @@
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -512,8 +514,11 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
   __weak __typeof(self) weakSelf = self;
 
   // Launch the Gemini experience with an image attached.
-  // TODO(crbug.com/457469273): Add more eligibility checks.
-  if (IsImageContextMenuGeminiEntryPointEnabled()) {
+  BOOL canShowGeminiElement =
+      IsImageContextMenuGeminiEntryPointEnabled() &&
+      BwgServiceFactory::GetForProfile(self.browser->GetProfile())
+          ->IsBwgAvailableForWebState(webState);
+  if (canShowGeminiElement) {
     ProceduralBlock geminiElementCallback = ^{
       [weakSelf openGeminiWithImageURL:imageURL referrer:referrer];
     };
