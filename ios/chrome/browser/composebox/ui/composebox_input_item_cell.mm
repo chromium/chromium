@@ -11,50 +11,52 @@
 
 namespace {
 /// The cell's max height.
-const CGFloat kMaxCellHeight = 36;
+const CGFloat kMaxCellHeight = 36.0;
+/// The trailing padding for the close button.
+const CGFloat kCloseButtonTrailing = 8.0;
+/// The corner radius for the cell's layer.
+const CGFloat kCellCornerRadius = 16.0;
+/// The point size for the symbol icons.
+const CGFloat kSymbolSize = 24.0;
+/// The size of the close icon.
+const CGFloat kCloseIconSize = 20;
+/// The alpha value for the close button.
+const CGFloat kCloseButtonAlpha = 0.9;
 }  // namespace
 
 @implementation ComposeboxInputItemCell {
+  /// The input item view displayed in the cell.
   ComposeboxInputItemView* _inputItemView;
+  /// The activity indicator for loading state.
   UIActivityIndicatorView* _loadingIndicator;
+  /// The scrim view overlaying content during loading or error states.
   UIView* _scrimView;
+  /// The error icon view displayed during error states.
   UIImageView* _errorIconView;
+  /// The button to dismiss the input item.
+  UIButton* _closeButton;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.layer.cornerRadius = 16;
+    self.layer.cornerRadius = kCellCornerRadius;
     self.clipsToBounds = YES;
 
-    _inputItemView = [[ComposeboxInputItemView alloc] init];
-    _inputItemView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self setupInputItemView];
+    [self setupScrimView];
+    [self setupLoadingIndicator];
+    [self setupErrorIconView];
+    [self setupCloseButton];
+
     [self.contentView addSubview:_inputItemView];
-
-    _scrimView = [[UIView alloc] init];
-    _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_scrimView];
-
-    _loadingIndicator = [[UIActivityIndicatorView alloc]
-        initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
-    _loadingIndicator.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_loadingIndicator];
-
-    UIImageSymbolConfiguration* symbolConfig =
-        [UIImageSymbolConfiguration configurationWithPointSize:24];
-    UIImage* errorImage =
-        DefaultSymbolWithConfiguration(@"exclamationmark.circle", symbolConfig);
-    _errorIconView = [[UIImageView alloc] initWithImage:errorImage];
-    _errorIconView.translatesAutoresizingMaskIntoConstraints = NO;
-    _errorIconView.tintColor = [UIColor whiteColor];
     [self.contentView addSubview:_errorIconView];
+    [self.contentView addSubview:_closeButton];
 
     AddSameConstraints(self.contentView, _inputItemView);
     AddSameConstraints(self.contentView, _scrimView);
-
-    [_inputItemView.closeButton addTarget:self
-                                   action:@selector(closeButtonTapped)
-                         forControlEvents:UIControlEventTouchUpInside];
 
     [NSLayoutConstraint activateConstraints:@[
       [self.heightAnchor constraintLessThanOrEqualToConstant:kMaxCellHeight],
@@ -66,6 +68,11 @@ const CGFloat kMaxCellHeight = 36;
           constraintEqualToAnchor:self.contentView.centerXAnchor],
       [_errorIconView.centerYAnchor
           constraintEqualToAnchor:self.contentView.centerYAnchor],
+      [_closeButton.trailingAnchor
+          constraintEqualToAnchor:self.contentView.trailingAnchor
+                         constant:-kCloseButtonTrailing],
+      [_closeButton.centerYAnchor
+          constraintEqualToAnchor:self.contentView.centerYAnchor],
     ]];
   }
   return self;
@@ -75,6 +82,8 @@ const CGFloat kMaxCellHeight = 36;
   [super prepareForReuse];
   [_inputItemView prepareForReuse];
 }
+
+#pragma mark - Public methods
 
 - (void)configureWithItem:(ComposeboxInputItem*)item
                     theme:(ComposeboxTheme*)theme {
@@ -103,13 +112,64 @@ const CGFloat kMaxCellHeight = 36;
     _scrimView.backgroundColor = theme.inputItemBackgroundColor;
   }
 
+  UIImage* image = SymbolWithPalette(
+      DefaultSymbolWithPointSize(kXMarkCircleFillSymbol, kCloseIconSize), @[
+        [UIColor colorNamed:kTextSecondaryColor],
+        [theme.inputItemBackgroundColor
+            colorWithAlphaComponent:kCloseButtonAlpha]
+      ]);
+  [_closeButton setImage:image forState:UIControlStateNormal];
+
   _inputItemView.backgroundColor = theme.inputItemBackgroundColor;
 }
 
-#pragma mark private
+#pragma mark Private helpers
 
+/// Called when the close button is tapped, notifying the delegate to remove the
+/// item.
 - (void)closeButtonTapped {
   [self.delegate composeboxInputItemCellDidTapCloseButton:self];
+}
+
+#pragma mark - Private methods
+
+/// Sets up `_inputItemView`.
+- (void)setupInputItemView {
+  _inputItemView = [[ComposeboxInputItemView alloc] init];
+  _inputItemView.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+/// Sets up `_scrimView`.
+- (void)setupScrimView {
+  _scrimView = [[UIView alloc] init];
+  _scrimView.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+/// Sets up `_loadingIndicator`.
+- (void)setupLoadingIndicator {
+  _loadingIndicator = [[UIActivityIndicatorView alloc]
+      initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
+  _loadingIndicator.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+/// Sets up `_errorIconView`.
+- (void)setupErrorIconView {
+  UIImageSymbolConfiguration* symbolConfig =
+      [UIImageSymbolConfiguration configurationWithPointSize:kSymbolSize];
+  UIImage* errorImage =
+      DefaultSymbolWithConfiguration(kErrorCircleSymbol, symbolConfig);
+  _errorIconView = [[UIImageView alloc] initWithImage:errorImage];
+  _errorIconView.translatesAutoresizingMaskIntoConstraints = NO;
+  _errorIconView.tintColor = [UIColor whiteColor];
+}
+
+/// Sets up `_closeButton`.
+- (void)setupCloseButton {
+  _closeButton = [UIButton buttonWithType:UIButtonTypeSystem];
+  _closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [_closeButton addTarget:self
+                   action:@selector(closeButtonTapped)
+         forControlEvents:UIControlEventTouchUpInside];
 }
 
 @end

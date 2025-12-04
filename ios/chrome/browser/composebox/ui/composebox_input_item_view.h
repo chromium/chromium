@@ -20,9 +20,6 @@ const CGSize kTabFileInputItemSize = {136.0f, 44.0f};
 // The aim input item view.
 @interface ComposeboxInputItemView : UIView
 
-/// The close button.
-@property(nonatomic, strong, readonly) UIButton* closeButton;
-
 /// Updates the UI based on the item's type.
 - (void)configureWithItem:(ComposeboxInputItem*)item
                     theme:(ComposeboxTheme*)theme;
