@@ -12,7 +12,7 @@
 //! - [CLI Concepts][_concepts]
 //! - [FAQ][_faq]
 //! - [Discussions](https://github.com/clap-rs/clap/discussions)
-//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.51/CHANGELOG.md) (includes major version migration
+//! - [CHANGELOG](https://github.com/clap-rs/clap/blob/v4.5.53/CHANGELOG.md) (includes major version migration
 //!   guides)
 //!
 //! ## Aspirations

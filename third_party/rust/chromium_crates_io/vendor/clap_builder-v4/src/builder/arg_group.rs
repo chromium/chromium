@@ -2,32 +2,15 @@
 use crate::builder::IntoResettable;
 use crate::util::Id;
 
-/// Family of related [arguments].
+/// Specifies a logical group of [arguments]
 ///
-/// By placing arguments in a logical group, you can create easier requirement and
-/// exclusion rules instead of having to list each argument individually, or when you want a rule
-/// to apply "any but not all" arguments.
+/// You can use this for
+/// - applying validation to an entire group, like [`ArgGroup::multiple`]
+/// - validate relationships between an argument and a group, like [conflicts] or [requirements]
+/// - check which argument in a group was specified on the command-line
 ///
-/// For instance, you can make an entire `ArgGroup` required. If [`ArgGroup::multiple(true)`] is
-/// set, this means that at least one argument from that group must be present. If
-/// [`ArgGroup::multiple(false)`] is set (the default), one and *only* one must be present.
-///
-/// You can also do things such as name an entire `ArgGroup` as a [conflict] or [requirement] for
-/// another argument, meaning any of the arguments that belong to that group will cause a failure
-/// if present, or must be present respectively.
-///
-/// Perhaps the most common use of `ArgGroup`s is to require one and *only* one argument to be
-/// present out of a given set. Imagine that you had multiple arguments, and you want one of them
-/// to be required, but making all of them required isn't feasible because perhaps they conflict
-/// with each other. For example, lets say that you were building an application where one could
-/// set a given version number by supplying a string with an option argument, i.e.
-/// `--set-ver v1.2.3`, you also wanted to support automatically using a previous version number
-/// and simply incrementing one of the three numbers. So you create three flags `--major`,
-/// `--minor`, and `--patch`. All of these arguments shouldn't be used at one time but you want to
-/// specify that *at least one* of them is used. For this, you can create a group.
-///
-/// Finally, you may use `ArgGroup`s to pull a value from a group of arguments when you don't care
-/// exactly which argument was actually used at runtime.
+/// For visually grouping arguments in help, see instead
+/// [`Arg::help_heading`][crate::Arg::help_heading].
 ///
 /// # Examples
 ///
@@ -78,12 +61,9 @@ use crate::util::Id;
 /// );
 /// // we could also alternatively check each arg individually (not shown here)
 /// ```
-/// [`ArgGroup::multiple(true)`]: ArgGroup::multiple()
-///
-/// [`ArgGroup::multiple(false)`]: ArgGroup::multiple()
 /// [arguments]: crate::Arg
-/// [conflict]: crate::Arg::conflicts_with()
-/// [requirement]: crate::Arg::requires()
+/// [conflicts]: crate::Arg::conflicts_with()
+/// [requirements]: crate::Arg::requires()
 #[derive(Default, Clone, Debug, PartialEq, Eq)]
 pub struct ArgGroup {
     pub(crate) id: Id,
