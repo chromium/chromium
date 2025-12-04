@@ -1877,6 +1877,42 @@ class RefillTest : public FormFillerTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(RefillTest, FormChanged_IrrelevantFieldChanges) {
+  AutofillProfile profile = test::GetFullProfile();
+  auto change_field_css_classes = [](FormData& form) {
+    auto fields = form.ExtractFields();
+    fields.front().set_css_classes(u"field-css-classes");
+    form.set_fields(std::move(fields));
+  };
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillFixFormEquality},
+        /*disabled_features=*/{features::kAutofillFewerTrivialRefills});
+    FormData form = test::GetFormData(
+        {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
+    FormsSeen({form});
+    AutofillForm(form, form.fields().front(), &profile);
+    EXPECT_CALL(mock_form_filler(), ScheduleRefill).Times(1);
+    change_field_css_classes(form);
+    FormsSeen({form});
+  }
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillFixFormEquality,
+                              features::kAutofillFewerTrivialRefills},
+        /*disabled_features=*/{});
+    FormData form = test::GetFormData(
+        {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}}});
+    FormsSeen({form});
+    AutofillForm(form, form.fields().front(), &profile);
+    EXPECT_CALL(mock_form_filler(), ScheduleRefill).Times(0);
+    change_field_css_classes(form);
+    FormsSeen({form});
+  }
+}
+
 TEST_F(RefillTest, SelectOptionsChanged_IrrelevantSelectField) {
   AutofillProfile profile = test::GetFullProfile();
   {

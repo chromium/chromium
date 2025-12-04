@@ -111,8 +111,12 @@ class FormFieldData {
 
   enum class Exclusion {
     // Excludes all attributes related to the field value from the comparison.
-    kValue,
-    kMaxValue = kValue
+    kValue = 0,
+    // Excludes all attributes that should not count towards triggering a
+    // refill. This would be attributes that cannot influence field predictions
+    // and cannot influence the value to be filled in a field.
+    kNotRefillRelated = 1,
+    kMaxValue = kNotRefillRelated
   };
 
   // Returns true if `a` and `b` represent DOM elements that are

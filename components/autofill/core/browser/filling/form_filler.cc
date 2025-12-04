@@ -49,6 +49,7 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/logging/log_buffer.h"
 #include "components/autofill/core/common/logging/log_macros.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
@@ -1043,13 +1044,22 @@ void FormFiller::MaybeTriggerRefill(
       // Only refill if the form actually changed since it was filled.
       // Since we won't schedule another refill, we should be cautious not to
       // prematurely schedule refills.
+      // TODO(crbug.com/459458715): Compare overall types directly and get rid
+      // of the field attributes comparison.
       if (refill_context->filled_form &&
           std::ranges::equal(
               refill_context->filled_form->fields(), form_structure.fields(),
               [](const FormFieldData& f,
                  const std::unique_ptr<AutofillField>& g) {
                 return FormFieldData::IdenticalAndEquivalentDomElements(
-                    f, *g, {FormFieldData::Exclusion::kValue});
+                    f, *g,
+                    base::FeatureList::IsEnabled(
+                        features::kAutofillFewerTrivialRefills)
+                        ? DenseSet<FormFieldData::
+                                       Exclusion>{FormFieldData::Exclusion::
+                                                      kNotRefillRelated}
+                        : DenseSet<FormFieldData::Exclusion>{
+                              FormFieldData::Exclusion::kValue});
               })) {
         return;
       }

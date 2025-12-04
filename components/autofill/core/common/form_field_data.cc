@@ -9,6 +9,7 @@
 #include <tuple>
 #include <variant>
 
+#include "base/i18n/rtl.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/strcat.h"
@@ -18,6 +19,7 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/types/zip.h"
 #include "build/build_config.h"
+#include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -342,52 +344,61 @@ bool FormFieldData::IdenticalAndEquivalentDomElements(
     using enum Exclusion;
     static const bool kFalse = {};
     static const CheckStatus kNotCheckable = CheckStatus::kNotCheckable;
+    static const RoleAttribute kNoRole = RoleAttribute::kOther;
+    static const LabelSource kNoLabelSource = LabelSource::kUnknown;
+    static const base::i18n::TextDirection kNoTextDirection =
+        base::i18n::TextDirection::UNKNOWN_DIRECTION;
+    static const int32_t kNullId = 0;
+    static const std::vector<SelectOption> kNoSelectOptions = {};
+    static const std::optional<AutocompleteParsingResult> kNoParsingResult =
+        std::nullopt;
+    static const FormRendererId kNoFormId = FormRendererId();
     // LINT.IfChange(IdenticalAndEquivalentDomElements)
     // clang-format off
     return std::tie(
         f.name_,
-        f.id_attribute_,
-        f.name_attribute_,
+        !e.contains(kNotRefillRelated) ? f.id_attribute_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.name_attribute_ : base::EmptyString16(),
         f.label_,
-        !e.contains(kValue) ? f.value_ : base::EmptyString16(),
-        !e.contains(kValue) ? f.selected_text_ : base::EmptyString16(),
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.value_ : base::EmptyString16(),
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.selected_text_ : base::EmptyString16(),
         f.form_control_type_,
         f.autocomplete_attribute_,
-        f.parsed_autocomplete_,
-        f.pattern_,
+        !e.contains(kNotRefillRelated) ? f.parsed_autocomplete_ : kNoParsingResult,
+        !e.contains(kNotRefillRelated) ? f.pattern_ : base::EmptyString16(),
         f.placeholder_,
-        f.css_classes_,
-        f.aria_label_,
-        f.aria_description_,
-        f.nonce_,
+        !e.contains(kNotRefillRelated) ? f.css_classes_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.aria_label_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.aria_description_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.nonce_ : base::EmptyString16(),
         f.host_frame_,
         f.renderer_id_,
-        f.host_form_id_,
+        !e.contains(kNotRefillRelated) ? f.host_form_id_ : kNoFormId,
         // host_form_signature_ is not compared because it (also) relies on
         // other DOM elements.
         // origin_ is not compared because by it is initialized to an opaque
         // origin (a random number).
-        f.form_control_ax_id_,
+        !e.contains(kNotRefillRelated) ? f.form_control_ax_id_ : kNullId,
         f.max_length_,
-        !e.contains(kValue) ? f.is_autofilled_ : kFalse,
-        !e.contains(kValue) ? f.is_user_edited_ : kFalse,
-        !e.contains(kValue) ? f.check_status_ : kNotCheckable,
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.is_autofilled_ : kFalse,
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.is_user_edited_ : kFalse,
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.check_status_ : kNotCheckable,
         f.is_focusable_,
-        f.is_visible_,
-        f.should_autocomplete_,
-        f.role_,
-        f.text_direction_,
+        !e.contains(kNotRefillRelated) ? f.is_visible_ : kFalse,
+        !e.contains(kNotRefillRelated) ? f.should_autocomplete_ : kFalse,
+        !e.contains(kNotRefillRelated) ? f.role_ : kNoRole,
+        !e.contains(kNotRefillRelated) ? f.text_direction_ : kNoTextDirection,
         // properties_mask_ is not compared because the properties do not depend
         // on the DOM.
-        f.is_enabled_,
-        f.is_readonly_,
-        !e.contains(kValue) ? f.user_input_ : base::EmptyString16(),
-        f.allows_writing_suggestions_,
+        !e.contains(kNotRefillRelated) ? f.is_enabled_ : kFalse,
+        !e.contains(kNotRefillRelated) ? f.is_readonly_ : kFalse,
+        !e.contains_any({kValue, kNotRefillRelated}) ? f.user_input_ : base::EmptyString16(),
+        !e.contains(kNotRefillRelated) ? f.allows_writing_suggestions_ : kFalse,
         f.options_,
-        f.label_source_,
+        !e.contains(kNotRefillRelated) ? f.label_source_ : kNoLabelSource,
         // bounds_ is not compared because it (also) relies on other DOM
         // elements.
-        f.datalist_options_
+        !e.contains(kNotRefillRelated) ? f.datalist_options_ : kNoSelectOptions
         // force_override_ is not compared because it does not depend on the
         // DOM.
     );
