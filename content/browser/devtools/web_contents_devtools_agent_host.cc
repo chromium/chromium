@@ -75,7 +75,9 @@ class WebContentsDevToolsAgentHost::AutoAttacher
 
  private:
   void UpdateAutoAttach(base::OnceClosure callback) override {
-    UpdateAssociatedPages();
+    if (web_contents_ && !web_contents_->IsBeingDestroyed()) {
+      UpdateAssociatedPages();
+    }
     protocol::TargetAutoAttacher::UpdateAutoAttach(std::move(callback));
   }
 
