@@ -8,6 +8,7 @@ import argparse
 import glob
 import json
 import os
+import platform
 import plistlib
 import re
 import subprocess
@@ -172,14 +173,15 @@ def _build_tests(out_dir: str, scheme: str) -> bool:
         return False
 
 
-def _run_tests(out_dir: str, simulator_name: str, os_version: str, scheme: str,
-               test_filters: List[str]) -> int:
+def _run_tests(out_dir: str, simulator_name: str, os_version: str, arch: str,
+               scheme: str, test_filters: List[str]) -> int:
     """Runs the EG tests on the specified simulator.
 
     Args:
         out_dir: The output directory for the build.
         simulator_name: The name of the simulator to use.
         os_version: The OS version of the simulator to use.
+        arch: The architecture of the simulator to use (e.g., 'arm64').
         scheme: The EG test scheme to run.
         test_filters: A list of test filters to apply.
 
@@ -195,7 +197,8 @@ def _run_tests(out_dir: str, simulator_name: str, os_version: str, scheme: str,
         '-scheme',
         scheme,
         '-destination',
-        f'platform=iOS Simulator,name={simulator_name},OS={os_version}',
+        f'platform=iOS Simulator,name={simulator_name},'
+        f'OS={os_version},arch={arch}',
     ]
     if test_filters:
         for test_filter in test_filters:
@@ -249,6 +252,10 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
     if not simulator:
         return 1
 
+    # Determine the architecture to use.
+    # We assume the simulator architecture matches the host architecture.
+    arch = platform.machine()
+
     final_exit_code = 0
     for scheme, tests in tests_by_scheme.items():
         if not _build_tests(args.out_dir, scheme):
@@ -259,6 +266,7 @@ def _build_and_run_eg_tests(args: argparse.Namespace) -> int:
             args.out_dir,
             simulator.name,
             simulator.os_version,
+            arch,
             scheme,
             tests,
         )
