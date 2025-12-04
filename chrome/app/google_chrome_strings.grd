@@ -2890,7 +2890,7 @@ Google Chrome is unable to recover your settings.
           Close Gemini in Chrome
         </message>
 
-        <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="This is the three-dot menu item for opening Gemini." translateable="false">
+        <message name="IDS_GLIC_THREE_DOT_MENU_ITEM" desc="This is the three-dot menu item for opening Gemini.">
           Open Gemini in Chrome
         </message>
 
@@ -2956,24 +2956,24 @@ Google Chrome is unable to recover your settings.
         </message>
 
         <!-- Profile Picker Glic version-->
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling." translateable="false">
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC" desc="Heading describing that the section below choosing a Chrome profile to use with Gemini. 'Gemini' has a special styling.">
           Choose a Chrome profile to use with <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Gemini<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
         </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE" desc="Sublabel describing to sign with a Google account to use Chrome with Gemini. 'Gemini' has a special styling." translateable="false">
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_GLIC_NO_PROFILE" desc="Sublabel describing to sign with a Google account to use Chrome with Gemini. 'Gemini' has a special styling.">
           Sign into Chrome with your Google Account to use <ph name="START_GLIC_STYLING">&lt;span class="glic-brand-style"&gt;</ph>Gemini<ph name="END_GLIC_STYLING">&lt;/span&gt;</ph>
         </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Sublabel describing that the section below choosing a Chrome profile to use with Gemini" translateable="false">
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC" desc="Sublabel describing that the section below choosing a Chrome profile to use with Gemini">
           To use Gemini in Chrome, you need to be signed in to Chrome with your Google Account
         </message>
-        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a Google account" translateable="false">
+        <message name="IDS_PROFILE_PICKER_MAIN_VIEW_SUBTITLE_GLIC_NO_PROFILE" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a Google account">
           When you sign in to Chrome with your Google Account, you can use your Chrome profile with Gemini. <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>Learn how to sign in to Chrome<ph name="END_LINK">&lt;/a&gt;</ph>
         </message>
-        <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a different Google account" translateable="false">
+        <message name="IDS_PROFILE_PICKER_ADD_PROFILE_HELPER_GLIC" desc="Sublabel describing that in order to add a new Chrome profile to use with Gemini, sign up with a different Google account">
           To use a different Google Account with Gemini in Chrome, <ph name="BEGIN_LINK">&lt;a class="learn-more-link" href="#" target=&quot;_blank&quot;&gt;</ph>create a new profile<ph name="END_LINK">&lt;/a&gt;</ph> and sign in with the account you want
         </message>
 
         <!-- Glic button and tab strip context menu -->
-        <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite announcement that happens when a contextual nudge is shown next to the Gemini button." translateable="false">
+        <message name="IDS_GLIC_CONTEXTUAL_CUEING_ANNOUNCEMENT" desc="Polite voice over announcement that happens when a contextual nudge is shown next to the Gemini button.">
           To open Gemini in Chrome, press <ph name="GLOBAL_HOTKEY">$1<ex>⌘+G</ex></ph>
         </message>
       </if>
