@@ -935,7 +935,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_MovementAndSquish",
                     "params": {
                         "search_box_movement": "true",
                         "search_box_squish_animation": "true"
@@ -943,18 +943,26 @@
                     "enable_features": [
                         "AndroidPinnedTabs"
                     ]
-                }
-            ]
-        }
-    ],
-    "AndroidPinnedTabsTabletTabStrip": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
+                },
+                {
+                    "name": "Enabled_Tablet_WithGTS",
+                    "params": {
+                        "search_box_movement": "true",
+                        "search_box_squish_animation": "true"
+                    },
+                    "enable_features": [
+                        "AndroidPinnedTabs",
+                        "AndroidPinnedTabsTabletTabStrip"
+                    ]
+                },
                 {
                     "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPinnedTabs"
+                    ]
+                },
+                {
+                    "name": "Enabled_Tablet",
                     "enable_features": [
                         "AndroidPinnedTabsTabletTabStrip"
                     ]
