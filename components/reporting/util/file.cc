@@ -5,11 +5,12 @@
 #include "components/reporting/util/file.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
@@ -90,9 +91,7 @@ StatusOr<std::string> MaybeReadFile(const base::FilePath& file_path,
 
   std::string result;
   result.resize(file_info.size - offset);
-  const int read_result =
-      UNSAFE_TODO(file.Read(offset, result.data(), file_info.size - offset));
-  if (read_result != file_info.size - offset) {
+  if (file.Read(offset, base::as_writable_byte_span(result)) != result.size()) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_READ_FILE,
                                   DataLossErrorReason::MAX_VALUE);
@@ -118,11 +117,13 @@ Status AppendLine(const base::FilePath& file_path,
   }
 
   const std::string line = base::StrCat({data, "\n"});
-  const int write_count = UNSAFE_TODO(file.Write(0, line.data(), line.size()));
-  if (write_count < 0 || static_cast<size_t>(write_count) < line.size()) {
+  if (const std::optional<size_t> bytes_written =
+          file.Write(0, base::as_byte_span(line));
+      bytes_written != line.size()) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_WRITE_FILE,
                                   DataLossErrorReason::MAX_VALUE);
+    const int write_count = bytes_written.value_or(-1);
     return Status(error::DATA_LOSS,
                   base::StrCat({"Failed to write health data file ",
                                 file_path.MaybeAsASCII(), " write count=",
@@ -169,11 +170,13 @@ Status MaybeWriteFile(const base::FilePath& file_path,
                                                   file_path.MaybeAsASCII()}));
   }
 
-  const int write_count = UNSAFE_TODO(file.Write(0, data.data(), data.size()));
-  if (write_count < 0 || static_cast<size_t>(write_count) < data.size()) {
+  if (const std::optional<size_t> bytes_written =
+          file.Write(0, base::as_byte_span(data));
+      bytes_written != data.size()) {
     base::UmaHistogramEnumeration(reporting::kUmaDataLossErrorReason,
                                   DataLossErrorReason::FAILED_TO_WRITE_FILE,
                                   DataLossErrorReason::MAX_VALUE);
+    const int write_count = bytes_written.value_or(-1);
     return Status(
         error::DATA_LOSS,
         base::StrCat({"Failed to write data file ", file_path.MaybeAsASCII(),
