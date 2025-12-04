@@ -57,14 +57,18 @@ void OmniboxAimPopupWebUIContent::ShowUI() {
       omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
     }
   }
+
+  is_shown_ = true;
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
   // If the popup state is not shown, don't take any action. Closing the UI
   // multiple times can result in incorrect state transitions from OnClose.
-  if (!GetVisible()) {
+  if (!is_shown_) {
     return;
   }
+
+  is_shown_ = false;
 
   // Update the popup state manager that the aim popup is closing.
   // LocationBarView is subscribed to state changes and will close the widget.
