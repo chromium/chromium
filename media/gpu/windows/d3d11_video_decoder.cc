@@ -296,8 +296,23 @@ D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
       return nullptr;
     }
 
+    // Check ID3D11Device5 is supported so that we can use D3D11Fence.
+    d3d_device = get_d3d_device_cb_.Run(D3DVersion::kD3D11);
+    if (!d3d_device) {
+      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+                   "Cannot create D3D11Device"});
+      return nullptr;
+    }
+    ComD3D11Device5 d3d11_device5;
+    if (d3d_device.As(&d3d11_device5) != S_OK) {
+      NotifyError({D3D11StatusCode::kUnsupportedFeatureLevel,
+                   "Cannot get ID3D11Device5 interface"});
+      return nullptr;
+    }
+
     video_decoder_wrapper = D3D12VideoDecoderWrapper::Create(
-        media_log_.get(), video_device, config_, bit_depth, chroma_sampling_);
+        media_log_.get(), video_device, config_, bit_depth, chroma_sampling_,
+        GetMaxDecodeRequests());
   } else {
     MEDIA_LOG(INFO, media_log_) << "D3D11VideoDecoder is using D3D11 backend";
     ComD3D11VideoContext video_context;
@@ -702,6 +717,9 @@ void D3D11VideoDecoder::Reset(base::OnceClosure closure) {
   DCHECK_NE(state_, State::kInitializing);
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::Reset");
 
+  // TODO(liberato): how do we signal an error?
+  accelerated_video_decoder_->Reset();
+
   current_buffer_ = nullptr;
   if (current_decode_cb_)
     std::move(current_decode_cb_).Run(DecoderStatus::Codes::kAborted);
@@ -709,9 +727,6 @@ void D3D11VideoDecoder::Reset(base::OnceClosure closure) {
   for (auto& queue_pair : input_buffer_queue_)
     std::move(queue_pair.second).Run(DecoderStatus::Codes::kAborted);
   input_buffer_queue_.clear();
-
-  // TODO(liberato): how do we signal an error?
-  accelerated_video_decoder_->Reset();
 
   std::move(closure).Run();
 }
@@ -766,10 +781,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
   // we had for the outgoing ones, if any.
   LogPictureBufferUsage();
 
-  // Drop any old pictures.
-  for (auto& buffer : picture_buffers_)
-    DCHECK(!buffer->in_picture_use());
-  picture_buffers_.clear();
+  // There shouldn't be any picture buffer.
+  CHECK(picture_buffers_.empty());
 
   ComD3D11Texture2D in_texture;
 
@@ -836,6 +849,12 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
     if (use_single_video_decoder_texture_)
       in_texture = nullptr;
   }
+
+  D3D11Status result =
+      d3d_video_decoder_wrapper_->SetPictureBuffers(picture_buffers_);
+  if (!result.is_ok()) {
+    return NotifyError(std::move(result).AddHere());
+  }
 }
 
 D3D11PictureBuffer* D3D11VideoDecoder::GetPicture() {
@@ -864,6 +883,12 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   DCHECK(texture_selector_);
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::OutputResult");
 
+  D3D11Status result =
+      picture_buffer->WaitForDecodeCompleteGPU(device_context_.Get());
+  if (!result.is_ok()) {
+    NotifyError(std::move(result).AddHere());
+    return false;
+  }
   picture_buffer->add_client_use();
 
   // Note: The pixel format doesn't matter.
@@ -884,8 +909,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   }
 
   scoped_refptr<gpu::ClientSharedImage> shared_image;
-  D3D11Status result =
-      picture_buffer->ProcessTexture(picture_color_space, shared_image);
+  result = picture_buffer->ProcessTexture(picture_color_space, shared_image);
   if (!result.is_ok()) {
     NotifyError(std::move(result).AddHere());
     return false;
@@ -1088,6 +1112,18 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     }
     ComD3D12Device d3d12_device;
     CHECK_EQ(d3d_device.As(&d3d12_device), S_OK);
+
+    // Check ID3D11Device5 is supported so that we can use D3D11Fence.
+    d3d_device = get_d3d_device_cb.Run(D3DVersion::kD3D11);
+    if (!d3d_device) {
+      return {};
+    }
+    ComD3D11Device d3d11_device;
+    CHECK_EQ(d3d_device.As(&d3d11_device), S_OK);
+    ComD3D11Device5 d3d11_device5;
+    if (d3d11_device.As(&d3d11_device5) != S_OK) {
+      return {};
+    }
 
     supported_resolutions =
         GetSupportedD3D12VideoDecoderResolutions(d3d12_device, gpu_workarounds);

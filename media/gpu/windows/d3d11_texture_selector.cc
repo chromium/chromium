@@ -285,7 +285,7 @@ std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
 }
 
 bool CopyTextureSelector::DoesDecoderOutputUseSharedHandle() const {
-  return false;
+  return base::FeatureList::IsEnabled(kD3D12VideoDecoder);
 }
 
 bool CopyTextureSelector::WillCopyForTesting() const {

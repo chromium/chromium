@@ -248,6 +248,8 @@ component("gpu") {
       "windows/d3d12_fence.h",
       "windows/d3d12_helpers.cc",
       "windows/d3d12_helpers.h",
+      "windows/d3d12_video_decode_task.cc",
+      "windows/d3d12_video_decode_task.h",
       "windows/d3d12_video_decoder_wrapper.cc",
       "windows/d3d12_video_decoder_wrapper.h",
       "windows/d3d12_video_encode_accelerator.cc",

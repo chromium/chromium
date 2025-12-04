@@ -27,15 +27,30 @@ struct D3D12HeapProperties {
   constexpr static D3D12_HEAP_PROPERTIES kReadback{D3D12_HEAP_TYPE_READBACK};
 };
 
+class D3D11PictureBuffer;
+
 // Manages reference frame buffers, for reference frame descriptors to index on.
 class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
  public:
   explicit D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap);
   ~D3D12ReferenceFrameList();
 
+  D3D12ReferenceFrameList(const D3D12ReferenceFrameList& other);
+
+  void SetPictureBuffers(
+      base::span<scoped_refptr<D3D11PictureBuffer>> picture_buffers);
+
   void WriteTo(D3D12_VIDEO_DECODE_REFERENCE_FRAMES* dest);
 
   void emplace(size_t index, ID3D12Resource* resource, UINT subresource);
+
+  // Get the D3D12 resource barriers for encoding a frame to the given
+  // |current_output_resource| and |current_output_subresource|, which contains
+  // transitions for the current frame to video decode write state, and for the
+  // reference frames to video decode read state.
+  std::vector<D3D12_RESOURCE_BARRIER> GetTransitionsToDecodeState(
+      ID3D12Resource* current_output_resource,
+      UINT current_output_subresource);
 
  private:
   // Max size of picture_buffers_ that D3D11VideoDecoder may create.
@@ -60,6 +75,10 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES also has ID3D12VideoDecoderHeap**
   // ppHeaps. The items in |heaps_| are always |heap_.Get()|.
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
+  // The raw pointer array for converting to
+  // D3D12_VIDEO_DECODE_REFERENCE_FRAMES. We only store the references here. The
+  // lifetime of |D3D11PictureBuffer|'s is managed by the |D3D11VideoDecoder|.
+  std::array<raw_ptr<D3D11PictureBuffer>, kMaxSize> picture_buffers_;
 };
 
 // A scoped class managing the |Map()| and |Unmap()| of a |ID3D12Resource|. The
