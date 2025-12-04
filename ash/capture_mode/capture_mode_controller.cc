@@ -1558,14 +1558,11 @@ void CaptureModeController::StopAllScreenShare() {
 }
 
 void CaptureModeController::OnPinnedStateChanged(aura::Window* pinned_window) {
-  // TODO: crbug.com/404941151 - Remove this method and use
-  // `SunfishScannerFeatureWatcher` instead.
   if (!Shell::Get()->screen_pinning_controller()->IsPinned()) {
     return;
   }
 
-  if (IsActive() && capture_mode_session_->active_behavior()->behavior_type() ==
-                        BehaviorType::kSunfish) {
+  if (IsActive()) {
     Stop();
   }
   CloseSearchResultsPanel();

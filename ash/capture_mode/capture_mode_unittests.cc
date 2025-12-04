@@ -66,6 +66,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_state.h"
@@ -1995,6 +1996,18 @@ TEST_P(CaptureModeTest, WindowRecordingCaptureId) {
   controller->EndVideoRecording(EndRecordingReason::kStopRecordingButton);
   EXPECT_FALSE(controller->is_recording_in_progress());
   EXPECT_FALSE(window->subtree_capture_id().is_valid());
+}
+
+TEST_P(CaptureModeTest, StopOnPinnedStateChanged) {
+  auto* controller = CaptureModeController::Get();
+  controller->Start(CaptureModeEntryType::kQuickSettings);
+  EXPECT_TRUE(controller->IsActive());
+
+  // Pin a window.
+  std::unique_ptr<aura::Window> window = CreateTestWindow(gfx::Rect(200, 200));
+  wm::ActivateWindow(window.get());
+  window_util::PinWindow(window.get(), /*trusted=*/false);
+  EXPECT_FALSE(controller->IsActive());
 }
 
 TEST_P(CaptureModeTest, ClosingDimmedWidgetAboveRecordedWindow) {
