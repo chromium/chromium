@@ -790,7 +790,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
   current_sps_.max_num_ref_frames = curr_params_.max_num_ref_frames;
 
   current_sps_.frame_mbs_only_flag = true;
-  current_sps_.gaps_in_frame_num_value_allowed_flag = false;
+  current_sps_.gaps_in_frame_num_value_allowed_flag = true;
 
   DCHECK_GT(mb_width_, 0u);
   DCHECK_GT(mb_height_, 0u);
