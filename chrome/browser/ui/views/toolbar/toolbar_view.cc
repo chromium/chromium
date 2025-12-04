@@ -132,10 +132,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/frame_view.h"
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/recovery/recovery_install_global_error_factory.h"
-#endif
-
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -524,11 +520,6 @@ void ToolbarView::Init() {
   app_menu_button_ = container_view_->AddChildView(std::move(app_menu_button));
 
   LoadImages();
-
-  // Start global error services now so we set the icon on the menu correctly.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  RecoveryInstallGlobalErrorFactory::GetForProfile(browser_->profile());
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
   // Set the button icon based on the system state. Do this after
   // |app_menu_button_| has been added as a bubble may be shown that needs

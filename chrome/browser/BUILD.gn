@@ -336,8 +336,6 @@ static_library("browser") {
     "component_updater/privacy_sandbox_attestations_component_installer.h",
     "component_updater/probabilistic_reveal_token_component_remover.cc",
     "component_updater/probabilistic_reveal_token_component_remover.h",
-    "component_updater/recovery_component_installer.cc",
-    "component_updater/recovery_component_installer.h",
     "component_updater/recovery_improved_component_installer.cc",
     "component_updater/recovery_improved_component_installer.h",
     "component_updater/registration.cc",
@@ -6324,14 +6322,6 @@ static_library("browser") {
       "enterprise/platform_auth/platform_auth_provider.h",
       "enterprise/platform_auth/platform_auth_provider_manager.cc",
       "enterprise/platform_auth/platform_auth_provider_manager.h",
-    ]
-
-    # Sources(generally "desktop OS importers") used only on Mac & Windows.
-    sources += [
-      "recovery/recovery_install_global_error.cc",
-      "recovery/recovery_install_global_error.h",
-      "recovery/recovery_install_global_error_factory.cc",
-      "recovery/recovery_install_global_error_factory.h",
     ]
 
     # Support for the recovery improved component.

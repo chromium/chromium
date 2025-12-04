@@ -3591,10 +3591,6 @@ inline constexpr char kCryptAuthInstanceId[] = "cryptauth.instance_id";
 inline constexpr char kCryptAuthInstanceIdToken[] =
     "cryptauth.instance_id_token";
 
-// Boolean that indicates whether elevation is needed to recover Chrome upgrade.
-inline constexpr char kRecoveryComponentNeedsElevation[] =
-    "recovery_component.needs_elevation";
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 // Policy that indicates how to handle animated images.
 inline constexpr char kAnimationPolicy[] = "settings.a11y.animation_policy";

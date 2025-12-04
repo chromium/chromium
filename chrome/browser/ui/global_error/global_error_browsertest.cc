@@ -23,7 +23,6 @@
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/scoped_test_mv2_enabler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/recovery/recovery_install_global_error.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/global_error/global_error_observer.h"
 #include "chrome/browser/ui/global_error/global_error_service.h"
@@ -214,12 +213,6 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
     // ExternalInstallError::OnDialogReady() adds the error and shows the dialog
     // immediately.
     waiter.Wait();
-  } else if (name == "RecoveryInstallGlobalError") {
-    GlobalErrorWaiter waiter(profile);
-    g_browser_process->local_state()->SetBoolean(
-        prefs::kRecoveryComponentNeedsElevation, true);
-    waiter.Wait();
-    ShowPendingError(browser());
   } else {
     ADD_FAILURE();
   }
@@ -259,11 +252,3 @@ IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
       extensions::FeatureSwitch::prompt_for_external_extensions(), true);
   ShowAndVerifyUi();
 }
-
-// RecoveryInstallGlobalError only exists on Windows and Mac.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(GlobalErrorBubbleTest,
-                       InvokeUi_RecoveryInstallGlobalError) {
-  ShowAndVerifyUi();
-}
-#endif

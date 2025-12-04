@@ -461,10 +461,6 @@
 #endif
 #endif
 
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#include "chrome/browser/recovery/recovery_install_global_error_factory.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/win/jumplist_factory.h"
 #endif
@@ -1252,9 +1248,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   ReadAnythingServiceFactory::GetInstance();
 #endif
   ReadingListModelFactory::GetInstance();
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  RecoveryInstallGlobalErrorFactory::GetInstance();
-#endif
   ReduceAcceptLanguageFactory::GetInstance();
   RendererUpdaterFactory::GetInstance();
   regional_capabilities::RegionalCapabilitiesServiceFactory::GetInstance();
