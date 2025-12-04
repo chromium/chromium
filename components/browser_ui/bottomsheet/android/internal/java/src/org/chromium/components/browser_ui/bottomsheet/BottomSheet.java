@@ -1033,10 +1033,12 @@ class BottomSheet extends FrameLayout
     /**
      * Set the current state of the bottom sheet. This is for internal use to notify observers of
      * state change events.
+     *
      * @param state The current state of the sheet.
      * @param reason The reason the state is changing if any.
      */
-    private void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
+    @VisibleForTesting
+    void setInternalCurrentState(@SheetState int state, @StateChangeReason int reason) {
         if (state == mCurrentState) return;
 
         // If we somehow got here with null content, force the sheet to close without animation.
