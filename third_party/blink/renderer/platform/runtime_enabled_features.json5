@@ -5237,13 +5237,6 @@
       name: "TextSpacingTrimYuGothicUI",
       status: "stable",
     },
-    // This feature is used to inform the renderer of a user bypass from the
-    // browser process to disable third-party storage partitioning.
-    {
-      name: "ThirdPartyStoragePartitioningUserBypass",
-      browser_process_read_write_access: true,
-      base_feature: "none",
-    },
     {
       name: "ThrottledHistoryAPIThrowsSecurityError",
       status: "test",

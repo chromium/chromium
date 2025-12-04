@@ -150,20 +150,6 @@ class CookieSettings
   // Sets the cookie setting to allow for the |first_party_url|.
   void SetCookieSettingForUserBypass(const GURL& first_party_url);
 
-  // Determines the current state of User Bypass for the given
-  // |first_party_url|. This method only takes into consideration the hard-coded
-  // default and user-specified values of cookie setting.
-  //
-  // Notes:
-  // - Storage partitioning could be enabled by default even when third-party
-  // cookies are allowed.
-  // - Also, user bypass as of now is only integrated with the runtime feature
-  // of the top-level frame.
-  // - Cases like WebUIs, allowlisted internal apps, and extension iframes are
-  // usually being exempted from storage partitioning or are allowlisted. Thus,
-  // not covered by user bypass at this state of art.
-  bool IsStoragePartitioningBypassEnabled(const GURL& first_party_url) const;
-
   ContentSettingsForOneType GetTpcdMetadataGrants() const;
 
   // Resets the cookie setting for the given url.

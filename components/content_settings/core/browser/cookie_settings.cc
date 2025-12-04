@@ -184,19 +184,6 @@ void CookieSettings::SetCookieSettingForUserBypass(
       constraints);
 }
 
-bool CookieSettings::IsStoragePartitioningBypassEnabled(
-    const GURL& first_party_url) const {
-  SettingInfo info;
-  ContentSetting setting = host_content_settings_map_->GetContentSetting(
-      GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
-  // Check for explicit 3PC exception.
-  if (IsAllowed(setting) && (!info.primary_pattern.MatchesAllHosts() ||
-                             !info.secondary_pattern.MatchesAllHosts())) {
-    return true;
-  }
-  return false;
-}
-
 void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
   host_content_settings_map_->SetNarrowestContentSetting(
       primary_url, GURL(), ContentSettingsType::COOKIES,

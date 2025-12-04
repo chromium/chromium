@@ -210,6 +210,22 @@ class CookieSettingsTestBase : public testing::Test {
                  : net::CookieSourceScheme::kNonSecure);
   }
 
+  // Determines the current state of User Bypass for the given
+  // `first_party_url`. This method only takes into consideration the hard-coded
+  // default and the specified values of cookie setting.
+  bool IsUserBypassEnabled(const GURL& first_party_url) const {
+    SettingInfo info;
+    ContentSetting setting = settings_map_->GetContentSetting(
+        GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
+    // Check for explicit 3PC exception.
+    if (CookieSettingsBase::IsAllowed(setting) &&
+        (!info.primary_pattern.MatchesAllHosts() ||
+         !info.secondary_pattern.MatchesAllHosts())) {
+      return true;
+    }
+    return false;
+  }
+
  protected:
   // There must be a valid SingleThreadTaskRunner::CurrentDefaultHandle in
   // HostContentSettingsMap's scope.
@@ -822,19 +838,15 @@ class CookieSettingsTestUserBypass : public CookieSettingsTest {
 #if !BUILDFLAG(IS_IOS)
 TEST_F(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
   // Bypass shouldn't be enabled.
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+  EXPECT_FALSE(IsUserBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
 
   cookie_settings_->SetCookieSettingForUserBypass(kFirstPartySite);
 
   // Bypass should only be enabled for |kFirstPartySite| with non-bypassed
   // site(s) unaffected.
-  EXPECT_TRUE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+  EXPECT_TRUE(IsUserBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
 
   base::TimeDelta expiration =
       content_settings::features::kUserBypassUIExceptionExpiration.Get();
@@ -843,10 +855,8 @@ TEST_F(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
   FastForwardTime(expiration + base::Seconds(1));
   // Passing the expiry of the user bypass entries should disable user bypass
   // for |kFirstPartySite| leaving non-bypassed site(s) unaffected.
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
-  EXPECT_FALSE(
-      cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+  EXPECT_FALSE(IsUserBypassEnabled(kFirstPartySite));
+  EXPECT_FALSE(IsUserBypassEnabled(kBlockedSite));
 }
 #endif
 

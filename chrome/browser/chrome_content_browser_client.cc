@@ -8252,38 +8252,6 @@ bool ChromeContentBrowserClient::IsThirdPartyStoragePartitioningAllowed(
          CONTENT_SETTING_ALLOW;
 }
 
-bool ChromeContentBrowserClient::
-    IsUnpartitionedStorageAccessAllowedByUserPreference(
-        content::BrowserContext* browser_context,
-        const GURL& url,
-        const net::SiteForCookies& site_for_cookies,
-        const url::Origin& top_frame_origin) {
-  content_settings::CookieSettings* cookie_settings =
-      CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context))
-          .get();
-
-  if (!cookie_settings) {
-    // If there are no cookies settings then nothing is limiting storage access.
-    return true;
-  }
-
-  net::SchemefulSite top_frame_site(top_frame_origin);
-  std::optional<net::CookiePartitionKey> cookie_partition_key =
-      net::CookiePartitionKey::FromStorageKeyComponents(
-          top_frame_site,
-          net::CookiePartitionKey::BoolToAncestorChainBit(
-              !site_for_cookies.IsFirstParty(url)),
-          /*nonce=*/std::nullopt);
-
-  // Cookie settings overrides are not relevant for this check.
-  net::CookieSettingOverrides empty_overrides;
-
-  return cookie_settings->IsFullCookieAccessAllowed(
-      url, site_for_cookies, top_frame_origin, empty_overrides,
-      cookie_partition_key);
-}
-
 bool ChromeContentBrowserClient::AreDeprecatedAutomaticBeaconCredentialsAllowed(
     content::BrowserContext* browser_context,
     const GURL& destination_url,

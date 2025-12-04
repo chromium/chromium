@@ -4827,7 +4827,6 @@ if (!is_android) {
         "../browser/supervised_user/extensions_interactive_uitest.cc",
         "../browser/ui/views/autofill/popup/custom_cursor_suppressor_browsertest.cc",
         "../browser/ui/views/user_education/recent_session_observer_impl_browsertest.cc",
-        "../browser/user_bypass/user_bypass_web_contents_observer_browsertest.cc",
         "../browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_close_window_browsertest.cc",
         "../renderer/controlled_frame/web_url_pattern_natives_browsertest.cc",
       ]

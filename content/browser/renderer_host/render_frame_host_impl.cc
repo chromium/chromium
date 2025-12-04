@@ -5308,29 +5308,6 @@ bool RenderFrameHostImpl::IsThirdPartyStoragePartitioningEnabled(
     return false;
   }
 
-  RuntimeFeatureStateDocumentData* rfs_document_data_for_storage_key =
-      RuntimeFeatureStateDocumentData::GetForCurrentDocument(
-          main_frame_for_storage_partitioning);
-
-  // `rfs_document_data_for_storage_key` should be available.
-  CHECK(rfs_document_data_for_storage_key);
-
-  bool unpartitioned_key_allowed =
-      GetContentClient()
-          ->browser()
-          ->IsUnpartitionedStorageAccessAllowedByUserPreference(
-              GetSiteInstance()->GetBrowserContext(), new_rfh_origin.GetURL(),
-              ComputeSiteForCookies(), ComputeTopFrameOrigin(new_rfh_origin));
-
-  // Ignore user bypass if only partitioned access is allowed. We'll
-  // still respect enterprise policies which take precedence over the user's 3P
-  // cookie blocking preference.
-  if (rfs_document_data_for_storage_key && unpartitioned_key_allowed &&
-      rfs_document_data_for_storage_key->runtime_feature_state_read_context()
-          .IsThirdPartyStoragePartitioningUserBypassEnabled()) {
-    return false;
-  }
-
   // If the enterprise policy blocks, we have directive to override the
   // current value of net::features::ThirdPartyStoragePartitioning.
   // We can safely read the last committed-origin (even during navigation)
