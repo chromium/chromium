@@ -749,7 +749,7 @@ void DisplayMediaAccessHandler::OnDisplaySurfaceSelected(
           media_id.web_contents_id.render_process_id,
           media_id.web_contents_id.main_render_frame_id))) {
     RejectRequest(web_contents.get(),
-                  MediaStreamRequestResult::TAB_CAPTURE_FAILURE);
+                  MediaStreamRequestResult::CAPTURED_TAB_DESTROYED);
     return;
   }
 

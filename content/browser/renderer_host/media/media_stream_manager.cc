@@ -348,6 +348,8 @@ const char* RequestResultToString(
       return "INVALID_DEVICE_TYPE_REQUEST";
     case blink::mojom::MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
       return "INVALID_EXTENSION_TYPE_REQUEST";
+    case blink::mojom::MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
+      return "CAPTURED_TAB_DESTROYED";
   }
   NOTREACHED();
 }

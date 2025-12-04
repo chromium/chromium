@@ -184,6 +184,8 @@ const char* MediaStreamRequestResultToString(MediaStreamRequestResult value) {
       return "INVALID_DEVICE_TYPE_REQUEST";
     case MediaStreamRequestResult::INVALID_EXTENSION_TYPE_REQUEST:
       return "INVALID_EXTENSION_TYPE_REQUEST";
+    case MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
+      return "CAPTURED_TAB_DESTROYED";
   }
   NOTREACHED();
 }
@@ -357,6 +359,7 @@ String ErrorCodeToString(MediaStreamRequestResult result) {
       return "Invalid security origin";
     case MediaStreamRequestResult::TAB_CAPTURE_FAILURE:
     case MediaStreamRequestResult::STREAM_NOT_FOUND_IN_REGISTRY:
+    case MediaStreamRequestResult::CAPTURED_TAB_DESTROYED:
       return "Error starting tab capture";
     case MediaStreamRequestResult::SCREEN_CAPTURE_FAILURE:
       return "Error starting screen capture";

@@ -465,7 +465,7 @@ void DesktopCaptureAccessHandler::HandleRequest(
               media_id.web_contents_id.main_render_frame_id))) {
     std::move(pending_request->callback)
         .Run(blink::mojom::StreamDevicesSet(),
-             MediaStreamRequestResult::TAB_CAPTURE_FAILURE,
+             MediaStreamRequestResult::CAPTURED_TAB_DESTROYED,
              /*ui=*/nullptr);
     return;
   }

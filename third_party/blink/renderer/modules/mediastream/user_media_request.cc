@@ -974,6 +974,9 @@ void UserMediaRequest::Fail(Result error, const String& message) {
       // `exception_code` kInvalidStateError for
       // FAILED_DUE_TO_SHUTDOWN once all new enum values are added.
     case Result::INVALID_EXTENSION_TYPE_REQUEST:
+    case Result::CAPTURED_TAB_DESTROYED:
+      // TODO(crbug.com/453600255): Use `result_enum` kNotFoundError for
+      // CAPTURED_TAB_DESTROYED once all new enum values are added.
     case Result::TAB_CAPTURE_FAILURE:
     case Result::STREAM_NOT_FOUND_IN_REGISTRY:
     case Result::REGISTRY_REQUEST_UNVERIFIED:
