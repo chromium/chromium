@@ -84,6 +84,10 @@
 }
 - (void)disableCreateImageActions:(BOOL)disabled {
 }
+- (void)disableCameraActions:(BOOL)disabled {
+}
+- (void)disableGalleryActions:(BOOL)disabled {
+}
 
 @end
 

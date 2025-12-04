@@ -364,6 +364,32 @@ CreateInputDataFromAnnotatedPageContent(
   return _items.count < kAttachmentLimit;
 }
 
+- (NSUInteger)maxNumberOfGalleryItemsAllowed {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+
+  NSUInteger availableSlots = kAttachmentLimit - _items.count;
+  switch (_modeHolder.mode) {
+    case ComposeboxMode::kRegularSearch:
+    case ComposeboxMode::kAIM: {
+      // For RegularSearch and AIM, allow up to kAttachmentLimit items.
+      return availableSlots;
+    }
+    case ComposeboxMode::kImageGeneration: {
+      // For ImageGeneration, allow 1 image if no images are present, otherwise
+      // 0.
+      BOOL hasImage = NO;
+      for (ComposeboxInputItem* item in _items) {
+        if (item.type ==
+            ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
+          hasImage = YES;
+          break;
+        }
+      }
+      return hasImage ? 0 : MIN(availableSlots, 1);
+    }
+  }
+}
+
 #pragma mark - ComposeboxInputPlateMutator
 
 - (void)removeItem:(ComposeboxInputItem*)item {
@@ -437,10 +463,14 @@ CreateInputDataFromAnnotatedPageContent(
       [self.consumer setItems:_items];
       break;
     case ComposeboxMode::kAIM:
+      break;
     case ComposeboxMode::kImageGeneration:
+      [self cleanAttachmentsForImageGeneration];
       break;
   }
+
   [self updateCompactModeIfNeeded];
+  [self updateConsumerActionsState];
 }
 
 #pragma mark - ComposeboxTabPickerSelectionDelegate
@@ -795,6 +825,42 @@ CreateInputDataFromAnnotatedPageContent(
 
 #pragma mark - Private
 
+// Cleans attachments when switching to image generation mode.
+// This method ensures that only one image attachment is kept, and all other
+// attachments (including other images, tabs, and files) are removed.
+- (void)cleanAttachmentsForImageGeneration {
+  NSMutableArray<ComposeboxInputItem*>* itemsToKeep = [NSMutableArray array];
+  ComposeboxInputItem* imageToKeep = nil;
+
+  // Find one image to keep.
+  for (ComposeboxInputItem* item in _items) {
+    if (item.type == ComposeboxInputItemType::kComposeboxInputItemTypeImage &&
+        !imageToKeep) {
+      imageToKeep = item;
+      [itemsToKeep addObject:item];
+      break;
+    }
+  }
+
+  if (itemsToKeep.count == _items.count) {
+    // No items were removed.
+    return;
+  }
+
+  // Find items to remove from the backend.
+  for (ComposeboxInputItem* item in _items) {
+    if (![itemsToKeep containsObject:item]) {
+      if (_contextualSearchSession) {
+        _contextualSearchSession->DeleteFile(item.serverToken);
+      }
+    }
+  }
+
+  _items = itemsToKeep;
+
+  [self updateConsumerItems];
+}
+
 // Handles the loaded preview `image` for the item with the given `identifier`.
 - (void)didLoadPreviewImage:(UIImage*)previewImage
       forItemWithIdentifier:(base::UnguessableToken)identifier {
@@ -1114,11 +1180,13 @@ CreateInputDataFromAnnotatedPageContent(
   }
   [self.consumer disableCreateImageActions:hasTabOrFile];
 
-  // TODO(crbug.com/454832175): Disable tabs and files actions in image creation
-  // mode.
-  BOOL isImageCreation = NO;
+  BOOL isImageCreation = _modeHolder.mode == ComposeboxMode::kImageGeneration;
   [self.consumer disableAttachTabActions:isImageCreation];
   [self.consumer disableAttachFileActions:isImageCreation];
+
+  BOOL canAddMoreImages = [self maxNumberOfGalleryItemsAllowed] > 0;
+  [self.consumer disableGalleryActions:!canAddMoreImages];
+  [self.consumer disableCameraActions:!canAddMoreImages];
 }
 /// Updates the consumer items and maybe trigger AIM.
 - (void)updateConsumerItems {
@@ -1127,12 +1195,10 @@ CreateInputDataFromAnnotatedPageContent(
   [self updateOptionToAttachCurrentTab];
   [self updateConsumerActionsState];
 
-  if (_items.count > 0) {
-    if ([_modeHolder isRegularSearch]) {
-      // AI mode is implicitly enabled by items attachment.
-      [self.metricsRecorder
-          recordAiModeActivationSource:AiModeActivationSource::kImplicit];
-    }
+  if (_items.count > 0 && [_modeHolder isRegularSearch]) {
+    // AI mode is implicitly enabled by items attachment.
+    [self.metricsRecorder
+        recordAiModeActivationSource:AiModeActivationSource::kImplicit];
     _modeHolder.mode = ComposeboxMode::kAIM;
   }
 }

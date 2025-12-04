@@ -84,6 +84,10 @@ class ContextualSearchSessionHandle;
 // Returns whether more attachments can be added.
 - (BOOL)canAddMoreAttachments;
 
+// Returns the maximum number of gallery items allowed based on the current
+// composebox mode.
+- (NSUInteger)maxNumberOfGalleryItemsAllowed;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_INPUT_PLATE_MEDIATOR_H_

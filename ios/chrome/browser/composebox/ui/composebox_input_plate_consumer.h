@@ -62,6 +62,12 @@
 // Sets whether the create image actions are disabled.
 - (void)disableCreateImageActions:(BOOL)disabled;
 
+// Sets whether the camera actions are disabled.
+- (void)disableCameraActions:(BOOL)disabled;
+
+// Sets whether the gallery actions are disabled.
+- (void)disableGalleryActions:(BOOL)disabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_UI_COMPOSEBOX_INPUT_PLATE_CONSUMER_H_
