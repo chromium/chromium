@@ -817,6 +817,9 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kPasswordFormClientsideClassifierName[];
 extern const char kPasswordFormClientsideClassifierDescription[];
 
+extern const char kPasswordRemovalFromDeleteBrowsingDataName[];
+extern const char kPasswordRemovalFromDeleteBrowsingDataDescription[];
+
 extern const char kPasswordReuseDetectionName[];
 extern const char kPasswordReuseDetectionDescription[];
 

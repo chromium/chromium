@@ -31,6 +31,7 @@ source_set("clear_browsing_data") {
   ]
   deps = [
     ":constants",
+    ":features",
     ":util",
     "//components/application_locale_storage",
     "//components/browsing_data/core",
@@ -235,4 +236,12 @@ source_set("util") {
     "//ios/chrome/browser/browsing_data/model:counters",
     "//ui/base",
   ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
 }
