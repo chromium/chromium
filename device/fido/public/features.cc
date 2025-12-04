@@ -198,11 +198,6 @@ BASE_FEATURE(kWebAuthnImmediateGetAutoselect,
              "WebAuthenticationImmediateGetAutoselect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Default enabled in M140. Remove in or after M143.
-BASE_FEATURE(kWebAuthnLargeBlobForGPM,
-             "WebAuthenticationLargeBlobGPM",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Deprecation flag. Disabled by default in M142. Remove in or after M145.
 BASE_FEATURE(kWebAuthnSendPinGeneration,
              "WebAuthenticationSendPinGeneration",

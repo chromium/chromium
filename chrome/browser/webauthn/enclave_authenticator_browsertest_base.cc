@@ -112,8 +112,7 @@ EnclaveAuthenticatorTestBase::EnclaveAuthenticatorTestBase()
   scoped_icloud_drive_override_ = OverrideICloudDriveEnabled(false);
 #endif
   scoped_feature_list_.InitWithFeatures(
-      /*enabled_features=*/{device::kWebAuthnLargeBlobForGPM,
-                            device::kWebAuthnSignalApiHidePasskeys,
+      /*enabled_features=*/{device::kWebAuthnSignalApiHidePasskeys,
                             device::kWebAuthnWrapCohortData},
       /*disabled_features=*/{});
   OSCryptMocker::SetUp();

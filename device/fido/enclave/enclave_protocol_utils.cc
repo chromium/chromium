@@ -447,12 +447,10 @@ ParseMakeCredentialResponse(cbor::Value response_value,
     }
   }
   bool large_blob_supported = false;
-  if (base::FeatureList::IsEnabled(device::kWebAuthnLargeBlobForGPM)) {
-    it = last_response->find(
-        cbor::Value(kMakeCredentialResponseLargeBlobSupportedKey));
-    if (it != last_response->end() && it->second.is_bool()) {
-      large_blob_supported = it->second.GetBool();
-    }
+  it = last_response->find(
+      cbor::Value(kMakeCredentialResponseLargeBlobSupportedKey));
+  if (it != last_response->end() && it->second.is_bool()) {
+    large_blob_supported = it->second.GetBool();
   }
 
   std::vector<uint8_t> credential_id =

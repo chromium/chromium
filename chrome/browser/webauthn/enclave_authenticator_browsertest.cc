@@ -4223,35 +4223,6 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
               testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
 }
 
-// Disable large blob for GPM feature flag.
-class EnclaveLargeBlobFlagOffTest : public EnclaveAuthenticatorBrowserTest {
- public:
-  EnclaveLargeBlobFlagOffTest() {
-    scoped_feature_list_.InitAndDisableFeature(
-        device::kWebAuthnLargeBlobForGPM);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(EnclaveLargeBlobFlagOffTest,
-                       LargeBlobExtensionNotOfferedWhenFlagDisabled) {
-  SetTrustedVaultEmpty();
-  content::WebContents* wc =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  content::DOMMessageQueue q(wc);
-  content::ExecuteScriptAsync(wc, kMakeCredentialLargeBlob);
-
-  delegate_observer()->WaitForUI();
-  model_observer_->WaitForStart();
-  dialog_model()->OnGPMCreatePasskey();
-  dialog_model()->OnGPMPinEntered(u"123456");
-
-  std::string result;
-  ASSERT_TRUE(q.WaitForMessage(&result));
-  EXPECT_EQ(result, "\"largeblob false\"");
-}
 
 }  // namespace
 

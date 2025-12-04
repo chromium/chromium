@@ -66,10 +66,6 @@ void RecordRequestResult(std::string_view request_type,
                                 result);
 }
 
-bool SupportsLargeBlobGPM() {
-  return base::FeatureList::IsEnabled(device::kWebAuthnLargeBlobForGPM);
-}
-
 AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   AuthenticatorSupportedOptions options;
   options.is_platform_device =
@@ -77,9 +73,7 @@ AuthenticatorSupportedOptions EnclaveAuthenticatorOptions() {
   options.supports_resident_key = true;
   options.user_verification_availability = AuthenticatorSupportedOptions::
       UserVerificationAvailability::kSupportedAndConfigured;
-  if (SupportsLargeBlobGPM()) {
-    options.large_blob_type = LargeBlobSupportType::kBespoke;
-  }
+  options.large_blob_type = LargeBlobSupportType::kBespoke;
   options.supports_user_presence = false;
   return options;
 }
@@ -224,14 +218,6 @@ void EnclaveAuthenticator::MakeCredential(CtapMakeCredentialRequest request,
       std::make_unique<PendingMakeCredentialRequest>(
           std::move(request), std::move(options), std::move(callback));
 
-  if (!SupportsLargeBlobGPM()) {
-    if (auto* root =
-            pending_make_credential_request_->options.json->value.get();
-        auto* exts = root->GetDict().FindDict(kExtensionsKey)) {
-      exts->Remove(kLargeBlobKey);
-    }
-  }
-
   if (ui_request_->uv_key_creation_callback) {
     includes_new_uv_key_ = true;
     std::move(ui_request_->uv_key_creation_callback)
@@ -291,7 +277,7 @@ void EnclaveAuthenticator::GetAssertion(CtapGetAssertionRequest request,
   pending_get_assertion_request_ = std::make_unique<PendingGetAssertionRequest>(
       request, options, std::move(callback));
   // Large blob write preprocessing (compress then encode).
-  if (SupportsLargeBlobGPM() && options.large_blob_write.has_value()) {
+  if (options.large_blob_write.has_value()) {
     std::vector<uint8_t> raw_blob = *options.large_blob_write;
     const size_t original_size = raw_blob.size();
 
@@ -497,7 +483,7 @@ void EnclaveAuthenticator::ProcessGetAssertionResponse(
   }
 
   // Large blob 'read' path.
-  if (SupportsLargeBlobGPM() && assertion.large_blob_extension) {
+  if (assertion.large_blob_extension) {
     auto compressed_data = assertion.large_blob_extension->compressed_data;
     auto original_size = assertion.large_blob_extension->original_size;
     data_decoder()->Inflate(
