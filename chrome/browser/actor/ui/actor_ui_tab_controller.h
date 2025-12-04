@@ -19,17 +19,12 @@ class ActorKeyedService;
 }
 namespace actor::ui {
 
-class ActorUiTabControllerFactory
-    : public ActorUiTabControllerFactoryInterface {};
-
 class ActorUiTabController : public ActorUiTabControllerInterface,
                              public ImmersiveModeController::Observer,
                              public OmniboxTabHelper::Observer {
  public:
-  ActorUiTabController(
-      tabs::TabInterface& tab,
-      ActorKeyedService* actor_keyed_service,
-      std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory);
+  ActorUiTabController(tabs::TabInterface& tab,
+                       ActorKeyedService* actor_keyed_service);
   ~ActorUiTabController() override;
   DECLARE_USER_DATA(ActorUiTabController);
 

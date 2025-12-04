@@ -135,8 +135,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
         .WillByDefault(ReturnNewScopedClosureRunner());
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
-        mock_tab_, actor_keyed_service(),
-        std::make_unique<ActorUiTabControllerFactory>());
+        mock_tab_, actor_keyed_service());
 
     mock_handoff_button_controller_ =
         std::make_unique<MockHandoffButtonController>(

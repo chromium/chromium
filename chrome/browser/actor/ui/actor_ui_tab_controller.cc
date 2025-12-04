@@ -39,8 +39,7 @@ void LogAndIgnoreCallbackError(const std::string_view source_name,
 
 ActorUiTabController::ActorUiTabController(
     tabs::TabInterface& tab,
-    ActorKeyedService* actor_keyed_service,
-    std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory)
+    ActorKeyedService* actor_keyed_service)
     : ActorUiTabControllerInterface(tab),
       tab_(tab),
       actor_keyed_service_(actor_keyed_service),

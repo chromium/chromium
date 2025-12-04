@@ -360,8 +360,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       // injection callbacks and as a direct constructor argument.
       actor_ui_tab_controller_ =
           GetUserDataFactory().CreateInstance<actor::ui::ActorUiTabController>(
-              tab, tab, actor::ActorKeyedService::Get(profile),
-              std::make_unique<actor::ui::ActorUiTabControllerFactory>());
+              tab, tab, actor::ActorKeyedService::Get(profile));
     }
     actor_tab_data_ =
         GetUserDataFactory().CreateInstance<actor::ActorTabData>(tab, &tab);

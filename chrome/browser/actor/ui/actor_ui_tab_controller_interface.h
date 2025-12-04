@@ -50,11 +50,6 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
-class ActorUiTabControllerFactoryInterface {
- public:
-  virtual ~ActorUiTabControllerFactoryInterface() = default;
-};
-
 class ActorUiTabControllerInterface {
  public:
   DECLARE_USER_DATA(ActorUiTabControllerInterface);
