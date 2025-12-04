@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedIns
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -339,6 +340,15 @@ class LocationBarMediator
                         && OmniboxFeatures.sOmniboxImprovementForLFFPersistEditingState.getValue()
                         && mIsTablet;
         mMultiInstanceManager = multiInstanceManager;
+
+        mFuseboxCoordinator
+                .getFuseboxStateSupplier()
+                .addObserver(
+                        mCallbackController.makeCancelable(s -> updateNavigateButtonVisibility()));
+        mFuseboxCoordinator
+                .getAttachmentsPresentSupplier()
+                .addObserver(
+                        mCallbackController.makeCancelable(b -> updateNavigateButtonVisibility()));
     }
 
     /**
@@ -1389,16 +1399,14 @@ class LocationBarMediator
     }
 
     private void updateNavigateButtonVisibility() {
-        @AutocompleteRequestType
-        int autocompleteRequestType = mAutocompleteRequestTypeSupplier.get();
-        boolean isMultimodalEnabled = OmniboxFeatures.sOmniboxMultimodalInput.isEnabled();
-        boolean navigateButtonVisible =
-                isUrlBarFocusedWithUserInput()
-                        && isMultimodalEnabled
-                        && (mUrlCoordinator.isTextWrapped()
-                                || autocompleteRequestType == AutocompleteRequestType.AI_MODE
-                                || autocompleteRequestType
-                                        == AutocompleteRequestType.IMAGE_GENERATION);
+        // TODO(crbug.com/464003589): Update the hasTextOrAttachments to include
+        // getAttachmentsPresentSupplier check.
+        boolean hasTextOrAttachments =
+                !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
+        // TODO(crbug.com/464003589): || mFuseboxCoordinator.getAttachmentsPresentSupplier().get();
+        boolean isExpandedFusebox =
+                mFuseboxCoordinator.getFuseboxStateSupplier().get() == FuseboxState.EXPANDED;
+        boolean navigateButtonVisible = mUrlHasFocus && isExpandedFusebox && hasTextOrAttachments;
         mLocationBarLayout.setNavigateButtonVisibility(navigateButtonVisible);
     }
 
@@ -1506,8 +1514,7 @@ class LocationBarMediator
         boolean hasText =
                 mUrlCoordinator != null
                         && !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
-        return (hasText || mFuseboxCoordinator.hasUserAddedAttachments())
-                && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+        return hasText && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
     }
 
     @VisibleForTesting

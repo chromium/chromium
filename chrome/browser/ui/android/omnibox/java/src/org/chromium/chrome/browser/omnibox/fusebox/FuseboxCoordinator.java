@@ -12,6 +12,7 @@ import android.content.res.Configuration;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -47,12 +48,25 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.Collections;
 import java.util.List;
 
 /** Coordinator for the Fusebox component. */
 @NullMarked
 public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlServiceObserver {
+    @IntDef({FuseboxState.DISABLED, FuseboxState.COMPACT, FuseboxState.EXPANDED})
+    @Retention(RetentionPolicy.SOURCE)
+    @Target(ElementType.TYPE_USE)
+    public @interface FuseboxState {
+        int DISABLED = 0;
+        int COMPACT = 1;
+        int EXPANDED = 2;
+    }
+
     private final @Nullable FuseboxViewHolder mViewHolder;
     private final @Nullable LocationBarDataProvider mLocationBarDataProvider;
     private @Nullable @BrandedColorScheme Integer mLastBrandedColorScheme;
@@ -68,11 +82,13 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
     private @Nullable ComposeBoxQueryControllerBridge mComposeBoxQueryControllerBridge;
     private boolean mDefaultSearchEngineIsGoogle = true;
     private TemplateUrlService mTemplateUrlService;
-    private final ObservableSupplierImpl<Boolean> mOnCompactModeChangedSupplier =
-            new ObservableSupplierImpl<>(false);
+    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
+            new ObservableSupplierImpl<>(FuseboxState.DISABLED);
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileObserver = this::onProfileAvailable;
     private final SnackbarManager mSnackbarManager;
+    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
+            new ObservableSupplierImpl<>(false);
 
     public FuseboxCoordinator(
             Context context,
@@ -96,7 +112,7 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
             mViewHolder = null;
             mLocationBarDataProvider = null;
-            mModel = new PropertyModel();
+            mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
             return;
         }
 
@@ -185,7 +201,8 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
                         mAutocompleteRequestTypeSupplier,
                         mTabModelSelectorSupplier,
                         mComposeBoxQueryControllerBridge,
-                        mOnCompactModeChangedSupplier,
+                        mFuseboxStateSupplier,
+                        mAttachmentsPresentSupplier,
                         mSnackbarManager,
                         () -> mTemplateUrlService);
         if (mLastBrandedColorScheme != null) {
@@ -351,13 +368,13 @@ public class FuseboxCoordinator implements UrlFocusChangeListener, TemplateUrlSe
      * Registers a callback notified when the compactness of the fusebox changes. This callback will
      * only fire if the compact mode variant is enabled and the compactness state changes.
      */
-    public ObservableSupplier<Boolean> getOnCompactModeChangedSupplier() {
-        return mOnCompactModeChangedSupplier;
+    public ObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
+        return mFuseboxStateSupplier;
     }
 
     /** Returns whether the Fusebox Attachments list contains any user-added entries. */
-    public boolean hasUserAddedAttachments() {
-        return !mModelList.isEmpty();
+    public ObservableSupplier<Boolean> getAttachmentsPresentSupplier() {
+        return mAttachmentsPresentSupplier;
     }
 
     /**

@@ -76,6 +76,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.omnibox.UrlBarCoordinator.SelectionState;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -243,6 +244,13 @@ public class LocationBarMediatorTest {
     private final ObservableSupplierImpl<@AutocompleteRequestType Integer>
             mAutocompleteRequestTypeSupplier =
                     new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
+    private final ObservableSupplierImpl<@FuseboxState Integer> mFuseboxStateSupplier =
+            new ObservableSupplierImpl<>(FuseboxState.EXPANDED);
+    private final ObservableSupplierImpl<Boolean> mAttachmentsPresentSupplier =
+            new ObservableSupplierImpl<>(false);
+
+    // Members capturing final state of the LocationBarLayout elements.
+    private boolean mNavigateButtonIsVisible;
 
     @Before
     public void setUp() {
@@ -275,6 +283,16 @@ public class LocationBarMediatorTest {
         mUiOverrides = new LocationBarEmbedderUiOverrides();
         ComposeplateUtilsJni.setInstanceForTesting(mMockComposeplateUtilsJni);
         when(mMockComposeplateUtilsJni.isAimEntrypointEligible(eq(mProfile))).thenReturn(true);
+
+        doAnswer(i -> mNavigateButtonIsVisible = i.getArgument(0))
+                .when(mLocationBarLayout)
+                .setNavigateButtonVisibility(anyBoolean());
+
+        doReturn(mFuseboxStateSupplier).when(mFuseboxCoordinator).getFuseboxStateSupplier();
+        doReturn(mAttachmentsPresentSupplier)
+                .when(mFuseboxCoordinator)
+                .getAttachmentsPresentSupplier();
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
 
         AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJni);
         doReturn(mAppBannerManager)
@@ -1650,16 +1668,15 @@ public class LocationBarMediatorTest {
         doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
         mMediator.onUrlFocusChange(true);
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
-
-        verify(mLocationBarLayout).setNavigateButtonVisibility(true);
+        assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.AI_MODE);
-        verify(mLocationBarLayout, times(2)).setNavigateButtonVisibility(true);
+        assertTrue(mNavigateButtonIsVisible);
 
         doReturn(false).when(mUrlCoordinator).isTextWrapped();
         mAutocompleteRequestTypeSupplier.set(AutocompleteRequestType.IMAGE_GENERATION);
-        verify(mLocationBarLayout, times(3)).setNavigateButtonVisibility(true);
+        assertTrue(mNavigateButtonIsVisible);
     }
 
     @Test
@@ -1889,6 +1906,63 @@ public class LocationBarMediatorTest {
         assertEquals(previousText, previousState.userText);
         assertEquals(previousSelectionStart, previousState.selectionStart);
         assertEquals(previousSelectionEnd, previousState.selectionEnd);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNavigateButton_showsWhenExpandedAndFocusedWithText() {
+        mMediator.onUrlFocusChange(true);
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.updateButtonVisibility();
+        assertTrue(mNavigateButtonIsVisible);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNavigateButton_hidesWhenExpandedAndFocusedWithoutText() {
+        mMediator.onUrlFocusChange(true);
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        doReturn("").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.updateButtonVisibility();
+        assertFalse(mNavigateButtonIsVisible);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNavigateButton_hidesWhenCompact() {
+        mMediator.onUrlFocusChange(true);
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.updateButtonVisibility();
+        assertFalse(mNavigateButtonIsVisible);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNavigateButton_hidesWhenNotFocused() {
+        mMediator.onUrlFocusChange(false);
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+
+        mMediator.updateButtonVisibility();
+        assertFalse(mNavigateButtonIsVisible);
+    }
+
+    @Test
+    @EnableFeatures(OmniboxFeatureList.OMNIBOX_MULTIMODAL_INPUT)
+    public void testNavigateButton_visibilityUpdatesOnFuseboxStateChange() {
+        mMediator.onUrlFocusChange(true);
+        doReturn("text").when(mUrlCoordinator).getTextWithAutocomplete();
+        mFuseboxStateSupplier.set(FuseboxState.COMPACT);
+        mMediator.updateButtonVisibility();
+        assertFalse(mNavigateButtonIsVisible);
+
+        mFuseboxStateSupplier.set(FuseboxState.EXPANDED);
+        assertTrue(mNavigateButtonIsVisible);
     }
 
     @Test
