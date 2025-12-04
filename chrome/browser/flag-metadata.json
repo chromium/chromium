@@ -304,7 +304,7 @@
   {
     "name": "android-desktop-webprefs-large-display",
     "owners": [ "lokeric@google.com", "clank-large-form-factors@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 149
   },
   {
     "name": "android-desktop-zoom-scaling",
@@ -9909,7 +9909,7 @@
   {
     "name": "tab-strip-incognito-migration",
     "owners": [ "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone": 145
+    "expiry_milestone": 150
   },
   {
     "name": "tab-switcher-color-blend-animate",
@@ -10052,7 +10052,7 @@
   {
     "name" : "toolbar-phone-animation-refactor",
     "owners": [ "skavuluru@google.com", "nemco@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone" : 145
+    "expiry_milestone" : 150
   },
   {
     "name": "toolbar-snapshot-refactor",
@@ -10067,7 +10067,7 @@
   {
     "name" : "toolbar-tablet-resize-refactor",
     "owners": [ "clhager@google.com", "skavuluru@google.com", "clank-large-form-factors@google.com" ],
-    "expiry_milestone" : 145
+    "expiry_milestone" : 150
   },
   {
     "name": "top-chrome-toast-refinements",
