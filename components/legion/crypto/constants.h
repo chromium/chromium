@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_LEGION_CRYPTO_CONSTANTS_H_
 #define COMPONENTS_LEGION_CRYPTO_CONSTANTS_H_
 
-#include <stdint.h>
+#include <stddef.h>
 
 namespace legion {
 

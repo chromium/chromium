@@ -63,34 +63,16 @@ TEST_F(SecureSessionImplTest, GetHandshakeMessageSucceeds) {
   EXPECT_FALSE(request.ciphertext.empty());
 }
 
-TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidPeerKey) {
-  // Though the result is not used, it's important to call GetHandshakeMessage()
-  // before ProcessHandshakeResponse().
-  client_session_.GetHandshakeMessage();
-
-  constexpr char kInvalidKey[] = "invalid key";
-  constexpr char kCiphertext[] = "some ciphertext";
-
-  // Malform the key by providing an incorrect size.
-  HandshakeMessage response(
-      std::vector<uint8_t>(std::begin(kInvalidKey), std::end(kInvalidKey)),
-      std::vector<uint8_t>(std::begin(kCiphertext), std::end(kCiphertext)));
-
-  EXPECT_FALSE(client_session_.ProcessHandshakeResponse(response));
-}
-
 TEST_F(SecureSessionImplTest, ProcessHandshakeResponseInvalidCiphertext) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
   client_session_.GetHandshakeMessage();
 
-  uint8_t server_e_pub_bytes[kP256X962Length] = {0};  // Test key
-
   constexpr char kCorruptedCiphertext[] = "corrupted ciphertext";
 
   // Create a valid server response, but then corrupt the ciphertext.
   HandshakeMessage server_handshake_response(
-      std::vector(std::begin(server_e_pub_bytes), std::end(server_e_pub_bytes)),
+      std::array<uint8_t, kP256X962Length>{},
       std::vector<uint8_t>(std::begin(kCorruptedCiphertext),
                            std::end(kCorruptedCiphertext)));
 

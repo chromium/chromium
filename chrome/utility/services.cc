@@ -58,6 +58,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/common/importer/profile_import.mojom.h"
 #include "chrome/utility/importer/profile_import_impl.h"
+#include "components/legion/oak_session_service/oak_session_service.h"  // nogncheck
 #include "components/mirroring/service/mirroring_service.h"
 #include "services/proxy_resolver/proxy_resolver_factory_impl.h"  // nogncheck
 #include "services/proxy_resolver/public/mojom/proxy_resolver.mojom.h"
@@ -225,6 +226,11 @@ auto RunSystemSignalsService(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if !BUILDFLAG(IS_ANDROID)
+auto RunOakSessionService(
+    mojo::PendingReceiver<legion::mojom::OakSession> receiver) {
+  return std::make_unique<legion::OakSessionService>(std::move(receiver));
+}
+
 auto RunProxyResolver(
     mojo::PendingReceiver<proxy_resolver::mojom::ProxyResolverFactory>
         receiver) {
@@ -443,6 +449,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunPassageEmbeddingsService);
 
 #if !BUILDFLAG(IS_ANDROID)
+  services.Add(RunOakSessionService);
   services.Add(RunProfileImporter);
   services.Add(RunMirroringService);
   services.Add(RunScreenAIServiceFactory);

@@ -4,6 +4,7 @@
 
 #include "components/legion/crypto/test_server_secure_session.h"
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <vector>
@@ -90,16 +91,17 @@ TestServerSecureSession::GenerateHandshakeResponse(
     const std::vector<uint8_t>& payload) {
   const EC_GROUP* group = EC_KEY_get0_group(server_e_key);
 
-  uint8_t server_e_pub_bytes[kP256X962Length] = {0};
-  if (sizeof(server_e_pub_bytes) !=
+  std::array<uint8_t, kP256X962Length> server_ephemeral_public_key;
+  if (server_ephemeral_public_key.size() !=
       EC_POINT_point2oct(group, EC_KEY_get0_public_key(server_e_key),
-                         POINT_CONVERSION_UNCOMPRESSED, server_e_pub_bytes,
-                         sizeof(server_e_pub_bytes), nullptr)) {
+                         POINT_CONVERSION_UNCOMPRESSED,
+                         server_ephemeral_public_key.data(),
+                         server_ephemeral_public_key.size(), nullptr)) {
     return std::nullopt;
   }
 
-  noise_.MixHash(server_e_pub_bytes);
-  noise_.MixKey(server_e_pub_bytes);
+  noise_.MixHash(server_ephemeral_public_key);
+  noise_.MixKey(server_ephemeral_public_key);
 
   uint8_t shared_key_ee[32] = {0};
   if (sizeof(shared_key_ee) !=
@@ -114,10 +116,7 @@ TestServerSecureSession::GenerateHandshakeResponse(
   auto [server_read_key, server_write_key] = noise_.traffic_keys();
   crypter_ = std::make_unique<Crypter>(server_read_key, server_write_key);
 
-  std::vector<uint8_t> ephemeral_public_key(std::begin(server_e_pub_bytes),
-                                            std::end(server_e_pub_bytes));
-
-  return HandshakeMessage(std::move(ephemeral_public_key),
+  return HandshakeMessage(std::move(server_ephemeral_public_key),
                           std::move(server_ciphertext));
 }
 

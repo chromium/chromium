@@ -33,7 +33,8 @@ class SecureSession {
   using EncryptOnceCallback = base::OnceCallback<void(
       std::optional<oak::session::v1::EncryptedMessage>)>;
 
-  using DecryptOnceCallback = base::OnceCallback<void(std::optional<Response>)>;
+  using DecryptOnceCallback =
+      base::OnceCallback<void(const std::optional<Response>&)>;
 
   virtual ~SecureSession() = default;
 

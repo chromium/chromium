@@ -11,6 +11,8 @@ source_set("crypto") {
     "constants.h",
     "crypter.cc",
     "crypter.h",
+    "handshake_message.cc",
+    "handshake_message.h",
     "noise.cc",
     "noise.h",
     "secure_session_impl.cc",

@@ -139,6 +139,7 @@ static_library("utility") {
       "//chrome/common:mojo_bindings",
       "//chrome/common/importer:interfaces",
       "//components/autofill/core/common",
+      "//components/legion/oak_session_service",
       "//components/user_data_importer/common",
       "//components/user_data_importer/content",
       "//components/user_data_importer/utility:bookmarks",

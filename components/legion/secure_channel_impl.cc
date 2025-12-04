@@ -279,7 +279,7 @@ void SecureChannelImpl::OnEncryptedResponse(
 }
 
 void SecureChannelImpl::OnDecryptedResponse(
-    std::optional<Request> decrypted_response) {
+    const std::optional<Request>& decrypted_response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!decrypted_response.has_value()) {
@@ -290,7 +290,7 @@ void SecureChannelImpl::OnDecryptedResponse(
   DVLOG(1) << "Response decrypted successfully.";
 
   CHECK(response_callback_);
-  response_callback_.Run(base::ok(std::move(*decrypted_response)));
+  response_callback_.Run(base::ok(*decrypted_response));
 
   ProcessPendingEncryptionRequests();
 }

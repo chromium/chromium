@@ -4,6 +4,9 @@
 
 #include "components/legion/crypto/secure_session_impl.h"
 
+#include <stdint.h>
+
+#include <array>
 #include <utility>
 
 #include "base/check.h"
@@ -11,20 +14,11 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "components/legion/crypto/constants.h"
+#include "components/legion/crypto/handshake_message.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 
 namespace legion {
-
-HandshakeMessage::HandshakeMessage(std::vector<uint8_t> ephemeral_public_key,
-                                   std::vector<uint8_t> ciphertext)
-    : ephemeral_public_key(ephemeral_public_key), ciphertext(ciphertext) {}
-
-HandshakeMessage::~HandshakeMessage() = default;
-
-HandshakeMessage::HandshakeMessage(HandshakeMessage&&) = default;
-
-HandshakeMessage& HandshakeMessage::operator=(HandshakeMessage&&) = default;
 
 SecureSessionImpl::SecureSessionImpl() = default;
 
@@ -40,18 +34,15 @@ HandshakeMessage SecureSessionImpl::GetHandshakeMessage() {
   ephemeral_key_.reset(EC_KEY_new_by_curve_name(NID_X9_62_prime256v1));
   const EC_GROUP* group = EC_KEY_get0_group(ephemeral_key_.get());
   CHECK(EC_KEY_generate_key(ephemeral_key_.get()));
-  uint8_t ephemeral_public_key_bytes[kP256X962Length];
-  CHECK_EQ(sizeof(ephemeral_public_key_bytes),
+  std::array<uint8_t, kP256X962Length> ephemeral_public_key;
+  CHECK_EQ(ephemeral_public_key.size(),
            EC_POINT_point2oct(
                group, EC_KEY_get0_public_key(ephemeral_key_.get()),
-               POINT_CONVERSION_UNCOMPRESSED, ephemeral_public_key_bytes,
-               sizeof(ephemeral_public_key_bytes), /*ctx=*/nullptr));
-  noise_->MixHash(ephemeral_public_key_bytes);
-  noise_->MixKey(ephemeral_public_key_bytes);
+               POINT_CONVERSION_UNCOMPRESSED, ephemeral_public_key.data(),
+               ephemeral_public_key.size(), /*ctx=*/nullptr));
+  noise_->MixHash(ephemeral_public_key);
+  noise_->MixKey(ephemeral_public_key);
 
-  std::vector<uint8_t> ephemeral_public_key(
-      std::begin(ephemeral_public_key_bytes),
-      std::end(ephemeral_public_key_bytes));
   std::vector<uint8_t> ciphertext_request = noise_->EncryptAndHash({});
 
   return HandshakeMessage(std::move(ephemeral_public_key),

@@ -8,10 +8,14 @@
 
 #include <vector>
 
-#include "base/test/task_environment.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/test/test_future.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "components/legion/crypto/constants.h"
 #include "components/legion/crypto/test_server_secure_session.h"
+#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ecdh.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
@@ -26,11 +30,17 @@ HandshakeMessage ConvertToHandshakeMessage(
   CHECK(response.has_noise_handshake_message());
 
   const auto noise_msg = response.noise_handshake_message();
+
+  CHECK_EQ(noise_msg.ephemeral_public_key().size(), kP256X962Length);
+
+  std::array<uint8_t, kP256X962Length> ephemeral_public_key;
+  base::span(ephemeral_public_key)
+      .copy_from(base::as_byte_span(noise_msg.ephemeral_public_key()));
+
   HandshakeMessage output(
-      std::vector<uint8_t>(noise_msg.ephemeral_public_key().begin(),
-                           noise_msg.ephemeral_public_key().end()),
-      std::vector<uint8_t>(noise_msg.ciphertext().begin(),
-                           noise_msg.ciphertext().end()));
+      ephemeral_public_key,
+      base::ToVector(base::as_byte_span(noise_msg.ciphertext())));
+
   return output;
 }
 
@@ -58,12 +68,20 @@ std::vector<uint8_t> ConvertToBytes(
                               encrypted_msg.ciphertext().end());
 }
 
-class SecureSessionAsyncImplTest : public ::testing::Test {
+class SecureSessionAsyncImplBrowserTest : public InProcessBrowserTest {
+ public:
+  // content::BrowserTestBase override:
+  void SetUpOnMainThread() override {
+    // `client_session_` spawns a separate process for crypto operations,
+    // therefore it has to be initialized after browser init.
+    client_session_ = std::make_unique<SecureSessionAsyncImpl>();
+  }
+
  protected:
   void PerformValidHandshake(TestServerSecureSession& server_session) {
     auto client_handshake_request = [&]() {
       base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-      client_session_.GetHandshakeMessage(future.GetCallback());
+      client_session_->GetHandshakeMessage(future.GetCallback());
       return future.Get();
     }();
 
@@ -73,22 +91,21 @@ class SecureSessionAsyncImplTest : public ::testing::Test {
 
     {
       base::test::TestFuture<bool> future;
-      client_session_.ProcessHandshakeResponse(
+      client_session_->ProcessHandshakeResponse(
           ConvertToResponseProto(server_handshake_response.value()),
           future.GetCallback());
       ASSERT_TRUE(future.Get());
     }
   }
 
-  SecureSessionAsyncImpl client_session_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
+ protected:
+  std::unique_ptr<SecureSessionAsyncImpl> client_session_;
 };
 
 // End-to-end test of the handshake and encryption/decryption in both
 // directions.
-TEST_F(SecureSessionAsyncImplTest, HandshakeAndEncryptDecryptSucceeds) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       HandshakeAndEncryptDecryptSucceeds) {
   TestServerSecureSession server_session;
   PerformValidHandshake(server_session);
 
@@ -97,7 +114,7 @@ TEST_F(SecureSessionAsyncImplTest, HandshakeAndEncryptDecryptSucceeds) {
   auto encrypted_from_client = [&]() {
     base::test::TestFuture<std::optional<oak::session::v1::EncryptedMessage>>
         future;
-    client_session_.Encrypt(client_plaintext, future.GetCallback());
+    client_session_->Encrypt(client_plaintext, future.GetCallback());
     return future.Get();
   }();
   ASSERT_TRUE(encrypted_from_client.has_value());
@@ -113,8 +130,8 @@ TEST_F(SecureSessionAsyncImplTest, HandshakeAndEncryptDecryptSucceeds) {
   ASSERT_TRUE(encrypted_from_server.has_value());
 
   {
-    base::test::TestFuture<std::optional<Response>> future;
-    client_session_.Decrypt(
+    base::test::TestFuture<const std::optional<Response>&> future;
+    client_session_->Decrypt(
         ConvertToEncryptedMessage(encrypted_from_server.value()),
         future.GetCallback());
     auto decrypted_by_client = future.Get();
@@ -124,9 +141,10 @@ TEST_F(SecureSessionAsyncImplTest, HandshakeAndEncryptDecryptSucceeds) {
   }
 }
 
-TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageSucceeds) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       GetHandshakeMessageSucceeds) {
   base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-  client_session_.GetHandshakeMessage(future.GetCallback());
+  client_session_->GetHandshakeMessage(future.GetCallback());
   auto request = future.Get();
 
   EXPECT_TRUE(request.has_noise_handshake_message());
@@ -136,12 +154,13 @@ TEST_F(SecureSessionAsyncImplTest, GetHandshakeMessageSucceeds) {
   EXPECT_FALSE(noise_msg.ciphertext().empty());
 }
 
-TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseInvalidPeerKey) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       ProcessHandshakeResponseInvalidPeerKey) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
   {
     base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-    client_session_.GetHandshakeMessage(future.GetCallback());
+    client_session_->GetHandshakeMessage(future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
 
@@ -153,17 +172,18 @@ TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseInvalidPeerKey) {
 
   {
     base::test::TestFuture<bool> future;
-    client_session_.ProcessHandshakeResponse(response, future.GetCallback());
+    client_session_->ProcessHandshakeResponse(response, future.GetCallback());
     EXPECT_FALSE(future.Get());
   }
 }
 
-TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseInvalidCiphertext) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       ProcessHandshakeResponseInvalidCiphertext) {
   // Though the result is not used, it's important to call GetHandshakeMessage()
   // before ProcessHandshakeResponse().
   {
     base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-    client_session_.GetHandshakeMessage(future.GetCallback());
+    client_session_->GetHandshakeMessage(future.GetCallback());
     ASSERT_TRUE(future.Wait());
   }
 
@@ -179,50 +199,30 @@ TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseInvalidCiphertext) {
 
   {
     base::test::TestFuture<bool> future;
-    client_session_.ProcessHandshakeResponse(server_handshake_response,
-                                             future.GetCallback());
+    client_session_->ProcessHandshakeResponse(server_handshake_response,
+                                              future.GetCallback());
     EXPECT_FALSE(future.Get());
   }
 }
 
-TEST_F(SecureSessionAsyncImplTest, EncryptBeforeHandshake) {
-  const Request client_plaintext = {1, 2, 3};
-
-  base::test::TestFuture<std::optional<oak::session::v1::EncryptedMessage>>
-      future;
-  client_session_.Encrypt(client_plaintext, future.GetCallback());
-  auto encrypted = future.Get();
-
-  EXPECT_FALSE(encrypted.has_value());
-}
-
-TEST_F(SecureSessionAsyncImplTest, DecryptBeforeHandshake) {
-  oak::session::v1::EncryptedMessage encrypted_message;
-  encrypted_message.set_ciphertext("some data");
-
-  base::test::TestFuture<std::optional<Response>> future;
-  client_session_.Decrypt(encrypted_message, future.GetCallback());
-  auto decrypted = future.Get();
-
-  EXPECT_FALSE(decrypted.has_value());
-}
-
 // Tests that ProcessHandshakeResponse fails if called before
 // GetHandshakeMessage.
-TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseWithoutHandshake) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       ProcessHandshakeResponseWithoutHandshake) {
   oak::session::v1::HandshakeResponse response;
 
   base::test::TestFuture<bool> future;
-  client_session_.ProcessHandshakeResponse(response, future.GetCallback());
+  client_session_->ProcessHandshakeResponse(response, future.GetCallback());
   EXPECT_FALSE(future.Get());
 }
 
 // Tests that the handshake fails if the server's response includes a payload,
 // which is not allowed in the NN handshake pattern.
-TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
+IN_PROC_BROWSER_TEST_F(SecureSessionAsyncImplBrowserTest,
+                       ProcessHandshakeResponseNonEmptyPlaintext) {
   auto client_handshake_request = [&]() {
     base::test::TestFuture<oak::session::v1::HandshakeRequest> future;
-    client_session_.GetHandshakeMessage(future.GetCallback());
+    client_session_->GetHandshakeMessage(future.GetCallback());
     return future.Get();
   }();
 
@@ -237,7 +237,7 @@ TEST_F(SecureSessionAsyncImplTest, ProcessHandshakeResponseNonEmptyPlaintext) {
   // empty.
   {
     base::test::TestFuture<bool> future;
-    client_session_.ProcessHandshakeResponse(
+    client_session_->ProcessHandshakeResponse(
         ConvertToResponseProto(server_handshake_response.value()),
         future.GetCallback());
     EXPECT_FALSE(future.Get());

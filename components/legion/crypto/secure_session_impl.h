@@ -5,30 +5,18 @@
 #ifndef COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_
 #define COMPONENTS_LEGION_CRYPTO_SECURE_SESSION_IMPL_H_
 
+#include <stdint.h>
+
 #include <memory>
 #include <optional>
 #include <vector>
 
 #include "components/legion/crypto/crypter.h"
+#include "components/legion/crypto/handshake_message.h"
 #include "components/legion/crypto/noise.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 
 namespace legion {
-
-struct HandshakeMessage {
-  HandshakeMessage(std::vector<uint8_t> ephemeral_public_key,
-                   std::vector<uint8_t> ciphertext);
-  ~HandshakeMessage();
-
-  HandshakeMessage(HandshakeMessage&&);
-  HandshakeMessage& operator=(HandshakeMessage&&);
-
-  HandshakeMessage(const HandshakeMessage&) = delete;
-  HandshakeMessage& operator=(const HandshakeMessage&) = delete;
-
-  std::vector<uint8_t> ephemeral_public_key;
-  std::vector<uint8_t> ciphertext;
-};
 
 class SecureSessionImpl {
  public:
