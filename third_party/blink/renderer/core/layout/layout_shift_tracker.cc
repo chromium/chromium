@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 
+#include <algorithm>
+
 #include "cc/layers/heads_up_display_layer.h"
 #include "cc/layers/picture_layer.h"
 #include "cc/trees/layer_tree_host.h"
@@ -657,6 +659,24 @@ void LayoutShiftTracker::ReportShift(double score_delta,
       frame.Client()->DidObserveLayoutShift(weighted_score_delta,
                                             observed_input_or_scroll_);
     }
+  }
+
+  if (RuntimeEnabledFeatures::SortedLayoutShiftSourcesByImpactAreaEnabled()) {
+    // Sort attributions by impact area in descending order (largest first).
+    // This benefits both the Performance API and tracing data.
+    // Using stable_sort to maintain insertion order for equal impact areas.
+    std::stable_sort(attributions_.begin(), attributions_.end(),
+                     [](const Attribution& a, const Attribution& b) {
+                       // Invalid attributions (kInvalidDOMNodeId) should sort
+                       // to the end.
+                       if (a.node_id == kInvalidDOMNodeId) {
+                         return false;
+                       }
+                       if (b.node_id == kInvalidDOMNodeId) {
+                         return true;
+                       }
+                       return a.MoreImpactfulThan(b);
+                     });
   }
 
   SubmitPerformanceEntry(score_delta, had_recent_input);

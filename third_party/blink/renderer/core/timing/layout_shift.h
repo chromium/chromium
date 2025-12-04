@@ -23,6 +23,9 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   // Maximum number of attributions (shifted elements) to record in any single
   // animation frame.
   static constexpr int kMaxAttributions = 5;
+  // AttributionList contains up to kMaxAttributions elements, sorted by
+  // impact area in descending order (largest first). Impact area is the
+  // union of previousRect and currentRect for each attribution.
   typedef HeapVector<Member<LayoutShiftAttribution>, kMaxAttributions>
       AttributionList;
 

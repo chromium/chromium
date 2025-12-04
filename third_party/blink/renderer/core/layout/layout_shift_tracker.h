@@ -190,6 +190,9 @@ class CORE_EXPORT LayoutShiftTracker final
   void UpdateInputTimestamps(base::TimeTicks timestamp);
   bool HasRecentInput();
 
+  // Creates the list of attributions for a layout shift entry, sorted by
+  // per-source impact area in descending order (largest impact first).
+  // Impact area is the union of the previous and current visual rectangles.
   LayoutShift::AttributionList CreateAttributionList() const;
   void SubmitPerformanceEntry(double score_delta, bool input_detected) const;
   void NotifyPrePaintFinishedInternal();

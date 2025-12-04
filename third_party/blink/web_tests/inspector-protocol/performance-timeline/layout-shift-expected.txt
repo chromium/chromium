@@ -8,21 +8,6 @@ Basic test for LayoutShift support in PerformanceTimeline
             sources : [
                 [0] : {
                     currentRect : {
-                        height : 100
-                        width : 20
-                        x : 8
-                        y : 126
-                    }
-                    nodeId : <div#padding2>
-                    previousRect : {
-                        height : 100
-                        width : 20
-                        x : 8
-                        y : 26
-                    }
-                }
-                [1] : {
-                    currentRect : {
                         height : 120
                         width : 400
                         x : 38
@@ -34,6 +19,21 @@ Basic test for LayoutShift support in PerformanceTimeline
                         width : 400
                         x : 38
                         y : 8
+                    }
+                }
+                [1] : {
+                    currentRect : {
+                        height : 100
+                        width : 20
+                        x : 8
+                        y : 126
+                    }
+                    nodeId : <div#padding2>
+                    previousRect : {
+                        height : 100
+                        width : 20
+                        x : 8
+                        y : 26
                     }
                 }
             ]

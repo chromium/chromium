@@ -4870,6 +4870,10 @@
       origin_trial_feature_name: "SoftNavigationHeuristics",
     },
     {
+      name: "SortedLayoutShiftSourcesByImpactArea",
+      status: "stable",
+    },
+    {
       // Whether spatial navigation should use cursor inheritance to exclude
       // nodes where cursor is inherited. Kill-switch that can be remove once
       // the change goes through a stable release.
