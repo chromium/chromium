@@ -14,7 +14,7 @@ interface DocumentIdAndNodes {
 
 function getDocumentIdAndNodes(annotatedPageContent: any): DocumentIdAndNodes {
   function traverseTree(result: DocumentIdAndNodes, node: any) {
-    if (!node) {
+    if (!node || !node.contentAttributes) {
       return;
     }
     const contentAttributes = node.contentAttributes;

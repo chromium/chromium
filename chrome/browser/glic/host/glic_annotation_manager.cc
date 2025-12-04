@@ -239,7 +239,7 @@ void GlicAnnotationManager::ScrollTo(
     return;
   }
 
-  auto focused_tab_data = service_->sharing_manager().GetFocusedTabData();
+  auto focused_tab_data = host->sharing_manager().GetFocusedTabData();
   if (!focused_tab_data.focus()) {
     std::move(wrapped_callback).Run(mojom::ScrollToErrorReason::kNoFocusedTab);
     return;
