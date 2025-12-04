@@ -19,6 +19,7 @@
   --cr-composebox-match-icon-container-padding-inline-start: 20px;
   --cr-composebox-match-icon-size: 16px;
   --cr-composebox-match-match-padding-bottom: 0;
+  --cr-composebox-match-remove-button-top: 4px;
   --cr-composebox-match-text-container-font-size: var(--omnibox-font-size);
   --cr-composebox-max-height: 800px;
   --cr-composebox-text-container-padding-block-start: 0;
@@ -63,6 +64,7 @@ cr-composebox[searchbox-layout-mode="Compact"] {
 }
 
 cr-composebox[searchbox-layout-mode="Compact"]::part(context-menu-entrypoint-icon) {
+  --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 28px;
   left: 12px;
   top: 14px;
