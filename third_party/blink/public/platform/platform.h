@@ -421,9 +421,9 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Decodes the in-memory audio file data and returns the linear PCM audio data
   // in the |destination_bus|.
   // Returns true on success.
-  virtual bool DecodeAudioFileData(WebAudioBus* destination_bus,
-                                   base::span<const char> audio_file_data) {
-    return false;
+  virtual std::unique_ptr<WebAudioBus> DecodeAudioFileData(
+      base::span<const char> audio_file_data) {
+    return nullptr;
   }
 
   // Process lifetime management -----------------------------------------

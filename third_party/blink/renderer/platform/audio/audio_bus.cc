@@ -706,9 +706,10 @@ void AudioBus::ClearSilentFlag() {
 }
 
 scoped_refptr<AudioBus> DecodeAudioFileData(base::span<const char> data) {
-  WebAudioBus web_audio_bus;
-  if (Platform::Current()->DecodeAudioFileData(&web_audio_bus, data)) {
-    return web_audio_bus.Release();
+  std::unique_ptr<WebAudioBus> out =
+      Platform::Current()->DecodeAudioFileData(data);
+  if (out) {
+    return out->Release();
   }
   return nullptr;
 }

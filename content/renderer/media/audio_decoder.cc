@@ -120,12 +120,8 @@ class Reader {
 }  // namespace
 
 // Decode in-memory audio file data.
-bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
-                         base::span<const char> data) {
-  if (!destination_bus) {
-    return false;
-  }
-
+std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
+    base::span<const char> data) {
 #if BUILDFLAG(ENABLE_FFMPEG)
   const base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -133,7 +129,7 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
   base::UmaHistogramBoolean("Media.ContentAudioDecoder.CreateReaderSuccess",
                             reader != nullptr);
   if (!reader) {
-    return false;
+    return nullptr;
   }
 
   const size_t number_of_channels = reader->channels();
@@ -145,25 +141,25 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
       number_of_channels > static_cast<size_t>(media::limits::kMaxChannels) ||
       sample_rate < media::limits::kMinSampleRate ||
       sample_rate > media::limits::kMaxSampleRate) {
-    return false;
+    return nullptr;
   }
 
   std::vector<std::unique_ptr<AudioBus>> decoded_audio_packets;
   const size_t number_of_frames = reader->Read(&decoded_audio_packets);
   if (number_of_frames == 0) {
-    return false;
+    return nullptr;
   }
 
   // Allocate and configure the output audio channel data and then
   // copy the decoded data to the destination.
-  destination_bus->Initialize(number_of_channels, number_of_frames,
-                              sample_rate);
+  auto out = std::make_unique<WebAudioBus>();
+  out->Initialize(number_of_channels, number_of_frames, sample_rate);
 
   std::vector<base::SpanWriter<float>> dest_channels;
   dest_channels.reserve(number_of_channels);
   for (size_t ch = 0; ch < number_of_channels; ++ch) {
-    dest_channels.emplace_back(UNSAFE_TODO(base::span(
-        destination_bus->ChannelData(ch), destination_bus->length())));
+    dest_channels.emplace_back(
+        UNSAFE_TODO(base::span(out->ChannelData(ch), out->length())));
   }
 
   // Append all `decoded_audio_packets`, channel per channel.
@@ -191,10 +187,12 @@ bool DecodeAudioFileData(blink::WebAudioBus* destination_bus,
       "Media.ContentAudioDecoder.DecodeTimePerFrame",
       (base::TimeTicks::Now() - start_time) / number_of_frames);
 
-  return number_of_frames > 0;
-#else
-  return false;
+  if (number_of_frames > 0) {
+    return out;
+  }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+  return nullptr;
 }
 
 }  // namespace content

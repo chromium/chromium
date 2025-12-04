@@ -100,6 +100,7 @@
 #include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/url_conversion.h"
+#include "third_party/blink/public/platform/web_audio_bus.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
 #include "third_party/blink/public/platform/web_audio_sink_descriptor.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -529,10 +530,10 @@ std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
       context_sample_rate, callback);
 }
 
-bool RendererBlinkPlatformImpl::DecodeAudioFileData(
-    blink::WebAudioBus* destination_bus,
+std::unique_ptr<blink::WebAudioBus>
+RendererBlinkPlatformImpl::DecodeAudioFileData(
     base::span<const char> audio_file_data) {
-  return content::DecodeAudioFileData(destination_bus, audio_file_data);
+  return content::DecodeAudioFileData(audio_file_data);
 }
 
 //------------------------------------------------------------------------------
