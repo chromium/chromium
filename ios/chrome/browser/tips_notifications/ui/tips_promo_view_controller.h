@@ -7,11 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_view_controller.h"
 
-// A PromoStyleViewController subclass which displays a Lottie animation above
+// A ButtonStackViewController subclass which displays a Lottie animation above
 // a title and subtitle.
-@interface TipsPromoViewController : PromoStyleViewController
+// The `actionDelegate` property from the superclass should be used to handle
+// button actions.
+@interface TipsPromoViewController : ButtonStackViewController
+
+// The title of the promo.
+@property(nonatomic, copy) NSString* titleText;
+// The subtitle of the promo.
+@property(nonatomic, copy) NSString* subtitleText;
 
 // The name of the animation resource to be used in light mode.
 @property(nonatomic, copy) NSString* animationName;

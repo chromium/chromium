@@ -11,11 +11,13 @@
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/tips_notifications/ui/enhanced_safe_browsing_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/enhanced_safe_browsing_promo_view_controller.h"
+#import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface EnhancedSafeBrowsingPromoCoordinator () <
+    ButtonStackActionDelegate,
     ConfirmationAlertActionHandler,
-    PromoStyleViewControllerDelegate,
     UIAdaptivePresentationControllerDelegate>
 @end
 
@@ -31,7 +33,12 @@
 
 - (void)start {
   _viewController = [[EnhancedSafeBrowsingPromoViewController alloc] init];
-  _viewController.delegate = self;
+  _viewController.actionDelegate = self;
+  UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
+      initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                           target:self
+                           action:@selector(dismissViewController)];
+  _viewController.navigationItem.rightBarButtonItem = dismissButton;
 
   UINavigationController* navigationController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -59,7 +66,7 @@
   _viewController = nil;
 }
 
-#pragma mark - PromoStyleViewControllerDelegate
+#pragma mark - ButtonStackActionDelegate
 
 - (void)didTapPrimaryActionButton {
   _showSettingsOnDismiss = YES;
@@ -83,8 +90,8 @@
                               completion:nil];
 }
 
-- (void)didDismissViewController {
-  [self dismissScreen];
+- (void)didTapTertiaryActionButton {
+  // Not used.
 }
 
 #pragma mark - ConfirmationAlertPrimaryAction
@@ -109,6 +116,11 @@
 }
 
 #pragma mark - Private methods
+
+// Dismisses the coordinator and its view controller.
+- (void)dismissViewController {
+  [self dismissScreen];
+}
 
 // Dismisses the instruction sheet.
 - (void)dismissInstructions {
