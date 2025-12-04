@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 // Instructions for adding new entries to this file:
 // https://chromium.googlesource.com/chromium/src/+/main/docs/how_to_add_your_feature_flag.md#step-2_adding-the-feature-flag-to-the-chrome_flags-ui
 
@@ -16,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/allocator/partition_alloc_features.h"
@@ -13636,7 +13632,8 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   version_info::Channel channel = chrome::GetChannel();
   // enable-projector-server-side-speech-recognition is only available in Chrome
   // branded builds.
-  if (!strcmp(kProjectorServerSideSpeechRecognition, entry.internal_name)) {
+  if (std::string_view(kProjectorServerSideSpeechRecognition) ==
+      entry.internal_name) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     return false;
 #else
@@ -13645,24 +13642,26 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // enable-ui-devtools is only available on for non Stable channels.
-  if (!strcmp(ui_devtools::switches::kEnableUiDevTools, entry.internal_name) &&
+  if (std::string_view(ui_devtools::switches::kEnableUiDevTools) ==
+          entry.internal_name &&
       channel == version_info::Channel::STABLE) {
     return true;
   }
 
   // Skip arc-enable-attestation if it is enabled by ash switch.
-  if (!strcmp(kArcEnableAttestationFlag, entry.internal_name)) {
+  if (std::string_view(kArcEnableAttestationFlag) == entry.internal_name) {
     return base::CommandLine::ForCurrentProcess()->HasSwitch(
         ash::switches::kArcEnableAttestation);
   }
 
-  if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
+  if (std::string_view(kArcEnableVirtioBlkForDataInternalName) ==
+      entry.internal_name) {
     return !arc::IsArcVmEnabled();
   }
 
   // Only show the Background Listening flag if channel is one of
   // Beta/Dev/Canary/Unknown (non-stable).
-  if (!strcmp(kBackgroundListeningName, entry.internal_name)) {
+  if (std::string_view(kBackgroundListeningName) == entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
@@ -13670,23 +13669,28 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   }
 
   // Only show Borealis flags on enabled devices.
-  if (!strcmp(kBorealisBigGlInternalName, entry.internal_name) ||
-      !strcmp(kBorealisDGPUInternalName, entry.internal_name) ||
-      !strcmp(kBorealisEnableUnsupportedHardwareInternalName,
-              entry.internal_name) ||
-      !strcmp(kBorealisForceBetaClientInternalName, entry.internal_name) ||
-      !strcmp(kBorealisForceDoubleScaleInternalName, entry.internal_name) ||
-      !strcmp(kBorealisLinuxModeInternalName, entry.internal_name) ||
-      !strcmp(kBorealisPermittedInternalName, entry.internal_name) ||
-      !strcmp(kBorealisProvisionInternalName, entry.internal_name) ||
-      !strcmp(kBorealisScaleClientByDPIInternalName, entry.internal_name) ||
-      !strcmp(kBorealisZinkGlDriverInternalName, entry.internal_name)) {
+  if (std::string_view(kBorealisBigGlInternalName) == entry.internal_name ||
+      std::string_view(kBorealisDGPUInternalName) == entry.internal_name ||
+      std::string_view(kBorealisEnableUnsupportedHardwareInternalName) ==
+          entry.internal_name ||
+      std::string_view(kBorealisForceBetaClientInternalName) ==
+          entry.internal_name ||
+      std::string_view(kBorealisForceDoubleScaleInternalName) ==
+          entry.internal_name ||
+      std::string_view(kBorealisLinuxModeInternalName) == entry.internal_name ||
+      std::string_view(kBorealisPermittedInternalName) == entry.internal_name ||
+      std::string_view(kBorealisProvisionInternalName) == entry.internal_name ||
+      std::string_view(kBorealisScaleClientByDPIInternalName) ==
+          entry.internal_name ||
+      std::string_view(kBorealisZinkGlDriverInternalName) ==
+          entry.internal_name) {
     return !base::FeatureList::IsEnabled(features::kBorealis);
   }
 
   // Only show wallpaper fast refresh flag if channel is one of
   // Dev/Canary/Unknown.
-  if (!strcmp(kWallpaperFastRefreshInternalName, entry.internal_name)) {
+  if (std::string_view(kWallpaperFastRefreshInternalName) ==
+      entry.internal_name) {
     return (channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
             channel != version_info::Channel::UNKNOWN);
@@ -13694,7 +13698,8 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Disable and prevent users from enabling LL privacy on boards that were
   // explicitly built without floss or hardware does not support LL privacy.
-  if (!strcmp(kBluetoothUseLLPrivacyInternalName, entry.internal_name)) {
+  if (std::string_view(kBluetoothUseLLPrivacyInternalName) ==
+      entry.internal_name) {
     return (
         base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
             floss::features::kLLPrivacyIsAvailable.name,
@@ -13703,7 +13708,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Only show Assistant Launcher search IPH flag if channel is one of
   // Beta/Dev/Canary/Unknown.
-  if (!strcmp(kAssistantIphInternalName, entry.internal_name)) {
+  if (std::string_view(kAssistantIphInternalName) == entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
@@ -13712,7 +13717,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Only show Growth campaigns flag if channel is one of Beta/Dev/Canary/
   // Unknown.
-  if (!strcmp(kGrowthCampaigns, entry.internal_name)) {
+  if (std::string_view(kGrowthCampaigns) == entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
@@ -13721,7 +13726,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   // Only show Growth campaigns test tag flag if channel is one of
   // Beta/Dev/Canary/ Unknown.
-  if (!strcmp(kGrowthCampaignsTestTag, entry.internal_name)) {
+  if (std::string_view(kGrowthCampaignsTestTag) == entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
@@ -13731,7 +13736,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   version_info::Channel chrome_channel = chrome::GetChannel();
   // Only show extension AI data flag in non-stable channels.
-  if (!strcmp(kExtensionAiDataInternalName, entry.internal_name)) {
+  if (std::string_view(kExtensionAiDataInternalName) == entry.internal_name) {
     return chrome_channel != version_info::Channel::BETA &&
            chrome_channel != version_info::Channel::DEV &&
            chrome_channel != version_info::Channel::CANARY &&
@@ -13743,8 +13748,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   // Only show the payments test flag to disable merchant allowlists if channel
   // is one of Beta/Dev/Canary/ Unknown.
   version_info::Channel channel = chrome::GetChannel();
-  if (!strcmp(kDisableFacilitatedPaymentsMerchantAllowlistInternalName,
-              entry.internal_name)) {
+  if (std::string_view(
+          kDisableFacilitatedPaymentsMerchantAllowlistInternalName) ==
+      entry.internal_name) {
     return channel != version_info::Channel::BETA &&
            channel != version_info::Channel::DEV &&
            channel != version_info::Channel::CANARY &&
@@ -13754,7 +13760,7 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
 #if !BUILDFLAG(IS_ANDROID)
   // Only show Webium flag for Canary channel and developer builds.
-  if (!strcmp(kWebiumFlag, entry.internal_name)) {
+  if (std::string_view(kWebiumFlag) == entry.internal_name) {
     return chrome::GetChannel() != version_info::Channel::CANARY &&
            version_info::IsOfficialBuild();
   }
