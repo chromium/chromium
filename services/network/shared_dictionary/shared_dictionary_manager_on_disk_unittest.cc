@@ -18,6 +18,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_file_util.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "net/base/hash_value.h"
@@ -34,6 +35,7 @@
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary_constants.h"
 #include "services/network/shared_dictionary/shared_dictionary_disk_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage.h"
 #include "services/network/shared_dictionary/shared_dictionary_storage_on_disk.h"
@@ -254,7 +256,6 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
     std::unique_ptr<sql::Database> db =
         std::make_unique<sql::Database>(sql::test::kTestTag);
     ASSERT_TRUE(db->Open(database_path_));
-
     sql::MetaTable meta_table;
     ASSERT_TRUE(meta_table.Init(db.get(), kCurrentVersionNumber,
                                 kCurrentVersionNumber));
@@ -262,6 +263,13 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
       ASSERT_TRUE(db->Execute(query));
     }
     db->Close();
+  }
+
+  void WaitForMetadataReady(SharedDictionaryManager* manager) {
+    base::test::TestFuture<const std::vector<net::SharedDictionaryUsageInfo>&>
+        future;
+    manager->GetUsageInfo(future.GetCallback());
+    ASSERT_TRUE(future.Wait());
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -273,8 +281,139 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
   base::FilePath cache_directory_path_;
   // `file_permissions_restorer_` must be below `tmp_directory_` to restore the
   // file permission correctly.
+
   std::unique_ptr<base::FilePermissionRestorer> file_permissions_restorer_;
 };
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_MetadataReady) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Re-create manager to simulate new session.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // Wait for metadata to load.
+  WaitForMetadataReady(manager.get());
+  // GetDictionarySync for a document request.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_TRUE(dictionary);
+
+  histogram_tester.ExpectUniqueSample(
+      "Network.SharedDictionary.DocumentRequestMetadataResult",
+      SharedDictionaryDocumentRequestMetadataResult::kMetadataReady, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_MetadataPending) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  // Re-create manager to simulate new session.
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  // Call GetDictionarySync immediately (before WaitForMetadataReady).
+  // Metadata is not ready, so it should return nullptr.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_FALSE(dictionary);
+
+  // Wait for tasks to complete (metadata loading + pending check task).
+  WaitForMetadataReady(manager.get());
+  histogram_tester.ExpectUniqueSample(
+      "Network.SharedDictionary.DocumentRequestMetadataResult",
+      SharedDictionaryDocumentRequestMetadataResult::kMetadataPending, 1);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_NoDictionary) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WaitForMetadataReady(manager.get());
+
+  // No dictionary written.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kDocument);
+  ASSERT_FALSE(dictionary);
+  histogram_tester.ExpectTotalCount(
+      "Network.SharedDictionary.DocumentRequestMetadataResult", 0);
+}
+
+TEST_F(SharedDictionaryManagerOnDiskTest,
+       DocumentRequestMetadataResult_NotDocument) {
+  base::HistogramTester histogram_tester;
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
+
+  {
+    std::unique_ptr<SharedDictionaryManager> manager =
+        CreateSharedDictionaryManager();
+    scoped_refptr<SharedDictionaryStorage> storage =
+        manager->GetStorage(isolation_key);
+    ASSERT_TRUE(storage);
+
+    WriteDictionary(storage.get(), GURL("https://origin.test/dict"), "test*",
+                    kTestData1);
+    FlushCacheTasks();
+  }
+
+  std::unique_ptr<SharedDictionaryManager> manager =
+      CreateSharedDictionaryManager();
+  scoped_refptr<SharedDictionaryStorage> storage =
+      manager->GetStorage(isolation_key);
+  ASSERT_TRUE(storage);
+
+  WaitForMetadataReady(manager.get());
+
+  // Request destination is kFrame, not kDocument.
+  scoped_refptr<net::SharedDictionary> dictionary = storage->GetDictionarySync(
+      GURL("https://origin.test/test"), mojom::RequestDestination::kFrame);
+  ASSERT_TRUE(dictionary);
+
+  histogram_tester.ExpectTotalCount(
+      "Network.SharedDictionary.DocumentRequestMetadataResult", 0);
+}
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   base::test::ScopedFeatureList feature_list;

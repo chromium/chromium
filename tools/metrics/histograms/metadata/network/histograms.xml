@@ -2500,6 +2500,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.SharedDictionary.DocumentRequestMetadataResult"
+    enum="SharedDictionaryDocumentRequestMetadataResult"
+    expires_after="2026-11-28">
+  <owner>wbjacksonjr@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    For each request that is for a document destination that has a shared
+    compression dictionary available and is using the disk-based dictionary
+    storage, records if the dictionary's metadata was ready in memory at request
+    initiation time, or if the request had to wait for the metadata to load from
+    disk.
+
+    This metric is logged only for those requests that were for a document
+    destination and had a compression dictionary available.
+  </summary>
+</histogram>
+
 <histogram name="Network.SharedDictionary.EncodingType"
     enum="SharedDictionaryEncodingType" expires_after="2026-04-12">
   <owner>nidhijaju@chromium.org</owner>

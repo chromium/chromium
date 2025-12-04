@@ -126,6 +126,10 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
   friend class SharedDictionaryManagerTest;
   friend class SharedDictionaryManagerOnDiskTest;
 
+  scoped_refptr<net::SharedDictionary> GetDictionarySyncInternal(
+      const GURL& url,
+      mojom::RequestDestination destination);
+
   void OnDatabaseRead(
       net::SQLitePersistentSharedDictionaryStore::DictionaryListOrError result);
   void OnDictionaryWritten(

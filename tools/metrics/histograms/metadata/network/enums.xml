@@ -2250,6 +2250,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Hit from Active Dictionary List"/>
 </enum>
 
+<!-- LINT.IfChange(SharedDictionaryDocumentRequestMetadataResult) -->
+
+<enum name="SharedDictionaryDocumentRequestMetadataResult">
+  <int value="0" label="Metadata was ready in memory"/>
+  <int value="1" label="Metadata was pending load from disk"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h:SharedDictionaryDocumentRequestMetadataResult) -->
+
 <enum name="SharedDictionaryEncodingType">
   <int value="0" label="Not Used"/>
   <int value="1" label="Shared Brotli"/>

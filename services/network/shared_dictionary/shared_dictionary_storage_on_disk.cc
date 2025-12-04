@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/request_destination.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/shared_dictionary/shared_dictionary_cache.h"
+#include "services/network/shared_dictionary/shared_dictionary_document_request_metadata_result.h"
 #include "services/network/shared_dictionary/shared_dictionary_manager_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_on_disk.h"
 #include "services/network/shared_dictionary/shared_dictionary_writer_on_disk.h"
@@ -31,6 +32,8 @@ namespace network {
 
 constexpr char kCacheResultHistogramName[] =
     "Network.SharedDictionary.DocumentRequestCacheResult";
+constexpr char kDocumentRequestMetadataResultHistogramName[] =
+    "Network.SharedDictionary.DocumentRequestMetadataResult";
 
 namespace {
 
@@ -126,6 +129,41 @@ scoped_refptr<net::SharedDictionary>
 SharedDictionaryStorageOnDisk::GetDictionarySync(
     const GURL& url,
     mojom::RequestDestination destination) {
+  scoped_refptr<net::SharedDictionary> dictionary =
+      GetDictionarySyncInternal(url, destination);
+  if (dictionary) {
+    if (destination == mojom::RequestDestination::kDocument) {
+      base::UmaHistogramEnumeration(
+          kDocumentRequestMetadataResultHistogramName,
+          SharedDictionaryDocumentRequestMetadataResult::kMetadataReady);
+    }
+    return dictionary;
+  }
+
+  if (!is_metadata_ready_ &&
+      destination == mojom::RequestDestination::kDocument) {
+    pending_get_dictionary_tasks_.emplace_back(base::BindOnce(
+        [](base::WeakPtr<SharedDictionaryStorageOnDisk> self, GURL url,
+           mojom::RequestDestination destination) {
+          if (!self) {
+            return;
+          }
+          if (self->GetDictionarySyncInternal(url, destination)) {
+            base::UmaHistogramEnumeration(
+                kDocumentRequestMetadataResultHistogramName,
+                SharedDictionaryDocumentRequestMetadataResult::
+                    kMetadataPending);
+          }
+        },
+        weak_factory_.GetWeakPtr(), url, destination));
+  }
+  return nullptr;
+}
+
+scoped_refptr<net::SharedDictionary>
+SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
+    const GURL& url,
+    mojom::RequestDestination destination) {
   if (!get_dictionary_called_) {
     get_dictionary_called_ = true;
     base::UmaHistogramBoolean(
@@ -144,6 +182,10 @@ SharedDictionaryStorageOnDisk::GetDictionarySync(
           "PreviouslyEvictedByMemoryPressure",
           is_metadata_ready_);
     }
+  }
+
+  if (!is_metadata_ready_) {
+    return nullptr;
   }
 
   if (!manager_) {

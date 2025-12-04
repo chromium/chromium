@@ -180,6 +180,7 @@ component("network_service") {
     "shared_dictionary/shared_dictionary_data_pipe_writer.h",
     "shared_dictionary/shared_dictionary_disk_cache.cc",
     "shared_dictionary/shared_dictionary_disk_cache.h",
+    "shared_dictionary/shared_dictionary_document_request_metadata_result.h",
     "shared_dictionary/shared_dictionary_in_memory.cc",
     "shared_dictionary/shared_dictionary_in_memory.h",
     "shared_dictionary/shared_dictionary_manager.cc",
