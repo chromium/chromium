@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -120,6 +121,14 @@ final class SigninPromoViewBinder {
                                 : View.GONE;
                 view.getSelectedAccountView().setVisibility(accountPickerVisibility);
             }
+        } else if (key == SigninPromoProperties.SHOULD_SHOW_LOADING_STATE) {
+            if (seamlessSigninPromoType != SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS) {
+                if (model.get(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE)) {
+                    showLoadingState(seamlessSigninPromoType, view);
+                } else {
+                    showRegularState(seamlessSigninPromoType, view);
+                }
+            }
         } else {
             throw new IllegalArgumentException("Unknown property key: " + key);
         }
@@ -160,6 +169,7 @@ final class SigninPromoViewBinder {
         view.setLayoutParams(lp);
     }
 
+    // TODO(crbug.com/465022302): Refactor to split into signed in and non signed in methods.
     private static void showHeaderWithAvatar(
             boolean showLayout,
             @SigninFeatureMap.SeamlessSigninPromoType int promoType,
@@ -198,6 +208,44 @@ final class SigninPromoViewBinder {
                     context.getResources()
                             .getDimensionPixelSize(R.dimen.signin_promo_button_margin_compact);
             updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
+        }
+    }
+
+    private static void showLoadingState(
+            @SigninFeatureMap.SeamlessSigninPromoType int promoType,
+            PersonalizedSigninPromoView view) {
+        assert promoType != SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS;
+        ButtonCompat primaryButton = view.getPrimaryButton();
+        primaryButton.setAlpha(0.9f);
+        primaryButton.setEnabled(false);
+        if (promoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+            View selectedAccountView = view.getSelectedAccountView();
+            selectedAccountView.setAlpha(0.6f);
+            selectedAccountView.setEnabled(false);
+        } else if (promoType == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+            Button secondaryButton = view.getSecondaryButton();
+            secondaryButton.setAlpha(0.9f);
+            secondaryButton.setEnabled(false);
+            view.getImage().setAlpha(0.6f);
+        }
+    }
+
+    private static void showRegularState(
+            @SigninFeatureMap.SeamlessSigninPromoType int promoType,
+            PersonalizedSigninPromoView view) {
+        assert promoType != SigninFeatureMap.SeamlessSigninPromoType.NON_SEAMLESS;
+        ButtonCompat primaryButton = view.getPrimaryButton();
+        primaryButton.setAlpha(1.0f);
+        primaryButton.setEnabled(true);
+        if (promoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+            View selectedAccountView = view.getSelectedAccountView();
+            selectedAccountView.setAlpha(1.0f);
+            selectedAccountView.setEnabled(true);
+        } else if (promoType == SigninFeatureMap.SeamlessSigninPromoType.TWO_BUTTONS) {
+            Button secondaryButton = view.getSecondaryButton();
+            secondaryButton.setAlpha(1.0f);
+            secondaryButton.setEnabled(true);
+            view.getImage().setAlpha(1.0f);
         }
     }
 }

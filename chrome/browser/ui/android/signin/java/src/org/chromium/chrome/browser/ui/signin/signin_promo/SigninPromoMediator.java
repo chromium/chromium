@@ -90,7 +90,8 @@ final class SigninPromoMediator
                         /* shouldSuppressSecondaryButton= */ false,
                         /* shouldHideDismissButton= */ false,
                         /* shouldShowAccountPicker= */ true,
-                        /* shouldShowHeaderWithAvatar= */ false);
+                        /* shouldShowHeaderWithAvatar= */ false,
+                        /* shouldShowLoadingState= */ false);
         mMaxImpressionReached = mDelegate.isMaxImpressionsReached();
         mDelegate.refreshPromoState(visibleAccount);
         mShouldShowPromo = canShowPromo();

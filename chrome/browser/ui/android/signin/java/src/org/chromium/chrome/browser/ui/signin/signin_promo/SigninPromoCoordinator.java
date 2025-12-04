@@ -100,6 +100,12 @@ public class SigninPromoCoordinator {
         mImpressionTracker.setListener(mMediator::recordImpression);
     }
 
+    void setLoadingStateForTesting(boolean shouldShowLoadingState) {
+        mMediator
+                .getModel()
+                .set(SigninPromoProperties.SHOULD_SHOW_LOADING_STATE, shouldShowLoadingState);
+    }
+
     private void destroyPropertyModelChangeProcessor() {
         if (mPropertyModelChangeProcessor != null) {
             mPropertyModelChangeProcessor.destroy();

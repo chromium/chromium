@@ -663,6 +663,56 @@ public class SigninPromoCoordinatorTest {
                         + getParamToRenderId(accessPoint, nightModeEnabled));
     }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/compact"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRendering_loadingState_Compact(boolean nightModeEnabled) throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPromoCoordinator.setLoadingStateForTesting(true);
+                });
+
+        mRenderTestRule.render(
+                mPromoView,
+                "LoadingState_Compact_"
+                        + getParamToRenderId(
+                                SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @EnableFeatures({
+        "EnableSeamlessSignin"
+                + ":seamless-signin-promo-type/twoButtons"
+                + "/seamless-signin-string-type/signinButton"
+    })
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testRendering_loadingState_TwoButtons(boolean nightModeEnabled) throws Exception {
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        setUpSignInPromo(SigninAccessPoint.NTP_FEED_TOP_PROMO);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mPromoCoordinator.setLoadingStateForTesting(true);
+                });
+
+        mRenderTestRule.render(
+                mPromoView,
+                "LoadingState_TwoButtons_"
+                        + getParamToRenderId(
+                                SigninAccessPoint.NTP_FEED_TOP_PROMO, nightModeEnabled));
+    }
+
     private void setUpSignInPromo(@SigninAccessPoint int accessPoint) {
         @LayoutRes int layoutResId = SigninPromoCoordinator.getLayoutResId(accessPoint);
         ThreadUtils.runOnUiThreadBlocking(
