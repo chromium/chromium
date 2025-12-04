@@ -28,6 +28,15 @@ class AutofillMessageControllerTestApi {
     return message_models;
   }
 
+  void OnActionClicked(AutofillMessageModel* message_model_ptr) {
+    controller_->OnActionClicked(message_model_ptr);
+  }
+
+  void OnDismissed(AutofillMessageModel* message_model_ptr,
+                   messages::DismissReason reason) {
+    controller_->OnDismissed(message_model_ptr, reason);
+  }
+
   void Dismiss() { controller_->Dismiss(); }
 
  private:

@@ -27,14 +27,16 @@ class AutofillMessageController {
   // Show a new message. If an existing message is already showing, dismiss that
   // message and show the new one.
   virtual void Show(std::unique_ptr<AutofillMessageModel> message_model);
-  // Callback for when the action button on the message is clicked.
-  void OnActionClicked(AutofillMessageModel* message_model_ptr);
-  // Callback for when the message is dismissed.
-  void OnDismissed(AutofillMessageModel* message_model_ptr,
-                   messages::DismissReason reason);
 
  private:
   friend class AutofillMessageControllerTestApi;
+
+  // Callback for when the action button on the message is clicked.
+  void OnActionClicked(AutofillMessageModel* message_model_ptr);
+
+  // Callback for when the message is dismissed.
+  void OnDismissed(AutofillMessageModel* message_model_ptr,
+                   messages::DismissReason reason);
 
   void Dismiss();
 

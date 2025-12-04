@@ -96,8 +96,8 @@ TEST_F(AutofillMessageControllerTest, OnDismissed) {
   raw_ptr<AutofillMessageModel> first_message = CreateAndShowNewMessage();
   raw_ptr<AutofillMessageModel> second_message = CreateAndShowNewMessage();
 
-  controller().OnDismissed(first_message,
-                           messages::DismissReason::PRIMARY_ACTION);
+  test_api(controller())
+      .OnDismissed(first_message, messages::DismissReason::PRIMARY_ACTION);
 
   EXPECT_THAT(message_models(), testing::SizeIs(1));
   EXPECT_EQ(FindMessageModel(second_message), second_message);
@@ -133,7 +133,7 @@ TEST_F(AutofillMessageControllerTest, Metrics_OnActionClicked) {
   base::HistogramTester histogram_tester;
   raw_ptr<AutofillMessageModel> message = CreateAndShowNewMessage();
 
-  controller().OnActionClicked(message);
+  test_api(controller()).OnActionClicked(message);
 
   histogram_tester.ExpectUniqueSample(
       base::StrCat(
@@ -148,7 +148,7 @@ TEST_F(AutofillMessageControllerTest, Metrics_OnDismissed) {
   raw_ptr<AutofillMessageModel> message = CreateAndShowNewMessage();
   std::string_view type_as_string = message->GetTypeAsString();
 
-  controller().OnDismissed(message, dismiss_reason);
+  test_api(controller()).OnDismissed(message, dismiss_reason);
 
   histogram_tester.ExpectUniqueSample(
       base::StrCat({"Autofill.Message.", type_as_string, ".Dismissed"}),
