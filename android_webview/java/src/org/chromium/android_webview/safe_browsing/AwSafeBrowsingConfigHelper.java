@@ -79,12 +79,13 @@ public class AwSafeBrowsingConfigHelper {
             // the existence of the CLI switch.
             setSafeBrowsingEnabledByManifest(
                     appOptIn == null ? !isDisabledByCommandLine() : appOptIn);
-
-            Callback<Boolean> cb =
-                    verifyAppsValue ->
-                            setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
-            PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
         }
+    }
+
+    public static void maybeEnableSafeBrowsingFromGms() {
+        Callback<Boolean> cb =
+                verifyAppsValue -> setSafeBrowsingUserOptIn(Boolean.TRUE.equals(verifyAppsValue));
+        PlatformServiceBridge.getInstance().querySafeBrowsingUserConsent(cb);
     }
 
     @Nullable
