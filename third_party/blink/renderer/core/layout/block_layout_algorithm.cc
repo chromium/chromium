@@ -3853,8 +3853,7 @@ BlockLayoutAlgorithm::HandleTextControlPlaceholder(
   const LayoutResult* result = placeholder.Layout(space);
   // crbug.com/439682405 and crbug.com/440833172: The placeholder layout may
   // fail.
-  if (RuntimeEnabledFeatures::AbortByPlaceholderLayoutEnabled() &&
-      result->Status() != LayoutResult::kSuccess) {
+  if (result->Status() != LayoutResult::kSuccess) {
     return {previous_inflow_position.logical_block_offset, result->Status()};
   }
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();

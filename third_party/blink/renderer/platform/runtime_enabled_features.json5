@@ -215,11 +215,6 @@
 
   data: [
     {
-      // crbug.com/439682405
-      name: "AbortByPlaceholderLayout",
-      status: "stable",
-    },
-    {
       // This flag changes about:blank to dark in dark mode on user action.
       name: "AboutBlankPageRespectsDarkModeOnUserAction",
       status: "stable",
