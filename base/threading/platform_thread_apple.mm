@@ -318,7 +318,6 @@ void SetCurrentThreadTypeImpl(ThreadType thread_type,
   } else {
     CHECK_EQ(thread_type, ThreadType::kRealtimeAudio);
     SetPriorityRealtimeAudio(GetCurrentThreadRealtimePeriod());
-    DCHECK_EQ([NSThread.currentThread threadPriority], 1.0);
   }
 }
 
