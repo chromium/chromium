@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/cookie_store/cookie_store.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <optional>
 #include <utility>
 
@@ -12,6 +14,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -89,10 +92,26 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
     return nullptr;
   }
 
-  base::Time expires = options->expires().has_value()
-                           ? base::Time::FromMillisecondsSinceUnixEpoch(
-                                 options->expires().value())
-                           : base::Time();
+  base::Time expiry_time;
+  if (base::FeatureList::IsEnabled(blink::features::kCookieStoreAPIMaxAge) &&
+      options->hasMaxAge()) {
+    if (options->expires().has_value()) {
+      // If both maxAge and expires are provided, throw an error.
+      exception_state.ThrowTypeError(
+          "Cookie expires and maxAge cannot both be specified");
+      return nullptr;
+    }
+    const int64_t max_age = options->maxAge().value();
+    // "If delta-seconds is less than or equal to zero (0), let expiry-
+    // time be the earliest representable date and time. Otherwise, let the
+    // expiry-time be the current date and time plus delta-seconds seconds."
+    expiry_time = (max_age <= 0) ? base::Time().Min()
+                                 : base::Time::Now() + base::Seconds(max_age);
+
+  } else if (options->expires().has_value()) {
+    expiry_time =
+        base::Time::FromMillisecondsSinceUnixEpoch(options->expires().value());
+  }
 
   String cookie_url_host = cookie_url.Host().ToString();
   String domain;
@@ -199,7 +218,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           GURL(cookie_url), name.Utf8(), value.Utf8(), domain.Utf8(),
-          path.Utf8(), base::Time() /*creation*/, expires,
+          path.Utf8(), base::Time() /*creation*/, expiry_time,
           base::Time() /*last_access*/, true /*secure*/, false /*http_only*/,
           same_site, net::CookiePriority::COOKIE_PRIORITY_DEFAULT,
           cookie_partition_key, &status_out);
