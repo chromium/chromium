@@ -348,9 +348,6 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                 }
                 return null;
             case BrowserWindowType.POPUP:
-                if (createParams.getProfile().isIncognitoBranded()) {
-                    return null;
-                }
                 // The following code is a copy of
                 // PopupCreator#initializePopupIntent().
                 //
@@ -373,9 +370,21 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                     // TODO: Use AndroidBrowserWindowCreateParams#getInitialBounds() create a
                     // WindowFeatures and set this extra.
                     // intent.putExtra(
-                    //      "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES",
+                    //
+                    // "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES",
                     //      new WindowFeatures().toBundle()
                     // );
+                    //
+                    // This mirrors:
+                    // IncognitoCustomTabIntentDataProvider#addIncognitoExtrasForChromeFeatures()
+                    if (createParams.getProfile().isIncognitoBranded()) {
+                        intent.putExtra(
+                                "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
+                                true);
+                        intent.putExtra(
+                                "org.chromium.chrome.browser.customtabs.EXTRA_INCOGNITO_CCT_CALLER_ID",
+                                7 /* IncognitoCctCallerId.CONTEXTUAL_POPUP */);
+                    }
                     IntentUtils.addTrustedIntentExtras(intent);
                     return intent;
                 } catch (ClassNotFoundException e) {
