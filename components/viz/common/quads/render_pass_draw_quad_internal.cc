@@ -12,6 +12,14 @@
 
 namespace viz {
 
+void RenderPassDrawQuadInternal::SetFilters(const gfx::Vector2dF& scale,
+                                            const gfx::PointF& origin,
+                                            const float backdrop_quality) {
+  this->filters_scale = scale;
+  this->filters_origin = origin;
+  this->backdrop_filter_quality = backdrop_quality;
+}
+
 RenderPassDrawQuadInternal::RenderPassDrawQuadInternal() = default;
 
 RenderPassDrawQuadInternal::RenderPassDrawQuadInternal(

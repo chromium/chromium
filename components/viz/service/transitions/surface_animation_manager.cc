@@ -88,11 +88,8 @@ void ReplaceSharedElementWithRenderPass(
       /*mask_resource_id=*/kInvalidResourceId,
       /*mask_uv_rect=*/gfx::RectF(),
       /*mask_texture_size=*/gfx::Size(),
-      /*filters_scale=*/gfx::Vector2dF(1.0f, 1.0f),
-      /*filters_origin=*/gfx::PointF(),
       /*tex_coord_rect=*/tex_coord_rect,
-      /*force_anti_aliasing_off=*/false,
-      /*backdrop_filter_quality*/ 1.f);
+      /*force_anti_aliasing_off=*/false);
 }
 
 // This function swaps a SharedElementDrawQuad with a TextureDrawQuad.

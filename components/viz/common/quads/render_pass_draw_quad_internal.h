@@ -17,6 +17,10 @@ namespace viz {
 
 class VIZ_COMMON_EXPORT RenderPassDrawQuadInternal : public DrawQuad {
  public:
+  void SetFilters(const gfx::Vector2dF& scale,
+                  const gfx::PointF& origin,
+                  const float backdrop_quality);
+
   gfx::RectF mask_uv_rect;
   gfx::Size mask_texture_size;
 

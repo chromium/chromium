@@ -227,8 +227,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingForAggregatedRenderPass) {
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, render_pass_1, render_pass_1,
                  frame.render_pass_list.at(0)->id, ResourceId(1), gfx::RectF(),
-                 gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
-                 false, 1.f);
+                 gfx::Size(), gfx::RectF(), false);
   }
   {
     SharedQuadState* shared_quad_state =
@@ -244,8 +243,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingForAggregatedRenderPass) {
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, render_pass_2, render_pass_2,
                  frame.render_pass_list.at(1)->id, ResourceId(2), gfx::RectF(),
-                 gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
-                 false, 1.f);
+                 gfx::Size(), gfx::RectF(), false);
   }
 
   EXPECT_EQ(NumVisibleRects(root_render_pass->quad_list), 3u);
@@ -329,8 +327,7 @@ TEST_F(OcclusionCullerTest,
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, foreground_filter_rect_1,
                  foreground_filter_rect_1, foreground_render_pass_1->id,
-                 ResourceId(1), gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1),
-                 gfx::PointF(), gfx::RectF(), false, 1.f);
+                 ResourceId(1), gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   }
 
   {
@@ -347,8 +344,7 @@ TEST_F(OcclusionCullerTest,
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, foreground_filter_rect_2,
                  foreground_filter_rect_2, foreground_render_pass_2->id,
-                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1),
-                 gfx::PointF(), gfx::RectF(), false, 1.f);
+                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   }
 
   EXPECT_EQ(NumVisibleRects(root_render_pass->quad_list), 3u);
@@ -425,8 +421,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, backdrop_filter_rect_1,
                  backdrop_filter_rect_1, backdrop_render_pass_1->id,
-                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1),
-                 gfx::PointF(), gfx::RectF(), false, 1.f);
+                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   }
   {
     SharedQuadState* shared_quad_state =
@@ -456,8 +451,7 @@ TEST_F(OcclusionCullerTest, OcclusionCullingWithIntersectingBackdropFilter) {
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, backdrop_filter_rect_2,
                  backdrop_filter_rect_2, backdrop_render_pass_2->id,
-                 ResourceId(3), gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1),
-                 gfx::PointF(), gfx::RectF(), false, 1.f);
+                 ResourceId(3), gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   }
   {
     SharedQuadState* shared_quad_state =
@@ -542,8 +536,7 @@ TEST_F(OcclusionCullerTest, EnsureOccluderComplexityWithBackdropFilters) {
                      .AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
     quad->SetNew(shared_quad_state, backdrop_filter_rect_1,
                  backdrop_filter_rect_1, backdrop_render_pass_1->id,
-                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1),
-                 gfx::PointF(), gfx::RectF(), false, 1.f);
+                 ResourceId(2), gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   }
   {
     SharedQuadState* shared_quad_state =
@@ -2674,9 +2667,8 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithCoveredRenderPass) {
         /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
     quad->SetNew(shared_quad_state, rect1, rect1, SkColors::kBlack, false);
     quad1->SetNew(shared_quad_state2, rect1, rect1, render_pass_id,
-                  mask_resource_id, gfx::RectF(), gfx::Size(),
-                  gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false,
-                  1.0f);
+                  mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+                  false);
 
     EXPECT_EQ(1u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
     EXPECT_EQ(1u, frame.render_pass_list.at(1)->quad_list.size());
@@ -2927,11 +2919,11 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
         /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     R1->SetNew(shared_quad_state, rect1, rect1, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     R2->SetNew(shared_quad_state, rect2, rect2, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     D1->SetNew(shared_quad_state3, rect3, rect3, SkColors::kBlack, false);
     D2->SetNew(shared_quad_state4, rect4, rect4, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -2982,11 +2974,11 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
         /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     R1->SetNew(shared_quad_state, rect5, rect5, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     R2->SetNew(shared_quad_state, rect1, rect1, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     D1->SetNew(shared_quad_state3, rect3, rect3, SkColors::kBlack, false);
     D2->SetNew(shared_quad_state4, rect6, rect6, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));
@@ -3036,11 +3028,11 @@ TEST_F(OcclusionCullerTest, CompositorFrameWithRenderPass) {
         /*sorting_context=*/0, /*layer_id=*/0u, /*fast_rounded_corner=*/false);
 
     R1->SetNew(shared_quad_state, rect5, rect5, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     R2->SetNew(shared_quad_state, rect1, rect1, render_pass_id,
-               mask_resource_id, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               mask_resource_id, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
     D1->SetNew(shared_quad_state3, rect3, rect3, SkColors::kBlack, false);
     D2->SetNew(shared_quad_state4, rect7, rect7, SkColors::kBlack, false);
     EXPECT_EQ(4u, NumVisibleRects(frame.render_pass_list.front()->quad_list));

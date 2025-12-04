@@ -84,9 +84,10 @@ void MirrorLayerImpl::AppendQuads(const AppendQuadsContext& context,
       render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
   quad->SetNew(shared_quad_state, content_rect, unoccluded_content_rect,
                mirrored_layer_render_pass_id(), mask_resource_id, mask_uv_rect,
-               mask_texture_size, mirrored_effect_node->surface_contents_scale,
-               gfx::PointF(), gfx::RectF(gfx::Rect(content_rect.size())),
-               !layer_tree_impl()->settings().enable_edge_anti_aliasing, 0.f);
+               mask_texture_size, gfx::RectF(gfx::Rect(content_rect.size())),
+               !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+  quad->SetFilters(mirrored_effect_node->surface_contents_scale, gfx::PointF(),
+                   0.f);
 }
 
 void MirrorLayerImpl::PushPropertiesTo(LayerImpl* layer) {

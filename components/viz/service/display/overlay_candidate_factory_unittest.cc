@@ -255,8 +255,7 @@ AggregatedRenderPassDrawQuad* AddRenderPassQuad(
   auto* rpdq =
       render_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(quad_state, quad_rect, quad_rect, rpid, kInvalidResourceId,
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
   return rpdq;
 }
 
@@ -666,9 +665,8 @@ TEST_F(OverlayCandidateFactoryArbitraryTransformTest,
       quad_list.AllocateAndConstruct<AggregatedRenderPassDrawQuad>();
   rpdq->SetNew(render_pass.CreateAndAppendSharedQuadState(),
                gfx::Rect(1, 1, 1, 1), gfx::Rect(1, 1, 1, 1), render_pass_id,
-               kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(0, 0), gfx::RectF(), false,
-               1.0);
+               kInvalidResourceId, gfx::RectF(), gfx::Size(), gfx::RectF(),
+               false);
 
   base::flat_map<AggregatedRenderPassId,
                  raw_ptr<cc::FilterOperations, CtnExperimental>>

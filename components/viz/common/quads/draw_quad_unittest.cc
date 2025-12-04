@@ -181,12 +181,12 @@ void CompareDrawQuad(DrawQuad* quad, DrawQuad* copy) {
   }                                                                           \
   SETUP_AND_COPY_QUAD_ALL_RP(Type, quad_all, copy_a);
 
-#define CREATE_QUAD_NEW_RP(Type, a, b, c, d, e, f, g, h, i, j, copy_a)       \
-  Type* quad_new = render_pass->CreateAndAppendDrawQuad<Type>();             \
-  {                                                                          \
-    QUAD_DATA quad_new->SetNew(shared_state, quad_rect, a, b, c, d, e, f, g, \
-                               h, i, j);                                     \
-  }                                                                          \
+#define CREATE_QUAD_NEW_RP(Type, a, b, c, d, e, f, g, h, i, j, copy_a)        \
+  Type* quad_new = render_pass->CreateAndAppendDrawQuad<Type>();              \
+  {                                                                           \
+    QUAD_DATA quad_new->SetNew(shared_state, quad_rect, a, b, c, d, e, h, i); \
+    quad_new->SetFilters(f, g, j);                                            \
+  }                                                                           \
   SETUP_AND_COPY_QUAD_NEW_RP(Type, quad_new, copy_a);
 
 TEST(DrawQuadTest, CopyDebugBorderDrawQuad) {
@@ -476,8 +476,8 @@ TEST_F(DrawQuadIteratorTest, CompositorRenderPassDrawQuad) {
   gfx::Rect quad_rect(30, 40, 50, 60);
   quad_new->SetNew(shared_state, quad_rect, visible_rect, render_pass_id,
                    new_mask_resource_id, mask_uv_rect, mask_texture_size,
-                   filters_scale, filters_origin, tex_coord_rect,
-                   force_anti_aliasing_off, backdrop_filter_quality);
+                   tex_coord_rect, force_anti_aliasing_off);
+  quad_new->SetFilters(filters_scale, filters_origin, backdrop_filter_quality);
   EXPECT_EQ(kInvalidResourceId, quad_new->mask_resource_id());
 }
 

@@ -21,10 +21,6 @@ class Rect;
 class Transform;
 }
 
-namespace gpu {
-struct SyncToken;
-}
-
 namespace viz {
 class ClientResourceProvider;
 class DisplayResourceProvider;
@@ -121,17 +117,6 @@ std::vector<viz::ResourceId> AddOneOfEveryQuadType(
     viz::CompositorRenderPass* to_pass,
     viz::ClientResourceProvider* resource_provider,
     viz::CompositorRenderPassId child_pass_id);
-
-// Adds a render pass quad with the given mask resource, filter, and transform.
-// The resource used in render pass is created by viz::ClientResourceProvider,
-// then transferred to viz::DisplayResourceProvider.
-void AddOneOfEveryQuadTypeInDisplayResourceProvider(
-    viz::AggregatedRenderPass* to_pass,
-    viz::DisplayResourceProvider* resource_provider,
-    viz::ClientResourceProvider* child_resource_provider,
-    viz::RasterContextProvider* child_context_provider,
-    viz::AggregatedRenderPassId child_pass_id,
-    gpu::SyncToken* sync_token_for_mailbox_texture);
 
 std::unique_ptr<viz::AggregatedRenderPass> CopyToAggregatedRenderPass(
     viz::CompositorRenderPass* from_pass,

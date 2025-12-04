@@ -2631,7 +2631,7 @@ TEST_F(UnderlayTest, DisallowFilteredQuadOnTop) {
       pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect, kOverlayRect,
                render_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               gfx::RectF(), false);
 
   CreateFullscreenCandidateQuad(pass->shared_quad_state_list.back(), pass.get())
       ->needs_blending = false;
@@ -2666,7 +2666,7 @@ TEST_F(UnderlayTest, AllowFilteredQuadOnTopForProtectedVideo) {
       pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect, kOverlayRect,
                render_pass_id, kInvalidResourceId, gfx::RectF(), gfx::Size(),
-               gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(), false, 1.0f);
+               gfx::RectF(), false);
 
   CreateCandidateQuadAt(
       pass->shared_quad_state_list.back(), pass.get(), pass->output_rect,
@@ -4765,8 +4765,7 @@ TEST_F(UnderlayTest, ProtectedVideoOverlayScaling) {
         pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
     quad->SetNew(pass->shared_quad_state_list.back(), kOverlayRect,
                  kOverlayRect, render_pass_id, kInvalidResourceId, gfx::RectF(),
-                 gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
-                 false, 1.0f);
+                 gfx::Size(), gfx::RectF(), false);
 
     // First, we want the overlay to be scaled by 0.5 and have it rejected.
     float res_scale = 1.0f / (initial_scaling * (1.0f - kUVTopLeft.x()));
@@ -4993,8 +4992,7 @@ TEST_F(DelegatedTest, BlockDelegationWithNonRootCopies) {
       root_pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(root_pass->shared_quad_state_list.back(), kOverlayRect,
                kOverlayRect, child_id, kInvalidResourceId, gfx::RectF(),
-               gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(), gfx::RectF(),
-               false, 1.0f);
+               gfx::Size(), gfx::RectF(), false);
 
   AggregatedRenderPassList pass_list;
   SurfaceDamageRectList surface_damage_rect_list;
@@ -5134,8 +5132,7 @@ TEST_F(DelegatedTest, TestClipAggregateRenderPass) {
       pass->CreateAndAppendDrawQuad<AggregatedRenderPassDrawQuad>();
   quad->SetNew(pass->shared_quad_state_list.back(), kSmallCandidateRect,
                kSmallCandidateRect, render_pass_id, kInvalidResourceId,
-               gfx::RectF(), gfx::Size(), gfx::Vector2dF(1, 1), gfx::PointF(),
-               gfx::RectF(), false, 1.0f);
+               gfx::RectF(), gfx::Size(), gfx::RectF(), false);
 
   pass->shared_quad_state_list.back()->clip_rect = kTestClip;
   // Check for potential candidates.
