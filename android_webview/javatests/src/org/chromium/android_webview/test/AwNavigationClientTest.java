@@ -40,31 +40,43 @@ public class AwNavigationClientTest extends AwParameterizedTest {
             """
                 <html>
                 <head>
-                <title>Hello, World!</title>
-                <script>
-                        // Start the overall measurement
-                        performance.mark('mark0');
-
-                        /**
-                         * Simulates a heavy task
-                         */
-                        function runHeavyTask() {
-                            performance.mark('mark1');
-                            setTimeout(() => {
-                                performance.mark('mark2');
-                                let marks = performance.getEntriesByType("mark");
-                                testListener.postMessage(JSON.stringify(marks));
-                            }, 1000);
-                        }
-
-                        // Run the task once the DOM is ready
-                        document.addEventListener('DOMContentLoaded', runHeavyTask);
-                </script>
+                <title>Test page</title>
+                <script>%s</script>
                 </head>
                 <body>
-                Hello, World!
+                        <div style="font-size: 0.5em">First LCP Trigger</div>
+                        <div id="second-lcp" style="font-size: 1.5em"></div>
                 </body>
                 </html>
+            """;
+    private static final String WEB_PERFORMANCE_LCP_JS =
+            """
+                setTimeout(() => {
+                        document.getElementById('second-lcp').innerHTML = "Second LCP Trigger";
+                        setTimeout(() => {
+                                const observer = new PerformanceObserver((list) => {
+                                        testListener.postMessage(JSON.stringify(list.getEntries()));
+                                });
+                                observer.observe({ type: "largest-contentful-paint", buffered: true });
+                        }, 1000);
+                }, 1000);
+            """;
+    private static final String WEB_PERFORMANCE_MARK_JS =
+            """
+                // Start the overall measurement
+                performance.mark('mark0');
+
+                function runHeavyTask() {
+                        performance.mark('mark1');
+                        setTimeout(() => {
+                        performance.mark('mark2');
+                        let marks = performance.getEntriesByType('mark');
+                        testListener.postMessage(JSON.stringify(marks));
+                        }, 1000);
+                }
+
+                // Run the task once the DOM is ready
+                document.addEventListener('DOMContentLoaded', runHeavyTask);
             """;
 
     public AwNavigationClientTest(AwSettingsMutation param) {
@@ -90,6 +102,60 @@ public class AwNavigationClientTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    public void testLargestContentfulPaint() throws Throwable {
+        mActivityTestRule
+                .getAwSettingsOnUiThread(mTestContainerView.getAwContents())
+                .setJavaScriptEnabled(true);
+
+        TestWebMessageListener listener = new TestWebMessageListener();
+        TestWebMessageListener.addWebMessageListenerOnUiThread(
+                mTestContainerView.getAwContents(), JS_OBJECT_NAME, new String[] {"*"}, listener);
+
+        String testPage =
+                mWebServer.setResponse(
+                        "/web_performance_metrics.html",
+                        String.format(WEB_PERFORMANCE_METRICS_HTML, WEB_PERFORMANCE_LCP_JS),
+                        null);
+
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                testPage);
+
+        // Wait for largest-contentful-paint data to be returned via postmessage
+        TestWebMessageListener.Data data = listener.waitForOnPostMessage();
+        JSONArray jsLCPs = new JSONArray(data.getAsString());
+
+        List<Long> listenerLCPs = mNavigationListener.getLastLargestContentfulPaintLoadTimes();
+
+        int expectedNumLCPs = 2;
+        Assert.assertEquals(
+                "Number of lcp events observered via js is incorrect",
+                expectedNumLCPs,
+                jsLCPs.length());
+        Assert.assertEquals(
+                "Number of lcp events observered via listener is incorrect",
+                expectedNumLCPs,
+                listenerLCPs.size());
+
+        // Note: The two time values may differ slightly. This is primarily due to
+        // coarsening for security reasons. We check here for a difference of 5 milliseconds
+        // as at a minimum we need to account for paint timing coarsening to the next multiple of
+        // 4 milliseconds, or coarser, when cross-origin isolated capability is false.
+        // See: https://w3c.github.io/paint-timing/#mark-paint-timing
+        // and https://developer.mozilla.org/en-US/docs/Web/API/DOMHighResTimeStamp
+        // and
+        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/renderer/core/paint/timing/paint_timing.cc
+        for (int i = 0; i < expectedNumLCPs; i++) {
+            JSONObject jsLCP = jsLCPs.getJSONObject(i);
+            Long listenerLCP = listenerLCPs.get(i);
+            Assert.assertTrue(Math.abs(jsLCP.getLong("startTime") - listenerLCP) < 5);
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
     public void testPerformanceMark() throws Throwable {
         mActivityTestRule
                 .getAwSettingsOnUiThread(mTestContainerView.getAwContents())
@@ -101,7 +167,9 @@ public class AwNavigationClientTest extends AwParameterizedTest {
 
         String testPage =
                 mWebServer.setResponse(
-                        "/web_performance_metrics.html", WEB_PERFORMANCE_METRICS_HTML, null);
+                        "/web_performance_metrics.html",
+                        String.format(WEB_PERFORMANCE_METRICS_HTML, WEB_PERFORMANCE_MARK_JS),
+                        null);
 
         mActivityTestRule.loadUrlSync(
                 mTestContainerView.getAwContents(),
