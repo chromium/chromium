@@ -734,7 +734,7 @@
     ]
   },
   {
-    "prefix": "disable-css-masonry-layout",
+    "prefix": "disable-css-grid-lanes-layout",
     "platforms": [
       "Win"
     ],
