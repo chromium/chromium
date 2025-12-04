@@ -85,12 +85,12 @@ VerticalTabStripTopContainer::~VerticalTabStripTopContainer() = default;
 views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
   views::ProposedLayout layout;
-  if (size_bounds.width().is_bounded()) {
-    layout.host_size =
-        gfx::Size(size_bounds.width().value(), kTopButtonContainerHeight);
-  } else {
-    layout.host_size = gfx::Size(parent()->width(), kTopButtonContainerHeight);
-  }
+  // TODO(crbug.com/465857622): Implement smarter reflow around caption buttons.
+  const int exclusion_height = exclusion_width_ > 0 ? toolbar_height_ : 0;
+  layout.host_size =
+      gfx::Size(size_bounds.width().is_bounded() ? size_bounds.width().value()
+                                                 : parent()->width(),
+                kTopButtonContainerHeight + exclusion_height);
 
   CHECK(tab_search_button_);
   CHECK(collapse_button_);
@@ -101,12 +101,13 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
       collapse_button_->GetPreferredSize(views::SizeBounds(layout.host_size));
 
   int current_x = layout.host_size.width();
+  int current_y = layout.host_size.height() - exclusion_height;
 
   // Calculate bounds to right-align the button horizontally and center it
   // vertically within the available space.
   gfx::Rect tab_search_button_bounds(
       current_x - tab_search_button_pref_size.width(),
-      (layout.host_size.height() - tab_search_button_pref_size.height()) / 2,
+      (current_y - tab_search_button_pref_size.height()) / 2 + exclusion_height,
       tab_search_button_pref_size.width(),
       tab_search_button_pref_size.height());
   layout.child_layouts.emplace_back(
@@ -118,7 +119,7 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
   // Re-calculate bounds based on new x value, offset by the tab search button.
   gfx::Rect collapse_button_bounds(
       current_x - collapse_button_pref_size.width(),
-      (layout.host_size.height() - collapse_button_pref_size.height()) / 2,
+      (current_y - collapse_button_pref_size.height()) / 2 + exclusion_height,
       collapse_button_pref_size.width(), collapse_button_pref_size.height());
   layout.child_layouts.emplace_back(
       collapse_button_.get(), collapse_button_->GetVisible(),
@@ -166,6 +167,15 @@ bool VerticalTabStripTopContainer::IsPositionInWindowCaption(
   }
 
   return true;
+}
+
+void VerticalTabStripTopContainer::SetToolbarHeightForLayout(
+    const int toolbar_height) {
+  toolbar_height_ = toolbar_height;
+}
+void VerticalTabStripTopContainer::SetExclusionWidthForLayout(
+    const int exclusion_width) {
+  exclusion_width_ = exclusion_width;
 }
 
 BEGIN_METADATA(VerticalTabStripTopContainer)

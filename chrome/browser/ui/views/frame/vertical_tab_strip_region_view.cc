@@ -131,6 +131,16 @@ void VerticalTabStripRegionView::CreateTabStripController(
   }
 }
 
+void VerticalTabStripRegionView::SetToolbarHeightForLayout(
+    const int toolbar_height) {
+  top_button_container_->SetToolbarHeightForLayout(toolbar_height);
+}
+
+void VerticalTabStripRegionView::SetExclusionWidthForLayout(
+    const int exclusion_width) {
+  top_button_container_->SetExclusionWidthForLayout(exclusion_width);
+}
+
 views::View* VerticalTabStripRegionView::SetTabStripView(
     std::unique_ptr<views::View> view) {
   CHECK(views::IsViewClass<VerticalTabStripView>(view.get()));
