@@ -13,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/service/local_data_description.h"
 
 class Browser;
