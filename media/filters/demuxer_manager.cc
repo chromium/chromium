@@ -146,8 +146,7 @@ void DemuxerManager::OnPipelineError(PipelineStatus error) {
   }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
-      error == DEMUXER_ERROR_DETECTED_HLS) {
+  if (error == DEMUXER_ERROR_DETECTED_HLS) {
     hls_fallback_ = true;
 
     // If we've gotten a request to start HLS fallback and logging, we can
@@ -293,8 +292,7 @@ PipelineStatus DemuxerManager::CreateDemuxer(
   }
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (hls_fallback_ || (base::FeatureList::IsEnabled(kBuiltInHlsPlayer) &&
-                        loaded_url_.path().ends_with(".m3u8"))) {
+  if (hls_fallback_ || loaded_url_.path().ends_with(".m3u8")) {
     std::unique_ptr<Demuxer> demuxer;
     std::tie(data_source_info_, demuxer) = CreateHlsDemuxer();
     SetDemuxer(std::move(demuxer));

@@ -55,10 +55,6 @@ void MediaBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
 #if BUILDFLAG(IS_ANDROID)
     features::kLogJsConsoleMessages,
 #endif
-
-#if BUILDFLAG(ENABLE_HLS_DEMUXER) && BUILDFLAG(USE_PROPRIETARY_CODECS)
-    media::kBuiltInHlsPlayer,
-#endif
   };
 
   std::vector<base::test::FeatureRef> disabled_features = {

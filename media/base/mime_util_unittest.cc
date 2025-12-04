@@ -131,12 +131,7 @@ static bool HasIamfSupport() {
 }
 
 TEST(MimeUtilTest, CommonMediaMimeType) {
-  const bool kHlsSupported =
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-      base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
-#else
-      false;
-#endif
+  constexpr bool kHlsSupported = BUILDFLAG(ENABLE_HLS_DEMUXER);
 
   EXPECT_TRUE(IsSupportedMediaMimeType("audio/webm"));
   EXPECT_TRUE(IsSupportedMediaMimeType("video/webm"));
@@ -643,12 +638,7 @@ TEST(IsCodecSupportedOnAndroidTest, HEVCSupport) {
 #endif
 
 TEST(IsCodecSupportedOnAndroidTest, AndroidHLSAAC) {
-  const bool kHlsSupported =
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-      base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
-#else
-      false;
-#endif
+  constexpr bool kHlsSupported = BUILDFLAG(ENABLE_HLS_DEMUXER);
 
   const std::string hls_mime_types[] = {"application/x-mpegurl",
                                         "application/vnd.apple.mpegurl",

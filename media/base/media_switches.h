@@ -363,14 +363,6 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kAllowMediaCodecSoftwareDecoder);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kUseAudioManagerMaxChannelLayout);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-// This feature enables chrome's built-in HLS parser and demuxer instead of
-// Android's MediaPlayer based implementation. When this feature is enabled,
-// the media-player based HLS player will NOT be used. This will roll out first
-// on android, but will eventually land in desktop chrome as well.
-MEDIA_EXPORT BASE_DECLARE_FEATURE(kBuiltInHlsPlayer);
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
-
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kChromeOSHWVBREncoding);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLimitConcurrentDecoderInstances);

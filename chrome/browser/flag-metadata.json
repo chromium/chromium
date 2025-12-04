@@ -3776,11 +3776,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-hls-playback",
-    "owners": ["tmathmeyer@chromium.org", "videostack-eng@google.com"],
-    "expiry_milestone": 141
-  },
-  {
     "name": "enable-hostname-setting",
     "owners": [ "khorimoto@chromium.org", "cros-device-enablement@google.com" ],
     "expiry_milestone": 135

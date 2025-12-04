@@ -399,21 +399,21 @@ void MimeUtil::AddSupportedMediaFormats() {
   AddContainerWithCodecs("video/3gpp", video_3gpp_codecs);
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
-  if (base::FeatureList::IsEnabled(kBuiltInHlsPlayer)) {
-    // HTTP Live Streaming (HLS).
-    CodecSet hls_codecs{
-        H264,
-        MP3,
-        MPEG4_AAC,
-    };
-    AddContainerWithCodecs("application/x-mpegurl", hls_codecs);
-    AddContainerWithCodecs("application/vnd.apple.mpegurl", hls_codecs);
-    AddContainerWithCodecs("audio/mpegurl", hls_codecs);
-    // Not documented by Apple, but unfortunately used extensively by Apple and
-    // others for both audio-only and audio+video playlists. See
-    // https://crbug.com/675552 for details and examples.
-    AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
-  }
+  CodecSet hls_codecs{
+      H264,
+      MP3,
+      MPEG4_AAC,
+  };
+  AddContainerWithCodecs("application/x-mpegurl", hls_codecs);
+  AddContainerWithCodecs("application/vnd.apple.mpegurl", hls_codecs);
+  AddContainerWithCodecs("audio/mpegurl", hls_codecs);
+  // Not documented by Apple, but unfortunately used extensively by Apple and
+  // others for both audio-only and audio+video playlists. See
+  // https://crbug.com/675552 for details and examples.
+  // TODO(crbug.com/455656766): It's possible that this should not count.
+  // Add a metric to see how often this mimetype is served to the HLS player
+  // with success/failure playback.
+  AddContainerWithCodecs("audio/x-mpegurl", hls_codecs);
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 }

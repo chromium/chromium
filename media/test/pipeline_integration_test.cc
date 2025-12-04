@@ -3009,7 +3009,6 @@ TEST_F(PipelineIntegrationTest, BasicPlaybackHi10P) {
 
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
 TEST_F(PipelineIntegrationTest, HLSMediaPlaylistTSavc1) {
-  base::test::ScopedFeatureList enable_hls{kBuiltInHlsPlayer};
   ASSERT_EQ(PIPELINE_OK, StartPipelineWithHlsManifest("hls/mp_ts_avc1.m3u8"));
   Play();
   ASSERT_TRUE(WaitUntilOnEnded());

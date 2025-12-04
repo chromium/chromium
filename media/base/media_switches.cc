@@ -1083,10 +1083,6 @@ BASE_FEATURE(kUseAudioManagerMaxChannelLayout,
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_HLS_DEMUXER)
-BASE_FEATURE(kBuiltInHlsPlayer, base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(ENABLE_HLS_DEMUXER)
-
 // TODO(crbug.com/414430336): Consider restricting to IS_CHROMEOS.
 #if BUILDFLAG(USE_LINUX_VIDEO_ACCELERATION)
 // Enable Variable Bitrate encoding with hardware accelerated encoders on

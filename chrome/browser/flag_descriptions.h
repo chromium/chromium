@@ -8388,11 +8388,6 @@ inline constexpr char kEnableOidcProfileRemoteCommandsName[] =
 inline constexpr char kEnableOidcProfileRemoteCommandsDescription[] =
     "Enables remote commands for OIDC profiles.";
 
-inline constexpr char kEnableHlsPlaybackName[] =
-    "Enable direct playback of HLS manifests";
-inline constexpr char kEnableHlsPlaybackDescription[] =
-    "Enables built-in HLS player for adaptive playback and live streams.";
-
 inline constexpr char kProfilesReorderingName[] = "Profiles Reordering";
 inline constexpr char kProfilesReorderingDescription[] =
     "Enables profiles reordering in the Profile Picker main view by drag and "
