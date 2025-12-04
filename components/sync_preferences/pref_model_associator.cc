@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -504,10 +505,14 @@ void PrefModelAssociator::OnPrefValueChanged(std::string_view name) {
   if (client_ &&
       // Only log if there's actually something to sync.
       !changes.empty()) {
-    base::UmaHistogramSparse("Sync.SyncablePrefValueChanged",
-                             client_->GetSyncablePrefsDatabase()
-                                 .GetSyncablePrefMetadata(name)
-                                 ->syncable_pref_id());
+    std::optional<SyncablePrefMetadata> pref_metadata =
+        client_->GetSyncablePrefsDatabase().GetSyncablePrefMetadata(name);
+    int id = pref_metadata->syncable_pref_id();
+    base::UmaHistogramSparse("Sync.SyncablePrefValueChanged", id);
+    base::UmaHistogramSparse(
+        base::StrCat({"Sync.SyncablePrefValueChanged.",
+                      syncer::DataTypeToHistogramSuffix(type_)}),
+        id);
   }
 
   sync_processor_->ProcessSyncChanges(FROM_HERE, changes);

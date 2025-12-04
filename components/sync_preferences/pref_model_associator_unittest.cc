@@ -13,6 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "components/prefs/mock_pref_change_callback.h"
@@ -883,6 +884,18 @@ TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
 
   MergeDataAndStartSyncing(initial_data);
   ASSERT_EQ(pref_service_->GetString(kStringPrefName), "new value");
+}
+
+TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
+       ShouldRecordHistogramOnPrefChange) {
+  base::HistogramTester histogram_tester;
+  MergeDataAndStartSyncing(syncer::SyncDataList());
+
+  pref_service_->SetString(kStringPrefName, "new value");
+
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged", 1);
+  histogram_tester.ExpectTotalCount("Sync.SyncablePrefValueChanged.PREFERENCE",
+                                    1);
 }
 
 TEST_F(PrefModelAssociatorWithPreferencesAccountStorageTest,
