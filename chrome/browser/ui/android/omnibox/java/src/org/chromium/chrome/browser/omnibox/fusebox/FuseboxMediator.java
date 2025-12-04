@@ -335,6 +335,7 @@ public class FuseboxMediator {
     @VisibleForTesting
     void onTabPickerClicked() {
         mPopup.dismiss();
+        FuseboxMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
         if (mModelList.getRemainingAttachments() < 1) {
             warnForMaxAttachments();
             return;
