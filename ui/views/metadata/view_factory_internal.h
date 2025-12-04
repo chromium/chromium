@@ -19,13 +19,10 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/base/class_property.h"
 #include "ui/base/metadata/base_type_conversion.h"
+#include "ui/views/view.h"
 #include "ui/views/views_export.h"
 
-namespace views {
-
-class View;
-
-namespace internal {
+namespace views::internal {
 
 template <typename T>
 class Builder {};
@@ -480,7 +477,6 @@ class BaseViewBuilderT : public ViewBuilderCore {
   std::vector<ConfigureCallback> after_build_callbacks_;
 };
 
-}  // namespace internal
-}  // namespace views
+}  // namespace views::internal
 
 #endif  // UI_VIEWS_METADATA_VIEW_FACTORY_INTERNAL_H_

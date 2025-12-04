@@ -57,7 +57,6 @@
 #include "ui/views/actions/action_view_interface.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
-#include "ui/views/metadata/view_factory.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/view_targeter.h"
 #include "ui/views/views_export.h"
@@ -2702,64 +2701,6 @@ class VIEWS_EXPORT BaseActionViewInterface : public ActionViewInterface {
   raw_ptr<View> action_view_;
 };
 
-BEGIN_VIEW_BUILDER(VIEWS_EXPORT, View, internal::BaseView)
-template <typename LayoutManager>
-BuilderT& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) & {
-  auto setter = std::make_unique<::views::internal::PropertySetter<
-      ViewClass_, std::unique_ptr<LayoutManager>,
-      decltype((static_cast<LayoutManager* (
-                    ViewClass_::*)(std::unique_ptr<LayoutManager>)>(
-          &ViewClass_::SetLayoutManager))),
-      &ViewClass_::SetLayoutManager>>(std::move(layout_manager));
-  ::views::internal::ViewBuilderCore::AddPropertySetter(std::move(setter));
-  return *static_cast<BuilderT*>(this);
-}
-template <typename LayoutManager>
-BuilderT&& SetLayoutManager(std::unique_ptr<LayoutManager> layout_manager) && {
-  return std::move(this->SetLayoutManager(std::move(layout_manager)));
-}
-
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, const std::u16string&)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName, View*)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleName,
-                             std::u16string,
-                             ax::mojom::NameFrom)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, const std::u16string&)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription, View*)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleDescription,
-                             const std::u16string&,
-                             ax::mojom::DescriptionFrom)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole, ax::mojom::Role)
-VIEW_BUILDER_OVERLOAD_METHOD(SetAccessibleRole,
-                             ax::mojom::Role,
-                             const std::u16string&)
-VIEW_BUILDER_PROPERTY(std::unique_ptr<Background>, Background)
-VIEW_BUILDER_PROPERTY(std::unique_ptr<Border>, Border)
-VIEW_BUILDER_PROPERTY(gfx::Rect, BoundsRect)
-VIEW_BUILDER_PROPERTY(gfx::Size, Size)
-VIEW_BUILDER_PROPERTY(gfx::Point, Position)
-VIEW_BUILDER_PROPERTY(int, X)
-VIEW_BUILDER_PROPERTY(int, Y)
-VIEW_BUILDER_PROPERTY(gfx::Size, PreferredSize)
-VIEW_BUILDER_PROPERTY(SkPath, ClipPath)
-VIEW_BUILDER_PROPERTY_DEFAULT(ui::LayerType, PaintToLayer, ui::LAYER_TEXTURED)
-VIEW_BUILDER_PROPERTY(bool, Enabled)
-VIEW_BUILDER_PROPERTY(bool, FlipCanvasOnPaintForRTLUI)
-VIEW_BUILDER_PROPERTY(views::View::FocusBehavior, FocusBehavior)
-VIEW_BUILDER_PROPERTY(int, Group)
-VIEW_BUILDER_PROPERTY(int, OwnedGroup)
-VIEW_BUILDER_PROPERTY(int, ID)
-VIEW_BUILDER_PROPERTY(bool, Mirrored)
-VIEW_BUILDER_PROPERTY(bool, NotifyEnterExitOnChild)
-VIEW_BUILDER_PROPERTY(gfx::Transform, Transform)
-VIEW_BUILDER_PROPERTY(bool, Visible)
-VIEW_BUILDER_PROPERTY(bool, CanProcessEventsWithinSubtree)
-VIEW_BUILDER_PROPERTY(bool, UseDefaultFillLayout)
-VIEW_BUILDER_PROPERTY(bool, ClipLayerToVisibleBounds)
-END_VIEW_BUILDER
-
 }  // namespace views
-
-DEFINE_VIEW_BUILDER(VIEWS_EXPORT, View)
 
 #endif  // UI_VIEWS_VIEW_H_

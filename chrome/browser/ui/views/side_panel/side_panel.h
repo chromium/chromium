@@ -19,6 +19,7 @@
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/controls/resize_area_delegate.h"
+#include "ui/views/view_utils.h"
 
 class BrowserView;
 

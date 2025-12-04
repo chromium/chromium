@@ -19,6 +19,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "ui/views/view_utils.h"
 
 class VerticalSplitTabViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
