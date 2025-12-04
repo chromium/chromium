@@ -466,7 +466,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Trailing"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/tab_strip_region_view.h:TabSearchPositionEnum) -->
+<!-- LINT.ThenChange(//chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h:TabSearchPositionEnum) -->
 
 <enum name="TabSearchRecentlyClosedItemOpenAction">
   <int value="0"

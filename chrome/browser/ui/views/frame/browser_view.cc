@@ -136,6 +136,7 @@
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
 #include "chrome/browser/ui/views/frame/contents_rounded_corner.h"
 #include "chrome/browser/ui/views/frame/contents_separator.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate_impl.h"
 #include "chrome/browser/ui/views/frame/main_background_region_view.h"
@@ -146,7 +147,6 @@
 #include "chrome/browser/ui/views/frame/scrim_view.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
 #include "chrome/browser/ui/views/frame/tab_modal_dialog_host.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/top_container_loading_bar.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/frame/top_controls_slide_controller.h"
@@ -973,7 +973,7 @@ BrowserView::BrowserView(Browser* browser)
   // Tabstrip comes basically last because it should be before toolbar in the
   // focus order but also needs to paint on top of everything.
   tab_strip_region_view_ =
-      AddChildView(std::make_unique<TabStripRegionView>(this));
+      AddChildView(std::make_unique<HorizontalTabStripRegionView>(this));
   tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
@@ -5016,7 +5016,7 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
       return HTCLIENT;
     } else {
       // See if the mouse pointer is within the bounds of the
-      // TabStripRegionView.
+      // HorizontalTabStripRegionView.
       gfx::Point test_point(point);
       if (ConvertedHitTest(parent(), tab_strip_region_view_, &test_point)) {
         if (tab_strip_region_view_->IsPositionInWindowCaption(test_point)) {

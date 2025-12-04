@@ -640,7 +640,7 @@ class TabStripModelTestTabGroupEntryPointsEnabled
   }
 
   TabStrip* tabstrip() {
-    return views::AsViewClass<TabStripRegionView>(
+    return views::AsViewClass<HorizontalTabStripRegionView>(
                browser()->GetBrowserView().tab_strip_view())
         ->tab_strip();
   }

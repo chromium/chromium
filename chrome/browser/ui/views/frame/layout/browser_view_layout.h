@@ -20,7 +20,7 @@ class InfoBarContainerView;
 class MultiContentsView;
 class SidePanel;
 class TabStrip;
-class TabStripRegionView;
+class HorizontalTabStripRegionView;
 class WebAppFrameToolbarView;
 
 namespace views {
@@ -53,7 +53,7 @@ struct BrowserViewLayoutViews {
   raw_ptr<views::View> top_container = nullptr;
   raw_ptr<WebAppFrameToolbarView> web_app_frame_toolbar = nullptr;
   raw_ptr<views::Label> web_app_window_title = nullptr;
-  raw_ptr<TabStripRegionView> tab_strip_region_view = nullptr;
+  raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view = nullptr;
   raw_ptr<views::View> vertical_tab_strip_container = nullptr;
   raw_ptr<views::View> toolbar = nullptr;
   raw_ptr<InfoBarContainerView> infobar_container = nullptr;

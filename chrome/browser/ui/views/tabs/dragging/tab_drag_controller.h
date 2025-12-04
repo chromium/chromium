@@ -211,7 +211,8 @@ class TabDragController : public views::WidgetObserver,
   // instead of a move loop.
   static bool IsSystemDnDSessionRunning();
 
-  // Called by TabStrip / TabStripRegionView to inform TabDragController.
+  // Called by TabStrip / HorizontalTabStripRegionView to inform
+  // TabDragController.
   static void OnSystemDnDUpdated(const ui::DropTargetEvent& event);
   static void OnSystemDnDExited();
   static void OnSystemDnDEnded();

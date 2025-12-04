@@ -483,8 +483,9 @@ void ResizeUsingMouseEmulation(Browser* browser,
   }
 
   // Move the window.
-  auto* tab_strip_region_view = views::AsViewClass<TabStripRegionView>(
-      browser->GetBrowserView().tab_strip_view());
+  auto* tab_strip_region_view =
+      views::AsViewClass<HorizontalTabStripRegionView>(
+          browser->GetBrowserView().tab_strip_view());
   auto* grab_handle_space =
       tab_strip_region_view->reserved_grab_handle_space_for_testing();
   auto grab_coordinates =

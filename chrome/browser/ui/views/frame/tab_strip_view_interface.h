@@ -19,7 +19,7 @@ class TabStripObserver;
 // backed by the View container responsible for managing the tabstrip.
 //
 // TODO(crbug.com/440630422): Rename TabStripViewInterface to
-// TabStripRegionView to make it easier to understand what this class
+// HorizontalTabStripRegionView to make it easier to understand what this class
 // represents.
 class TabStripViewInterface : public views::AccessiblePaneView {
  public:

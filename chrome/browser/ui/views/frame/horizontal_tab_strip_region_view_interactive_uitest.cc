@@ -13,7 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
@@ -24,21 +24,21 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/views/layout/flex_layout.h"
 
-class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
+class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
  public:
-  TabStripRegionViewBrowserBaseTest() = default;
-  TabStripRegionViewBrowserBaseTest(const TabStripRegionViewBrowserBaseTest&) =
+  HorizontalTabStripRegionViewBrowserBaseTest() = default;
+  HorizontalTabStripRegionViewBrowserBaseTest(const HorizontalTabStripRegionViewBrowserBaseTest&) =
       delete;
-  TabStripRegionViewBrowserBaseTest& operator=(
-      const TabStripRegionViewBrowserBaseTest&) = delete;
-  ~TabStripRegionViewBrowserBaseTest() override = default;
+  HorizontalTabStripRegionViewBrowserBaseTest& operator=(
+      const HorizontalTabStripRegionViewBrowserBaseTest&) = delete;
+  ~HorizontalTabStripRegionViewBrowserBaseTest() override = default;
 
   void SetUp() override { InProcessBrowserTest::SetUp(); }
 
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, false); }
 
-  TabStripRegionView* tab_strip_region_view() {
-    return views::AsViewClass<TabStripRegionView>(
+  HorizontalTabStripRegionView* tab_strip_region_view() {
+    return views::AsViewClass<HorizontalTabStripRegionView>(
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
   }
 
@@ -62,20 +62,20 @@ class TabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-class TabStripRegionViewBrowserTest : public TabStripRegionViewBrowserBaseTest {
+class HorizontalTabStripRegionViewBrowserTest : public HorizontalTabStripRegionViewBrowserBaseTest {
  public:
-  TabStripRegionViewBrowserTest() {
+  HorizontalTabStripRegionViewBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{});
   }
-  TabStripRegionViewBrowserTest(const TabStripRegionViewBrowserTest&) = delete;
-  TabStripRegionViewBrowserTest& operator=(
-      const TabStripRegionViewBrowserTest&) = delete;
-  ~TabStripRegionViewBrowserTest() override = default;
+  HorizontalTabStripRegionViewBrowserTest(const HorizontalTabStripRegionViewBrowserTest&) = delete;
+  HorizontalTabStripRegionViewBrowserTest& operator=(
+      const HorizontalTabStripRegionViewBrowserTest&) = delete;
+  ~HorizontalTabStripRegionViewBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestForwardFocus) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestForwardFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -127,7 +127,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestForwardFocus) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestReverseFocus) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestReverseFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestReverseFocus) {
   EXPECT_TRUE(tab_0->HasFocus());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest, TestBeginEndFocus) {
   AppendTab();
   AppendTab();
   Tab* tab_0 = tab_strip()->tab_at(0);
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest, TestBeginEndFocus) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
                        DefaultTestSearchContainerIsEndAligned) {
   if (!features::HasTabSearchToolbarButton() &&
       !tabs::GetTabSearchTrailingTabstrip(browser()->profile())) {
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewBrowserTest,
   }
 }
 
-class TabSearchForcedPositionTest : public TabStripRegionViewBrowserBaseTest,
+class TabSearchForcedPositionTest : public HorizontalTabStripRegionViewBrowserBaseTest,
                                     public testing::WithParamInterface<bool> {
  public:
   TabSearchForcedPositionTest() {

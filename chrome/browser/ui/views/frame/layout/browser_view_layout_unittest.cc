@@ -11,9 +11,9 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_layout_manager.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/layout/browser_view_layout_delegate.h"
 #include "chrome/browser/ui/views/frame/mock_immersive_mode_controller.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -196,7 +196,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
     auto tab_strip = std::make_unique<TabStrip>(
         std::make_unique<FakeBaseTabStripController>());
     tab_strip_region_view_ = top_container_->AddChildView(
-        std::make_unique<TabStripRegionView>(std::move(tab_strip)));
+        std::make_unique<HorizontalTabStripRegionView>(std::move(tab_strip)));
     webui_tab_strip_ = top_container_->AddChildView(
         CreateFixedSizeView(gfx::Size(kBaseWidth, 200)));
     webui_tab_strip_->SetVisible(false);
@@ -302,7 +302,7 @@ class BrowserViewLayoutTest : public ChromeViewsTestBase {
   // Views owned by |browser_view_|.
   raw_ptr<views::View> main_background_region_;
   raw_ptr<views::View> top_container_;
-  raw_ptr<TabStripRegionView> tab_strip_region_view_;
+  raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view_;
   raw_ptr<views::View> webui_tab_strip_;
   raw_ptr<views::View> toolbar_;
   raw_ptr<views::Separator> separator_;

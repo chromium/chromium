@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
-
 #include <memory>
 #include <string>
 
@@ -19,6 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/fake_base_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -75,15 +74,15 @@ class LayoutWaiter : public views::ViewObserver {
   base::RunLoop run_loop_;
 };
 
-// TabStripRegionViewTestBase contains no test cases.
-class TabStripRegionViewTest : public InProcessBrowserTest {
+// HorizontalTabStripRegionViewTestBase contains no test cases.
+class HorizontalTabStripRegionViewTest : public InProcessBrowserTest {
  public:
-  TabStripRegionViewTest()
+  HorizontalTabStripRegionViewTest()
       : animation_mode_reset_(gfx::AnimationTestApi::SetRichAnimationRenderMode(
             gfx::Animation::RichAnimationRenderMode::FORCE_ENABLED)) {}
-  TabStripRegionViewTest(const TabStripRegionViewTest&) = delete;
-  TabStripRegionViewTest& operator=(const TabStripRegionViewTest&) = delete;
-  ~TabStripRegionViewTest() override = default;
+  HorizontalTabStripRegionViewTest(const HorizontalTabStripRegionViewTest&) = delete;
+  HorizontalTabStripRegionViewTest& operator=(const HorizontalTabStripRegionViewTest&) = delete;
+  ~HorizontalTabStripRegionViewTest() override = default;
 
   void SetUp() override {
     InProcessBrowserTest::SetUp();
@@ -100,8 +99,8 @@ class TabStripRegionViewTest : public InProcessBrowserTest {
   }
 
  protected:
-  TabStripRegionView* tab_strip_region_view() {
-    return views::AsViewClass<TabStripRegionView>(
+  HorizontalTabStripRegionView* tab_strip_region_view() {
+    return views::AsViewClass<HorizontalTabStripRegionView>(
         BrowserView::GetBrowserViewForBrowser(browser())->tab_strip_view());
   }
 
@@ -116,7 +115,7 @@ class TabStripRegionViewTest : public InProcessBrowserTest {
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        DISABLED_GrabHandleSpaceStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -139,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        DISABLED_NewTabButtonStaysVisible) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -159,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
 
 // TODO(crbug.com/41493572): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        DISABLED_NewTabButtonRightOfTabs) {
   const int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth, 20);
@@ -178,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
 
 // TODO(crbug.com/41496209): Skip for now due to test failing when CR2023
 // enabled.
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
   constexpr int kTabStripRegionViewWidth = 500;
   tab_strip_region_view()->SetBounds(0, 0, kTabStripRegionViewWidth,
                                      GetLayoutConstant(TAB_STRIP_HEIGHT));
@@ -209,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, DISABLED_NewTabButtonInkDrop) {
 // This is important in ensuring that we maximise the targetable area of these
 // views when the tab strip is flush with the top of the screen when the window
 // is maximized (Fitt's Law).
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        ChildrenAreFlushWithTopOfTabStripRegionView) {
   tab_strip_region_view()->SetBounds(0, 0, 1000, 100);
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);
@@ -236,9 +235,9 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
   EXPECT_EQ(0, new_tab_button_origin.y());
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        TabSearchPositionLoggedOnConstruction) {
-  using TabSearchPositionEnum = TabStripRegionView::TabSearchPositionEnum;
+  using TabSearchPositionEnum = HorizontalTabStripRegionView::TabSearchPositionEnum;
   const bool tab_search_trailing_tabstrip =
       tabs::GetTabSearchTrailingTabstrip(browser()->profile());
   TabSearchPositionEnum expected_enum_val =
@@ -251,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
                                       expected_enum_val, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, HasMultiselectableState) {
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest, HasMultiselectableState) {
   ui::AXNodeData ax_node_data;
   tab_strip_region_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data);
@@ -261,7 +260,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, HasMultiselectableState) {
 // When scrolling is disabled, the tab strip cannot be larger than the container
 // so tabs that do not fit in the tabstrip will become invisible. This is the
 // opposite behavior from
-// TabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
+// HorizontalTabStripRegionViewTestWithScrollingEnabled.TabStripCanBeLargerThanContainer.
 // TODO(crbug.com/451682395): Disabled on Linux dbg due to flakiness.
 #if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_TabStripCannotBeLargerThanContainer \
@@ -270,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest, HasMultiselectableState) {
 #define MAYBE_TabStripCannotBeLargerThanContainer \
   TabStripCannotBeLargerThanContainer
 #endif
-IN_PROC_BROWSER_TEST_F(TabStripRegionViewTest,
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTest,
                        MAYBE_TabStripCannotBeLargerThanContainer) {
   const int minimum_active_width = TabStyle::Get()->GetMinimumInactiveWidth();
   chrome::AddTabAt(browser(), GURL("about:blank"), -1, true);

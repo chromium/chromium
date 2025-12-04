@@ -31,7 +31,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_features.h"
@@ -223,13 +223,13 @@ bool BrowserRootView::CanDrop(const ui::OSExchangeData& data) {
   }
 
   // If this is for a fallback window dragging session, return false and let
-  // TabStripRegionView forward drag events to TabDragController. This is
-  // necessary because we don't want to return true if the custom MIME type is
-  // there but the mouse is not over the tab strip region, and we don't know the
-  // current mouse location.
+  // HorizontalTabStripRegionView forward drag events to TabDragController. This
+  // is necessary because we don't want to return true if the custom MIME type
+  // is there but the mouse is not over the tab strip region, and we don't know
+  // the current mouse location.
   // TODO(crbug.com/40828528): This is a smoking gun code smell;
-  // TabStripRegionView and Toolbar have different affordances, so they should
-  // separately override the drag&drop methods.
+  // HorizontalTabStripRegionView and Toolbar have different affordances, so
+  // they should separately override the drag&drop methods.
   if (data.HasCustomFormat(ui::ClipboardFormatType::CustomPlatformType(
           ui::kMimeTypeWindowDrag))) {
     return false;
@@ -322,7 +322,7 @@ views::View::DropCallback BrowserRootView::GetDropCallback(
 
 bool BrowserRootView::OnMouseWheel(const ui::MouseWheelEvent& event) {
   // TODO(dfried): See if it's possible to move this logic deeper into the view
-  // hierarchy - ideally to TabStripRegionView.
+  // hierarchy - ideally to HorizontalTabStripRegionView.
 
   // Scroll-event-changes-tab is incompatible with scrolling tabstrip, so
   // disable it if the latter feature is enabled.

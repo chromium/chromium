@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -64,7 +64,7 @@ class TabStripBrowsertest : public InProcessBrowserTest {
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
 
   TabStrip* tab_strip() {
-    return views::AsViewClass<TabStripRegionView>(
+    return views::AsViewClass<HorizontalTabStripRegionView>(
                browser()->GetBrowserView().tab_strip_view())
         ->tab_strip();
   }

@@ -78,7 +78,8 @@ class TabStripControlButton : public views::LabelButton,
 
   void SetFlatEdgeFactor(float factor);
 
-  // Helper function for changing the state for TabStripRegionView tests.
+  // Helper function for changing the state for HorizontalTabStripRegionView
+  // tests.
   void AnimateToStateForTesting(views::InkDropState state);
 
   // views::View

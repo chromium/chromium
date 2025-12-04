@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/tab_strip_view_interface.h"
@@ -28,8 +28,8 @@ class TabSearchPositionMetricsLogger;
 
 // Container for the tabstrip and the other views sharing space with it -
 // with the exception of the caption buttons.
-class TabStripRegionView final : public TabStripViewInterface {
-  METADATA_HEADER(TabStripRegionView, views::AccessiblePaneView)
+class HorizontalTabStripRegionView final : public TabStripViewInterface {
+  METADATA_HEADER(HorizontalTabStripRegionView, views::AccessiblePaneView)
 
  public:
   // These values are persisted to logs. Entries should not be renumbered and
@@ -43,11 +43,12 @@ class TabStripRegionView final : public TabStripViewInterface {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:TabSearchPosition)
 
-  explicit TabStripRegionView(BrowserView* browser_view);
-  explicit TabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
-  TabStripRegionView(const TabStripRegionView&) = delete;
-  TabStripRegionView& operator=(const TabStripRegionView&) = delete;
-  ~TabStripRegionView() override;
+  explicit HorizontalTabStripRegionView(BrowserView* browser_view);
+  explicit HorizontalTabStripRegionView(std::unique_ptr<TabStrip> tab_strip);
+  HorizontalTabStripRegionView(const HorizontalTabStripRegionView&) = delete;
+  HorizontalTabStripRegionView& operator=(const HorizontalTabStripRegionView&) =
+      delete;
+  ~HorizontalTabStripRegionView() override;
 
   // Returns true if the specified rect intersects the window caption area of
   // the browser window. |rect| is in the local coordinate space
@@ -154,9 +155,9 @@ class TabStripRegionView final : public TabStripViewInterface {
       tab_search_position_metrics_logger_;
 
   const base::CallbackListSubscription subscription_ =
-      ui::TouchUiController::Get()->RegisterCallback(
-          base::BindRepeating(&TabStripRegionView::UpdateButtonBorders,
-                              base::Unretained(this)));
+      ui::TouchUiController::Get()->RegisterCallback(base::BindRepeating(
+          &HorizontalTabStripRegionView::UpdateButtonBorders,
+          base::Unretained(this)));
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_FRAME_HORIZONTAL_TAB_STRIP_REGION_VIEW_H_

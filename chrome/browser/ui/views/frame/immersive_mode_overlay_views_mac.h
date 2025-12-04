@@ -47,10 +47,10 @@ class OverlayWidgetMac : public ThemeCopyingWidget {
   explicit OverlayWidgetMac(views::Widget* role_model);
 };
 
-// TabContainerOverlayView is a view that hosts the TabStripRegionView during
-// immersive fullscreen. The TopContainerView usually draws the background for
-// the tab strip. Since the tab strip has been reparented we need to handle
-// drawing the background here.
+// TabContainerOverlayView is a view that hosts the HorizontalTabStripRegionView
+// during immersive fullscreen. The TopContainerView usually draws the
+// background for the tab strip. Since the tab strip has been reparented we need
+// to handle drawing the background here.
 class TabContainerOverlayViewMac : public views::View {
   METADATA_HEADER(TabContainerOverlayViewMac, views::View)
 

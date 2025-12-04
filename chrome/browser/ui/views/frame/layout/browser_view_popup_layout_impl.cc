@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/layout/browser_view_popup_layout_impl.h"
 
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 #include "ui/views/controls/separator.h"
 

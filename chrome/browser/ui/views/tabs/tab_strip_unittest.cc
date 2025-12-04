@@ -122,7 +122,8 @@ class TabStripTestBase : public ChromeViewsTestBase {
     views::FlexLayout* layout_manager = tab_strip_parent->SetLayoutManager(
         std::make_unique<views::FlexLayout>());
     // Scale the tabstrip between zero and its preferred width to match the
-    // context it operates in in TabStripRegionView (with tab scrolling off).
+    // context it operates in in HorizontalTabStripRegionView (with tab
+    // scrolling off).
     layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal)
         .SetDefault(
             views::kFlexBehaviorKey,

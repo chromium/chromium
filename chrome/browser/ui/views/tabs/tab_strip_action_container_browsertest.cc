@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/glic_actor_task_icon.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"

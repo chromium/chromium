@@ -30,9 +30,9 @@
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/views/frame/contents_container_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/shadow_overlay_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
@@ -1205,10 +1205,10 @@ class BrowserView : public BrowserWindow,
   raw_ptr<views::Label> web_app_window_title_ = nullptr;
 
   // The view that contains the tabstrip, new tab button, and grab handle space.
-  raw_ptr<TabStripRegionView> tab_strip_region_view_ = nullptr;
-  // The insertion index of the TabStripRegionView in the BrowserView view tree.
-  // This is used to correctly reparent the tabstrip when exiting fullscreen
-  // mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
+  raw_ptr<HorizontalTabStripRegionView> tab_strip_region_view_ = nullptr;
+  // The insertion index of the HorizontalTabStripRegionView in the BrowserView
+  // view tree. This is used to correctly reparent the tabstrip when exiting
+  // fullscreen mode. See BrowserView::ReparentTopContainerForEndOfImmersive.
   std::optional<size_t> tab_strip_region_insertion_index_;
 
   // The webui based tabstrip, when applicable. see https://crbug.com/989131.
@@ -1240,7 +1240,8 @@ class BrowserView : public BrowserWindow,
   // the Titlebar.
   raw_ptr<views::Widget, DanglingUntriaged> tab_overlay_widget_ = nullptr;
 
-  // The hosting view of TabStripRegionView during immersive fullscreen.
+  // The hosting view of HorizontalTabStripRegionView during immersive
+  // fullscreen.
   raw_ptr<views::View, DanglingUntriaged> tab_overlay_view_ = nullptr;
 
 #endif

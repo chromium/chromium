@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_search_button.h"
 #include "chrome/browser/ui/views/tabs/tab_search_container.h"
@@ -143,7 +143,8 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
   }
 
   auto* tab_strip_region_view =
-      views::AsViewClass<TabStripRegionView>(browser_view()->tab_strip_view());
+      views::AsViewClass<HorizontalTabStripRegionView>(
+          browser_view()->tab_strip_view());
 
   if (features::HasTabSearchToolbarButton()) {
     TabStripActionContainer* action_container =

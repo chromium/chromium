@@ -27,7 +27,7 @@
 #include "chrome/browser/ui/unload_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/frame/horizontal_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest, MonochromeAppIconOnHomeTab) {
   TabStripModel* tab_strip = app_browser->tab_strip_model();
 
   TabIcon* tab_icon =
-      static_cast<TabStripRegionView*>(
+      static_cast<HorizontalTabStripRegionView*>(
           BrowserView::GetBrowserViewForBrowser(app_browser)->tab_strip_view())
           ->tab_strip()
           ->tab_at(0)
@@ -1021,7 +1021,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripBrowserTest,
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
   ::TabStrip* tab_strip =
-      static_cast<TabStripRegionView*>(browser_view->tab_strip_view())
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
           ->tab_strip();
 
   // Open another tab.
@@ -1379,7 +1379,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
   ::TabStrip* tab_strip =
-      static_cast<TabStripRegionView*>(browser_view->tab_strip_view())
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
           ->tab_strip();
   tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);
@@ -1413,7 +1413,7 @@ IN_PROC_BROWSER_TEST_P(WebAppTabStripForOnTaskBrowserTest,
   BrowserView* browser_view =
       BrowserView::GetBrowserViewForBrowser(app_browser);
   ::TabStrip* tab_strip =
-      static_cast<TabStripRegionView*>(browser_view->tab_strip_view())
+      static_cast<HorizontalTabStripRegionView*>(browser_view->tab_strip_view())
           ->tab_strip();
   tab_strip->CloseTab(tab_strip->tab_at(0), CloseTabSource::kFromMouse);
   ASSERT_EQ(tab_strip_model->count(), 2);

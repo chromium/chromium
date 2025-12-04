@@ -44,7 +44,7 @@ class BrowserTabStripControllerTestBase : public InProcessBrowserTest {
 
   TabStripModel* tab_strip_model() { return browser()->tab_strip_model(); }
   TabStrip* tabstrip() {
-    return views::AsViewClass<TabStripRegionView>(
+    return views::AsViewClass<HorizontalTabStripRegionView>(
                browser()->GetBrowserView().tab_strip_view())
         ->tab_strip();
   }
