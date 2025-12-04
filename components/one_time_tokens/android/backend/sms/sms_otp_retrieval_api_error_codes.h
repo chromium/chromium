@@ -15,6 +15,8 @@ namespace one_time_tokens {
 // numeric values should never be reused.
 // LINT.IfChange
 enum class SmsOtpRetrievalApiErrorCode {
+  // Mapped from OneTimeTokensBackendErrorCode.GMSCORE_VERSION_NOT_SUPPORTED
+  kGmscoreVersionNotSupported = 0,
   // CommonStatusCodes.ERROR
   kError = 13,
   // timeout
@@ -28,7 +30,7 @@ enum class SmsOtpRetrievalApiErrorCode {
 };
 // LINT.ThenChange(
 //   //components/one_time_tokens/android/backend/sms/sms_otp_to_one_time_token_retrieval_error_converter.cc,
-//   //tools/metrics/histograms/enums.xml
+//   //tools/metrics/histograms/metadata/autofill/enums.xml
 // )
 
 }  // namespace one_time_tokens

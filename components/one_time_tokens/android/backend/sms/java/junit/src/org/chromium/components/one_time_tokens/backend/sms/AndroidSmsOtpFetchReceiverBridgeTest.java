@@ -19,6 +19,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.one_time_tokens.backend.OneTimeTokensBackendErrorCode;
+import org.chromium.components.one_time_tokens.backend.OneTimeTokensBackendException;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class AndroidSmsOtpFetchReceiverBridgeTest {
@@ -48,5 +50,15 @@ public class AndroidSmsOtpFetchReceiverBridgeTest {
         mReceiverBridge.onOtpValueRetrievalError(receivedException);
         verify(mReceiverBridgeJniMock)
                 .onOtpValueRetrievalError(S_FAKE_NATIVE_POINTER, receivedException.getStatusCode());
+    }
+
+    @Test
+    public void testOnOtpValueRetrievalError_backendException() {
+        OneTimeTokensBackendException receivedException =
+                new OneTimeTokensBackendException(
+                        "test", OneTimeTokensBackendErrorCode.GMSCORE_VERSION_NOT_SUPPORTED);
+        mReceiverBridge.onOtpValueRetrievalError(receivedException);
+        verify(mReceiverBridgeJniMock)
+                .onOtpValueRetrievalError(S_FAKE_NATIVE_POINTER, receivedException.getErrorCode());
     }
 }

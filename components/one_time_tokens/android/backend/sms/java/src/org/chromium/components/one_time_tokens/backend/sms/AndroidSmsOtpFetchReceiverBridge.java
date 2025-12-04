@@ -13,6 +13,7 @@ import org.jni_zero.NativeClassQualifiedName;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.one_time_tokens.backend.OneTimeTokensBackendException;
 
 /**
  * Java-counterpart of the native AndroidSmsOtpFetchReceiverBridge. It's part of the OTP value
@@ -42,8 +43,11 @@ class AndroidSmsOtpFetchReceiverBridge {
         if (mNativeReceiverBridge == 0) return;
 
         int errorCode = CommonStatusCodes.ERROR;
-        if (exception instanceof ApiException) {
-            errorCode = ((ApiException) exception).getStatusCode();
+        if (exception instanceof OneTimeTokensBackendException backendException) {
+            errorCode = backendException.getErrorCode();
+        }
+        if (exception instanceof ApiException apiException) {
+            errorCode = apiException.getStatusCode();
         }
         AndroidSmsOtpFetchReceiverBridgeJni.get()
                 .onOtpValueRetrievalError(mNativeReceiverBridge, errorCode);

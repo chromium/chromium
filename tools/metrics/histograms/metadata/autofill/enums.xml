@@ -4292,6 +4292,7 @@ Called by update_autofill_enums.py.-->
 <!-- LINT.IfChange(SmsOtpRetrievalApiErrorCode) -->
 
 <enum name="SmsOtpRetrievalApiErrorCode">
+  <int value="0" label="GmsCore version not supported"/>
   <int value="13" label="CommonStatusCodes.ERROR"/>
   <int value="15" label="Timeout"/>
   <int value="36500" label="Platform does not support SmsCodeAutofillClient"/>

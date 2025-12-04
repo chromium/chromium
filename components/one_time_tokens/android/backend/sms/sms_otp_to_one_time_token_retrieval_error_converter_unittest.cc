@@ -26,6 +26,9 @@ TEST(SmsOtpToOnetimeTokenRetrievalErrorConverterTest, Smoke) {
   EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
                 SmsOtpRetrievalApiErrorCode::kUserPermissionRequired),
             OneTimeTokenRetrievalError::kSmsOtpBackendUserPermissionRequired);
+  EXPECT_EQ(ConvertSmsOtpRetrievalApiErrorCode(
+                SmsOtpRetrievalApiErrorCode::kGmscoreVersionNotSupported),
+            OneTimeTokenRetrievalError::kSmsOtpGmscoreVersionNotSupported);
 }
 
 }  // namespace one_time_tokens

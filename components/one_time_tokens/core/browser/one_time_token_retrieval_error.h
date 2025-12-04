@@ -17,7 +17,8 @@ enum class OneTimeTokenRetrievalError {
   kSmsOtpBackendPlatformNotSupported = 3,
   kSmsOtpBackendApiNotAvailable = 4,
   kSmsOtpBackendUserPermissionRequired = 5,
-  kMaxValue = kSmsOtpBackendUserPermissionRequired,
+  kSmsOtpGmscoreVersionNotSupported = 6,
+  kMaxValue = kSmsOtpGmscoreVersionNotSupported,
 };
 
 }  // namespace one_time_tokens

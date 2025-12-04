@@ -13,6 +13,8 @@ OneTimeTokenRetrievalError ConvertSmsOtpRetrievalApiErrorCode(
     SmsOtpRetrievalApiErrorCode error_code) {
   // LINT.IfChange
   switch (error_code) {
+    case SmsOtpRetrievalApiErrorCode::kGmscoreVersionNotSupported:
+      return OneTimeTokenRetrievalError::kSmsOtpGmscoreVersionNotSupported;
     case SmsOtpRetrievalApiErrorCode::kError:
       return OneTimeTokenRetrievalError::kSmsOtpBackendError;
     case SmsOtpRetrievalApiErrorCode::kTimeout:
