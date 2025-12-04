@@ -114,8 +114,7 @@ std::optional<size_t> File::Read(int64_t offset, span<uint8_t> data) {
 }
 
 bool File::ReadAndCheck(int64_t offset, span<uint8_t> data) {
-  // Size checked in span form of Read() above.
-  return Read(offset, data) == static_cast<int>(data.size());
+  return Read(offset, data) == data.size();
 }
 
 std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
@@ -130,8 +129,7 @@ std::optional<size_t> File::ReadAtCurrentPos(span<uint8_t> data) {
 }
 
 bool File::ReadAtCurrentPosAndCheck(span<uint8_t> data) {
-  // Size checked in span form of ReadAtCurrentPos() above.
-  return ReadAtCurrentPos(data) == static_cast<int>(data.size());
+  return ReadAtCurrentPos(data) == data.size();
 }
 
 std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
@@ -146,8 +144,7 @@ std::optional<size_t> File::Write(int64_t offset, span<const uint8_t> data) {
 }
 
 bool File::WriteAndCheck(int64_t offset, span<const uint8_t> data) {
-  // Size checked in span form of Write() above.
-  return Write(offset, data) == static_cast<int>(data.size());
+  return Write(offset, data) == data.size();
 }
 
 std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
@@ -162,8 +159,7 @@ std::optional<size_t> File::WriteAtCurrentPos(span<const uint8_t> data) {
 }
 
 bool File::WriteAtCurrentPosAndCheck(span<const uint8_t> data) {
-  // Size checked in span form of WriteAtCurrentPos() above.
-  return WriteAtCurrentPos(data) == static_cast<int>(data.size());
+  return WriteAtCurrentPos(data) == data.size();
 }
 
 std::optional<size_t> File::ReadAtCurrentPosNoBestEffort(
