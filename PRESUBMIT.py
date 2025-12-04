@@ -853,7 +853,6 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             r'chrome/browser/ash/printing/zeroconf_printer_detector_unittest\.cc',
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contact_manager_impl_unittest\.cc',
             r'chrome/browser/nearby_sharing/contacts/nearby_share_contacts_sorter_unittest\.cc',
-            r'chrome/browser/privacy_budget/mesa_distribution_unittest\.cc',
             r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
             r'chrome/browser/web_applications/test/web_app_test_utils\.cc',
             r'chrome/browser/win/conflicts/module_blocklist_cache_util_unittest\.cc',
