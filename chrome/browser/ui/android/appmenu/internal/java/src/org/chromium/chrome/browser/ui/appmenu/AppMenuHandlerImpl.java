@@ -305,7 +305,12 @@ class AppMenuHandlerImpl
                 /* headerModelList= */ null, mModelList, () -> {});
 
         if (mAppMenu == null) {
-            mAppMenu = new AppMenu(this, mContext.getResources(), mHierarchicalMenuController);
+            mAppMenu =
+                    new AppMenu(
+                            this,
+                            mContext.getResources(),
+                            mHierarchicalMenuController,
+                            mAppMenuDelegate.shouldDisableVerticalScrollbar());
             mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
 
