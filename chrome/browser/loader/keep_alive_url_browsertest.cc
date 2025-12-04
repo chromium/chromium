@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(ChromeKeepAliveURLBrowserTest,
   request_handler->Done();
 
   // The response should be processed by browser before shutting down.
-  // TODO(crbug.com/40236167): Deflake WaitForTotalOnReceiveResponseProcessed
+  // TODO(crbug.com/464173571): Deflake WaitForTotalOnReceiveResponseProcessed
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
