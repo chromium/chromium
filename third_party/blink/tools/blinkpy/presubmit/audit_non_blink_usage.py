@@ -1793,7 +1793,6 @@ _CONFIG = [
         ],
         'allowed': [
             'media::.+',
-            'media_capabilities_identifiability_metrics::.+',
             'webrtc::SdpVideoFormat',
             'webrtc::SdpAudioFormat',
         ]
@@ -2671,14 +2670,6 @@ _CONFIG = [
         ],
         'allowed': [
             'media::CaptureVersion',
-        ]
-    },
-    {
-        'paths': [
-            'third_party/blink/public/common/privacy_budget/identifiable_token.h',
-        ],
-        'allowed': [
-            'internal::DigestOfObjectRepresentation',
         ]
     },
     {
