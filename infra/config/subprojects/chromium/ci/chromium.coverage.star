@@ -857,17 +857,21 @@ coverage_builder(
             ),
             "components_browsertests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 4,
+                    shards = 8,
                 ),
             ),
-            "content_browsertests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.coverage.content_browsertests.filter",
-                    "--test-launcher-jobs=1",
-                ],
+            "components_unittests": targets.mixin(
                 swarming = targets.swarming(
-                    shards = 41,
+                    shards = 24,
                 ),
+            ),
+            "content_browsertests": targets.remove(
+                reason = [
+                    "The test suite is consistently failing after ",
+                    "29.20250815.6.1 due to the potential memory usage ",
+                    "increment and OOM restart.",
+                    "TODO: Reenable these test suite in code coverage builder.",
+                ],
             ),
             "content_unittests": targets.mixin(
                 swarming = targets.swarming(
