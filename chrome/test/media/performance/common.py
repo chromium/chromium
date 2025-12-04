@@ -104,11 +104,13 @@ SENDER_STATUS_CMD = {
 
 SENDER_TERMINATE_DRIVER_CMD = {
     'mac': (
-        'killall chromedriver'
+        'killall chromedriver && killall "Google Chrome for Testing"'
     ),
     'win': (
-        'powershell -Command "Stop-Process -Name chromedriver -Force; '
-        'taskkill /F /IM chromedriver.exe /t"'
+        'powershell -Command "Stop-Process -Name chromedriver -Force '
+        '-ErrorAction SilentlyContinue; Stop-Process -Name chrome -Force '
+        '-ErrorAction SilentlyContinue; taskkill /F /IM chromedriver.exe /t; '
+        'taskkill /F /IM chrome.exe /t"'
     ),
 }
 
