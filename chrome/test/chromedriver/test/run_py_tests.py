@@ -5476,6 +5476,52 @@ class ChromeDriverW3cTest(ChromeDriverBaseTestWithWebServer):
       element.SendKeys('hello')
       self.assertEqual('hellohello ->', element.GetText())
 
+  def testSendKeysLongStringNotCorrupted(self):
+    """Regression test for crbug.com/428116079.
+
+    Verifies that a long string sent via SendKeys is not corrupted or
+    truncated (e.g. no pattern of every 53rd character being omitted).
+    Uses a deterministic A-Z cycling pattern for multiple representative
+    lengths (53, 101, 501) inspired by the original bug report.
+    """
+    self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
+    for length in (53, 101, 501):
+      # Use a deterministic A-Z cycling pattern for the given length.
+      long_string = ''.join(chr(65 + (i % 26)) for i in range(length))
+
+      # Create a simple page with an <input>, <textarea>, and a contenteditable
+      # element to exercise the common editable element types. Rebuild the body
+      # HTML for each length so each iteration starts from a clean page.
+      self._driver.ExecuteScript(
+          'document.body.innerHTML = '
+          '\'<input id="text-input" type="text">'
+          '<textarea id="text-area"></textarea>'
+          '<div id="editable" contentEditable="true"></div>\';')
+
+      text_input = self._driver.FindElement('css selector', '#text-input')
+      text_area = self._driver.FindElement('css selector', '#text-area')
+      editable = self._driver.FindElement('css selector', '#editable')
+
+      # <input>
+      text_input.Clear()
+      text_input.SendKeys(long_string)
+      input_value = text_input.GetProperty('value')
+      self.assertEqual(len(long_string), len(input_value))
+      self.assertEqual(long_string, input_value)
+
+      # <textarea>
+      text_area.Clear()
+      text_area.SendKeys(long_string)
+      textarea_value = text_area.GetProperty('value')
+      self.assertEqual(len(long_string), len(textarea_value))
+      self.assertEqual(long_string, textarea_value)
+
+      # contenteditable
+      editable.SendKeys(long_string)
+      editable_text = editable.GetText()
+      self.assertEqual(len(long_string), len(editable_text))
+      self.assertEqual(long_string, editable_text)
+
   def testUnexpectedAlertOpenExceptionMessage(self):
     self._driver.Load(self.GetHttpUrlForFile('/chromedriver/empty.html'))
     self._driver.ExecuteScript('window.alert("Hi");')
