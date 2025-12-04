@@ -139,8 +139,11 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
                 : url::GURLAndroid::EmptyGURL(env),
             suggestion.HasDeactivatedStyle(), payload));
   }
-  Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
-                                                std::move(java_suggestions));
+  gfx::RectF bounds = controller_->element_bounds();
+  Java_AutofillKeyboardAccessoryViewBridge_show(
+      env, java_object_, std::move(java_suggestions),
+      Java_AutofillKeyboardAccessoryViewBridge_createFieldBounds(
+          env, bounds.x(), bounds.y(), bounds.right(), bounds.bottom()));
 }
 
 void AutofillKeyboardAccessoryViewImpl::AxAnnounce(const std::u16string& text) {

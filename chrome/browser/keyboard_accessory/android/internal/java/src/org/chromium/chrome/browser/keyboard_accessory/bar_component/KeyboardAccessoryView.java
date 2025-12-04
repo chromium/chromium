@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.ui.base.LocalizationUtils.isLayoutRtl;
 
 import android.animation.ObjectAnimator;
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
@@ -21,7 +22,6 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.OvershootInterpolator;
 import android.widget.LinearLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.coordinatorlayout.widget.CoordinatorLayout;
@@ -33,6 +33,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.EnsuresNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.components.feature_engagement.Tracker;
@@ -321,9 +322,9 @@ class KeyboardAccessoryView extends LinearLayout {
         mMaxWidth = style.getMaxWidth();
         CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) getLayoutParams();
         if (style.isDocked()) {
-            applyDockedStyle(params, style.getOffset());
+            applyDockedStyle(params, style);
         } else {
-            applyUndockedStyle(params, style.getOffset());
+            applyUndockedStyle(params, style);
         }
         setLayoutParams(params);
     }
@@ -332,13 +333,27 @@ class KeyboardAccessoryView extends LinearLayout {
      * Configures the view's appearance for the floating (undocked) state. This state has an
      * elevation, rounded corners and wraps its content.
      */
-    private void applyUndockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
-        // To provide an experience similar to desktop popup, animations are disabled.
-        mDisableAnimations =
+    @SuppressLint("RtlHardcoded")
+    private void applyUndockedStyle(
+            CoordinatorLayout.LayoutParams params, KeyboardAccessoryStyle style) {
+        boolean isDynamicPositioningEnabled =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING);
-        params.gravity = Gravity.CENTER | Gravity.TOP;
-        params.setMargins(params.leftMargin, offset, params.rightMargin, 0);
+        // To provide an experience similar to desktop popup, animations are disabled.
+        mDisableAnimations = isDynamicPositioningEnabled;
+        if (isDynamicPositioningEnabled) {
+            // For dynamically positioned keyboard accessory, the keyboard accessory is positioned
+            // by setting the gravity to LEFT|TOP and applying horizontal and vertical margins to
+            // place the bar near the focused field.
+            // Gravity.LEFT is used even for RTL layout.
+            params.gravity = Gravity.LEFT | Gravity.TOP;
+            params.setMargins(style.getHorizontalOffset(), style.getVerticalOffset(), 0, 0);
+        } else {
+            // For statically positioned keyboard accessory, the gravity is centered horizontally
+            // and at the top of the parent. Only a vertical offset is used.
+            params.gravity = Gravity.CENTER | Gravity.TOP;
+            params.setMargins(0, style.getVerticalOffset(), 0, 0);
+        }
         params.width = ViewGroup.LayoutParams.WRAP_CONTENT;
 
         findViewById(R.id.accessory_shadow).setVisibility(View.GONE);
@@ -361,10 +376,11 @@ class KeyboardAccessoryView extends LinearLayout {
      * Configures the view's appearance for the standard (docked) bottom state. This state matches
      * the parent width and has no elevation.
      */
-    private void applyDockedStyle(CoordinatorLayout.LayoutParams params, @Px int offset) {
+    private void applyDockedStyle(
+            CoordinatorLayout.LayoutParams params, KeyboardAccessoryStyle style) {
         mDisableAnimations = false;
         params.gravity = Gravity.BOTTOM;
-        params.setMargins(params.leftMargin, 0, params.rightMargin, offset);
+        params.setMargins(0, 0, 0, style.getVerticalOffset());
         params.width = ViewGroup.LayoutParams.MATCH_PARENT;
 
         findViewById(R.id.accessory_shadow).setVisibility(View.VISIBLE);

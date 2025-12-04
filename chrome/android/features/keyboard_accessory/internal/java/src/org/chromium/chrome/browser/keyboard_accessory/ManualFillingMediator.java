@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory;
 
+import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.FIELD_BOUNDS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.IS_FULLSCREEN;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KEYBOARD_EXTENSION_STATE;
@@ -18,6 +19,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SHOW_WHEN_VISIBLE;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.SUPPRESSED_BY_BOTTOM_SHEET;
 
+import android.graphics.RectF;
 import android.util.SparseArray;
 import android.view.Surface;
 import android.view.View;
@@ -358,6 +360,10 @@ class ManualFillingMediator
         mKeyboardAccessory.setSuggestions(suggestions, delegate);
     }
 
+    void setFieldBounds(RectF bounds) {
+        mModel.set(FIELD_BOUNDS, bounds);
+    }
+
     void registerActionProvider(WebContents webContents, Provider<Action[]> actionProvider) {
         if (!isInitialized()) return;
         ManualFillingState state = mStateCache.getStateFor(webContents);
@@ -467,6 +473,9 @@ class ManualFillingMediator
         // TODO(bokan): Once mApplicationViewportInsetSupplier includes browser controls, we can use
         // CompositorViewHolder instead of WebContents and simply apply the viewVisibleHeightInset
         // to it, rather than awkwardly undoing the webContentsHeightInset.
+        // TODO(crbug.com/458644290): Confirm if space checks work correctly when dynamic
+        // positioning is used.
+
         WebContents webContents = mActivity.getCurrentWebContents();
         if (webContents == null || webContents.isDestroyed()) return false;
         float height = webContents.getHeight(); // In dip. Already insetted by top/bottom controls.
@@ -520,6 +529,9 @@ class ManualFillingMediator
         } else if (property == IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS) {
             // Do nothing. IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS is used with
             // KEYBOARD_EXTENSION_STATE.
+            return;
+        } else if (property == FIELD_BOUNDS) {
+            // Do nothing. FIELD_BOUNDS is used when keyboard accessory style is modified.
             return;
         }
         throw new IllegalArgumentException("Unhandled property: " + property);
@@ -774,18 +786,78 @@ class ManualFillingMediator
     }
 
     /**
-     * Gets the keyboard accessory's top offset. This offset is slightly smaller than the content
-     * offset to allow the accessory to partially overlap the top bar.
+     * Gets the keyboard accessory's top offset. Since these are viewport coordinates, the browser
+     * controls height must be added to position it correctly relative to the web content.
      */
     private @Px int getTopOffset() {
-        if (mControlsManager == null || mControlsManager.getContentOffset() == 0) {
+        if (mControlsManager == null) {
             return 0;
         }
+        @Px int contentOffset = mControlsManager.getContentOffset();
+
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            return getTopOffsetForDynamicPositioning() + contentOffset;
+        }
+
         int topInsetOverlap =
                 mActivity
                         .getResources()
                         .getDimensionPixelOffset(R.dimen.keyboard_accessory_top_inset_overlap);
-        return mControlsManager.getContentOffset() - topInsetOverlap;
+        return Math.max(0, contentOffset - topInsetOverlap);
+    }
+
+    /**
+     * Gets the keyboard accessory's top offset for dynamic positioning. The offset is calculated in
+     * the way that positions the field above or below the field depending on the available space.
+     */
+    private @Px int getTopOffsetForDynamicPositioning() {
+        CompositorViewHolder compositorViewHolder =
+                mActivity.getCompositorViewHolderSupplier().get();
+        RectF viewport = new RectF();
+        compositorViewHolder.getVisibleViewport(viewport);
+
+        @Px int viewportHeight = Math.round(viewport.height());
+        @Px
+        int bottom =
+                Math.round(
+                        mModel.get(FIELD_BOUNDS).bottom
+                                * mWindowAndroid.getDisplay().getDipScale());
+        @Px
+        int top =
+                Math.round(
+                        mModel.get(FIELD_BOUNDS).top * mWindowAndroid.getDisplay().getDipScale());
+        @Px
+        int barPadding =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.keyboard_accessory_dynamic_positioning_padding);
+        @Px
+        int barHeight =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.keyboard_accessory_height_redesign);
+
+        // Display the keyboard accessory below the field if there is enough space.
+        if (viewportHeight - bottom > barHeight + barPadding) {
+            return bottom + barPadding;
+        }
+        // If there is not enough space below the field, try to display it above the field.
+        return top - barHeight - barPadding;
+    }
+
+    /**
+     * For dynamically positioned keyboard accessory, the horizontal offset is provided as the left
+     * boundary of the focused field, ensuring the bar is displayed near the field.
+     */
+    private @Px int getHorizontalOffset() {
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.AUTOFILL_ANDROID_KEYBOARD_ACCESSORY_DYNAMIC_POSITIONING)) {
+            return Math.round(
+                    mModel.get(FIELD_BOUNDS).left * mWindowAndroid.getDisplay().getDipScale());
+        }
+        return 0;
     }
 
     private @Px int getMaxWidth() {
@@ -802,9 +874,9 @@ class ManualFillingMediator
                 && requiresVisibleBar(extensionState)
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.AUTOFILL_ANDROID_DESKTOP_KEYBOARD_ACCESSORY_REVAMP)) {
-            @Px int offset = getTopOffset();
-            @Px int maxWidth = getMaxWidth();
-            mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(false, offset, maxWidth));
+            mKeyboardAccessory.setStyle(
+                    new KeyboardAccessoryStyle(
+                            false, getHorizontalOffset(), getTopOffset(), getMaxWidth()));
             mBottomInsetSupplier.set(0);
             return;
         }
@@ -834,7 +906,12 @@ class ManualFillingMediator
             newControlsOffset += mAccessorySheet.getHeight();
         }
         if (requiresVisibleBar(extensionState)) {
-            mKeyboardAccessory.setStyle(new KeyboardAccessoryStyle(true, newControlsOffset, 0));
+            mKeyboardAccessory.setStyle(
+                    new KeyboardAccessoryStyle(
+                            /* isDocked= */ true,
+                            /* horizontalOffset= */ 0,
+                            newControlsOffset,
+                            /* maxWidth= */ 0));
         }
         mBottomInsetSupplier.set(newControlsHeight);
     }

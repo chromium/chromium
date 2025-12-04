@@ -618,12 +618,22 @@ void AutofillKeyboardAccessoryControllerImpl::Show(
       return;
     }
 
+    // Dynamic positioning requires calling the keyboard accessory view's Show()
+    // method before the ManualFillingController updates visibility. This
+    // ensures the bar's screen position is updated before the controller makes
+    // it visible.
+    bool should_show_before_mf = base::FeatureList::IsEnabled(
+        features::kAutofillAndroidKeyboardAccessoryDynamicPositioning);
+
+    if (should_show_before_mf) {
+      view_->Show();
+    }
     if (base::WeakPtr<ManualFillingController> manual_filling_controller =
             ManualFillingController::GetOrCreate(web_contents_.get())) {
       manual_filling_controller->UpdateSourceAvailability(
           FillingSource::AUTOFILL, !suggestions_.empty());
     }
-    if (view_) {
+    if (!should_show_before_mf) {
       view_->Show();
     }
   }

@@ -15,6 +15,8 @@ import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProper
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.StateProperty.HIDDEN_SHEET;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.StateProperty.VISIBLE_SHEET;
 
+import android.graphics.RectF;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
@@ -44,6 +46,8 @@ class ManualFillingProperties {
             IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS =
                     new PropertyModel.WritableBooleanPropertyKey(
                             "is_credential_field_or_has_autofill_suggestions");
+    static final PropertyModel.WritableObjectPropertyKey<RectF> FIELD_BOUNDS =
+            new PropertyModel.WritableObjectPropertyKey<>("field_bounds");
 
     /**
      * Properties that a given state enforces. Must be between 0x0 and 0x100.
@@ -94,7 +98,8 @@ class ManualFillingProperties {
                         IS_FULLSCREEN,
                         SUPPRESSED_BY_BOTTOM_SHEET,
                         SHOULD_EXTEND_KEYBOARD,
-                        IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS)
+                        IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS,
+                        FIELD_BOUNDS)
                 .with(SHOW_WHEN_VISIBLE, false)
                 .with(KEYBOARD_EXTENSION_STATE, HIDDEN)
                 .with(PORTRAIT_ORIENTATION, true)
@@ -102,6 +107,7 @@ class ManualFillingProperties {
                 .with(SUPPRESSED_BY_BOTTOM_SHEET, false)
                 .with(SHOULD_EXTEND_KEYBOARD, true)
                 .with(IS_CREDENTIAL_FIELD_OR_HAS_AUTOFILL_SUGGESTIONS, false)
+                .with(FIELD_BOUNDS, null)
                 .build();
     }
 
