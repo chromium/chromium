@@ -269,3 +269,8 @@ IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxVoiceSearch) {
   RunTest("cr_components/composebox/composebox_voice_search_test.js",
           "mocha.run()");
 }
+
+IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ComposeboxDragAndDrop) {
+  RunTest("cr_components/composebox/composebox_drag_drop_test.js",
+          "mocha.run()");
+}

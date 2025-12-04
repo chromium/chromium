@@ -9,6 +9,7 @@ assert(!is_android && !is_ios)
 build_webui_tests("build") {
   files = [
     "composebox_voice_search_test.ts",
+    "composebox_drag_drop_test.ts",
     "context_menu_entrypoint_test.ts",
     "composebox_test_utils.ts",
     "recent_tab_chip_test.ts",
@@ -16,6 +17,7 @@ build_webui_tests("build") {
 
   ts_deps = [
     "//ui/webui/resources/cr_components/composebox:build_ts",
+    "//ui/webui/resources/cr_components/search:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
