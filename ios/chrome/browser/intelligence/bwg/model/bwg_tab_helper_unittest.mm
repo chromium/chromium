@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -491,4 +492,87 @@ TEST_F(BwgTabHelperTest,
   tab_helper_ = BwgTabHelper::FromWebState(web_state_.get());
 
   ASSERT_EQ(tab_helper_->GetServerId().value(), server_id);
+}
+
+@interface FakePageContextWrapper : PageContextWrapper
+@property(nonatomic, assign) BOOL populateCalled;
+@end
+
+@implementation FakePageContextWrapper
+- (instancetype)initWithWebState:(web::WebState*)webState
+              completionCallback:
+                  (base::OnceCallback<void(PageContextWrapperCallbackResponse)>)
+                      completionCallback {
+  // Call the super designated initializer but we don't care about the callback
+  // since this is a fake.
+  return [super initWithWebState:webState completionCallback:base::DoNothing()];
+}
+- (void)populatePageContextFieldsAsync {
+  self.populateCalled = YES;
+}
+@end
+
+TEST_F(BwgTabHelperTest, TestGeneratePageContext) {
+  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
+  FakePageContextWrapper* fakeWrapper =
+      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
+                                    completionCallback:base::DoNothing()];
+  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+
+  base::RunLoop run_loop;
+  tab_helper_->GeneratePageContext(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             PageContextWrapperCallbackResponse response) { run_loop->Quit(); },
+          &run_loop),
+      /*full_page_context=*/true);
+
+  EXPECT_TRUE(fakeWrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
+  EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
+TEST_F(BwgTabHelperTest, TestGeneratePageContext_WaitsForLoad) {
+  feature_list_.InitAndEnableFeature(kGeminiImmediateOverlay);
+  web_state_->SetLoading(true);
+
+  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
+  FakePageContextWrapper* fakeWrapper =
+      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
+                                    completionCallback:base::DoNothing()];
+  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+
+  tab_helper_->GeneratePageContext(base::DoNothing(),
+                                   /*full_page_context=*/true);
+
+  EXPECT_TRUE(fakeWrapper.shouldGetAnnotatedPageContent);
+  EXPECT_TRUE(fakeWrapper.shouldGetSnapshot);
+  // Should NOT be called immediately.
+  EXPECT_FALSE(fakeWrapper.populateCalled);
+
+  // Now simulate page load finish.
+  tab_helper_->PageLoaded(web_state_.get(),
+                          web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_TRUE(fakeWrapper.populateCalled);
+}
+
+TEST_F(BwgTabHelperTest, TestGeneratePageContext_Partial) {
+  id mockWrapperClass = OCMClassMock([PageContextWrapper class]);
+  FakePageContextWrapper* fakeWrapper =
+      [[FakePageContextWrapper alloc] initWithWebState:web_state_.get()
+                                    completionCallback:base::DoNothing()];
+  OCMStub([mockWrapperClass alloc]).andReturn(fakeWrapper);
+
+  base::RunLoop run_loop;
+  tab_helper_->GeneratePageContext(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             PageContextWrapperCallbackResponse response) { run_loop->Quit(); },
+          &run_loop),
+      /*full_page_context=*/false);
+
+  EXPECT_FALSE(fakeWrapper.shouldGetAnnotatedPageContent);
+  EXPECT_FALSE(fakeWrapper.shouldGetSnapshot);
+  EXPECT_TRUE(fakeWrapper.populateCalled);
 }

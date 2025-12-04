@@ -12,6 +12,7 @@
 #import "components/optimization_guide/core/hints/optimization_guide_decision.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/optimization_guide/mojom/zero_state_suggestions_service.mojom.h"
 #import "ios/web/public/js_image_transcoder/java_script_image_transcoder.h"
 #import "ios/web/public/web_state_observer.h"
@@ -33,6 +34,12 @@ class BwgTabHelper : public web::WebStateObserver,
   BwgTabHelper& operator=(const BwgTabHelper&) = delete;
 
   ~BwgTabHelper() override;
+
+  // Generate page Context (including snapshot and APC) and invokes the callback
+  // with the result.
+  void GeneratePageContext(
+      base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback,
+      bool full_page_context = true);
 
   // Executes the zero-state suggestions flow.
   void ExecuteZeroStateSuggestions(
@@ -124,8 +131,14 @@ class BwgTabHelper : public web::WebStateObserver,
 
   friend class web::WebStateUserData<BwgTabHelper>;
 
+  // The PageContext wrapper used to provide context about a page.
+  __strong PageContextWrapper* page_context_wrapper_ = nil;
+
   // Clears the zero-state suggestions and resets the service.
   void ClearZeroStateSuggestions();
+
+  // Populates the page context fields if the wrapper exists.
+  void PopulatePageContextFields();
 
   // Callback for the OptimizationGuide with the result of whether the
   // zero-state suggestions should be shown for the current URL.

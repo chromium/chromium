@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_ui_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/intelligence/zero_state_suggestions/model/zero_state_suggestions_service_impl.h"
 #import "ios/chrome/browser/location_bar/badge/model/badge_type.h"
 #import "ios/chrome/browser/location_bar/badge/model/location_bar_badge_configuration.h"
@@ -137,6 +138,41 @@ BwgTabHelper::~BwgTabHelper() {
     web_state_ = nullptr;
   }
   optimization_guide_decider_ = nullptr;
+}
+
+void BwgTabHelper::GeneratePageContext(
+    base::OnceCallback<void(PageContextWrapperCallbackResponse)> callback,
+    bool full_page_context) {
+  // Cancel any ongoing page context operation.
+  if (page_context_wrapper_) {
+    page_context_wrapper_ = nil;
+  }
+
+  // Create a new wrapper.
+  page_context_wrapper_ =
+      [[PageContextWrapper alloc] initWithWebState:web_state_
+                                completionCallback:std::move(callback)];
+
+  // Configure it to fetch full context.
+  [page_context_wrapper_ setShouldGetAnnotatedPageContent:full_page_context];
+  [page_context_wrapper_ setShouldGetSnapshot:full_page_context];
+
+  // If the page is still loading, wait for it to finish before extracting the
+  // page context.
+  bool should_update_context_after_page_load =
+      full_page_context && IsGeminiImmediateOverlayEnabled() &&
+      web_state_->IsLoading();
+  if (should_update_context_after_page_load) {
+    // TODO(crbug.com/466107255): Move waiting for page loading responsibility
+    // to BwgBrowserAgent.
+    base::OnceCallback<void()> pageContextPopulateCallback =
+        base::BindOnce(&BwgTabHelper::PopulatePageContextFields,
+                       weak_ptr_factory_.GetWeakPtr());
+    SetPageLoadedCallback(std::move(pageContextPopulateCallback));
+    return;
+  }
+
+  PopulatePageContextFields();
 }
 
 void BwgTabHelper::ExecuteZeroStateSuggestions(
@@ -417,6 +453,12 @@ void BwgTabHelper::WebStateDestroyed(web::WebState* web_state) {
 }
 
 #pragma mark - Private
+
+void BwgTabHelper::PopulatePageContextFields() {
+  if (page_context_wrapper_) {
+    [page_context_wrapper_ populatePageContextFieldsAsync];
+  }
+}
 
 void BwgTabHelper::ClearZeroStateSuggestions() {
   if (!IsZeroStateSuggestionsEnabled()) {
