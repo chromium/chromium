@@ -25582,22 +25582,6 @@
             ]
         }
     ],
-    "ThrottleMainFrameTo60HzV2": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "ThrottledUrgentInput_20250325",
-                    "enable_features": [
-                        "ThrottleMainFrameTo60Hz",
-                        "UrgentMainFrameForInput"
-                    ]
-                }
-            ]
-        }
-    ],
     "TokenHandleRefactoring": [
         {
             "platforms": [

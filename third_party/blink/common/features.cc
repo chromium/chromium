@@ -2399,7 +2399,15 @@ BASE_FEATURE(kUnloadBlocklisted, base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When BeginMainFrame() is throttled, whether input-related BeginMainFrame()s
 // are marked urgent, and thus unthtrottled.
-BASE_FEATURE(kUrgentMainFrameForInput, base::FEATURE_DISABLED_BY_DEFAULT);
+//
+// Enabled on Android, since a field trial showed benefits.
+BASE_FEATURE(kUrgentMainFrameForInput,
+#if BUILDFLAG(IS_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+);
 
 // If enabled, URLPattern will use standard defined dummy URL canonicalization
 // to canonicalize URL properties. See https://crbug.com/409350827
