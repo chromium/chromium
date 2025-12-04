@@ -6995,7 +6995,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830512293931520102">Sua senha é criptografada e nunca é vista por ninguém</translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">Carteira do Google</translation>
 <translation id="583179300286794292">Login feito como <ph name="SPAN_START" /><ph name="DRIVE_ACCOUNT_EMAIL" /><ph name="SPAN_END" /></translation>
 <translation id="5831950941058843834">Excluir permissões e dados do site <ph name="SITE_NAME" />, todos os sites relacionados e o app instalado?</translation>
 <translation id="5832813618714645810">Perfis</translation>
@@ -9816,7 +9816,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
     Visível para dispositivos por perto, como o <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />…</translation>
 <translation id="7786889348652477777">&amp;Recarregar aplicativo</translation>
 <translation id="7787308148023287649">Exibir em outra tela</translation>
-<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como receber resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
+<translation id="7789895198197042595">Seu endereço de casa deixa os Serviços do Google, como resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="USERNAME" /><ph name="END_LINK" />.</translation>
 <translation id="7791269138074599214">Método de entrada</translation>
 <translation id="7791429245559955092">Esse app será instalado no perfil do Chrome usado no momento</translation>
 <translation id="7791436592012979144">Rolagem reversa ativada</translation>

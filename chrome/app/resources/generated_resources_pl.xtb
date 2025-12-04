@@ -2435,7 +2435,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2663253180579749458">Dodaję profil eSIM. Może to potrwać kilka minut.</translation>
 <translation id="2663302507110284145">Język</translation>
 <translation id="2665394472441560184">Dodaj nowe słowo</translation>
-<translation id="2665647207431876759">Stracił ważność</translation>
+<translation id="2665647207431876759">Ważność wygasła</translation>
 <translation id="2665919335226618153">Kurza twarz! Podczas formatowania wystąpił błąd.</translation>
 <translation id="2666247341166669829">Poziom naładowania lewej baterii to <ph name="PERCENTAGE" />%.</translation>
 <translation id="2667144577800272420">Inne aplikacje zostały ustawione na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacje <ph name="APP_NAME_2" /> i <ph name="APP_NAME_3" /> przestaną otwierać obsługiwane linki.</translation>
@@ -5601,7 +5601,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="4857304314344645169">Zobacz szczegółowe wyjaśnienie każdego problemu</translation>
 <translation id="485806788160414322">Odtwórz lub wstrzymaj multimedia</translation>
 <translation id="4858913220355269194">Fritz</translation>
-<translation id="486213875233855629">Wyciszony przez administratora</translation>
+<translation id="486213875233855629">Wyciszone przez administratora</translation>
 <translation id="4862642413395066333">Podpisywanie odpowiedzi protokołu OCSP</translation>
 <translation id="4863702650881330715">Zwiększ zgodność</translation>
 <translation id="4863769717153320198">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (domyślna)</translation>
@@ -8706,7 +8706,7 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7039912931802252762">Logowanie karty inteligentnej firmy Microsoft</translation>
 <translation id="7039951224110875196">Utwórz konto Google dla dziecka</translation>
 <translation id="7039968672732182060">Twój Chromebook nie otrzymuje już aktualizacji zabezpieczeń. Czas przejść na najnowszą wersję zabezpieczeń i oprogramowania. Obowiązują warunki oferty.</translation>
-<translation id="7042116641003232070">Może zapisywać dane na urządzeniu</translation>
+<translation id="7042116641003232070">Zezwolono na zapisywanie danych na urządzeniu</translation>
 <translation id="7044124535091449260">Więcej informacji o uprawnieniach dostępu do stron</translation>
 <translation id="7044207729381622209">Wylogujemy Cię z tych stron, także na otwartych kartach</translation>
 <translation id="7044211973375150246">Inna aplikacja została ustawiona na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacja <ph name="APP_NAME_2" /> przestanie otwierać obsługiwane linki.</translation>

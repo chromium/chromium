@@ -34,7 +34,7 @@
 <translation id="1060136083665017312">سیستم‌های بازی و کنسول</translation>
 <translation id="1060320201901229167">پاکت کاکو ۵</translation>
 <translation id="1060985736456216896">‏‫Google Pay، نشان‌واره Zip</translation>
-<translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1063822554756965137">فایل‌ها باموفقیت حذف شد</translation>
 <translation id="1064054731605354900">A3x5</translation>
 <translation id="1065369186007547872">‏‫Chrome تشخیص داده است شما اعلان‌های این سایت را نمی‌خواهید. بنابراین درخواست‌ها پنهان شده‌اند تا از ایجاد مزاحمت جلوگیری شود.</translation>
@@ -203,7 +203,7 @@
 <translation id="1319245136674974084">برای این برنامه دوباره پرسیده نشود</translation>
 <translation id="1322083935398004629">سیاست</translation>
 <translation id="132301787627749051">جستجوی تصویر بریده‌دان</translation>
-<translation id="1323433172918577554">نمایش موارد بیشتر</translation>
+<translation id="1323433172918577554">بیشتر نشان دادن</translation>
 <translation id="1329916999021038454">ارسال گزارش</translation>
 <translation id="1330449323196174374">سمت چپ تاخوردگی دروازه‌ای</translation>
 <translation id="1333745675627230582">‏بازی کردن بازی «دایناسور Chrome»</translation>
@@ -235,7 +235,7 @@
 <translation id="1374468813861204354">پیشنهادات</translation>
 <translation id="1375198122581997741">درباره نسخه</translation>
 <translation id="1375293861397106342">همه گزینه‌ها در محدوده قیمت معمول <ph name="LOW_PRICE" /> - <ph name="HIGH_PRICE" /> قرار دارند</translation>
-<translation id="1376836354785490390">نمایش موارد کمتر</translation>
+<translation id="1376836354785490390">کمتر نشان دادن</translation>
 <translation id="1380591466760231819">تاخوردگی نامه‌مانند</translation>
 <translation id="138218114945450791">آبی روشن</translation>
 <translation id="1382194467192730611">‏سرپرست دستگاه USB را مجاز کرد</translation>
@@ -298,7 +298,7 @@
 <translation id="1465457928007067810">‏‫IBAN در «حساب Google» شما ذخیره شد</translation>
 <translation id="1467432559032391204">چپ</translation>
 <translation id="1468653229182955856"><ph name="ONE_TIME_CODE" /> کد شما برای <ph name="EMBEDDED_ORIGIN" /> جهت ادامه دادن در <ph name="TOP_ORIGIN" /> است</translation>
-<translation id="1472675084647422956">نمایش بیشتر</translation>
+<translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473183651233018052">JIS B10</translation>
 <translation id="1473495410389165587">برای دریافت کمک در نوشتن، ۳ کلمه یا بیشتر وارد کنید</translation>
 <translation id="147358896496811705">2A0</translation>
@@ -1233,7 +1233,7 @@
 <translation id="3027915437837548462">‏تصویر قالب SVG</translation>
 <translation id="3030331669969285614">این پرچم‌ها از تغییر ناگهانی جلوگیری می‌کنند یا آن را لغو می‌کنند و فقط برای مدت محدودی دردسترس خواهند بود.</translation>
 <translation id="3030542417256082866">وسیله نقلیه ذخیره شود؟</translation>
-<translation id="3033200136993730761">‏نشانی خانه می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید در<ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="ACCOUNT" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
+<translation id="3033200136993730761">‏نشانی خانه می‌تواند در انجام کارها در سراسر سرویس‌های Google به شما کمک کند، مانند نتایج «جستجو» و مسیرهای مربوط‌تر در Google Maps. می‌توانید <ph name="BEGIN_LINK" />در «حساب Google» خود (<ph name="ACCOUNT" />)<ph name="END_LINK" /> نشانی‌تان را ویرایش یا حذف کنید.</translation>
 <translation id="3034526003882782781">پیمایش و بزرگ‌نمایی مجاز است</translation>
 <translation id="3036894576201005614">لوازم تمیزکاری خانگی</translation>
 <translation id="3037177537145227281">درحال پیگیری قیمت</translation>
@@ -2539,7 +2539,7 @@
 <translation id="5136841603454277753">کد صحیح را وارد کنید</translation>
 <translation id="5137761395480718572">‏این برنامه برای نصب اطلاعات اعتباری Wi-Fi اجازه می‌خواهد. پس‌از راه‌اندازی، <ph name="DEVICE_TYPE" /> به‌طور خودکار به شبکه‌های Wi-Fi شرکت‌کننده متصل خواهد شد. برای حذف این اطلاعات اعتباری، برنامه را حذف نصب کنید. <ph name="LEARN_MORE" /></translation>
 <translation id="5138014172396933048">کارت مجازی درحال‌حاضر دردسترس نیست، لطفاً با بانکتان تماس بگیرید</translation>
-<translation id="5138227688689900538">نمایش کمتر</translation>
+<translation id="5138227688689900538">کمتر نشان دادن</translation>
 <translation id="5144613843429436866">شما <ph name="PERMISSION" /> را برای این سایت مجاز کرده‌اید</translation>
 <translation id="5145883236150621069">کد خطا در پاسخ خط‌مشی موجود است</translation>
 <translation id="5146995429444047494">اعلان‌های مربوط به <ph name="ORIGIN" /> مسدود شده‌اند</translation>
@@ -4302,7 +4302,7 @@
 <translation id="8028993641010258682">اندازه</translation>
 <translation id="8029829038322015001">قرمز ۱</translation>
 <translation id="8030729864112325446">آموزش شغلی و مداوم</translation>
-<translation id="8032546467100845887">شفافیت</translation>
+<translation id="8032546467100845887">شفاف</translation>
 <translation id="8035152190676905274">قلم</translation>
 <translation id="8035264638816032066">‏عنوان زبانه‌ها و نشانی وب صفحه‌هایی که به جدول اضافه می‌کنید برای Google ارسال می‌شود</translation>
 <translation id="8037117624646282037">افرادی که اخیراً از دستگاه استفاده کرده‌اند</translation>
@@ -5057,7 +5057,7 @@
 <translation id="984275831282074731">روش‌های پرداخت</translation>
 <translation id="985199708454569384">‏&lt;p&gt;اگر تاریخ و زمان رایانه یا دستگاه همراهتان درست نباشد این خطا را می‌بینید.&lt;/p&gt;
     &lt;p&gt;برای برطرف کردن این خطا، ساعت دستگاه را باز کنید. مطمئن شوید تاریخ و زمان صحیح است.&lt;/p&gt;</translation>
-<translation id="987264212798334818">موارد کلی</translation>
+<translation id="987264212798334818">عمومی</translation>
 <translation id="988159990683914416">ساخت برنامه‌نویس</translation>
 <translation id="989988560359834682">ویرایش نشانی</translation>
 <translation id="991413375315957741">حسگرهای نوری یا حرکتی</translation>

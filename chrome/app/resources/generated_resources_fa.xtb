@@ -103,7 +103,7 @@
 <translation id="1061373870045429865">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
 <translation id="10619348099955377">کپی کردن نام نمایشی</translation>
-<translation id="1062407476771304334">جایگزینی</translation>
+<translation id="1062407476771304334">جایگزین کردن</translation>
 <translation id="1064236804542808595">بازیابی میان‌برهای سازمان</translation>
 <translation id="1065369186007547872">‏‫Chrome تشخیص داده است شما اعلان‌های این سایت را نمی‌خواهید. بنابراین درخواست‌ها پنهان شده‌اند تا از ایجاد مزاحمت جلوگیری شود.</translation>
 <translation id="1066964438793906105">اسکن برای یافتن بدافزار</translation>
@@ -700,7 +700,7 @@
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{افزودن برگه به گروه جدید}one{افزودن برگه‌ها به گروه جدید}other{افزودن برگه‌ها به گروه جدید}}</translation>
 <translation id="1470946456740188591">‏برای روشن یا خاموش کردن مرور با نشانگر نوشتار، از میان‌بر Ctrl+Search+7 استفاده کنید</translation>
 <translation id="1471034383866732283">حالت خواندن نمی‌تواند محتوای اصلی را در این صفحه پیدا کند</translation>
-<translation id="1472675084647422956">نمایش بیشتر</translation>
+<translation id="1472675084647422956">بیشتر نشان دادن</translation>
 <translation id="1473223074251193484">تنظیم پیکربندی اشتراک‌گذاری اینترنت</translation>
 <translation id="1473927070149284123">دوباره امتحان کنید یا به‌صورت دستی به شبکه متصل شوید</translation>
 <translation id="1474785664565228650">‏برای اعمال تغییر ایجادشده در میکروفون، باید Parallels Desktop را راه‌اندازی مجدد کنید. برای ادامه، Parallels Desktop را راه‌اندازی مجدد کنید.</translation>
@@ -1436,7 +1436,7 @@
 <translation id="1960211333621141174">صخره</translation>
 <translation id="1962356719152496092">میان‌بر صفحه‌کلید را در اینجا سفارشی‌سازی کنید</translation>
 <translation id="1963976881984600709">محافظت استاندارد</translation>
-<translation id="1964009877615282740">دیدن موارد بیشتر</translation>
+<translation id="1964009877615282740">بیشتر دیدن</translation>
 <translation id="1965578266762387357">‏وقتی در نوشتن کمک می‌گیرید، نشانی وب صفحه، محتوا، و نوشتار شما به Google ارسال می‌شود. اطلاعات شخصی (مانند جزئیات پزشکی یا مالی) را وارد نکنید</translation>
 <translation id="1966649499058910679">وقتی کلمه‌ای گفته می‌شود، برجسته شود</translation>
 <translation id="1967970931040389207">روشن کردن نقطه اتصال</translation>
@@ -6020,7 +6020,7 @@
 <translation id="5136343472380336530">مطمئن شوید قفل هر دو دستگاه باز باشد، نزدیک یکدیگر باشند، و بلوتوث آن‌ها روشن باشد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">«نقطه اتصال فوری» متصل نشد</translation>
-<translation id="5138227688689900538">نمایش کمتر</translation>
+<translation id="5138227688689900538">کمتر نشان دادن</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، جستجوی <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
 <translation id="5139823398361067371">پین کلید امنیتی را وارد کنید. اگر پین را نمی‌دانید، باید کلید امنیتی را بازنشانی کنید.</translation>
 <translation id="5139955368427980650">&amp;بازکردن</translation>
@@ -8028,7 +8028,7 @@
 <translation id="6557290421156335491">میان‌برهای من</translation>
 <translation id="6560061709899140565">نمایش جلسه‌های دیگر پخش محتوا</translation>
 <translation id="6560151649238390891">پیشنهاد درج شد</translation>
-<translation id="656065428026159829">موارد بیشتر</translation>
+<translation id="656065428026159829">بیشتر دیدن</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6561877237303825108">‏این نوع فایل (‎<ph name="TYPE" />) می‌تواند خطرناک باشد. فقط اگر به <ph name="ORIGIN" /> اعتماد دارید آن را ذخیره کنید</translation>
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
@@ -11379,7 +11379,7 @@
 <translation id="8849001918648564819">پنهان</translation>
 <translation id="8849219423513870962">لغو کردن حذف نمایه سیم‌کارت داخلی با نام <ph name="PROFILE_NAME" /></translation>
 <translation id="8849262417389398097"><ph name="CHECKED" /> از <ph name="CHECKING" /></translation>
-<translation id="8850251000316748990">دیدن موارد بیشتر...</translation>
+<translation id="8850251000316748990">بیشتر دیدن…</translation>
 <translation id="885246833287407341">‏متغیرهای مستقل عملکرد API</translation>
 <translation id="8853586775156634952">این کارت فقط در این دستگاه ذخیره خواهد شد</translation>
 <translation id="8855242995793521265">باعث نمی‌شود سرعت مرورگر یا دستگاه شما به‌طور قابل‌توجهی کاهش یابد.</translation>
@@ -12027,7 +12027,7 @@
 <translation id="983531994960412650"><ph name="WINDOW_TITLE" /> - دوربین و میکروفون درحال ضبط هستند</translation>
 <translation id="984705303330760860">افزودن زبان‌های غلط‌گیر املایی</translation>
 <translation id="987068745968718743">Parallels Desktop: <ph name="PLUGIN_VM_NAME" /></translation>
-<translation id="987264212798334818">موارد کلی</translation>
+<translation id="987264212798334818">عمومی</translation>
 <translation id="987574372967138078">‫<ph name="WEBSITE_ORIGIN" /> می‌خواهد اطلاعات را از دستگاه همراهتان دریافت کند</translation>
 <translation id="988320949174893488">گیر کردن اتفاقی</translation>
 <translation id="988978206646512040">گذرعبارت خالی مجاز نیست</translation>

@@ -364,7 +364,7 @@
 <translation id="1232569758102978740">Adsız</translation>
 <translation id="1233497634904001272">İsteği tamamlamak için güvenlik anahtarınıza tekrar dokunun.</translation>
 <translation id="1233721473400465416">Yerel ayar</translation>
-<translation id="1233835246554936745">{0,plural, =1{1 öğeyi hesaba kaydet}other{# öğeyi hesaba kaydet}}</translation>
+<translation id="1233835246554936745">{0,plural, =1{1 Öğeyi Hesaba Kaydet}other{# Öğeyi Hesaba Kaydet}}</translation>
 <translation id="1234736487471201993">Bu resim için QR Kodu oluştur</translation>
 <translation id="1234808891666923653">Hizmet Çalışanları</translation>
 <translation id="1235458158152011030">Bilinen ağlar</translation>
@@ -665,7 +665,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1448779317883494811">Fırça Aracı</translation>
 <translation id="1448963928642384376">Cihazınızın hotspot'ları</translation>
 <translation id="1449191289887455076">Atamayı onaylayıp <ph name="RESPONSE" /> için tekrar "<ph name="CURRENTKEY" />" tuşuna basın</translation>
-<translation id="1450484535522155181">Misafir profilini aç</translation>
+<translation id="1450484535522155181">Misafir Profilini Aç</translation>
 <translation id="1451375123200651445">Web Sayfası, Tek Dosya</translation>
 <translation id="1453561711872398978"><ph name="BEGIN_LINK" />Hata ayıklama günlüklerini<ph name="END_LINK" /> gönder (önerilir)</translation>
 <translation id="1454223536435069390">Ekr&amp;an görüntüsü al</translation>
@@ -7612,7 +7612,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6265159465845424232">Microsoft dosyalarını Microsoft OneDrive'a kopyalamadan veya taşımadan önce sor</translation>
 <translation id="6265687851677020761">Bağlantı noktasını kaldır</translation>
 <translation id="6266532094411434237"><ph name="DEVICE" /> cihazına bağlanılıyor</translation>
-<translation id="6266984048393265562">Profili özelleştir</translation>
+<translation id="6266984048393265562">Profili Özelleştir</translation>
 <translation id="6267166720438879315"><ph name="HOST_NAME" /> sunucusunda kimliğinizi doğrulamak için bir sertifika seçin</translation>
 <translation id="6268252012308737255"><ph name="APP" /> ile aç</translation>
 <translation id="6269050081341530851">Yinelenen sekmeleri kapattığınızda en eski kopya saklanır</translation>
@@ -10642,7 +10642,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8357388086258943206">Linux yüklenirken hata oluştu</translation>
 <translation id="8358685469073206162">Sayfalar geri yüklensin mi?</translation>
 <translation id="835927394551949760">Google'a Sor</translation>
-<translation id="835951711479681002">Google Hesabınızda kaydedin</translation>
+<translation id="835951711479681002">Google Hesabıma kaydet</translation>
 <translation id="8360140320636871023">Ekran temanızı kişiselleştirme</translation>
 <translation id="8360267485906769442">Geri bildirim gönder düğmesi</translation>
 <translation id="8363095875018065315">kararlı</translation>

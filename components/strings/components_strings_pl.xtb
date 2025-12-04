@@ -1422,7 +1422,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="333839153442689579">Bardzo intensywny trening interwałowy</translation>
 <translation id="3339446062576134663">Chmura (Ash)</translation>
 <translation id="3340978935015468852">ustawienia</translation>
-<translation id="3342018947887487892">Później odwiedzana przez Ciebie witryna może prosić o te informacje (tematy reklam lub reklamy sugerowane przez odwiedzane witryny).</translation>
+<translation id="3342018947887487892">Później odwiedzana przez Ciebie witryna może prosić o te informacje – tematy lub reklamy sugerowane przez odwiedzane witryny.</translation>
 <translation id="334438173029876234">Sprzęt do jazdy na deskorolce</translation>
 <translation id="3347146863028219517">Narty i snowboard</translation>
 <translation id="3349952286488694786">SRA2</translation>
@@ -5018,7 +5018,7 @@ Dodatkowe informacje:
 <translation id="933712198907837967">Diners Club</translation>
 <translation id="934634059306213385">Zezwolić aplikacji <ph name="APP_NAME" /> na konfigurowanie sieci Wi-Fi?</translation>
 <translation id="936602727769022409">Możesz stracić dostęp do swojego konta Google. Chromium zaleca natychmiastową zmianę hasła. Zobaczysz prośbę, by się zalogować.</translation>
-<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> tematy reklam są określane na podstawie Twojej najnowszej historii przeglądania, czyli listy witryn odwiedzonych przez Ciebie w Chrome na tym urządzeniu.</translation>
+<translation id="937804173274050966"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> przeglądarka Chrome określa tematy reklam na podstawie Twojej najnowszej historii przeglądania, czyli listy witryn, które w niej odwiedzasz na tym urządzeniu.</translation>
 <translation id="937885410143139026">Dane zostały wysłane do konsoli administracyjnej</translation>
 <translation id="939736085109172342">Nowy folder</translation>
 <translation id="940524522703752213">Przesyłanie plików do usługi <ph name="CLOUD_PROVIDER" /> rozpocznie się za <ph name="MINUTES" /> min</translation>

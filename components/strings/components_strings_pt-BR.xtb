@@ -1233,7 +1233,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Essas sinalizações evitam ou revertem uma mudança interruptiva e só ficam disponíveis por tempo limitado.</translation>
 <translation id="3030542417256082866">Salvar veículo?</translation>
-<translation id="3033200136993730761">Seu endereço de casa ajuda você a realizar ações nos Serviços do Google, como ver resultados da Pesquisa e rotas do Google Maps mais relevantes. É possível editar ou excluir o endereço na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
+<translation id="3033200136993730761">Seu endereço de casa deixa os Serviços do Google, como resultados da Pesquisa e rotas do Google Maps, mais úteis e relevantes. Ele pode ser editado ou excluído na sua <ph name="BEGIN_LINK" />Conta do Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Configuração de rolagem e zoom permitida</translation>
 <translation id="3036894576201005614">Materiais de limpeza doméstica</translation>
 <translation id="3037177537145227281">Monitorando preço</translation>
@@ -2937,7 +2937,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5817918615728894473">Parear</translation>
 <translation id="5826507051599432481">Nome comum (CN)</translation>
 <translation id="5830698870816298009">uso e movimento da câmera</translation>
-<translation id="5831217499016131155">Google Wallet</translation>
+<translation id="5831217499016131155">Carteira do Google</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5832976493438355584">Bloqueado</translation>
 <translation id="5837220895135257862">Libere espaço em <ph name="CLOUD_PROVIDER" /> antes de tentar de novo</translation>

@@ -244,7 +244,6 @@
 <translation id="2063047797624276601">貴機構已開啟安全瀏覽強化防護功能</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{無法完成 1 項下載作業}other{無法完成 # 項下載作業}}</translation>
 <translation id="2067805253194386918">文字</translation>
-<translation id="2074527029802029717">取消分頁固定</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
 <translation id="2088833076121753253">如要完成自動填入設定程序，請立即重新啟動 Chrome。你的分頁會自動重新開啟。</translation>
@@ -1780,7 +1779,6 @@
 <translation id="8540136935098276800">請輸入正確格式的網址</translation>
 <translation id="854522910157234410">開啟以下網頁</translation>
 <translation id="8547466829003330976">使用 AI 審查 PDF</translation>
-<translation id="855081842937141170">固定分頁</translation>
 <translation id="8551513938758868521">退出 Chrome 時鎖定無痕分頁</translation>
 <translation id="8559961053328923750">對於收集用來評估廣告成效的資料，Chrome 會限制網站可透過瀏覽器分享的資料總量</translation>
 <translation id="8559990750235505898">詢問是否將網頁內容翻譯成其他語言</translation>

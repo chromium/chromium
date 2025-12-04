@@ -7566,7 +7566,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6238923052227198598">Mantén la darrera nota a la pantalla de bloqueig</translation>
 <translation id="6238982280403036866">Amb permís per utilitzar JavaScript</translation>
 <translation id="6239558157302047471">Torna a carregar el &amp;marc</translation>
-<translation id="6240637845286751292">Concedit. Activa l'<ph name="LINK_BEGIN" />accés a la ubicació del sistema<ph name="LINK_END" />.</translation>
+<translation id="6240637845286751292">Concedit. Activa l‘<ph name="LINK_BEGIN" />accés a la ubicació del sistema<ph name="LINK_END" />.</translation>
 <translation id="6240821072888636753">Pregunta sempre</translation>
 <translation id="6240964651812394252">Per utilitzar el gestor de contrasenyes de Google amb el teu sistema operatiu, reinicia Chrome i permet l'accés al gestor de contrasenyes de l'ordinador. Les pestanyes es tornaran a obrir després de reiniciar.</translation>
 <translation id="6241530762627360640">Accedir a informació sobre els dispositius Bluetooth vinculats al sistema i descobrir dispositius Bluetooth propers</translation>
@@ -8942,7 +8942,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7210499381659830293">Impressores d'extensions</translation>
 <translation id="7211783048245131419">Encara no s'ha assignat cap interruptor</translation>
 <translation id="7212097698621322584">Introdueix el PIN actual per canviar-lo. Si no el saps, hauràs de restablir la clau de seguretat i, a continuació, crear un PIN nou.</translation>
-<translation id="7214047272988222011">Concedit: <ph name="PERMISSION_DETAILS" />. Activa l'<ph name="LINK_BEGIN" />accés a la càmera del sistema<ph name="LINK_END" />.</translation>
+<translation id="7214047272988222011">Concedit: <ph name="PERMISSION_DETAILS" />. Activa l‘<ph name="LINK_BEGIN" />accés a la càmera del sistema<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Pestanya nova en 1 pestanya}other{Pestanya nova en # pestanyes}}</translation>
 <translation id="721490496276866468">Importa les contrasenyes</translation>
 <translation id="7217208603285112910">La selecció no està en <ph name="LANGUAGE" /></translation>

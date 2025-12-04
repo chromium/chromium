@@ -22,7 +22,7 @@
 <translation id="131112695174432497">داده‌ای که بر شخصی‌سازی آگهی اثر بگذارد حذف می‌شود</translation>
 <translation id="1317194122196776028">فراموش کردن این سایت</translation>
 <translation id="1321110954513621549">مجاز است • تقریبی</translation>
-<translation id="1323433172918577554">نمایش موارد بیشتر</translation>
+<translation id="1323433172918577554">بیشتر نشان دادن</translation>
 <translation id="1333965224356556482">اجازه ندادن به سایت‌ها برای دیدن مکان شما</translation>
 <translation id="1343356790768851700">این سایت چیزهایی را که می‌پسندید تعیین می‌کند و سپس به سایت‌های دیگر آگهی پیشنهاد می‌دهد</translation>
 <translation id="1369915414381695676">سایت <ph name="SITE_NAME" /> اضافه شد</translation>
@@ -506,7 +506,7 @@
 <translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}one{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}other{<ph name="PERMISSION_1" />، <ph name="PERMISSION_2" />، و <ph name="NUM_MORE" /> اجازه دیگر مسدود هستند}}</translation>
 <translation id="6554732001434021288">آخرین بازدید: <ph name="NUM_DAYS" /> روز پیش</translation>
 <translation id="6557290421156335491">میان‌برهای من</translation>
-<translation id="656065428026159829">موارد بیشتر</translation>
+<translation id="656065428026159829">بیشتر دیدن</translation>
 <translation id="6561560012278703671">استفاده از پیام‌رسانی کم‌صداتر (درخواست‌های اعلان را مسدود می‌کند تا مزاحمتان نشود)</translation>
 <translation id="6565144332292237355">سایت‌ها می‌توانند از این ویژگی برای جستجو کردن و وصل شدن به دستگاه‌های موجود در شبکه محلی شما استفاده کنند</translation>
 <translation id="6593061639179217415">سایت مخصوص رایانه</translation>

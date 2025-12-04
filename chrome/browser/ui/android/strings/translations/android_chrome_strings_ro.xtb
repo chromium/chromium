@@ -244,7 +244,6 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="2063047797624276601">Organizația ta a activat Navigarea sigură îmbunătățită</translation>
 <translation id="2065944887543506430">{FILE_COUNT,plural, =1{O descărcare nu a reușit}few{# descărcări nu au reușit}other{# de descărcări nu au reușit}}</translation>
 <translation id="2067805253194386918">text</translation>
-<translation id="2074527029802029717">Anulează fixarea filei</translation>
 <translation id="2079545284768500474">Anulează</translation>
 <translation id="2082238445998314030">Rezultatul <ph name="RESULT_NUMBER" /> din <ph name="TOTAL_RESULTS" /></translation>
 <translation id="2088833076121753253">Pentru a finaliza configurarea completării automate, repornește Chrome acum. Filele se vor redeschide automat.</translation>
@@ -1780,7 +1779,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="8540136935098276800">Introdu o adresă URL formatată corect</translation>
 <translation id="854522910157234410">Deschide această pagină</translation>
 <translation id="8547466829003330976">Examinează PDF-ul cu AI</translation>
-<translation id="855081842937141170">Fixează fila</translation>
 <translation id="8551513938758868521">Blochează filele incognito când părăsești Chrome</translation>
 <translation id="8559961053328923750">Chrome limitează volumul total de date pe care site-urile îl pot trimite prin browser pentru a cuantifica performanța anunțurilor</translation>
 <translation id="8559990750235505898">Oferă traducerea paginilor în alte limbi</translation>
