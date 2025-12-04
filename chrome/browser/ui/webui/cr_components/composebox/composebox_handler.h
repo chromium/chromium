@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_COMPOSEBOX_HANDLER_H_
-#define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_COMPOSEBOX_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_COMPOSEBOX_COMPOSEBOX_HANDLER_H_
+#define CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_COMPOSEBOX_COMPOSEBOX_HANDLER_H_
 
 #include <memory>
 #include <optional>
@@ -108,5 +108,4 @@ class ComposeboxHandler : public composebox::mojom::PageHandler,
   mojo::Remote<composebox::mojom::Page> page_;
   mojo::Receiver<composebox::mojom::PageHandler> handler_;
 };
-
-#endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_COMPOSEBOX_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_WEBUI_CR_COMPONENTS_COMPOSEBOX_COMPOSEBOX_HANDLER_H_
