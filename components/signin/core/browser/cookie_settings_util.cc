@@ -20,23 +20,35 @@ namespace signin {
 // take in CookieSettingOverrides rather than default to none.
 
 bool SettingsAllowSigninCookies(
-    const content_settings::CookieSettings* cookie_settings) {
+    const content_settings::CookieSettings* cookie_settings,
+    bool check_only_gaia_url) {
 #if BUILDFLAG(IS_IOS)
   // There is no way for users to set the cookies content setting in iOS so
   // sign-in cookies will always be allowed.
   return true;
 #else
+  if (!cookie_settings) {
+    return false;
+  }
+
   GURL gaia_url = GaiaUrls::GetInstance()->gaia_url();
+  if (!cookie_settings->IsFullCookieAccessAllowed(
+          gaia_url, net::SiteForCookies::FromUrl(gaia_url),
+          url::Origin::Create(gaia_url), net::CookieSettingOverrides(),
+          /*cookie_partition_key=*/std::nullopt)) {
+    return false;
+  }
+
   GURL google_url = GaiaUrls::GetInstance()->secure_google_url();
-  return cookie_settings &&
-         cookie_settings->IsFullCookieAccessAllowed(
-             gaia_url, net::SiteForCookies::FromUrl(gaia_url),
-             url::Origin::Create(gaia_url), net::CookieSettingOverrides(),
-             /*cookie_partition_key=*/std::nullopt) &&
-         cookie_settings->IsFullCookieAccessAllowed(
-             google_url, net::SiteForCookies::FromUrl(google_url),
-             url::Origin::Create(google_url), net::CookieSettingOverrides(),
-             /*cookie_partition_key=*/std::nullopt);
+  if (!check_only_gaia_url &&
+      !cookie_settings->IsFullCookieAccessAllowed(
+          google_url, net::SiteForCookies::FromUrl(google_url),
+          url::Origin::Create(google_url), net::CookieSettingOverrides(),
+          /*cookie_partition_key=*/std::nullopt)) {
+    return false;
+  }
+
+  return true;
 #endif
 }
 
