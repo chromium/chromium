@@ -5,8 +5,10 @@
 #ifndef UI_GL_VSYNC_PROVIDER_WIN_DCOMP_H_
 #define UI_GL_VSYNC_PROVIDER_WIN_DCOMP_H_
 
-#include "ui/gl/direct_composition_support.h"
-#include "ui/gl/vsync_provider_win.h"
+#include <dcomp.h>
+
+#include "ui/gfx/vsync_provider.h"
+#include "ui/gl/gl_export.h"
 
 namespace gl {
 // gfx::VSyncProvider implementation that utilizes the compositor clock to

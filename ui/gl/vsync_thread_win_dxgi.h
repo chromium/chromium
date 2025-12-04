@@ -5,6 +5,7 @@
 #ifndef UI_GL_VSYNC_THREAD_WIN_DXGI_H_
 #define UI_GL_VSYNC_THREAD_WIN_DXGI_H_
 
+#include "ui/gl/vsync_provider_win.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {

@@ -7,7 +7,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/video_types.h"
 
 namespace gl {
 

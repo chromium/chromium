@@ -10,14 +10,12 @@
 #include <d3d11.h>
 #include <wrl/client.h>
 
-#include "base/containers/flat_set.h"
-#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/threading/thread.h"
+#include "ui/gfx/vsync_provider.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/vsync_provider_win.h"
 
 namespace gl {
 // Helper singleton that wraps a thread which calls IDXGIOutput::WaitForVBlank()

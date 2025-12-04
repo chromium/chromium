@@ -4,10 +4,8 @@
 
 #include "ui/gl/vsync_thread_win_dcomp.h"
 
-#include "base/logging.h"
-#include "base/trace_event/typed_macros.h"
+#include "base/trace_event/trace_event.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_features.h"
 
 namespace gl {
 

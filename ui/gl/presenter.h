@@ -32,10 +32,6 @@
 #include "ui/gfx/android/surface_control_frame_rate.h"
 #endif
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
-#endif
-
 namespace gfx {
 namespace mojom {
 class DelegatedInkPointRenderer;
