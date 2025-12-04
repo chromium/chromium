@@ -177,6 +177,7 @@
 // presents a new `SnackbarView`.
 - (void)presentSnackbar:(SnackbarMessage*)message
        withBottomOffset:(CGFloat)offset {
+  CHECK(message, base::NotFatalUntil::M147);
   // If a snackbar is already showing, dismiss it before showing the new one.
   if (_snackbarView) {
     [self dismissAllSnackbars];

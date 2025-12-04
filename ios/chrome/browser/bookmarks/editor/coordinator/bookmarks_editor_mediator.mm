@@ -227,11 +227,14 @@
     [self.delegate bookmarkEditorWillCommitTitleOrURLChange:self];
   }
 
-  [self.snackbarCommandsHandler
-      showSnackbarMessage:bookmark_utils_ios::UpdateBookmarkWithUndoSnackbar(
-                              self.bookmark, name, url, _originalFolder,
-                              self.folder, _bookmarkModel.get(), self.profile,
-                              _authenticationService, _syncService)];
+  SnackbarMessage* message = bookmark_utils_ios::UpdateBookmarkWithUndoSnackbar(
+      self.bookmark, name, url, _originalFolder, self.folder,
+      _bookmarkModel.get(), self.profile, _authenticationService, _syncService);
+  if (message) {
+    // Only show snackbar if the bookmark node changed.
+    [self.snackbarCommandsHandler showSnackbarMessage:message];
+  }
+
   if (_manuallyChangedTheFolder) {
     BookmarkStorageType type = bookmark_utils_ios::GetBookmarkStorageType(
         _folder, _bookmarkModel.get());
