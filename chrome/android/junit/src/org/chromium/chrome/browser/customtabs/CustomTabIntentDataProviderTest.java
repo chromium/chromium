@@ -45,6 +45,7 @@ import android.view.ContextThemeWrapper;
 import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
+import androidx.browser.auth.AuthTabIntent;
 import androidx.browser.customtabs.CustomContentAction;
 import androidx.browser.customtabs.CustomTabColorSchemeParams;
 import androidx.browser.customtabs.CustomTabsIntent;
@@ -82,6 +83,7 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams.ButtonType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider.BackgroundInteractBehavior;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
+import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams.VariantLayoutType;
@@ -101,11 +103,13 @@ import java.util.List;
 public class CustomTabIntentDataProviderTest {
 
     private static final String BUTTON_DESCRIPTION = "buttonDescription";
+    private static final String PACKAGE = "com.example.package.app";
 
     private Context mContext;
 
     @Before
     public void setUp() {
+        FirstRunStatus.setFirstRunFlowComplete(true);
         mContext =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
@@ -2538,5 +2542,69 @@ public class CustomTabIntentDataProviderTest {
                 dataProvider.getRequestedWindowFeatures());
 
         IntentUtils.setForceIsTrustedIntentForTesting(false);
+    }
+
+    @Test
+    public void uiTypes_openInBrowserButtonState() {
+        final int stateDefault = CustomTabsIntent.OPEN_IN_BROWSER_STATE_DEFAULT;
+        final int stateOff = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
+
+        assertEquals(stateDefault, getOibStateForType(CustomTabsUiType.DEFAULT));
+
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.NETWORK_BOUND_TAB));
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.AUTH_TAB));
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.MEDIA_VIEWER));
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.POPUP));
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.READER_MODE));
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.OFFLINE_PAGE));
+    }
+
+    @Test
+    public void uiTypes_openInBrowserButtonState_firstRunStatus() {
+        FirstRunStatus.setFirstRunFlowComplete(false);
+        final int stateOff = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
+
+        // Without completing first run, OIB won't be shown.
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.DEFAULT));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_WEB_APP_MENU_BUTTON)
+    public void uiTypes_openInBrowserButtonState_twa() {
+        final int stateOff = CustomTabsIntent.OPEN_IN_BROWSER_STATE_OFF;
+        assertEquals(stateOff, getOibStateForType(CustomTabsUiType.TRUSTED_WEB_ACTIVITY));
+    }
+
+    private int getOibStateForType(int type) {
+        if (type == CustomTabsUiType.AUTH_TAB) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("https://www.google.com"));
+            intent.putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true);
+            intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
+            Bundle bundle = new Bundle();
+            bundle.putBinder(CustomTabsIntent.EXTRA_SESSION, null);
+            intent.putExtras(bundle);
+
+            var provider = new AuthTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+            return provider.getOpenInBrowserButtonState();
+
+        } else {
+            Intent intent = new Intent().putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, type);
+            if (type == CustomTabsUiType.NETWORK_BOUND_TAB) {
+                Network network = Mockito.mock(Network.class);
+                intent.putExtra(CustomTabsIntent.EXTRA_NETWORK, network);
+            }
+            setIsTrustedCustomTab(intent);
+            var provider = new CustomTabIntentDataProvider(intent, mContext, COLOR_SCHEME_LIGHT);
+            return provider.getOpenInBrowserButtonState();
+        }
+    }
+
+    private static void setIsTrustedCustomTab(Intent intent) {
+        CustomTabsConnection connection = Mockito.mock(CustomTabsConnection.class);
+        when(connection.getClientPackageNameForSession(any())).thenReturn(null);
+        when(connection.isFirstParty(eq(PACKAGE))).thenReturn(true);
+        CustomTabsConnection.setInstanceForTesting(connection);
+        intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, PACKAGE);
     }
 }

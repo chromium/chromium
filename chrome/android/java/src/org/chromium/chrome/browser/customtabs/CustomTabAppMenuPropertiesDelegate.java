@@ -169,7 +169,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             findInPageVisible = false;
             bookmarkItemVisible = false; // Set to skip initialization.
             downloadItemVisible = false; // Set to skip initialization.
-            openInChromeItemVisible = false;
             requestDesktopSiteVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
@@ -178,7 +177,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             iconRowVisible = false;
             bookmarkItemVisible = false; // Set to skip initialization.
             downloadItemVisible = false; // Set to skip initialization.
-            openInChromeItemVisible = false;
             requestDesktopSiteVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
@@ -199,7 +197,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             if (ChromeFeatureList.sAndroidWebAppMenuButton.isEnabled()) {
                 requestDesktopSiteVisible = false;
 
-                openInChromeItemVisible = false;
                 translateVisible = false;
                 // Remove icons.
                 iconRowVisible = false;
@@ -210,24 +207,20 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 mShowShare = true;
             }
         } else if (mUiType == CustomTabsUiType.OFFLINE_PAGE) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = true;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
             requestDesktopSiteVisible = true;
             tryAddingReadAloud = false;
         } else if (mUiType == CustomTabsUiType.AUTH_TAB) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
             tryAddingReadAloud = false;
         } else if (mUiType == CustomTabsUiType.NETWORK_BOUND_TAB) {
-            openInChromeItemVisible = false;
             addToHomeScreenVisible = false;
             requestDesktopSiteVisible = true;
         } else if (mUiType == CustomTabsUiType.POPUP) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
@@ -236,7 +229,6 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         }
 
         if (!FirstRunStatus.getFirstRunFlowComplete()) {
-            openInChromeItemVisible = false;
             bookmarkItemVisible = false;
             downloadItemVisible = false;
             addToHomeScreenVisible = false;
@@ -245,10 +237,12 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
         if (mIsIncognitoBranded) {
             addToHomeScreenVisible = false;
             downloadItemVisible = false;
-            openInChromeItemVisible = false;
             tryAddingReadAloud = false;
         }
 
+        if (CustomTabIntentDataProvider.isOpenInBrowserDisallowed(mUiType, mIsIncognitoBranded)) {
+            openInChromeItemVisible = false;
+        }
         boolean isNativePage =
                 url.getScheme().equals(UrlConstants.CHROME_SCHEME)
                         || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
