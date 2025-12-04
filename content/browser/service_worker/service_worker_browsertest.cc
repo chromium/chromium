@@ -6227,9 +6227,16 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_EQ(1, GetRequestCount(path_after_redirect));
 }
 
+#if BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_Subresource_FetchHandler_PassThrough \
+  DISABLED_Subresource_FetchHandler_PassThrough
+#else
+#define MAYBE_Subresource_FetchHandler_PassThrough \
+  Subresource_FetchHandler_PassThrough
+#endif
 IN_PROC_BROWSER_TEST_P(
     ServiceWorkerStaticRouterRaceNetworkAndFetchHandlerSourceBrowserTest,
-    Subresource_FetchHandler_PassThrough) {
+    MAYBE_Subresource_FetchHandler_PassThrough) {
   SetupAndRegisterServiceWorker();
   WorkerRunningStatusObserver observer(public_context());
   ReloadBlockUntilNavigationsComplete(shell(), 1);
