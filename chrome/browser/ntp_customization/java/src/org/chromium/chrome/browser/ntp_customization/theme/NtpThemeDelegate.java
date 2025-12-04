@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
+
+import java.util.List;
 
 /** Delegate for {@link NtpThemeMediator} to communicate with {@link NtpThemeCoordinator}. */
 @NullMarked
@@ -17,6 +20,10 @@ public interface NtpThemeDelegate {
      *
      * @param onDailyRefreshCancelledCallback A callback to be executed if the user cancels the
      *     daily refresh option from a theme collection.
+     * @param themeCollectionsList The list of {@link BackgroundCollection} containing information
+     *     like theme collection cover images.
      */
-    void onThemeCollectionsClicked(Runnable onDailyRefreshCancelledCallback);
+    void onThemeCollectionsClicked(
+            Runnable onDailyRefreshCancelledCallback,
+            List<BackgroundCollection> themeCollectionsList);
 }

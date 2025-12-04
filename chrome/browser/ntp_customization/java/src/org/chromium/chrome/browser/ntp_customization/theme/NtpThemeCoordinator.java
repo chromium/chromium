@@ -29,12 +29,15 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpChromeColorsCoordinator;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionsCoordinator;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.UploadImagePreviewCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.util.List;
 
 /** Coordinator for the NTP appearance settings bottom sheet in the NTP customization. */
 @NullMarked
@@ -108,6 +111,7 @@ public class NtpThemeCoordinator {
         mMediator =
                 new NtpThemeMediator(
                         context,
+                        mProfile,
                         bottomSheetPropertyModel,
                         themePropertyModel,
                         delegate,
@@ -159,7 +163,9 @@ public class NtpThemeCoordinator {
             }
 
             @Override
-            public void onThemeCollectionsClicked(Runnable onDailyRefreshCancelledCallback) {
+            public void onThemeCollectionsClicked(
+                    Runnable onDailyRefreshCancelledCallback,
+                    List<BackgroundCollection> themeCollectionsList) {
                 if (mNtpThemeCollectionsCoordinator == null) {
                     mNtpThemeCollectionsCoordinator =
                             new NtpThemeCollectionsCoordinator(
@@ -167,7 +173,8 @@ public class NtpThemeCoordinator {
                                     mBottomSheetDelegate,
                                     mProfile,
                                     mNtpThemeCollectionManager,
-                                    onDailyRefreshCancelledCallback);
+                                    onDailyRefreshCancelledCallback,
+                                    themeCollectionsList);
                 }
                 mBottomSheetDelegate.showBottomSheet(THEME_COLLECTIONS);
             }

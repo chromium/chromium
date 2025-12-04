@@ -16,7 +16,10 @@ import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProper
 import static org.chromium.chrome.browser.ntp_customization.theme.NtpThemeProperty.SECTION_ON_CLICK_LISTENER;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.util.Pair;
 import android.view.View;
@@ -35,10 +38,17 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationMetricsUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
-import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Mediator for the NTP appearance settings bottom sheet in the NTP customization. */
 @NullMarked
@@ -56,11 +66,14 @@ public class NtpThemeMediator {
     private final Callback<@Nullable Bitmap> mOnImageSelectedCallback;
     private final NtpThemeDelegate mNtpThemeDelegate;
     private final NtpThemeCollectionManager mNtpThemeCollectionManager;
+    private final Profile mProfile;
+    private final List<BackgroundCollection> mThemeCollectionsList = new ArrayList<>();
     private @Nullable ActivityResultRegistry mActivityResultRegistry;
     private @Nullable ActivityResultLauncher<String> mActivityResultLauncher;
 
     public NtpThemeMediator(
             Context context,
+            Profile profile,
             PropertyModel bottomSheetPropertyModel,
             PropertyModel themePropertyModel,
             BottomSheetDelegate delegate,
@@ -70,6 +83,7 @@ public class NtpThemeMediator {
             NtpThemeDelegate ntpThemeDelegate,
             NtpThemeCollectionManager ntpThemeCollectionManager) {
         mContext = context;
+        mProfile = profile;
         mBottomSheetPropertyModel = bottomSheetPropertyModel;
         mThemePropertyModel = themePropertyModel;
         mBottomSheetDelegate = delegate;
@@ -89,7 +103,7 @@ public class NtpThemeMediator {
         setOnClickListenerForAllSection();
         mThemePropertyModel.set(LEARN_MORE_BUTTON_CLICK_LISTENER, this::handleLearnMoreClick);
         initTrailingIcon();
-        setLeadingIconForThemeCollectionsSection();
+        fetchAndSetThemeCollectionsLeadingIcon();
     }
 
     void destroy() {
@@ -165,19 +179,6 @@ public class NtpThemeMediator {
         NtpCustomizationMetricsUtils.recordBottomSheetShown(BottomSheetType.UPLOAD_IMAGE);
     }
 
-    /**
-     * Sets the primary image and the secondary image for the leading icon of the theme collections
-     * section.
-     */
-    private void setLeadingIconForThemeCollectionsSection() {
-        // TODO(crbug.com/423579377): Update the drawable.
-        mThemePropertyModel.set(
-                LEADING_ICON_FOR_THEME_COLLECTIONS,
-                new Pair<>(
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet));
-    }
-
     @VisibleForTesting
     void handleChromeDefaultSectionClick(View view) {
         resetCustomizedTheme();
@@ -216,7 +217,8 @@ public class NtpThemeMediator {
 
     @VisibleForTesting
     void handleThemeCollectionsSectionClick(View view) {
-        mNtpThemeDelegate.onThemeCollectionsClicked(this::resetCustomizedTheme);
+        mNtpThemeDelegate.onThemeCollectionsClicked(
+                this::resetCustomizedTheme, mThemeCollectionsList);
     }
 
     @VisibleForTesting
@@ -239,5 +241,117 @@ public class NtpThemeMediator {
     void updateForChoosingDefaultOrChromeColorOption(@NtpBackgroundImageType int sectionType) {
         updateTrailingIconVisibilityForSectionType(sectionType);
         mNtpThemeCollectionManager.resetCustomBackground();
+    }
+
+    /**
+     * Fetches theme collections and sets the leading icon for the theme collections section with
+     * cover images from two selected collections. This method fetches two preview images in
+     * parallel and updates the UI once both image fetches are complete.
+     */
+    @VisibleForTesting
+    void fetchAndSetThemeCollectionsLeadingIcon() {
+        mNtpThemeCollectionManager.getBackgroundCollections(
+                (collections) -> {
+                    mThemeCollectionsList.clear();
+                    if (collections != null) {
+                        mThemeCollectionsList.addAll(collections);
+                    }
+
+                    // TODO(crbug.com/423579377): Decide if these indices should be dynamic.
+                    int firstIndex = mThemeCollectionsList.size() > 3 ? 3 : 0;
+                    GURL firstImageUrl =
+                            mThemeCollectionsList.size() > firstIndex
+                                    ? mThemeCollectionsList.get(firstIndex).previewImageUrl
+                                    : null;
+
+                    int secondIndex = mThemeCollectionsList.size() > 5 ? 5 : 1;
+                    GURL secondImageUrl =
+                            mThemeCollectionsList.size() > secondIndex
+                                    ? mThemeCollectionsList.get(secondIndex).previewImageUrl
+                                    : null;
+
+                    ImageFetcher imageFetcher = NtpCustomizationUtils.createImageFetcher(mProfile);
+                    // Array to store the fetched bitmaps. Index 0 for the first image, Index 1 for
+                    // the second.
+                    final @Nullable Bitmap[] bitmaps = new Bitmap[2];
+                    // Counter to track how many image fetches have completed.
+                    // Using AtomicInteger for thread safety, ensuring atomic increments.
+                    final AtomicInteger finishedCount = new AtomicInteger(0);
+                    final int totalCount = 2;
+
+                    // This Runnable is called after each image fetch attempt (success or failure).
+                    // When both fetches are complete, it updates the leading icon.
+                    Runnable onBothImagesFetched =
+                            () -> {
+                                // Atomically increment the count and check if all fetches are done.
+                                if (finishedCount.incrementAndGet() == totalCount) {
+                                    setLeadingIconFromBitmaps(bitmaps[0], bitmaps[1]);
+                                }
+                            };
+
+                    // Create callbacks for handling the result of each image fetch.
+                    Callback<@Nullable Bitmap> firstImageCallback =
+                            createBitmapCallback(bitmaps, /* index= */ 0, onBothImagesFetched);
+                    Callback<@Nullable Bitmap> secondImageCallback =
+                            createBitmapCallback(bitmaps, /* index= */ 1, onBothImagesFetched);
+
+                    // Fetch the images. If the URL is null, the callback is invoked immediately
+                    // with null.
+                    fetchImageOrRunCallback(imageFetcher, firstImageUrl, firstImageCallback);
+                    fetchImageOrRunCallback(imageFetcher, secondImageUrl, secondImageCallback);
+                });
+    }
+
+    /**
+     * Creates a Callback for handling a fetched Bitmap. The callback stores the received Bitmap in
+     * the specified index of the {@code bitmaps} array and then executes the {@code
+     * onBothImagesFetched} Runnable.
+     *
+     * @param bitmaps The array where the fetched Bitmap will be stored.
+     * @param index The index in the {@code bitmaps} array to store the result.
+     * @param onBothImagesFetched The Runnable to execute after the bitmap is stored.
+     */
+    @VisibleForTesting
+    Callback<@Nullable Bitmap> createBitmapCallback(
+            final @Nullable Bitmap[] bitmaps, final int index, final Runnable onBothImagesFetched) {
+        return (bitmap) -> {
+            if (index >= 0 && index < bitmaps.length) {
+                bitmaps[index] = bitmap;
+            }
+            onBothImagesFetched.run();
+        };
+    }
+
+    /**
+     * Helper method to either fetch an image using the ImageFetcher if the URL is not null, or to
+     * immediately invoke the callback with a null Bitmap if the URL is null.
+     *
+     * @param imageFetcher The ImageFetcher instance to use for fetching.
+     * @param imageUrl The URL of the image to fetch. Can be null.
+     * @param callback The Callback to be invoked with the result (Bitmap or null).
+     */
+    @VisibleForTesting
+    void fetchImageOrRunCallback(
+            @Nullable ImageFetcher imageFetcher,
+            @Nullable GURL imageUrl,
+            Callback<@Nullable Bitmap> callback) {
+        if (imageFetcher != null && imageUrl != null) {
+            NtpCustomizationUtils.fetchThemeCollectionImage(imageFetcher, imageUrl, callback);
+        } else {
+            // If URL is null, report back with a null bitmap immediately.
+            callback.onResult(null);
+        }
+    }
+
+    /** Sets the leading icon for the theme collections section from two bitmaps. */
+    @VisibleForTesting
+    void setLeadingIconFromBitmaps(@Nullable Bitmap firstBitmap, @Nullable Bitmap secondBitmap) {
+        Resources res = mContext.getResources();
+        Drawable firstDrawable =
+                (firstBitmap != null) ? new BitmapDrawable(res, firstBitmap) : null;
+        Drawable secondDrawable =
+                (secondBitmap != null) ? new BitmapDrawable(res, secondBitmap) : null;
+        mThemePropertyModel.set(
+                LEADING_ICON_FOR_THEME_COLLECTIONS, new Pair<>(firstDrawable, secondDrawable));
     }
 }

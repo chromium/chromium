@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ntp_customization.theme;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.View;
 
@@ -19,7 +20,7 @@ public class NtpThemeProperty {
     public static final PropertyModel.WritableObjectPropertyKey<View.OnClickListener>
             LEARN_MORE_BUTTON_CLICK_LISTENER = new PropertyModel.WritableObjectPropertyKey<>();
 
-    public static final PropertyModel.WritableObjectPropertyKey<Pair<Integer, Integer>>
+    public static final PropertyModel.WritableObjectPropertyKey<Pair<Drawable, Drawable>>
             LEADING_ICON_FOR_THEME_COLLECTIONS = new PropertyModel.WritableObjectPropertyKey<>();
 
     // The key manages the visibility of trailing icon for each section, with the integer

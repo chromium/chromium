@@ -4,11 +4,14 @@
 
 package org.chromium.chrome.browser.ntp_customization.theme;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
@@ -52,8 +55,15 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationViewProperties;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionManager;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Tests for {@link NtpThemeMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -61,6 +71,7 @@ public class NtpThemeMediatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Mock private Profile mProfile;
     @Mock private Callback<Bitmap> mOnImageSelectedCallback;
     @Mock private BottomSheetDelegate mBottomSheetDelegate;
     @Mock private View mView;
@@ -68,6 +79,7 @@ public class NtpThemeMediatorUnitTest {
     @Mock private Uri mUri;
     @Mock private NtpThemeDelegate mNtpThemeDelegate;
     @Mock private NtpThemeCollectionManager mNtpThemeCollectionManager;
+    @Mock private ImageFetcher mImageFetcher;
 
     private PropertyModel mBottomSheetPropertyModel;
     private PropertyModel mThemePropertyModel;
@@ -81,6 +93,7 @@ public class NtpThemeMediatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         when(mView.getContext()).thenReturn(mContext);
+        NtpCustomizationUtils.setImageFetcherForTesting(mImageFetcher);
 
         mBottomSheetPropertyModel =
                 new PropertyModel(NtpCustomizationViewProperties.BOTTOM_SHEET_KEYS);
@@ -137,10 +150,20 @@ public class NtpThemeMediatorUnitTest {
     @Test
     public void testHandleThemeCollectionsSectionClick() {
         createMediator(/* shouldShowAlone= */ true);
+        List<BackgroundCollection> collections = new ArrayList<>();
+        doAnswer(
+                        invocation -> {
+                            Callback<List<BackgroundCollection>> callback =
+                                    invocation.getArgument(0);
+                            callback.onResult(collections);
+                            return null;
+                        })
+                .when(mNtpThemeCollectionManager)
+                .getBackgroundCollections(any(Callback.class));
 
         mMediator.handleThemeCollectionsSectionClick(mView);
 
-        verify(mNtpThemeDelegate).onThemeCollectionsClicked(any(Runnable.class));
+        verify(mNtpThemeDelegate).onThemeCollectionsClicked(any(Runnable.class), eq(collections));
     }
 
     @Test
@@ -153,12 +176,12 @@ public class NtpThemeMediatorUnitTest {
     }
 
     @Test
-    public void testSetLeadingIconForThemeCollectionsSection() {
-        createMediator(/* shouldShowAlone= */ true);
-
-        Pair<Integer, Integer> drawablePair =
-                mThemePropertyModel.get(LEADING_ICON_FOR_THEME_COLLECTIONS);
-        assertNotNull(drawablePair);
+    public void testSetLeadingIconFromBitmaps() {
+        createMediator(true);
+        Bitmap bitmap1 = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap2 = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        mMediator.setLeadingIconFromBitmaps(bitmap1, bitmap2);
+        verify(mThemePropertyModel).set(eq(LEADING_ICON_FOR_THEME_COLLECTIONS), any(Pair.class));
     }
 
     @Test
@@ -251,6 +274,7 @@ public class NtpThemeMediatorUnitTest {
         mMediator =
                 new NtpThemeMediator(
                         mContext,
+                        mProfile,
                         mBottomSheetPropertyModel,
                         mThemePropertyModel,
                         mBottomSheetDelegate,
@@ -276,5 +300,53 @@ public class NtpThemeMediatorUnitTest {
                 .set(eq(IS_SECTION_TRAILING_ICON_VISIBLE), eq(new Pair<>(IMAGE_FROM_DISK, false)));
 
         verify(mNtpThemeCollectionManager).resetCustomBackground();
+    }
+
+    @Test
+    public void testFetchImageOrRunCallback_withUrl() {
+        createMediator(true);
+        Callback<Bitmap> callback = mock(Callback.class);
+        GURL url = new GURL("http://test.com");
+        mMediator.fetchImageOrRunCallback(mImageFetcher, url, callback);
+        verify(mImageFetcher).fetchImage(any(), eq(callback));
+    }
+
+    @Test
+    public void testCreateBitmapCallback() {
+        createMediator(true);
+        Bitmap[] bitmaps = new Bitmap[1];
+        Runnable runnable = mock(Runnable.class);
+        Callback<Bitmap> callback = mMediator.createBitmapCallback(bitmaps, 0, runnable);
+
+        Bitmap bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
+        callback.onResult(bitmap);
+
+        assertEquals(bitmap, bitmaps[0]);
+        verify(runnable).run();
+    }
+
+    @Test
+    public void testFetchAndSetThemeCollectionsLeadingIcon() {
+        createMediator(true);
+        mMediator = spy(mMediator);
+
+        List<BackgroundCollection> collections = new ArrayList<>();
+        // Add enough collections to trigger both fetches.
+        for (int i = 0; i < 6; i++) {
+            collections.add(mock(BackgroundCollection.class));
+        }
+        doAnswer(
+                        invocation -> {
+                            Callback<List<BackgroundCollection>> callback =
+                                    invocation.getArgument(0);
+                            callback.onResult(collections);
+                            return null;
+                        })
+                .when(mNtpThemeCollectionManager)
+                .getBackgroundCollections(any(Callback.class));
+
+        mMediator.fetchAndSetThemeCollectionsLeadingIcon();
+
+        verify(mMediator, times(2)).fetchImageOrRunCallback(eq(mImageFetcher), any(), any());
     }
 }

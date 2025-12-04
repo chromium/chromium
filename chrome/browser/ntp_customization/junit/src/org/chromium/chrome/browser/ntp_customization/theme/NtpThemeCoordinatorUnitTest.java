@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
 import org.chromium.chrome.browser.ntp_customization.R;
+import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.BackgroundCollection;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridge;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.NtpThemeCollectionBridgeJni;
@@ -48,6 +49,9 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Ntp
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.url.GURL;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link NtpThemeCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -129,10 +133,11 @@ public class NtpThemeCoordinatorUnitTest {
     }
 
     @Test
-    public void onThemeCollectionsClicked() {
+    public void testOnThemeCollectionsClicked() {
+        List<BackgroundCollection> collections = new ArrayList<>();
         mCoordinator
                 .getNtpThemeDelegateForTesting()
-                .onThemeCollectionsClicked(mOnDailyUpdateCancelledCallback);
+                .onThemeCollectionsClicked(mOnDailyUpdateCancelledCallback, collections);
         verify(mBottomSheetDelegate).showBottomSheet(eq(BottomSheetType.THEME_COLLECTIONS));
     }
 

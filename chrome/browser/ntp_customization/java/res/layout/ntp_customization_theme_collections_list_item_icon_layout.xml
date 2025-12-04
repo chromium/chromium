@@ -49,7 +49,7 @@ found in the LICENSE file.
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        android:scaleType="fitCenter"
+        android:scaleType="centerCrop"
         android:clipToOutline="true"
         android:importantForAccessibility="no" />
 
@@ -70,7 +70,7 @@ found in the LICENSE file.
           android:layout_width="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
           android:layout_height="@dimen/ntp_customization_theme_collections_icon_secondary_inner_size"
           android:layout_gravity="right|top"
-          android:scaleType="fitCenter"
+          android:scaleType="centerCrop"
           android:clipToOutline="true"
           android:importantForAccessibility="no"
           tools:ignore="RtlHardcoded" />

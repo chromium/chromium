@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.util.Pair;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
@@ -100,10 +101,11 @@ public class NtpThemeViewBinderUnitTest {
         PropertyModelChangeProcessor.create(
                 mModel, mNtpThemeBottomSheetView, NtpThemeViewBinder::bindThemeBottomSheet);
 
-        final Pair<Integer, Integer> pair =
-                new Pair<>(
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable primaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable secondaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        final Pair<Drawable, Drawable> pair = new Pair<>(primaryDrawable, secondaryDrawable);
         mModel.set(NtpThemeProperty.LEADING_ICON_FOR_THEME_COLLECTIONS, pair);
         verify(mNtpThemeBottomSheetView).setLeadingIconForThemeCollections(pair);
     }

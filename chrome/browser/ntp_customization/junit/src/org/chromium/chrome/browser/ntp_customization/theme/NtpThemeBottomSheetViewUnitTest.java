@@ -105,10 +105,11 @@ public class NtpThemeBottomSheetViewUnitTest {
 
     @Test
     public void testSetLeadingIconForThemeCollections() {
-        final Pair<Integer, Integer> pair =
-                new Pair<>(
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet,
-                        R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable primaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        Drawable secondaryDrawable =
+                mContext.getDrawable(R.drawable.upload_an_image_icon_for_theme_bottom_sheet);
+        final Pair<Drawable, Drawable> pair = new Pair<>(primaryDrawable, secondaryDrawable);
         mNtpThemeBottomSheetView.setLeadingIconForThemeCollections(pair);
 
         ArgumentCaptor<Pair<Drawable, Drawable>> captor = ArgumentCaptor.forClass(Pair.class);

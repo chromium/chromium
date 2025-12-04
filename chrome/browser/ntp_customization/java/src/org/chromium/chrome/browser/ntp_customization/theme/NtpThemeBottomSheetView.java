@@ -19,8 +19,6 @@ import android.view.LayoutInflater;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 
-import androidx.core.content.ContextCompat;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType;
@@ -102,11 +100,9 @@ public class NtpThemeBottomSheetView extends ScrollView {
         ntpThemeListItemView.setOnClickListener(onClickListener);
     }
 
-    void setLeadingIconForThemeCollections(Pair<Integer, Integer> drawableSourcePair) {
-        Drawable primaryDrawable =
-                ContextCompat.getDrawable(getContext(), drawableSourcePair.first);
-        Drawable secondaryDrawable =
-                ContextCompat.getDrawable(getContext(), drawableSourcePair.second);
+    void setLeadingIconForThemeCollections(Pair<Drawable, Drawable> drawablePair) {
+        Drawable primaryDrawable = drawablePair.first;
+        Drawable secondaryDrawable = drawablePair.second;
         NtpThemeListItemView themeCollectionsItemView =
                 assumeNonNull(getItemBySectionType(THEME_COLLECTION));
         NtpThemeListThemeCollectionItemIconView themeCollectionsItemIconView =

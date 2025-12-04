@@ -9,7 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -79,6 +78,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     private Context mContext;
     private Context mContextSpy;
     private View mBottomSheetView;
+    private List<BackgroundCollection> mThemeCollectionsList;
 
     @Before
     public void setUp() {
@@ -87,6 +87,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
         mContextSpy = spy(mContext);
+        mThemeCollectionsList = new ArrayList<>();
 
         when(mBottomSheetDelegate.getBottomSheetController()).thenReturn(mBottomSheetController);
 
@@ -96,7 +97,8 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         mBottomSheetDelegate,
                         mProfile,
                         mNtpThemeCollectionManager,
-                        mOnDailyUpdateCancelledCallback);
+                        mOnDailyUpdateCancelledCallback,
+                        mThemeCollectionsList);
 
         ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
         verify(mBottomSheetDelegate)
@@ -107,19 +109,14 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     @Test
     public void testConstructor() {
         assertNotNull(mBottomSheetView);
-        verify(mNtpThemeCollectionManager).getBackgroundCollections(mCallbackCaptor.capture());
 
         RecyclerView recyclerView =
                 mBottomSheetView.findViewById(R.id.theme_collections_recycler_view);
         NtpThemeCollectionsAdapter adapter = (NtpThemeCollectionsAdapter) recyclerView.getAdapter();
-        NtpThemeCollectionsAdapter adapterSpy = spy(adapter);
-        mCoordinator.setNtpThemeCollectionsAdapterForTesting(adapterSpy);
+        assertEquals(mThemeCollectionsList.size(), adapter.getItemCount());
 
-        List<BackgroundCollection> collections = new ArrayList<>();
-        mCallbackCaptor.getValue().onResult(collections);
-
-        verify(mBottomSheetController).expandSheet();
-        verify(adapterSpy).setSelection(any(), any());
+        verify(mNtpThemeCollectionManager).getSelectedThemeCollectionId();
+        verify(mNtpThemeCollectionManager).getSelectedThemeCollectionImageUrl();
     }
 
     @Test
@@ -186,8 +183,7 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
     public void testHandleThemeCollectionClick() {
         String histogramName = "NewTabPage.Customization.Theme.ThemeCollection.CollectionShow";
 
-        // Populate mThemeCollectionsList in the coordinator.
-        verify(mNtpThemeCollectionManager).getBackgroundCollections(mCallbackCaptor.capture());
+        // Create a list with one collection for this test.
         List<BackgroundCollection> collections = new ArrayList<>();
         collections.add(
                 new BackgroundCollection(
@@ -195,8 +191,18 @@ public class NtpThemeCollectionsCoordinatorUnitTest {
                         TEST_COLLECTION_TITLE,
                         JUnitTestGURLs.EXAMPLE_URL,
                         TEST_COLLECTION_HASH));
-        mCallbackCaptor.getValue().onResult(collections);
-        verify(mBottomSheetController).expandSheet();
+        mCoordinator =
+                new NtpThemeCollectionsCoordinator(
+                        mContextSpy,
+                        mBottomSheetDelegate,
+                        mProfile,
+                        mNtpThemeCollectionManager,
+                        mOnDailyUpdateCancelledCallback,
+                        collections);
+        ArgumentCaptor<View> viewCaptor = ArgumentCaptor.forClass(View.class);
+        verify(mBottomSheetDelegate, times(2))
+                .registerBottomSheetLayout(eq(THEME_COLLECTIONS), viewCaptor.capture());
+        mBottomSheetView = viewCaptor.getValue();
 
         // Force the RecyclerView to create and bind views.
         RecyclerView recyclerView =

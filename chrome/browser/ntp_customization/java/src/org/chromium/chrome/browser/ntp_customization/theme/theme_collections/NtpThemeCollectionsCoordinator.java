@@ -31,7 +31,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** Coordinator for the NTP appearance theme collections bottom sheet in the NTP customization. */
@@ -42,7 +41,7 @@ public class NtpThemeCollectionsCoordinator {
             "https://support.google.com/chrome/?p=new_tab";
     private static final int RECYCLE_VIEW_SPAN_COUNT = 3;
 
-    private final List<BackgroundCollection> mThemeCollectionsList = new ArrayList<>();
+    private final List<BackgroundCollection> mThemeCollectionsList;
     private final BottomSheetDelegate mBottomSheetDelegate;
     private final Context mContext;
     private final View mNtpThemeCollectionsBottomSheetView;
@@ -74,12 +73,14 @@ public class NtpThemeCollectionsCoordinator {
             BottomSheetDelegate delegate,
             Profile profile,
             NtpThemeCollectionManager ntpThemeCollectionManager,
-            Runnable onDailyRefreshCancelledCallback) {
+            Runnable onDailyRefreshCancelledCallback,
+            List<BackgroundCollection> themeCollectionsList) {
         mContext = context;
         mBottomSheetDelegate = delegate;
         mImageFetcher = NtpCustomizationUtils.createImageFetcher(profile);
         mNtpThemeCollectionManager = ntpThemeCollectionManager;
         mOnDailyRefreshCancelledCallback = onDailyRefreshCancelledCallback;
+        mThemeCollectionsList = themeCollectionsList;
 
         mItemMaxWidth =
                 mContext.getResources()
@@ -124,6 +125,18 @@ public class NtpThemeCollectionsCoordinator {
                         this::handleThemeCollectionClick,
                         mImageFetcher);
         mThemeCollectionsBottomSheetRecyclerView.setAdapter(mNtpThemeCollectionsAdapter);
+        mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
+        // After setting items, apply the current selection from the manager.
+        mNtpThemeCollectionsAdapter.setSelection(
+                mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
+                mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
+
+        // Post the task to expand the sheet to ensure that the bottom sheet view is laid out and
+        // has a height, allowing it to correctly open to the half-height state.
+        mThemeCollectionsBottomSheetRecyclerView.post(
+                () -> {
+                    delegate.getBottomSheetController().expandSheet();
+                });
 
         NtpThemeCollectionsUtils.updateSpanCountOnLayoutChange(
                 gridLayoutManager,
@@ -138,23 +151,6 @@ public class NtpThemeCollectionsCoordinator {
                                         newConfig,
                                         gridLayoutManager,
                                         mThemeCollectionsBottomSheetRecyclerView));
-
-        // Fetches the theme collections.
-        mNtpThemeCollectionManager.getBackgroundCollections(
-                (collections) -> {
-                    mThemeCollectionsList.clear();
-                    if (collections != null) {
-                        mThemeCollectionsList.addAll(collections);
-                    }
-                    mNtpThemeCollectionsAdapter.setItems(mThemeCollectionsList);
-                    // Once items are loaded, expand to the half state.
-                    delegate.getBottomSheetController().expandSheet();
-
-                    // After setting items, apply the current selection from the manager.
-                    mNtpThemeCollectionsAdapter.setSelection(
-                            mNtpThemeCollectionManager.getSelectedThemeCollectionId(),
-                            mNtpThemeCollectionManager.getSelectedThemeCollectionImageUrl());
-                });
     }
 
     public void destroy() {
