@@ -113,9 +113,13 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
   bool has_permissions = prompt_->GetPermissionCount() > 0;
   if (has_permissions) {
     std::u16string permissions_heading = prompt_->GetPermissionsHeading();
+    std::u16string permissions_show_details =
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_SHOW_DETAILS);
+    std::u16string permissions_hide_details =
+        l10n_util::GetStringUTF16(IDS_EXTENSIONS_HIDE_DETAILS);
+
     std::vector<std::u16string> permissions_text;
     std::vector<std::u16string> permissions_details;
-
     auto permissions = prompt_->GetPermissions();
     for (size_t i = 0; i < permissions.permissions.size(); ++i) {
       permissions_text.push_back(permissions.permissions[i]);
@@ -128,9 +132,14 @@ void ExtensionInstallDialogViewAndroid::BuildPropertyModel() {
         base::android::ToJavaArrayOfStrings(env, permissions_text);
     ScopedJavaLocalRef<jobjectArray> java_permissions_details_array =
         base::android::ToJavaArrayOfStrings(env, permissions_details);
+    ScopedJavaLocalRef<jstring> java_permissions_show_details =
+        ConvertUTF16ToJavaString(env, permissions_show_details);
+    ScopedJavaLocalRef<jstring> java_permissions_hide_details =
+        ConvertUTF16ToJavaString(env, permissions_hide_details);
     Java_ExtensionInstallDialogBridge_withPermissions(
         env, java_object_, java_permissions_heading,
-        java_permissions_text_array, java_permissions_details_array);
+        java_permissions_text_array, java_permissions_details_array,
+        java_permissions_show_details, java_permissions_hide_details);
   }
 
   bool requires_justification =

@@ -112,7 +112,11 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      */
     @CalledByNative
     public void withPermissions(
-            String permissionsHeading, String[] permissionsText, String[] permissionsDetails) {
+            String permissionsHeading,
+            String[] permissionsText,
+            String[] permissionsDetails,
+            String permissionsShowDetails,
+            String permissionsHideDetails) {
         View contentView = getContentView();
         LinearLayout scrollViewContainer = contentView.findViewById(R.id.scroll_view_container);
 
@@ -120,22 +124,52 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
                 scrollViewContainer.findViewById(R.id.permissions_container);
         permissionsContainer.setVisibility(View.VISIBLE);
 
+        // Add the permissions heading.
         TextView permissionsHeadingView =
                 permissionsContainer.findViewById(R.id.permissions_heading);
         permissionsHeadingView.setText(permissionsHeading);
 
+        // Add a row for each permission.
         LayoutInflater inflater = LayoutInflater.from(mContext);
-        for (String permissionText : permissionsText) {
-            TextViewWithLeading permissionTextView =
-                    (TextViewWithLeading)
-                            inflater.inflate(
-                                    R.layout.modal_dialog_paragraph_view,
-                                    permissionsContainer,
-                                    false);
-            permissionTextView.setText(permissionText);
-            permissionsContainer.addView(permissionTextView);
-            // TODO(crbug.com/424010795): Add permissionsDetails as a collapsible view, if
-            // existent.
+        for (int i = 0; i < permissionsText.length; i++) {
+            // Inflate the custom layout for the permission row.
+            View permissionRow =
+                    inflater.inflate(
+                            R.layout.extension_install_dialog_permission_item,
+                            permissionsContainer,
+                            false);
+
+            // Add the permission's main text.
+            TextViewWithLeading mainText = permissionRow.findViewById(R.id.permission_item_text);
+            mainText.setText(permissionsText[i]);
+
+            // Add toggle to open the permission's details, if existent.
+            TextViewWithLeading toggle = permissionRow.findViewById(R.id.permission_item_toggle);
+            TextViewWithLeading details = permissionRow.findViewById(R.id.permission_item_details);
+            if (permissionsDetails[i].isEmpty()) {
+                toggle.setVisibility(View.GONE);
+                details.setVisibility(View.GONE);
+            } else {
+                toggle.setText(permissionsShowDetails);
+                details.setText(permissionsDetails[i]);
+
+                toggle.setVisibility(View.VISIBLE);
+                details.setVisibility(View.GONE);
+
+                toggle.setOnClickListener(
+                        v -> {
+                            if (details.getVisibility() == View.VISIBLE) {
+                                details.setVisibility(View.GONE);
+                                toggle.setText(permissionsShowDetails);
+                            } else {
+                                details.setVisibility(View.VISIBLE);
+                                toggle.setText(permissionsHideDetails);
+                            }
+                        });
+            }
+
+            // Add the permission's row to the main container.
+            permissionsContainer.addView(permissionRow);
         }
     }
 

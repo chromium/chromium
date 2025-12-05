@@ -53,8 +53,8 @@ public class ExtensionInstallDialogBridgeTest {
     private static final String ACCEPT_BUTTON_LABEL = "Add extension";
     private static final String CANCEL_BUTTON_LABEL = "Cancel";
     private static final String PERMISSIONS_HEADING = "It can:";
-    private static final String[] PERMISSIONS_TEXT = {"Permission #1", "Permission #2"};
-    private static final String[] PERMISSIONS_DETAILS = {"Details #1", ""};
+    private static final String PERMISSIONS_SHOW_DETAILS = "Show Details";
+    private static final String PERMISSIONS_HIDE_DETAILS = "Hide Details";
     private static final String JUSTIFICATION_HEADING =
             "Justification for requesting this extension:";
     private static final String JUSTIFICATION_PLACEHOLDER = "Enter justification...";
@@ -122,28 +122,95 @@ public class ExtensionInstallDialogBridgeTest {
     @Test
     @SmallTest
     public void testDialogWithPermissions() throws Exception {
+        String[] permissionsText = {"Permission #1", "Permission #2"};
+        String[] permissionsDetails = {"", "Details #1"};
+
         mExtensionInstallDialogBridge.withPermissions(
-                PERMISSIONS_HEADING, PERMISSIONS_TEXT, PERMISSIONS_DETAILS);
+                PERMISSIONS_HEADING,
+                permissionsText,
+                permissionsDetails,
+                PERMISSIONS_SHOW_DETAILS,
+                PERMISSIONS_HIDE_DETAILS);
         buildAndShowDialog();
         PropertyModel dialogModel = mModalDialogManager.getShownDialogModel();
 
         View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
         LinearLayout permissionsContainer = customView.findViewById(R.id.permissions_container);
         // Permissions container includes the heading and an entry per permission.
-        int expectedChildCount = 1 + PERMISSIONS_TEXT.length;
+        int expectedChildCount = 1 + permissionsText.length;
         Assert.assertEquals(expectedChildCount, permissionsContainer.getChildCount());
 
+        // Verify permissions heading.
         TextView headingView = customView.findViewById(R.id.permissions_heading);
         Assert.assertEquals(PERMISSIONS_HEADING, headingView.getText());
 
-        for (int i = 0; i < PERMISSIONS_TEXT.length; i++) {
-            // Permissions text start at index 1 in the container, since the heading is at index 0.
-            View childView = permissionsContainer.getChildAt(i + 1);
-            Assert.assertTrue(childView instanceof TextViewWithLeading);
-            TextViewWithLeading permissionTextView = (TextViewWithLeading) childView;
+        // Verify first permission with details.
+        int permissionOneIndex = 0;
+        View permissionOne = permissionsContainer.getChildAt(permissionOneIndex + 1);
+        TextViewWithLeading permissionOneMainText =
+                permissionOne.findViewById(R.id.permission_item_text);
+        TextViewWithLeading permissionOneToggle =
+                permissionOne.findViewById(R.id.permission_item_toggle);
+        TextViewWithLeading permissionOneDetails =
+                permissionOne.findViewById(R.id.permission_item_details);
+        Assert.assertEquals(
+                "Permission one text does not match.",
+                permissionsText[permissionOneIndex],
+                permissionOneMainText.getText().toString());
+        Assert.assertEquals(
+                "Permission one toggle should be hidden, since permission has no details",
+                View.GONE,
+                permissionOneToggle.getVisibility());
+        Assert.assertEquals(
+                "Permission one details should be hidden, since permission has no details.",
+                View.GONE,
+                permissionOneDetails.getVisibility());
 
-            Assert.assertEquals(PERMISSIONS_TEXT[i], permissionTextView.getText().toString());
-        }
+        // Verify second permission with no details.
+        int permissionTwoIndex = 1;
+        View permissionTwo = permissionsContainer.getChildAt(permissionTwoIndex + 1);
+        TextViewWithLeading permissionTwoMainText =
+                permissionTwo.findViewById(R.id.permission_item_text);
+        TextViewWithLeading permissionTwoToggle =
+                permissionTwo.findViewById(R.id.permission_item_toggle);
+        TextViewWithLeading permissionTwoDetails =
+                permissionTwo.findViewById(R.id.permission_item_details);
+        Assert.assertEquals(
+                "Permission two text does not match.",
+                permissionsText[permissionTwoIndex],
+                permissionTwoMainText.getText().toString());
+        Assert.assertEquals(
+                "Permission two toggle should be visible.",
+                View.VISIBLE,
+                permissionTwoToggle.getVisibility());
+        Assert.assertEquals(
+                "Permission two details should be initially hidden.",
+                View.GONE,
+                permissionTwoDetails.getVisibility());
+        // Clicking on the toggle should show the details.
+        permissionTwoToggle.performClick();
+        Assert.assertEquals(
+                "Permissions two details should be visible after toggle click.",
+                View.VISIBLE,
+                permissionTwoDetails.getVisibility());
+        Assert.assertEquals(
+                "Permission two details does not match.",
+                permissionsDetails[permissionTwoIndex],
+                permissionTwoDetails.getText().toString());
+        Assert.assertEquals(
+                "Permissions two toggle text should chang.",
+                PERMISSIONS_HIDE_DETAILS,
+                permissionTwoToggle.getText().toString());
+        // Clicking on the toggle again should hide the details.
+        permissionTwoToggle.performClick();
+        Assert.assertEquals(
+                "Permissions two details should be hidden after second click.",
+                View.GONE,
+                permissionTwoDetails.getVisibility());
+        Assert.assertEquals(
+                "Permissions two toggle text should revert.",
+                PERMISSIONS_SHOW_DETAILS,
+                permissionTwoToggle.getText().toString());
     }
 
     /**
