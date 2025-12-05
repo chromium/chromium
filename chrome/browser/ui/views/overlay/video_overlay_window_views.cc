@@ -1518,7 +1518,17 @@ void VideoOverlayWindowViews::OnUpdateControlsBounds() {
       top_controls_bounds.bottom_left(),
       {bounds.width(), bounds.height() - (2 * top_controls_bounds.height())});
 
-  title_view_->SetSize(bounds.size());
+  // TODO(crbug.com/433972713): Set to default behavior once fix is confirmed.
+  if (base::FeatureList::IsEnabled(
+          media::kVideoPipDisplaySmoothnessOptimization)) {
+    title_view_->SetBoundsRect(
+        {top_controls_bounds.x(), top_controls_bounds.y(),
+         top_controls_bounds.width() - kOriginRightMargin,
+         kFaviconTopMargin + kFaviconSize.height()});
+  } else {
+    title_view_->SetSize(bounds.size());
+  }
+
   playback_controls_container_view_->SetSize(bounds.size());
   vc_controls_container_view_->SetSize(bounds.size());
   controls_top_scrim_view_->SetBoundsRect(

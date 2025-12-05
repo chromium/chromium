@@ -352,6 +352,13 @@ BASE_FEATURE(kPictureInPictureOcclusionTracking,
 // Enables the animation of the Picture-in-Picture window creation.
 BASE_FEATURE(kPictureInPictureShowWindowAnimation,
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables video Picture-in-Picture display smoothness optimization.
+//
+// Ensures that the video PiP window title view is properly sized to only fit
+// the favicon and origin.
+BASE_FEATURE(kVideoPipDisplaySmoothnessOptimization,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables user control over muting tab audio from the tab strip.
