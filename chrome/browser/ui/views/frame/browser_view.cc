@@ -1302,6 +1302,14 @@ bool BrowserView::ShouldDrawTabStrip() const {
   return tab_strip_region_view_->tab_strip() != nullptr;
 }
 
+bool BrowserView::ShouldDrawVerticalTabStrip() const {
+  return ShouldDrawTabStrip() && tabs::IsVerticalTabsFeatureEnabled() &&
+         browser()
+             ->browser_window_features()
+             ->vertical_tab_strip_state_controller()
+             ->ShouldDisplayVerticalTabs();
+}
+
 bool BrowserView::GetIncognito() const {
   return browser_->GetProfile()->IsIncognitoProfile();
 }

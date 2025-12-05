@@ -330,6 +330,9 @@ class BrowserView : public BrowserWindow,
   // On macOS, it is possible that the top UI is drawn but hidden.
   bool ShouldDrawTabStrip() const;
 
+  // Returns whether a vertical tabstrip should be shown.
+  bool ShouldDrawVerticalTabStrip() const;
+
   // Returns true if the profile associated with this Browser window is
   // incognito.
   bool GetIncognito() const;

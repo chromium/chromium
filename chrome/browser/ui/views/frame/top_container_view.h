@@ -27,6 +27,7 @@ class TopContainerView : public views::View {
 
   // views::View overrides:
   void PaintChildren(const views::PaintInfo& paint_info) override;
+  void OnPaintBackground(gfx::Canvas* canvas) override;
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:

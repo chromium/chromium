@@ -45,11 +45,7 @@ bool BrowserViewLayoutDelegateImpl::ShouldUseTouchableTabstrip() const {
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawVerticalTabStrip() const {
-  return ShouldDrawTabStrip() && tabs::IsVerticalTabsFeatureEnabled() &&
-         browser_view_->browser()
-             ->browser_window_features()
-             ->vertical_tab_strip_state_controller()
-             ->ShouldDisplayVerticalTabs();
+  return browser_view_->ShouldDrawVerticalTabStrip();
 }
 
 bool BrowserViewLayoutDelegateImpl::ShouldDrawWebAppFrameToolbar() const {
