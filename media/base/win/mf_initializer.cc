@@ -14,9 +14,13 @@
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/win/delayload_helpers.h"
 #include "base/win/scoped_handle.h"
 #include "media/base/win/media_foundation_package_runtime_locator.h"
+
+class ScopedAllowBlockingForMediaFoundation : public base::ScopedAllowBlocking {
+};
 
 namespace {
 
@@ -33,6 +37,7 @@ static const char kMediaFoundationLoadFailedMessage[] =
 // sandbox initialization or it will always fail.
 bool LoadMediaFoundationLibraries() {
   static const bool kDidLoadSucceed = []() {
+    ScopedAllowBlockingForMediaFoundation allow_io_to_load_library;
     for (const wchar_t* mfdll : {L"mf.dll", L"mfplat.dll"}) {
       base::NativeLibraryLoadError error;
       if (!base::LoadSystemLibrary(mfdll, &error)) {
@@ -89,8 +94,9 @@ class MediaFoundationSession {
   ~MediaFoundationSession() {
     // The public documentation stating that it needs to have a corresponding
     // shutdown for all startups (even failed ones) is wrong.
-    if (has_media_foundation_)
+    if (has_media_foundation_) {
       MFShutdown();
+    }
   }
 
   bool has_media_foundation() const { return has_media_foundation_; }
