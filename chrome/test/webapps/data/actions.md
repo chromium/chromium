@@ -30,7 +30,7 @@ TODO(dmurph): Possibly this table up into markdown-header section.
 | |
 | # Manifest Update |
 | manifest_update_scope_to | Site, Site |  | 8 | Implemented | Update the scope of the app at the first site to the second site. |  |
-| manifest_update_icon | Site |  | 68 | Implemented | Updates the launcher icon in the manifest of the website. | finnur@ |
+| manifest_update_icon | Site, Color |  | 68 | Implemented | Updates the launcher icon in the manifest of the website to a specific color. | finnur@ |
 | manifest_update_title | Site, Title |  | 88 | Implemented | The website updates it's manifest.json to change the 'title' | finnur@ |
 | manifest_update_colors | Site |  | 80 | Not Implemented | The website updates it's manifest.json to change the 'theme' color | P3 |
 | manifest_update_display | Site, Display |  | 116 | Implemented |  |  |

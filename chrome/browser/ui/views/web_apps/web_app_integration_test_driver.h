@@ -98,7 +98,7 @@ enum class InstallableSite {
 
 enum class Title { kStandaloneOriginal, kStandaloneUpdated };
 
-enum class Color { kRed, kGreen };
+enum class Color { kRed, kGreen, kGreenSmallDiff };
 
 enum class ProfileClient { kClient2, kClient1 };
 
@@ -326,7 +326,7 @@ class WebAppIntegrationTestDriver {
   void NavigatePwa(Site app, Site to);
   void NavigateNotfoundUrl();
   void NewAppTab(Site site);
-  void ManifestUpdateIcon(Site site);
+  void ManifestUpdateIcon(Site site, Color update_color);
   void ManifestUpdateTitle(Site site, Title title);
   void ManifestUpdateDisplay(Site site, Display display);
   void ManifestUpdateScopeTo(Site app, Site scope);

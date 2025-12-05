@@ -2276,7 +2276,8 @@ void WebAppIntegrationTestDriver::NewAppTab(Site site) {
   AfterStateChangeAction();
 }
 
-void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site) {
+void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site,
+                                                     Color update_color) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
   }
@@ -2286,18 +2287,36 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site) {
   ASSERT_NE(app_browser(), nullptr)
       << " manifest updates require the app browser to be launched!";
 
+  std::string manifest_query_param;
+  switch (update_color) {
+    case Color::kGreen:
+      manifest_query_param = "?manifest=basic.json";
+      break;
+    case Color::kRed:
+      manifest_query_param = base::StringPrintf(
+          "?manifest=manifest_icon_red_%u.json", kLauncherIconSize);
+      break;
+    case Color::kGreenSmallDiff:
+      manifest_query_param =
+          base::StringPrintf("?manifest=manifest_icon_green_small_diff_%u.json",
+                             kLauncherIconSize);
+      break;
+  }
+
   // After launching the trusted icon architecture, the icon of largest size of
   // purpose any is going to be preferred.
-  GURL url = GetUrlForSite(
-      site, base::StringPrintf("?manifest=manifest_icon_red_%u.json",
-                               kLauncherIconSize));
+  GURL url = GetUrlForSite(site, manifest_query_param);
   webapps::AppId app_id = GetAppIdBySiteMode(site);
 
-  // Security sensitive updates to apps that are considered installed from
-  // trusted sources happen silently without UX intervention.
-  ForceUpdateManifestContents(site, url,
-                              !provider()->registrar_unsafe().AppMatches(
-                                  app_id, WebAppFilter::IsTrusted()));
+  // Waiting for the menu button UX to be updated is not required icon updates
+  // happen silently, which happens when:
+  // 1. The icon url being updated points to an icon that is <10% in pixel by
+  // pixel diff.
+  // 2. Updates are being triggered for trusted app installs.
+  bool wait_for_menu_button_update = update_color != Color::kGreenSmallDiff &&
+                                     !provider()->registrar_unsafe().AppMatches(
+                                         app_id, WebAppFilter::IsTrusted());
+  ForceUpdateManifestContents(site, url, wait_for_menu_button_update);
   AfterStateChangeAction();
 }
 
@@ -3150,6 +3169,9 @@ void WebAppIntegrationTestDriver::CheckAppIcon(Site site, Color color) {
     case Color::kRed:
       color_str = "red";
       break;
+    case Color::kGreenSmallDiff:
+      color_str = "green-small-diff";
+      break;
   }
   EXPECT_EQ(app_state->manifest_launcher_icon_filename,
             base::StringPrintf("%ux%u-%s.png", kLauncherIconSize,
@@ -3185,6 +3207,11 @@ void WebAppIntegrationTestDriver::CheckAppIcon(Site site, Color color) {
       break;
     case Color::kRed:
       expected_color = SK_ColorRED;
+      break;
+    // The icons referred to here are green with a white line starting from the
+    // top left.
+    case Color::kGreenSmallDiff:
+      expected_color = SK_ColorWHITE;
       break;
   }
   EXPECT_EQ(expected_color, launcher_icon_color)
