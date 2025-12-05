@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
