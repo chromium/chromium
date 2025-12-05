@@ -1748,6 +1748,14 @@ void HostProcess::InitializeSignaling() {
   zombie_host_detector_ = std::make_unique<ZombieHostDetector>(base::BindOnce(
       &HostProcess::OnZombieStateDetected, base::Unretained(this)));
 
+#if BUILDFLAG(IS_LINUX)
+  // TODO: joedow - Remove Linux scope after this codepath has been stabilized.
+  const base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+  if (is_corp_host_ && cmd_line->HasSwitch(kEnableCorpMessaging)) {
+    // TODO: joedow - Create CorpSignalStrategy instance here.
+  }
+#endif
+
   auto ftl_signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(
           oauth_token_getter_->GetWeakPtr()),

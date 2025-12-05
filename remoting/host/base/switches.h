@@ -46,6 +46,9 @@ extern const char kEvaluateCapabilitySwitchName[];
 extern const char kEnableWtmpdb[];
 #endif
 
+// Indicates whether Corp Messaging should be enabled for signaling.
+extern const char kEnableCorpMessaging[];
+
 // Values for kEvaluateCapabilitySwitchName.
 #if BUILDFLAG(IS_WIN)
 // Executes EvaluateD3D() function.
