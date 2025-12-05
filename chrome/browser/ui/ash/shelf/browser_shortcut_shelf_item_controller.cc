@@ -13,6 +13,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/window_animations.h"
+#include "base/check_deref.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,14 +26,12 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
+#include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
@@ -135,6 +134,30 @@ bool ShouldRecordLaunchTime(const ash::BrowserDelegate& browser,
          IsBrowserRepresentedInBrowserList(&browser, model);
 }
 
+ash::BrowserDelegate* FindNormalBrowserOnActiveDesk(
+    const AccountId& account_id) {
+  ash::BrowserDelegate* result = nullptr;
+  ash::BrowserController::GetInstance()->ForEachBrowser(
+      ash::BrowserController::BrowserOrder::kAscendingActivationTime,
+      [&](ash::BrowserDelegate& browser) {
+        if (browser.GetType() != ash::BrowserType::kNormal ||
+            browser.GetAccountId() != account_id || browser.IsClosing()) {
+          return ash::BrowserController::kContinueIteration;
+        }
+        aura::Window* window = browser.GetNativeWindow();
+        if (window && ash::desks_util::BelongsToActiveDesk(window)) {
+          result = &browser;
+          return ash::BrowserController::kBreakIteration;
+        }
+        return ash::BrowserController::kContinueIteration;
+      });
+  return result;
+}
+
+AccountId GetAccountId(Profile* profile) {
+  return CHECK_DEREF(ash::AnnotatedAccountId::Get(profile));
+}
+
 }  // namespace
 
 BrowserShortcutShelfItemController::BrowserShortcutShelfItemController(
@@ -225,14 +248,11 @@ void BrowserShortcutShelfItemController::ItemSelected(
   }
 
   ash::BrowserDelegate* last_browser =
-      ash::BrowserController::GetInstance()->GetDelegate(
-          chrome::FindTabbedBrowser(profile, true));
-
+      FindNormalBrowserOnActiveDesk(GetAccountId(profile));
   if (last_browser && !filter_predicate.is_null() &&
       !filter_predicate.Run(last_browser->GetNativeWindow())) {
     last_browser = nullptr;
   }
-
   if (!last_browser) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(
         /*incognito=*/false,
@@ -410,9 +430,8 @@ BrowserShortcutShelfItemController::ActivateOrAdvanceToNextBrowser() {
         browser = (++it == browsers.end()) ? browsers[0] : *it;
       }
     } else {
-      browser = ash::BrowserController::GetInstance()->GetDelegate(
-          chrome::FindTabbedBrowser(
-              ChromeShelfController::instance()->profile(), true));
+      browser = FindNormalBrowserOnActiveDesk(
+          GetAccountId(ChromeShelfController::instance()->profile()));
       if (!browser ||
           !IsBrowserRepresentedInBrowserList(browser, shelf_model_)) {
         browser = browsers[0];
