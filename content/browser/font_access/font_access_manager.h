@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_H_
 #define CONTENT_BROWSER_FONT_ACCESS_FONT_ACCESS_MANAGER_H_
 
-#include <map>
 #include <memory>
 #include <vector>
 

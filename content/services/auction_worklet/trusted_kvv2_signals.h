@@ -5,7 +5,6 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_KVV2_SIGNALS_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_TRUSTED_KVV2_SIGNALS_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <set>

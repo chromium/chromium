@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_RENDER_FRAME_DEVTOOLS_AGENT_HOST_H_
 #define CONTENT_BROWSER_DEVTOOLS_RENDER_FRAME_DEVTOOLS_AGENT_HOST_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <vector>

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFIER_IMPL_H_
 #define CONTENT_BROWSER_WEBID_DELEGATION_EMAIL_VERIFIER_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <set>
 

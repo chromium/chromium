@@ -5,8 +5,6 @@
 #ifndef CONTENT_RENDERER_V8_VALUE_CONVERTER_IMPL_H_
 #define CONTENT_RENDERER_V8_VALUE_CONVERTER_IMPL_H_
 
-#include <map>
-
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "content/common/content_export.h"

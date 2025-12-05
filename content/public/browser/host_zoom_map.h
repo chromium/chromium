@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_HOST_ZOOM_MAP_H_
 #define CONTENT_PUBLIC_BROWSER_HOST_ZOOM_MAP_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>

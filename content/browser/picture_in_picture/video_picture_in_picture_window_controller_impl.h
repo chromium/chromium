@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_PICTURE_IN_PICTURE_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 #define CONTENT_BROWSER_PICTURE_IN_PICTURE_VIDEO_PICTURE_IN_PICTURE_WINDOW_CONTROLLER_IMPL_H_
 
-#include <map>
 #include <set>
 
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"

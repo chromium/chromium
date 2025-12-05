@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_XR_SERVICE_VR_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_XR_SERVICE_VR_SERVICE_IMPL_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <vector>

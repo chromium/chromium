@@ -6,7 +6,6 @@
 #define CONTENT_PUBLIC_BROWSER_BACK_FORWARD_CACHE_H_
 
 #include <cstdint>
-#include <map>
 #include <optional>
 #include <set>
 

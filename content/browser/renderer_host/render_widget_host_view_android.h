@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include <deque>
-#include <map>
 #include <memory>
 
 #include "base/android/jni_android.h"

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <string>
 
 #include "base/memory/weak_ptr.h"

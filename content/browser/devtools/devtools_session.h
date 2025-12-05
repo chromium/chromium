@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_SESSION_H_
 
 #include <list>
-#include <map>
 #include <memory>
 #include <string>
 #include <type_traits>

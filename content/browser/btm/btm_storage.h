@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BTM_BTM_STORAGE_H_
 
 #include <cstddef>
-#include <map>
 #include <string>
 
 #include "base/files/file_path.h"

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_OP_SCHEDULER_H_
 #define CONTENT_BROWSER_BACKGROUND_SYNC_BACKGROUND_SYNC_OP_SCHEDULER_H_
 
-#include <map>
 #include <vector>
 
 #include "base/containers/queue.h"
