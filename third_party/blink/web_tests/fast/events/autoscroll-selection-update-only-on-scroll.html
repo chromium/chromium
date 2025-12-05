@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<title>Test that selectionchange doesn't fire infinitely during autoscroll when scroll position doesn't change</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+}
+#editable {
+  width: 200px;
+  height: 200px;
+  overflow: scroll;
+  border: 1px solid black;
+  font-size: 16px;
+  line-height: 20px;
+}
+</style>
+<div id="editable" contenteditable>
+Line 1: hello world this is some text
+Line 2: hello world this is some text
+Line 3: hello world this is some text
+Line 4: hello world this is some text
+Line 5: hello world this is some text
+Line 6: hello world this is some text
+Line 7: hello world this is some text
+Line 1: hello world this is some text
+Line 2: hello world this is some text
+Line 3: hello world this is some text
+Line 4: hello world this is some text
+Line 5: hello world this is some text
+Line 6: hello world this is some text
+Line 7: hello world this is some text
+</div>
+<script>
+promise_test(async () => {
+  assert_true(!!window.eventSender, 'This test requires eventSender');
+
+  const editable = document.getElementById('editable');
+  let selectionChangeCount = 0;
+
+  // This handler creates a potential infinite loop:
+  // selectionchange -> setBaseAndExtent -> selectionchange -> ...
+  document.addEventListener('selectionchange', () => {
+    selectionChangeCount++;
+    const selection = window.getSelection();
+    selection.setBaseAndExtent(editable, 0, editable, 1);
+  });
+
+  const initialScrollTop = editable.scrollTop;
+
+  // Click and drag inside the editable, staying within visible bounds
+  // so autoscroll won't actually scroll
+  const x = editable.offsetLeft + 10;
+  const y = editable.offsetTop + 10;
+
+  eventSender.dragMode = false;
+  eventSender.mouseMoveTo(x, y);
+  eventSender.mouseDown();
+  const initialCount = selectionChangeCount;
+
+  // Move mouse slightly but stay within visible area - this shouldn't cause
+  // scrolling but would trigger UpdateSelectionForMouseDrag on each animation
+  // frame without the fix.
+  eventSender.mouseMoveTo(x + 5, y + 5);
+
+  // Wait for multiple frames to pass (2 seconds = ~120 frames at 60fps).
+  await new Promise(resolve => setTimeout(resolve, 2000));
+
+  const countIncrease = selectionChangeCount - initialCount;
+  const finalScrollTop = editable.scrollTop;
+  eventSender.mouseUp();
+
+  // Verify scroll position hasn't changed (mouse stayed within visible area)
+  assert_equals(finalScrollTop, initialScrollTop,
+      'Scroll position should not change when mouse stays within visible area');
+
+  assert_less_than(countIncrease, 5,
+      'selectionchange count should remain stable when scroll position does ' +
+      'not change.');
+}, 'SelectionUpdateOnlyAfterAutoscroll prevents infinite selectionchange ' +
+   'events when scroll position does not change');
+</script>
+</body>
+</html>

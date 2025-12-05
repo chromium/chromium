@@ -34,9 +34,10 @@ namespace scroll_into_view_util {
 // LayoutObject, and scrolls the LayoutObject and all its containers such that
 // the child content of the LayoutObject at that rect is visible in the
 // viewport.
+// Returns true if scrolling occurred.
 // TODO(bokan): `from_remote_frame` is temporary, to track cross-origin
 // scroll-into-view prevalence. https://crbug.com/1339003.
-void CORE_EXPORT ScrollRectToVisible(const LayoutObject& target,
+bool CORE_EXPORT ScrollRectToVisible(const LayoutObject& target,
                                      const PhysicalRect&,
                                      mojom::blink::ScrollIntoViewParamsPtr,
                                      const LayoutObject* container = nullptr,

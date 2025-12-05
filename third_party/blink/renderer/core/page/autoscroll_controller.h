@@ -111,6 +111,7 @@ class CORE_EXPORT AutoscrollController final
 
   Member<Page> page_;
   AutoscrollType autoscroll_type_ = kNoAutoscroll;
+  bool scroll_result_ = true;
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();

@@ -4641,6 +4641,14 @@
       status: "stable",
     },
     {
+      // Conditionally update selection only when autoscroll actually scrolls.
+      // This prevents infinite selection updates during autoscroll when the
+      // scroll position doesn't change.
+      // See https://crbug.com/412578722
+      name: "SelectionUpdateOnlyAfterAutoscroll",
+      status: "stable",
+    },
+    {
       // See https://crbug.com/395544401
       name: "SelectionUpdateToInitialSelectionInListify",
       status: "stable",

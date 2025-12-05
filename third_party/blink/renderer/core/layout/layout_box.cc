@@ -1600,15 +1600,15 @@ PhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
   return scrollbars;
 }
 
-void LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
+bool LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
   NOT_DESTROYED();
   LocalFrame* frame = GetFrame();
   if (!frame)
-    return;
+    return false;
 
   LocalFrameView* frame_view = frame->View();
   if (!frame_view)
-    return;
+    return false;
 
   PhysicalOffset absolute_position =
       frame_view->ConvertFromRootFrame(position_in_root_frame);
@@ -1616,11 +1616,11 @@ void LayoutBox::Autoscroll(const PhysicalOffset& position_in_root_frame) {
       scroll_into_view_util::CreateScrollIntoViewParams(
           ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
           mojom::blink::ScrollType::kUser);
-  scroll_into_view_util::ScrollRectToVisible(
+  return scroll_into_view_util::ScrollRectToVisible(
       *this,
       PhysicalRect(absolute_position,
                    PhysicalSize(LayoutUnit(1), LayoutUnit(1))),
-      std::move(params));
+      std::move(params), nullptr, false, true);
 }
 
 // If specified point is outside the border-belt-excluded box (the border box
