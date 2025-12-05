@@ -942,6 +942,38 @@
             ]
         }
     ],
+    "AndroidOpenIncognitoAsWindow": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20251204",
+                    "enable_features": [
+                        "AndroidOpenIncognitoAsWindow",
+                        "TabStripIncognitoMigration"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidPauseMutedBackgroundAudio": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PauseMutedBackgroundAudio"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidPinnedTabs": [
         {
             "platforms": [
