@@ -54,7 +54,7 @@ public class CustomTabNavigationBarController {
         Integer navigationBarColor = intentDataProvider.getColorProvider().getNavigationBarColor();
         Integer navigationBarDividerColor =
                 intentDataProvider.getColorProvider().getNavigationBarDividerColor();
-        // TODO(b/300419189): Pass the CCT Top Bar Color in AGSA intent after Page Insights Hub is
+        // TODO(crbug.com/465719853): Pass the CCT Top Bar Color in AGSA intent after Google Bottom Bar is
         // launched
         if (GoogleBottomBarCoordinator.isFeatureEnabled()
                 && CustomTabsConnection.getInstance()
