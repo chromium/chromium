@@ -112,6 +112,7 @@ enum NonConfigurableActions {
   kBrowserSelectPreviousTab,
   kBrowserPageUp,
   kBrowserPageDown,
+  kBrowserNewSplitView,
   // Ambient action ids:
   kAmbientDragLinkInSameTab,
   kAmbientCycleForwardMRU,
@@ -404,6 +405,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     NonConfigurableActions::kAmbientOpenLinkInTab,
     NonConfigurableActions::kAmbientOpenLinkInTabBackground,
     NonConfigurableActions::kBrowserStopDragTab,
+    NonConfigurableActions::kBrowserNewSplitView,
 
     // Browser > Bookmarks
     NonConfigurableActions::kBrowserBookmarkThisTab,

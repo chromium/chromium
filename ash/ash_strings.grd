@@ -4376,6 +4376,9 @@ No devices connected.
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_INCOGNITO_WINDOW" translateable="false" desc="Label for accelerator action - Open new Incognito window.">
         Open new Incognito window
       </message>
+      <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_SPLIT_VIEW" desc="Label for accelerator action - Add tab to new split view.">
+        Add tab to new split view
+      </message>
       <message name="IDS_ASH_ACCELERATOR_DESCRIPTION_NEW_TAB" desc="Label for accelerator action - Open new tab.">
         Open new tab
       </message>
