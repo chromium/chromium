@@ -7761,7 +7761,7 @@ New install
       </message>
       <message name="IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL"
         desc="This string appears as the label of a button in a feature tour dialog. When selected, this button closes the dialog and activates the feature.">
-        Get started
+        Got it
       </message>
       <message name="IDS_PICKER_LIST_ITEM_ACCESSIBLE_NAME"
         desc="This string is read out by a screen reader to describe a search result. The search result contains two lines of text: a primary text (e.g. the title of a page) and a secondary text (e.g. the URL of a page). The commas are significant as they will introduce a pause in the spoken text. This string is used inside the placeholder of another message.">

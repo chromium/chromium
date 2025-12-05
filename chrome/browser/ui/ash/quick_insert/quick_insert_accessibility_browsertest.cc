@@ -931,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(QuickInsertAccessibilityBrowserTest,
   sm()->ExpectSpeechPattern("*insert content*");
 #endif
   sm()->ExpectSpeechPattern("Dialog");
-  sm()->ExpectSpeechPattern("Get started");
+  sm()->ExpectSpeechPattern("Got it");
   sm()->ExpectSpeechPattern("Button");
   sm()->Replay();
 }
