@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/types/pass_key.h"
 #include "components/credential_management/android/password_credential_response.h"
 #include "content/public/browser/browser_thread.h"
@@ -129,6 +130,19 @@ TEST_F(ThirdPartyCredentialManagerBridgeTest, TestUnuccessfulGetCall) {
   bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/true,
                 /*federations=*/{}, kTestOrigin, mock_callback.Get());
   run_loop.Run();
+}
+
+TEST_F(ThirdPartyCredentialManagerBridgeTest,
+       TestGetCallWithoutPasswordsFails) {
+  base::test::TestFuture<password_manager::CredentialManagerError,
+                         const std::optional<password_manager::CredentialInfo>&>
+      future;
+
+  bridge()->Get(/*is_auto_select_allowed=*/true, /*include_passwords=*/false,
+                /*federations=*/{}, kTestOrigin, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  EXPECT_EQ(future.Get<0>(), password_manager::CredentialManagerError::UNKNOWN);
+  EXPECT_FALSE(future.Get<1>().has_value());
 }
 
 TEST_F(ThirdPartyCredentialManagerBridgeTest, TestSuccessfulStoreCall) {
