@@ -138,6 +138,23 @@ bitflags::bitflags! {
     }
 }
 
+impl HandleSignals {
+    /// Check if the readable flag is set.
+    pub fn is_readable(&self) -> bool {
+        self.contains(HandleSignals::READABLE)
+    }
+
+    /// Check if the writable flag is set.
+    pub fn is_writable(&self) -> bool {
+        self.contains(HandleSignals::WRITABLE)
+    }
+
+    /// Check if the peer-closed flag is set.
+    pub fn is_peer_closed(&self) -> bool {
+        self.contains(HandleSignals::PEER_CLOSED)
+    }
+}
+
 /// Represents the signals state of a handle: which signals are satisfied,
 /// and which are satisfiable.
 #[repr(transparent)]
@@ -211,7 +228,13 @@ pub enum WaitResult {
 
 /// Implementing the Handle trait means we can access the native integer-based
 /// MojoHandle underneath.
-pub(crate) trait Handle {
+///
+/// FOR_RELEASE: Revisit if we want to limit the visibility of Handle.
+/// In particular: while mostly we want the underlying get_native_handle to be
+/// opaque, Traps really require access to the underlying value to work, which
+/// means this trait needs to be public. One way to handle this may be by
+/// "sealing" the trait: https://predr.ag/blog/definitive-guide-to-sealed-traits-in-rust/
+pub trait Handle {
     /// Returns the native handle that the structure implementing this trait is
     /// wrapped around.
     fn get_native_handle(&self) -> types::MojoHandle;
@@ -220,6 +243,11 @@ pub(crate) trait Handle {
 
     // FOR_RELEASE: Implement wait().
 }
+
+// This trait is only defined on Handles that are trappable.
+// FOR_RELEASE: We may want to refactor this as a "sealed" trait to better
+// control visibility. See https://predr.ag/blog/definitive-guide-to-sealed-traits-in-rust/
+pub trait Trappable: Handle {}
 
 /// UntypedHandle is the basic handle that wraps a native MojoHandle. It is
 /// untyped in that there are no guarantees about what type of Mojo object it
@@ -235,6 +263,7 @@ pub(crate) trait Handle {
 /// but I'm hoping if we construct these primitives properly, nothing in the
 /// public Rust API should have to ever touch a handle that could possibly be
 /// invalid.
+#[repr(transparent)]
 pub struct UntypedHandle {
     // FOR_RELEASE: Let's use NonZeroU32 here and move enforcement of "is this
     // handle valid or not" outside of UntypedHandle (instead this type should

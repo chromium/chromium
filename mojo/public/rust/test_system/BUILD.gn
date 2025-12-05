@@ -12,6 +12,10 @@ rust_static_library("system_api_unittests") {
     "pure_c_api_unittests.rs",
     crate_root,
   ]
+
+  # TODO: Would it be worthwhile to separate out "unit tests that invoke unsafe"
+  # from "unit tests that don't do that", or not worth the potential fragmentation?
+  allow_unsafe = true
   deps = [
     "//mojo/public/rust:mojo_rust_system_api",
     "//mojo/public/rust/test_support:test_util",

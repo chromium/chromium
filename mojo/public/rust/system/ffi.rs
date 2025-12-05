@@ -43,24 +43,31 @@ pub mod types {
     pub type MojoResultCode = raw_ffi::MojoResult;
 }
 
-pub use raw_ffi::MojoAppendMessageData;
-pub use raw_ffi::MojoClose;
-pub use raw_ffi::MojoCreateDataPipe;
-pub use raw_ffi::MojoCreateMessage;
-pub use raw_ffi::MojoCreateMessagePipe;
-pub use raw_ffi::MojoDestroyMessage;
-pub use raw_ffi::MojoGetMessageData;
-pub use raw_ffi::MojoGetTimeTicksNow;
-pub use raw_ffi::MojoHandleSignalsState as SignalsState;
-pub use raw_ffi::MojoQueryHandleSignalsState;
-// SAFETY: The `num_bytes` argument to this function must not be null.
-pub use raw_ffi::MojoReadData;
-pub use raw_ffi::MojoReadMessage;
 // SAFETY: The `num_bytes` argument to this function must not be null.
 // Additionally the `data` argument must have at least `num_bytes` of
 // valid memory. Additionally, for thread safety, one must have exclusive
 // access to `data_pipe_producer_handle`.
 pub use raw_ffi::MojoWriteData;
+
+// SAFETY: The `num_bytes` argument to this function must not be null.
+pub use raw_ffi::MojoReadData;
+
+pub use raw_ffi::MojoAddTrigger;
+pub use raw_ffi::MojoAppendMessageData;
+pub use raw_ffi::MojoArmTrap;
+pub use raw_ffi::MojoClose;
+pub use raw_ffi::MojoCreateDataPipe;
+pub use raw_ffi::MojoCreateMessage;
+pub use raw_ffi::MojoCreateMessagePipe;
+pub use raw_ffi::MojoCreateTrap;
+pub use raw_ffi::MojoDestroyMessage;
+pub use raw_ffi::MojoGetMessageData;
+pub use raw_ffi::MojoGetTimeTicksNow;
+pub use raw_ffi::MojoHandleSignalsState as SignalsState;
+pub use raw_ffi::MojoQueryHandleSignalsState;
+pub use raw_ffi::MojoReadMessage;
+pub use raw_ffi::MojoRemoveTrigger;
+pub use raw_ffi::MojoTrapEvent;
 pub use raw_ffi::MojoWriteMessage;
 pub use types::MojoResultCode;
 
@@ -131,4 +138,25 @@ declare_mojo_options!(
     flags: types::MojoCreateDataPipeFlags,
     element_num_bytes: u32,
     capacity_num_bytes: u32
+);
+
+declare_mojo_options!(
+  MojoCreateTrapOptions,
+  flags: types::MojoCreateTrapFlags
+);
+
+declare_mojo_options!(
+  MojoAddTriggerOptions,
+  flags: types::MojoAddTriggerFlags
+);
+
+declare_mojo_options!(
+  MojoRemoveTriggerOptions,
+  flags: types::MojoRemoveTriggerFlags
+);
+
+declare_mojo_options!(
+  MojoArmTrapOptions,
+  flags: types::MojoArmTrapFlags
+
 );

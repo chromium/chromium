@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-use crate::mojo_types::{Handle, MojoResult, UntypedHandle};
+use crate::mojo_types::{Handle, MojoResult, Trappable, UntypedHandle};
+use mojo_ffi::types::MojoHandle;
 use std::ffi::c_void;
 use std::ptr;
 
@@ -56,6 +57,14 @@ pub struct DataPipeConsumerHandle {
     handle: UntypedHandle,
 }
 
+impl Handle for DataPipeConsumerHandle {
+    fn get_native_handle(&self) -> MojoHandle {
+        self.handle.get_native_handle()
+    }
+}
+
+impl Trappable for DataPipeConsumerHandle {}
+
 impl DataPipeConsumerHandle {
     /// Perform a read operation. Returns the number of bytes read.
     ///
@@ -104,6 +113,14 @@ impl DataPipeConsumerHandle {
 pub struct DataPipeProducerHandle {
     handle: UntypedHandle,
 }
+
+impl Handle for DataPipeProducerHandle {
+    fn get_native_handle(&self) -> MojoHandle {
+        self.handle.get_native_handle()
+    }
+}
+
+impl Trappable for DataPipeProducerHandle {}
 
 impl DataPipeProducerHandle {
     /// Perform a write operation on the producer end of the data pipe. Returns
