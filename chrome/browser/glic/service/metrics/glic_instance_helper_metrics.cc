@@ -4,7 +4,6 @@
 
 #include "chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h"
 
-#include "base/debug/dump_without_crashing.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 
@@ -38,10 +37,6 @@ void GlicInstanceHelperMetrics::OnPinnedByInstance(
 
 void GlicInstanceHelperMetrics::SetIsDaisyChained() {
   if (is_daisy_chained_) {
-    // This should only be called once per tab. If a single tab is dasiy chained
-    // multiple times it signals there is a logic bug. If this occurs, send a
-    // non-fatal crash report to the server for analysis.
-    base::debug::DumpWithoutCrashing();
     return;
   }
   is_daisy_chained_ = true;
