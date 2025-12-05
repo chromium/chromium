@@ -370,7 +370,24 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void moveTabGroupToOtherWindow(
             TabGroupMetadata tabGroupMetadata, @NewWindowAppSource int source) {
-        if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE) == 1) {
+        // TODO(crbug.com/465141949): Add unit tests.
+        // Check the number of instances that the tab group is able to move into.
+        int instanceCount =
+                MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
+        @PersistedInstanceType int instanceType = PersistedInstanceType.ANY;
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            if (tabGroupMetadata.isIncognito) {
+                instanceCount = MultiWindowUtils.getIncognitoInstanceCount(/* activeOnly= */ true);
+                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD;
+            } else {
+                instanceCount =
+                        MultiWindowUtils.getInstanceCountWithFallback(
+                                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
+                instanceType = PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR;
+            }
+        }
+
+        if (instanceCount <= 1) {
             moveTabGroupToNewWindow(tabGroupMetadata, source);
             return;
         }
@@ -386,7 +403,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
-                getInstanceInfo(),
+                getInstanceInfo(instanceType),
                 UiUtils.isInstanceSwitcherV2Enabled()
                         ? R.string.menu_move_group_to_other_window
                         : R.string.menu_move_to_other_window);

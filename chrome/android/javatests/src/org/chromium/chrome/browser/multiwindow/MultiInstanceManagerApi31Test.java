@@ -410,6 +410,65 @@ public class MultiInstanceManagerApi31Test {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void moveTabGroupToOtherWindow_multipleWindowsOpen_incognitoWindow_hideTargetSelector() {
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 2,
+                /* addIncognitoExtras= */ true);
+        TabGroupMetadata tabGroupMetadata = getTabGroupMetaData();
+
+        ChromeTabbedActivity newWindow =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        () ->
+                                mMultiInstanceManager.moveTabGroupToOtherWindow(
+                                        tabGroupMetadata,
+                                        MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER));
+        assertFalse(
+                "Target selector dialog should not be visible", mModalDialogManager.isShowing());
+        assertFalse("New window should not be incognito", newWindow.isIncognitoWindow());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+        ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT
+    })
+    public void moveTabGroupToOtherWindow_multipleWindowsOpen_incognitoWindow_showTargetSelector() {
+        createNewWindows(
+                mActivityTestRule.getActivity(),
+                /* numWindows= */ 3,
+                /* addIncognitoExtras= */ true);
+        TabGroupMetadata incognitoTabGroupMetadata =
+                new TabGroupMetadata(
+                        /* selectedTabId= */ TAB1_ID,
+                        /* sourceWindowId= */ 1,
+                        TAB_GROUP_ID1,
+                        TAB_IDS_TO_URLS,
+                        /* tabGroupColor= */ 0,
+                        TAB_GROUP_TITLE,
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ true,
+                        /* isGroupShared= */ false,
+                        /* isIncognito= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mMultiInstanceManager.moveTabGroupToOtherWindow(
+                            incognitoTabGroupMetadata,
+                            MultiInstanceManager.NewWindowAppSource.WINDOW_MANAGER);
+                });
+        assertTrue("Target selector dialog should be visible", mModalDialogManager.isShowing());
+    }
+
+    @Test
+    @SmallTest
     public void openUrlInOtherWindow_multipleWindowsOpen() {
         createNewWindow(
                 mActivityTestRule.getActivity(),
