@@ -167,7 +167,6 @@ QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
                                       weak_ptr_factory_.GetWeakPtr()),
                                   CloseButton::Type::kLargeFloating))
                               .CopyAddressTo(&close_button_for_testing_))))
-      .SetModalType(ui::mojom::ModalType::kSystem)
       .BuildChildren();
   SetCancelButtonVisible(false);
 

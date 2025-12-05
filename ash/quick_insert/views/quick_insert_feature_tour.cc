@@ -44,6 +44,7 @@ std::unique_ptr<views::Widget> CreateWidget(
   params.delegate = feature_tour_dialog.release();
   params.name = "QuickInsertFeatureTourWidget";
   params.activatable = views::Widget::InitParams::Activatable::kYes;
+  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
 
   auto widget = std::make_unique<views::Widget>(std::move(params));
   widget->GetLayer()->SetFillsBoundsOpaquely(false);
