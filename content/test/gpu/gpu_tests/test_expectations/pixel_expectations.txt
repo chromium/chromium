@@ -410,7 +410,7 @@ crbug.com/286989320 [ linux ] Pixel_MeetEffects* [ Failure Slow ]
 crbug.com/286989320 [ win amd ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win nvidia ] Pixel_MeetEffects* [ Failure Slow ]
 crbug.com/286989320 [ win qualcomm ] Pixel_MeetEffects* [ Failure Slow ]
-crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Failure Slow ]
+crbug.com/286989320 [ win intel-0x4680 ] Pixel_MeetEffects* [ Slow ]
 crbug.com/286989320 [ win intel-0x9bc5 ] Pixel_MeetEffects* [ Failure ]
 
 # Slow on DCHECK builds being used on fuchsia builders.
