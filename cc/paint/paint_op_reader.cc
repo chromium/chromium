@@ -538,9 +538,7 @@ void PaintOpReader::Read(PaintImage* image) {
       builder = std::move(builder).set_gainmap_texture_image(
           entry->gainmap_image(), entry->gainmap_info());
     }
-    if (entry->hdr_metadata().has_value()) {
-      builder = std::move(builder).set_hdr_metadata(entry->hdr_metadata());
-    }
+    builder = std::move(builder).set_hdr_metadata(entry->hdr_metadata());
     *image = builder.TakePaintImage();
   }
 }

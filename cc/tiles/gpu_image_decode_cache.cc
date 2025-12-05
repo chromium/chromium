@@ -2212,7 +2212,7 @@ void GpuImageDecodeCache::UploadImageIfNecessary(const DrawImage& draw_image,
       ToneMapUtil::UseGlobalToneMapFilter(decoded_color_space.get())) {
     target_color_space = nullptr;
   }
-  const std::optional<gfx::HDRMetadata> hdr_metadata =
+  const gfx::HDRMetadata& hdr_metadata =
       draw_image.paint_image().GetHDRMetadata();
 
   std::array<ClientImageTransferCacheEntry::Image, kAuxImageCount> image;

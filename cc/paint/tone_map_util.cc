@@ -243,7 +243,7 @@ bool ToneMapUtil::UseGlobalToneMapFilter(const SkColorSpace* cs) {
 void ToneMapUtil::AddGlobalToneMapFilterToPaint(
     SkPaint& paint,
     const SkImage* image,
-    const std::optional<gfx::HDRMetadata>& metadata,
+    const gfx::HDRMetadata& metadata,
     float target_hdr_headroom) {
   if (!image || !image->colorSpace()) {
     return;
@@ -252,8 +252,8 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
   image->colorSpace()->transferFn(&trfn);
 
   gfx::HdrMetadataAgtmParsed agtm;
-  const bool agtm_parsed = metadata.has_value() && metadata->agtm.has_value() &&
-                           agtm.Parse(metadata->agtm.value());
+  const bool agtm_parsed =
+      metadata.agtm.has_value() && agtm.Parse(metadata.agtm.value());
 
   // The remainder of the function will construct `filter` to perform all
   // transformations (scaling, OOTF, and tone mapping).
@@ -267,9 +267,8 @@ void ToneMapUtil::AddGlobalToneMapFilterToPaint(
       return agtm.hdr_reference_white;
     }
     // Then NDWL.
-    if (metadata.has_value() && metadata->ndwl.has_value() &&
-        metadata->ndwl->nits > 0.f) {
-      return metadata->ndwl->nits;
+    if (metadata.ndwl.has_value() && metadata.ndwl->nits > 0.f) {
+      return metadata.ndwl->nits;
     }
     // Then defer to the source color space.
     if (skcms_TransferFunction_isPQ(&trfn) ||

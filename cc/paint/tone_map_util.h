@@ -35,11 +35,10 @@ class CC_PAINT_EXPORT ToneMapUtil {
   static bool UseGlobalToneMapFilter(const SkColorSpace* cs);
 
   // Add a color filter to `paint` that will perform tone mapping.
-  static void AddGlobalToneMapFilterToPaint(
-      SkPaint& paint,
-      const SkImage* image,
-      const std::optional<gfx::HDRMetadata>& metadata,
-      float target_hdr_headroom);
+  static void AddGlobalToneMapFilterToPaint(SkPaint& paint,
+                                            const SkImage* image,
+                                            const gfx::HDRMetadata& metadata,
+                                            float target_hdr_headroom);
 };
 
 }  // namespace cc

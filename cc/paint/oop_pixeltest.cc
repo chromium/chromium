@@ -1079,13 +1079,12 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
         sk_make_sp<FakePaintImageGenerator>(image->imageInfo());
     {
       ImageHeaderMetadata image_metadata;
-      image_metadata.hdr_metadata.emplace();
       if (peak_luminance.has_value()) {
-        image_metadata.hdr_metadata->cta_861_3.emplace(peak_luminance.value(),
-                                                       kContentAvgNits);
+        image_metadata.hdr_metadata.cta_861_3.emplace(peak_luminance.value(),
+                                                      kContentAvgNits);
       }
       if (white_luminance.has_value()) {
-        image_metadata.hdr_metadata->ndwl.emplace(white_luminance.value());
+        image_metadata.hdr_metadata.ndwl.emplace(white_luminance.value());
       }
       image_generator->SetImageHeaderMetadata(image_metadata);
       EXPECT_TRUE(image->peekPixels(&image_generator->GetPixmap()));

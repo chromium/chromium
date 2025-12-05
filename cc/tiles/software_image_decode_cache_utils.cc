@@ -462,7 +462,7 @@ SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry()
 SoftwareImageDecodeCacheUtils::CacheEntry::CacheEntry(
     sk_sp<SkImage> image,
     sk_sp<SkImage> gainmap_image,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
+    const gfx::HDRMetadata& hdr_metadata,
     std::unique_ptr<base::DiscardableMemory> in_memory,
     const SkSize& src_rect_offset)
     : is_locked(true),

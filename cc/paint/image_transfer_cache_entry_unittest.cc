@@ -249,7 +249,7 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
       ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes(), yuva_info,
                                            nullptr /* decoded color space*/),
-      true /* needs_mips */, std::nullopt));
+      true /* needs_mips */, gfx::HDRMetadata()));
   uint32_t size = client_entry->SerializedSize();
   auto data = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(size);
   ASSERT_TRUE(client_entry->Serialize(
@@ -400,7 +400,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageWithMips) {
 
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), true,
-      std::nullopt);
+      gfx::HDRMetadata());
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::span(storage.get(), storage_size));
@@ -430,7 +430,7 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
       SkImageInfo::MakeN32Premul(gr_context->maxTextureSize() + 1, 10));
   ClientImageTransferCacheEntry client_entry(
       ClientImageTransferCacheEntry::Image(&bitmap.pixmap()), false,
-      std::nullopt);
+      gfx::HDRMetadata());
   const uint32_t storage_size = client_entry.SerializedSize();
   auto storage = PaintOpWriter::AllocateAlignedBuffer<uint8_t>(storage_size);
   client_entry.Serialize(base::span(storage.get(), storage_size));
@@ -450,8 +450,6 @@ TEST(ImageTransferCacheEntryTestNoYUV, CPUImageAddMipsLater) {
   EXPECT_TRUE(service_entry.has_mips());
   EXPECT_EQ(pre_mip_image, service_entry.image());
 }
-
-
 
 }  // namespace
 }  // namespace cc

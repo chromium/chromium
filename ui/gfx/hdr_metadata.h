@@ -163,6 +163,13 @@ struct COLOR_SPACE_EXPORT HDRMetadata {
   HDRMetadata& operator=(const HDRMetadata& rhs);
   ~HDRMetadata();
 
+  // Return true if this structure holds no metadata.
+  bool IsEmpty() const {
+    return !smpte_st_2086.has_value() && !cta_861_3.has_value() &&
+           !ndwl.has_value() && !extended_range.has_value() &&
+           !agtm.has_value();
+  }
+
   bool IsValid() const {
     return (cta_861_3 && cta_861_3->IsValid()) ||
            (smpte_st_2086 && smpte_st_2086->IsValid()) || extended_range;

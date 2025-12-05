@@ -1323,7 +1323,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   // Retrieve the SkImages and sampling.
   sk_sp<SkImage> sk_image;
   sk_sp<SkImage> gainmap_sk_image;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   SkSamplingOptions sampling = op->sampling;
   // If the SkImages are from an ImageProvider, keep them in scope.
   ImageProvider::ScopedResult scoped_result;
@@ -1441,7 +1441,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   // Retrieve the SkImages, adjusted source rect, and sampling.
   sk_sp<SkImage> sk_image;
   sk_sp<SkImage> gainmap_sk_image;
-  std::optional<gfx::HDRMetadata> hdr_metadata;
+  gfx::HDRMetadata hdr_metadata;
   SkRect adjusted_src;
   SkSamplingOptions sampling;
   // If the SkImages are from an ImageProvider, keep them in scope.

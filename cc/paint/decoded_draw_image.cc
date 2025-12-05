@@ -18,22 +18,21 @@ DecodedDrawImage::DecodedDrawImage(sk_sp<SkImage> image,
                                    bool is_budgeted)
     : DecodedDrawImage(std::move(image),
                        nullptr,
-                       std::nullopt,
+                       gfx::HDRMetadata(),
                        std::move(dark_mode_color_filter),
                        src_rect_offset,
                        scale_adjustment,
                        filter_quality,
                        is_budgeted) {}
 
-DecodedDrawImage::DecodedDrawImage(
-    sk_sp<SkImage> image,
-    sk_sp<SkImage> gainmap_image,
-    const std::optional<gfx::HDRMetadata>& hdr_metadata,
-    sk_sp<ColorFilter> dark_mode_color_filter,
-    const SkSize& src_rect_offset,
-    const SkSize& scale_adjustment,
-    PaintFlags::FilterQuality filter_quality,
-    bool is_budgeted)
+DecodedDrawImage::DecodedDrawImage(sk_sp<SkImage> image,
+                                   sk_sp<SkImage> gainmap_image,
+                                   const gfx::HDRMetadata& hdr_metadata,
+                                   sk_sp<ColorFilter> dark_mode_color_filter,
+                                   const SkSize& src_rect_offset,
+                                   const SkSize& scale_adjustment,
+                                   PaintFlags::FilterQuality filter_quality,
+                                   bool is_budgeted)
     : image_(std::move(image)),
       gainmap_image_(std::move(gainmap_image)),
       hdr_metadata_(hdr_metadata),
