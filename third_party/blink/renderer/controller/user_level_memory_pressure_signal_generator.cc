@@ -89,8 +89,29 @@ UserLevelMemoryPressureSignalGenerator::
   g_instance = nullptr;
 }
 
-void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal() {
+void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal(
+    base::MemoryPressureLevel level) {
   base::TimeTicks now = base::TimeTicks::Now();
+
+  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    // Returning to no pressure. Cancel the pending request, if any.
+    timer_.Stop();
+    last_requested_ = std::nullopt;
+
+    // Forget about the last time a critical signal was generated, so we don't
+    // have to wait for `minimum_interval_` to propagate the memory pressure
+    // level if it returns to critical.
+    last_critical_generated_ = std::nullopt;
+
+    // Don't send repeat NONE notifications.
+    if (current_level_ != base::MEMORY_PRESSURE_LEVEL_NONE) {
+      Generate(base::MEMORY_PRESSURE_LEVEL_NONE, now);
+    }
+
+    return;
+  }
+
+  CHECK_EQ(level, base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   // Check if there is already a pending request, while ensuring the timestamp
   // of the most recent request is saved.
@@ -111,14 +132,15 @@ void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal() {
   base::TimeTicks inert_interval_expiry =
       last_loaded_.value_or(base::TimeTicks::Min()) + inert_interval_;
   base::TimeTicks minimum_interval_expiry =
-      last_generated_.value_or(base::TimeTicks::Min()) + minimum_interval_;
+      last_critical_generated_.value_or(base::TimeTicks::Min()) +
+      minimum_interval_;
   base::TimeTicks next_valid_timestamp =
       std::max(inert_interval_expiry, minimum_interval_expiry);
 
   // If that timestamp has already passed, generate immediately. Else start the
   // timer.
   if (next_valid_timestamp <= now) {
-    Generate(now);
+    Generate(base::MEMORY_PRESSURE_LEVEL_CRITICAL, now);
   } else {
     timer_.StartOneShot(next_valid_timestamp - now, FROM_HERE);
   }
@@ -166,11 +188,16 @@ void UserLevelMemoryPressureSignalGenerator::OnRAILModeChanged(
   timer_.StartOneShot(inert_interval_, FROM_HERE);
 }
 
-void UserLevelMemoryPressureSignalGenerator::Generate(base::TimeTicks now) {
-  last_generated_ = now;
+void UserLevelMemoryPressureSignalGenerator::Generate(
+    base::MemoryPressureLevel level,
+    base::TimeTicks now) {
+  if (level == base::MEMORY_PRESSURE_LEVEL_CRITICAL) {
+    last_critical_generated_ = now;
+  }
   last_requested_ = std::nullopt;
+  current_level_ = level;
   base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+      level);
 }
 
 void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {
@@ -180,16 +207,17 @@ void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {
   // The inert interval is definitely passed.
   CHECK(!last_loaded_.has_value() ||
         now - last_loaded_.value() >= inert_interval_);
-  // The minimum interval is also passed since the last generated signal.
-  CHECK(!last_generated_.has_value() ||
-        now - last_generated_.value() >= minimum_interval_);
+  // The minimum interval is also passed since the last generated CRITICAL
+  // signal.
+  CHECK(!last_critical_generated_.has_value() ||
+        now - last_critical_generated_.value() >= minimum_interval_);
   // No expired requests.
   CHECK_LE(now - last_requested_.value(), minimum_interval_);
 
-  Generate(now);
+  Generate(base::MEMORY_PRESSURE_LEVEL_CRITICAL, now);
 }
 
-void RequestUserLevelMemoryPressureSignal() {
+void RequestUserLevelMemoryPressureSignal(base::MemoryPressureLevel level) {
   // TODO(crbug.com/1473814): AndroidWebView creates renderer processes
   // without appending extra commandline switches,
   // c.f. ChromeContentBrowserClient::AppendExtraCommandLineSwitches(),
@@ -199,7 +227,7 @@ void RequestUserLevelMemoryPressureSignal() {
   // nullptr and will crash.
   if (UserLevelMemoryPressureSignalGenerator* generator =
           UserLevelMemoryPressureSignalGenerator::Instance()) {
-    generator->RequestMemoryPressureSignal();
+    generator->RequestMemoryPressureSignal(level);
   }
 }
 

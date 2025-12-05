@@ -137,14 +137,16 @@ void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
   base::ByteCount total_pmf =
       GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
+  base::MemoryPressureLevel level = base::MEMORY_PRESSURE_LEVEL_NONE;
   if (total_pmf > memory_threshold_) {
-    NotifyMemoryPressure();
+    level = base::MEMORY_PRESSURE_LEVEL_CRITICAL;
     interval = minimum_interval_;
 
     ReportBeforeAfterMetrics(total_pmf, "Before");
     StartReportingTimer();
   }
 
+  HandleMemoryPressureLevel(level);
   StartPeriodicTimer(interval);
 }
 
@@ -243,8 +245,25 @@ base::ByteCount UserLevelMemoryPressureSignalGenerator::
   return total_pmf_visible_or_higher_priority_renderers_bytes;
 }
 
+void UserLevelMemoryPressureSignalGenerator::HandleMemoryPressureLevel(
+    base::MemoryPressureLevel level) {
+  // MODERATE level is not used.
+  CHECK_NE(level, base::MEMORY_PRESSURE_LEVEL_MODERATE);
+
+  // Don't notify duplicate NONE pressure level, but always notify for CRITICAL,
+  // as some listeners still rely on repeated signals to continually reduce
+  // memory usage.
+  if (current_level_ == level && level == base::MEMORY_PRESSURE_LEVEL_NONE) {
+    return;
+  }
+
+  current_level_ = level;
+  NotifyMemoryPressure(level);
+}
+
 // static
-void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
+void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure(
+    base::MemoryPressureLevel level) {
   // Notifies GPU process and Utility processes.
   for (BrowserChildProcessHostIterator iter; !iter.Done(); ++iter) {
     if (!iter.GetData().GetProcess().IsValid())
@@ -252,8 +271,7 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
 
     ChildProcessHostImpl* host =
         static_cast<ChildProcessHostImpl*>(iter.GetHost());
-    host->NotifyMemoryPressureToChildProcess(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+    host->NotifyMemoryPressureToChildProcess(level);
   }
 
   // Notifies renderer processes.
@@ -266,12 +284,11 @@ void UserLevelMemoryPressureSignalGenerator::NotifyMemoryPressure() {
       continue;
 
     static_cast<RenderProcessHostImpl*>(host)->NotifyMemoryPressureToRenderer(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+        level);
   }
 
   // Notifies browser process.
-  base::MemoryPressureListener::NotifyMemoryPressure(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
+  base::MemoryPressureListener::NotifyMemoryPressure(level);
 }
 
 // static

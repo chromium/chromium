@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/byte_count.h"
+#include "base/memory/memory_pressure_level.h"
 #include "base/no_destructor.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -55,7 +56,9 @@ class UserLevelMemoryPressureSignalGenerator {
   static base::ByteCount
   GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
 
-  static void NotifyMemoryPressure();
+  void HandleMemoryPressureLevel(base::MemoryPressureLevel level);
+
+  static void NotifyMemoryPressure(base::MemoryPressureLevel level);
 
   static void ReportBeforeAfterMetrics(
       base::ByteCount total_pmf_visible_or_higher_priority_renderers,
@@ -69,6 +72,8 @@ class UserLevelMemoryPressureSignalGenerator {
   base::TimeDelta minimum_interval_;
   base::OneShotTimer periodic_measuring_timer_;
   base::OneShotTimer delayed_report_timer_;
+
+  base::MemoryPressureLevel current_level_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   std::optional<UserLevelMemoryPressureMetrics> latest_metrics_;
 };

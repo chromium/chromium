@@ -1757,7 +1757,7 @@ void RenderThreadImpl::OnMemoryPressureFromBrowserReceived(
   if (!blink_platform_impl_) {
     return;
   }
-  blink::RequestUserLevelMemoryPressureSignal();
+  blink::RequestUserLevelMemoryPressureSignal(level);
 }
 
 #endif

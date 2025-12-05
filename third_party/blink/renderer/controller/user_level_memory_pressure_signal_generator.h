@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -44,13 +45,13 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
 
   ~UserLevelMemoryPressureSignalGenerator() override;
 
-  void RequestMemoryPressureSignal();
+  void RequestMemoryPressureSignal(base::MemoryPressureLevel level);
 
   // RAILModeObserver:
   void OnRAILModeChanged(RAILMode rail_mode) override;
 
  private:
-  void Generate(base::TimeTicks now);
+  void Generate(base::MemoryPressureLevel level, base::TimeTicks now);
 
   void OnTimerFired(TimerBase*);
 
@@ -70,9 +71,12 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   // request.
   std::optional<base::TimeTicks> last_requested_;
 
-  // The timestamp of the last generated signal. If nullopt, no signal was
-  // generated yet.
-  std::optional<base::TimeTicks> last_generated_;
+  // The timestamp of the last generated MEMORY_PRESSURE_LEVEL_CRITICAL signal.
+  // If nullopt, no signal was generated yet since the last time the memory
+  // pressure level was MEMORY_PRESSURE_LEVEL_NONE.
+  std::optional<base::TimeTicks> last_critical_generated_;
+
+  base::MemoryPressureLevel current_level_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   // Timer that tracks when the next signal can be generated.
   TaskRunnerTimer<UserLevelMemoryPressureSignalGenerator> timer_;
