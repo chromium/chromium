@@ -121,6 +121,10 @@ Resource* ResourceManagerImpl::GetResource(AndroidResourceType res_type,
 }
 
 void ResourceManagerImpl::RemoveUnusedTints() {
+  for (auto& it : tinted_resources_to_keep_) {
+    used_tints_.insert(it.second);
+  }
+
   // Iterate over the currently cached tints and remove ones that were not
   // used as defined in |used_tints|.
   for (auto it = tinted_resources_.cbegin(); it != tinted_resources_.cend();) {
@@ -202,7 +206,19 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(
   return (*resource_map)[res_id].get();
 }
 
+Resource* ResourceManagerImpl::GetAndRetainStaticResourceWithTint(
+    int res_id,
+    SkColor tint_color) {
+  tinted_resources_to_keep_[res_id] = tint_color;
+  return GetStaticResourceWithTint(res_id, tint_color);
+}
+
+void ResourceManagerImpl::ReleaseStaticResource(int res_id) {
+  tinted_resources_to_keep_.erase(res_id);
+}
+
 void ResourceManagerImpl::ClearTintedResourceCache(JNIEnv* env) {
+  tinted_resources_to_keep_.clear();
   tinted_resources_.clear();
 }
 
@@ -281,6 +297,10 @@ bool ResourceManagerImpl::OnMemoryDump(
       base::trace_event::EstimateMemoryUsage(tinted_resources_);
   CreateMemoryDump(prefix + "/tinted_resource", tinted_resource_usage, pmd);
   return true;
+}
+
+base::WeakPtr<ResourceManager> ResourceManagerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void ResourceManagerImpl::PreloadResourceFromJava(AndroidResourceType res_type,

@@ -77,9 +77,24 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   url_bar_background_layer_->SetHideLayerAndSubtree(!url_bar_visible);
   if (url_bar_visible) {
     ui::NinePatchResource* url_bar_background_resource;
-    url_bar_background_resource = ui::NinePatchResource::From(
-        resource_manager_->GetStaticResourceWithTint(
-            url_bar_background_resource_id, toolbar_textbox_background_color));
+    if (base::FeatureList::IsEnabled(
+            chrome::android::kMvcUpdateViewWhenModelChanged)) {
+      // Because the ToolbarLayer is not updated every frame, even if visible,
+      // we need keep the tint in the cache until the layer is destroyed.
+      url_bar_background_resource = ui::NinePatchResource::From(
+          resource_manager_->GetAndRetainStaticResourceWithTint(
+              url_bar_background_resource_id,
+              toolbar_textbox_background_color));
+      DCHECK(last_url_bar_background_resource_id_ == kInvalidResourceId ||
+             last_url_bar_background_resource_id_ ==
+                 url_bar_background_resource_id);
+      last_url_bar_background_resource_id_ = url_bar_background_resource_id;
+    } else {
+      url_bar_background_resource = ui::NinePatchResource::From(
+          resource_manager_->GetStaticResourceWithTint(
+              url_bar_background_resource_id,
+              toolbar_textbox_background_color));
+    }
 
     gfx::Size draw_size(url_bar_background_resource->DrawSize(
         resource->location_bar_content_rect().size()));
@@ -249,7 +264,7 @@ void ToolbarLayer::SetOpacity(float opacity) {
 }
 
 ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
-    : resource_manager_(resource_manager),
+    : resource_manager_(resource_manager->GetWeakPtr()),
       layer_(cc::slim::Layer::Create()),
       toolbar_layers_(cc::slim::Layer::Create()),
       progress_bar_layers_(cc::slim::Layer::Create()),
@@ -318,6 +333,12 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
   debug_layer_->SetOpacity(0.5f);
 }
 
-ToolbarLayer::~ToolbarLayer() = default;
+ToolbarLayer::~ToolbarLayer() {
+  if (resource_manager_ &&
+      last_url_bar_background_resource_id_ != kInvalidResourceId) {
+    resource_manager_->ReleaseStaticResource(
+        last_url_bar_background_resource_id_);
+  }
+}
 
 }  //  namespace android
