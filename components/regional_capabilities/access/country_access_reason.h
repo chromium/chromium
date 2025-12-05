@@ -57,6 +57,7 @@ enum class CountryAccessReason {
 
   // Used by Private Metrics to include the profile country in private metrics
   // reports.
+  // Access Request: crbug.com/461922774.
   kPrivateUserMetricsReporting,
 };
 
