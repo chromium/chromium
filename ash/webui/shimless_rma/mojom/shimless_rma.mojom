@@ -484,6 +484,8 @@ struct UpdateDeviceInfoStateProperty {
 
   // Customized serial number naming.
   string customized_serial_number_naming;
+  // True if the Google SKU IDs should be hidden in the dropdown.
+  bool hide_google_sku;
 };
 
 // A union to hold different sets of state-specific properties.

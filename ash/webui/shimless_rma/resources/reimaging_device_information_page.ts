@@ -316,33 +316,44 @@ export class ReimagingDeviceInformationPage extends
         });
   }
 
-  private getOriginalSkuAndSkuList(): void {
-    this.shimlessRmaService.getOriginalSku()
-        .then((result: {skuIndex: number}) => {
-          this.originalSkuIndex = result.skuIndex;
-          return this.shimlessRmaService.getSkuList();
-        })
-        .then((result: {skus: bigint[]}) => {
-          this.skus = result.skus;
-          this.skuIndex = this.originalSkuIndex;
-          return this.shimlessRmaService.getSkuDescriptionList();
-        })
-        .then((result: {skuDescriptions: string[]}) => {
-          // The SKU description list can be empty.
-          if (this.skus.length === result.skuDescriptions.length) {
-            this.skus = this.skus.map(
-                (sku, index) => `${sku}: ${result.skuDescriptions[index]}`);
-          }
+  private async getOriginalSkuAndSkuList(): Promise<void> {
+    const originalSkuResult = await this.shimlessRmaService.getOriginalSku();
+    this.originalSkuIndex = originalSkuResult.skuIndex;
 
-          // Need to wait for the select options to render before setting the
-          // selected index.
-          afterNextRender(this, () => {
-            const skuSelect: HTMLSelectElement|null =
-                this.shadowRoot!.querySelector('#skuSelect');
-            assert(skuSelect);
-            skuSelect.selectedIndex = this.skuIndex;
-          });
-        });
+    const skuListResult = await this.shimlessRmaService.getSkuList();
+    this.skus = skuListResult.skus;
+    this.skuIndex = this.originalSkuIndex;
+
+    const skuDescriptionResult =
+        await this.shimlessRmaService.getSkuDescriptionList();
+
+    const stateProperties =
+        (await this.shimlessRmaService.getStateProperties())
+            ?.statePropertyResult.property?.updateDeviceInfoStateProperty;
+
+    const hideGoogleSku =
+        (loadTimeData.getBoolean('hideGoogleSKUEnabled') &&
+         stateProperties?.hideGoogleSku);
+
+    // The SKU description list can be empty.
+    if (this.skus.length === skuDescriptionResult.skuDescriptions.length) {
+      if (hideGoogleSku) {
+        this.skus = skuDescriptionResult.skuDescriptions;
+      } else {
+        this.skus = this.skus.map(
+            (sku, index) =>
+                `${sku}: ${skuDescriptionResult.skuDescriptions[index]}`);
+      }
+    }
+
+    // Need to wait for the select options to render before setting the
+    // selected index.
+    afterNextRender(this, () => {
+      const skuSelect: HTMLSelectElement|null =
+          this.shadowRoot!.querySelector('#skuSelect');
+      assert(skuSelect);
+      skuSelect.selectedIndex = this.skuIndex;
+    });
   }
 
   private getOriginalCustomLabelAndCustomLabelList(): void {

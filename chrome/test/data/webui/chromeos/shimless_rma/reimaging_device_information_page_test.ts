@@ -99,6 +99,7 @@ suite('reimagingDeviceInformationPageTest', function() {
     loadTimeData.overrideValues({
       'dynamicDeviceInfoInputsEnabled': true,
       'flexibleSerialNumberNameEnabled': true,
+      'hideGoogleSKUEnabled': true,
     });
   });
 
@@ -162,17 +163,22 @@ suite('reimagingDeviceInformationPageTest', function() {
     dramPartNumberModifiable: true,
     featureLevelModifiable: true,
     customizedSerialNumberNaming: 'DEFAULT SN NAME',
+    hideGoogleSku: false,
   };
 
   // Helper function to set all modifiability for device info inputs.
-  const setDeviceInfoProperties =
-      (properties = DEFAULT_DEVICE_INFO_PROPERTIES) => {
-        service.setGetStatePropertiesResult({
-          property: {
-            updateDeviceInfoStateProperty: properties,
-          },
-        });
-      };
+  const setDeviceInfoProperties = (overrideProperties = {}) => {
+    const mergedProperties = {
+      ...DEFAULT_DEVICE_INFO_PROPERTIES,
+      ...overrideProperties,
+    };
+
+    service.setGetStatePropertiesResult({
+      property: {
+        updateDeviceInfoStateProperty: mergedProperties,
+      },
+    });
+  };
 
   // Verify the page initializes with the expected components.
   test('PageInitializes', async () => {
@@ -416,7 +422,6 @@ suite('reimagingDeviceInformationPageTest', function() {
   // Test case: All inputs disabled when none are modifiable
   test('AllInputsDisabled_WhenNonModifiable', async () => {
     setDeviceInfoProperties({
-      ...DEFAULT_DEVICE_INFO_PROPERTIES,
       serialNumberModifiable: false,
       regionModifiable: false,
       skuModifiable: false,
@@ -461,7 +466,6 @@ suite('reimagingDeviceInformationPageTest', function() {
   // Verify the serial number label is replaced.
   test('Customized_serial_number_naming', async () => {
     setDeviceInfoProperties({
-      ...DEFAULT_DEVICE_INFO_PROPERTIES,
       customizedSerialNumberNaming: 'TEST SN NAME',
     });
 
@@ -472,6 +476,23 @@ suite('reimagingDeviceInformationPageTest', function() {
         strictQuery(serialNumberSelector, component.shadowRoot, CrInputElement);
 
     assertEquals(serialNumberSelect.label, 'TEST SN NAME');
+  });
+
+  // Verify the Google SKU IDs is hidden from the dropdown options.
+  test('HideGoogleSku', async () => {
+    setDeviceInfoProperties({
+      hideGoogleSku: true,
+    });
+
+    await initializeReimagingDeviceInformationPage();
+    assert(component);
+
+    const skuSelect =
+        strictQuery(skuSelectSelector, component.shadowRoot, HTMLSelectElement);
+
+    for (let i = 0; i < skuSelect.options.length; ++i) {
+      assertEquals(fakeDeviceSkuDescriptions[i], skuSelect.options[i]!.text);
+    }
   });
 
   // Verify the next button gets disabled when the inputs has invalid values.
