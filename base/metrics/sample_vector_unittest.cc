@@ -420,8 +420,7 @@ TEST_F(SampleVectorTest, PersistentSampleVector) {
   LocalPersistentMemoryAllocator allocator(64 << 10, 0, "");
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
-  HistogramSamples::Metadata samples_meta;
-  UNSAFE_TODO(memset(&samples_meta, 0, sizeof(samples_meta)));
+  HistogramSamples::Metadata samples_meta = {};
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);
@@ -515,8 +514,7 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   LocalPersistentMemoryAllocator allocator(64 << 10, 0, "");
   std::atomic<PersistentMemoryAllocator::Reference> samples_ref;
   samples_ref.store(0, std::memory_order_relaxed);
-  HistogramSamples::Metadata samples_meta;
-  UNSAFE_TODO(memset(&samples_meta, 0, sizeof(samples_meta)));
+  HistogramSamples::Metadata samples_meta = {};
 
   // Custom buckets: [1, 5) [5, 10)
   BucketRanges ranges(3);
