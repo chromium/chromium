@@ -16,3 +16,6 @@ features:
   files:
   - Worker-postMessage-happens-in-parallel.https.html
   - postMessage_*
+- name: user-agent-sniffing
+  files:
+  - WorkerNavigator_userAgent.htm

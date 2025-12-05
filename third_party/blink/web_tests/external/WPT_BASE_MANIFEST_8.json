@@ -4382,6 +4382,13 @@
         {}
        ]
       ],
+      "triply-nested-partial-relayout.html": [
+       "f20eaf601500ed9e4ac47c2652a89c619785ca26",
+       [
+        null,
+        {}
+       ]
+      ],
       "vertical-rl-column-rules-wide-columns.html": [
        "22eb9d56b6d1f50ab756899f21453f68c94521d6",
        [
@@ -4960,6 +4967,13 @@
         null,
         {}
        ]
+      ],
+      "sticky-continuation-crash.html": [
+       "5e6e6dd50ddb13b48abb3399d2b548428efa1399",
+       [
+        null,
+        {}
+       ]
       ]
      }
     },
@@ -5381,6 +5395,13 @@
       ]
      ],
      "crashtests": {
+      "atomic-item-crash.html": [
+       "8eefcf7756db24562879eb878eb0e4725c2a0b66",
+       [
+        null,
+        {}
+       ]
+      ],
       "caption-repaint-crash.html": [
        "6a024d0c1d7ef58da06a489d80d187bcb2a3e350",
        [
@@ -10559,6 +10580,19 @@
        {}
       ]
      ]
+    },
+    "declarative": {
+     "tentative": {
+      "shadowrootadoptedstylesheets": {
+       "shadowrootadoptedstylesheets-document-parse-crash.html": [
+        "4f69301dee9b782da144fbca46af58ad06f01497",
+        [
+         null,
+         {}
+        ]
+       ]
+      }
+     }
     },
     "event-on-pseudo-element-crash.html": [
      "c03f51a64f439e772ff56702dc132f8cd8c7938c",
@@ -76698,6 +76732,19 @@
        {}
       ]
      ],
+     "anchor-name-dynamic-reflow-root.html": [
+      "548dae8d74f640e1a222d2fc1c200fb4e4560b58",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/anchor-name-dynamic-reflow-root-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "anchor-name-multicol-003.html": [
       "07d1c72ad11c3a4755b67e0126e1338cd7f484df",
       [
@@ -77653,7 +77700,7 @@
       ]
      ],
      "position-anchor-001.html": [
-      "b0a964485c65ed1c8eeff89a1406bda9f4ea9b48",
+      "35f2227d8a29e8de04fa5c674a49a432ad9ee4bf",
       [
        null,
        [
@@ -77666,7 +77713,7 @@
       ]
      ],
      "position-anchor-002.html": [
-      "a9248ef694f810cc7d06e4ce20f22807e91e6607",
+      "4e5cad6a071fbfd9053374cc83d6e0caef3abbb5",
       [
        null,
        [
@@ -77679,7 +77726,7 @@
       ]
      ],
      "position-anchor-004.html": [
-      "d1a1ce962c4d956de3853339456eb4cc867b44db",
+      "6bc40f7059d2e05110363d5220ac82e39a2fda50",
       [
        null,
        [
@@ -77691,8 +77738,21 @@
        {}
       ]
      ],
+     "position-anchor-005.tentative.html": [
+      "fd975ddb0dcd7bd9d71b95ead1c5dca16d61a29e",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/position-anchor-005-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-anchor-target-with-children.html": [
-      "d6e5164936af90987f43802f84e62478e931dbc6",
+      "5008f7e6bb790ee1720665b3d629049666674b44",
       [
        null,
        [
@@ -77965,7 +78025,7 @@
       ]
      ],
      "position-visibility-anchors-visible-after-scroll-in-document.html": [
-      "3b889fc21900f34bf22b401cca10c774d652c621",
+      "79825f0c981989080827de801933994f69305650",
       [
        null,
        [
@@ -77978,7 +78038,7 @@
       ]
      ],
      "position-visibility-anchors-visible-after-scroll-in.html": [
-      "f5eb1c2557886ac4536ace655fdfc9631db972ea",
+      "00c6e3cf432ebebc6030190f90ab44ab99c8cc50",
       [
        null,
        [
@@ -78056,7 +78116,7 @@
       ]
      ],
      "position-visibility-anchors-visible-chained-004.html": [
-      "c8a5c444602d136acd8aeca2daebbfc674172f9a",
+      "50ca439012899f795fdadc076d2ce011fc55a2e3",
       [
        null,
        [
@@ -78069,7 +78129,7 @@
       ]
      ],
      "position-visibility-anchors-visible-change-anchor.html": [
-      "a7668240b8c405f97fa305cf83d581d270995666",
+      "0e8c0718d0b1313916954d6e8bcc4637506a751f",
       [
        null,
        [
@@ -78082,7 +78142,7 @@
       ]
      ],
      "position-visibility-anchors-visible-change-css-visibility.html": [
-      "a16b45a07d50ec5d841dbc3f497bd5441a96fa98",
+      "12163fb2289f3e4ea4307c5d528f99449667c863",
       [
        null,
        [
@@ -78303,7 +78363,7 @@
       ]
      ],
      "position-visibility-remove-anchors-visible.html": [
-      "daca9e51f49abe218f39fd822cc1f71bce2a54c4",
+      "8d530232d3190ce26dad1a5d3e8e1cb52a8d2156",
       [
        null,
        [
@@ -89484,6 +89544,19 @@
      ]
     },
     "css-borders": {
+     "border-radius-currentcolor.html": [
+      "77dfd6a74644044c55a9b34e266ad12516d1b3f1",
+      [
+       null,
+       [
+        [
+         "/css/css-borders/border-radius-currentcolor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "border-radius-greater-than-width.html": [
       "8c421a213bc2b6b1c5df705ee8e89f774cb81619",
       [
@@ -89843,1104 +89916,6 @@
         }
        ]
       ],
-      "corner-shape-render-fuzzy.html": [
-       "53301d8e782e7e5e477552bb424c74d9059c2753",
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?border-radius=30%&corner-shape=superellipse(-1.5)&box-shadow=10px%2010px%200%2010px%20black",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-radius=30%&corner-shape=superellipse(-1.5)&box-shadow=10px%2010px%200%2010px%20black",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?border-radius=40%&corner-shape=notch&box-shadow=10px%2010px%200%2010px%20yellow",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-radius=40%&corner-shape=notch&box-shadow=10px%2010px%200%2010px%20yellow",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?border-radius=50%&corner-shape=bevel&box-shadow=10px%2010px%200%2010px%20black",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-radius=50%&corner-shape=bevel&box-shadow=10px%2010px%200%2010px%20black",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?border-radius=50%&corner-top-left-shape=scoop&corner-bottom-right-shape=scoop&corner-top-right-shape=notch&corner-bottom-left-shape=notch&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-radius=50%&corner-top-left-shape=scoop&corner-bottom-right-shape=scoop&corner-top-right-shape=notch&corner-bottom-left-shape=notch&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?border-radius=50%&corner-top-right-shape=scoop&corner-bottom-left-shape=scoop&corner-top-left-shape=notch&corner-bottom-right-shape=notch&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-radius=50%&corner-top-right-shape=scoop&corner-bottom-left-shape=scoop&corner-top-left-shape=notch&corner-bottom-right-shape=notch&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=scoop&border-radius=20%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=scoop&border-radius=20%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=25%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=25%&box-shadow=10px 10px 0 10px black",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=squircle&border-radius=50%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-radius=50%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(-2)&border-radius=20%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(-2)&border-radius=20%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(-7)&border-radius=20%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(-7)&border-radius=20%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(0.8)&border-radius=40px&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(0.8)&border-radius=40px&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(3)&border-radius=40px&box-shadow=10px 10px 0 10px black",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(3)&border-radius=40px&box-shadow=10px 10px 0 10px black",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-shape=superellipse(5)&border-radius=20%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(5)&border-radius=20%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40px&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40px&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=superellipse(-4)&border-radius=40%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(-4)&border-radius=40%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-left-shape=superellipse(2.5)&border-radius=20%&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(2.5)&border-radius=20%&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-fuzzy.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             200
-            ],
-            [
-             0,
-             550
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
-      "corner-shape-render-precise.html": [
-       "68f2555eafad97a26eca0ea0d5f0b4db4f0f91f3",
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?border-top-left-radius=50%&corner-shape=superellipse(0.7)&border-left-width=30px&border-top-width=30px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?border-top-left-radius=50%&corner-shape=superellipse(0.7)&border-left-width=30px&border-top-width=30px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-bottom-left-shape=bevel&border-width=10px&border-radius=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&border-width=10px&border-radius=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-bottom-right-shape=superellipse(0.8)&border-bottom-right-radius=50%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-bottom-right-shape=superellipse(0.8)&border-bottom-right-radius=50%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=notch&border-radius=30px&border-width=30px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=notch&border-radius=30px&border-width=30px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=square&border-bottom-left-radius=5px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=square&border-bottom-left-radius=5px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-left-radius=30%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-left-radius=30%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=squircle&border-top-right-radius=30px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=squircle&border-top-right-radius=30px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(-2)&border-top-left-radius=40%&border-width=20px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(-2)&border-top-left-radius=40%&border-width=20px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(2.3)&border-radius=40%",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(2.3)&border-radius=40%",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-shape=superellipse(3)&border-top-right-radius=33px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-shape=superellipse(3)&border-top-right-radius=33px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=bevel&border-radius=40px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-radius=40px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=bevel&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=bevel&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=scoop&border-radius=40px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=scoop&border-radius=40px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(-0.5)&border-radius=40px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(-0.5)&border-radius=40px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(-4)&border-radius=40px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(-4)&border-radius=40px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-left-shape=superellipse(0.5)&border-radius=40px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-left-shape=superellipse(0.5)&border-radius=40px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-right-shape=bevel&border-width=10px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=bevel&border-width=10px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ],
-       [
-        "css/css-borders/corner-shape/corner-shape-render-precise.html?corner-top-right-shape=superellipse(-4)&border-top-right-radius=50px",
-        [
-         [
-          "/css/css-borders/corner-shape/corner-shape-any-ref.html?corner-top-right-shape=superellipse(-4)&border-top-right-radius=50px",
-          "=="
-         ]
-        ],
-        {
-         "fuzzy": [
-          [
-           null,
-           [
-            [
-             0,
-             180
-            ],
-            [
-             0,
-             350
-            ]
-           ]
-          ]
-         ]
-        }
-       ]
-      ],
       "corner-shape-square.html": [
        "f8425816c1c25c40365c638a3466dde92eb95005",
        [
@@ -91021,6 +89996,1179 @@
             [
              0,
              255
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "render-corner-shape.html": [
+       "57c4a354ecb27f2f97c6eaf87aab02642d4c14e8",
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=25&corner-shape=2&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=25&corner-shape=2&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=40&corner-shape=-1.5&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=40&corner-shape=-1.5&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=40&corner-shape=-infinity&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=40&corner-shape=-infinity&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=40&corner-shape=3&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=40&corner-shape=3&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=5&corner-top-left-shape=0.5&corner-bottom-right-shape=-0.5&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=5&corner-top-left-shape=0.5&corner-bottom-right-shape=-0.5&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=50%&corner-top-left-shape=scoop&corner-bottom-right-shape=scoop&corner-top-right-shape=notch&corner-bottom-left-shape=notch&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=50%&corner-top-left-shape=scoop&corner-bottom-right-shape=scoop&corner-top-right-shape=notch&corner-bottom-left-shape=notch&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=50%&corner-top-right-shape=scoop&corner-bottom-left-shape=scoop&corner-top-left-shape=notch&corner-bottom-right-shape=notch&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=50%&corner-top-right-shape=scoop&corner-bottom-left-shape=scoop&corner-top-left-shape=notch&corner-bottom-right-shape=notch&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-radius=50&corner-shape=0&shadow-spread=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-radius=50&corner-shape=0&shadow-spread=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-top-left-radius=50%&corner-shape=0.7&border-left-width=30&border-top-width=30",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-top-left-radius=50%&corner-shape=0.7&border-left-width=30&border-top-width=30",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?border-top-right-radius=100&corner-top-right-shape=0&shadow-spread=30",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?border-top-right-radius=100&corner-top-right-shape=0&shadow-spread=30",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-bottom-left-shape=bevel&border-bottom-left-radius=30",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-bottom-left-shape=bevel&border-width=10&border-radius=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-bottom-left-shape=bevel&border-width=10&border-radius=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-bottom-right-shape=0.8&border-bottom-right-radius=50%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-bottom-right-shape=0.8&border-bottom-right-radius=50%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-bottom-right-shape=bevel&border-width=10&border-radius=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-bottom-right-shape=bevel&border-width=10&border-radius=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-bottom-right-shape=bevel&corner-bottom-left-shape=bevel",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=-2&border-radius=20%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=-2&border-radius=20%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=-2&border-top-left-radius=40%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=-2&border-top-left-radius=40%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=-7&border-radius=20%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=-7&border-radius=20%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=0.8&border-radius=40&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=0.8&border-radius=40&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=2.3&border-radius=40%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=2.3&border-radius=40%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=3&border-top-right-radius=33",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=3&border-top-right-radius=33",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=5&border-radius=20%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=5&border-radius=20%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=notch&border-radius=30&border-width=30",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=notch&border-radius=30&border-width=30",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=scoop&border-radius=20%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=scoop&border-radius=20%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=square&border-bottom-left-radius=5",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=square&border-bottom-left-radius=5",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=squircle&border-radius=25%&border-width=20",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=squircle&border-radius=25%&border-width=20",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=squircle&border-radius=50%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=squircle&border-radius=50%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=squircle&border-top-left-radius=25%&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=squircle&border-top-left-radius=30%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=squircle&border-top-left-radius=30%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-shape=squircle&border-top-right-radius=30",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-shape=squircle&border-top-right-radius=30",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=-0.5&border-radius=40",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=-0.5&border-radius=40",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=-4&border-radius=40",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=-4&border-radius=40",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=-4&border-radius=40%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=-4&border-radius=40%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=0&corner-top-right-shape=notch&corner-bottom-right-shape=2&corner-bottom-left-shape=-1&border-width=20&shadow-spread=20&border-radius=50",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=0&corner-top-right-shape=notch&corner-bottom-right-shape=2&corner-bottom-left-shape=-1&border-width=20&shadow-spread=20&border-radius=50",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=0.5&border-radius=40",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=0.5&border-radius=40",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=2.5&border-radius=20%&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=2.5&border-radius=20%&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=bevel&border-radius=40",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=bevel&border-radius=40",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=bevel&border-radius=40&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=bevel&border-radius=40&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=bevel&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=bevel&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=bevel&corner-bottom-right-shape=bevel&border-radius=40&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=scoop&border-radius=40",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=scoop&border-radius=40",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-left-shape=scoop&corner-top-right-shape=scoop&border-radius=50%",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-right-shape=-4&border-top-right-radius=50",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-right-shape=-4&border-top-right-radius=50",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-right-shape=bevel&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-right-shape=bevel&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
+            ]
+           ]
+          ]
+         ]
+        }
+       ],
+       [
+        "css/css-borders/corner-shape/render-corner-shape.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10",
+        [
+         [
+          "/css/css-borders/corner-shape/render-corner-shape-ref.html?corner-top-right-shape=scoop&border-radius=20%&border-width=10",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             64
+            ],
+            [
+             0,
+             128
             ]
            ]
           ]
@@ -137312,6 +137460,19 @@
         {}
        ]
       ],
+      "font-weight-search-direction.html": [
+       "24ae55bc76ec04ae9785d19399229231e0150529",
+       [
+        null,
+        [
+         [
+          "/css/css-fonts/matching/font-weight-search-direction-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "range-descriptor-reversed.html": [
        "71b424d5fe7f09a4bd5872656ac77fa67713d071",
        [
@@ -140578,7 +140739,7 @@
        ]
       ],
       "multicol-gap-decorations-020.html": [
-       "9e4b10ee085bc5d1160ccbd606f759939c4eb330",
+       "41fdff5e75ac7dad76c5000596feb5f454ecc3b9",
        [
         null,
         [
@@ -147954,7 +148115,7 @@
          ]
         ],
         "row-explicit-placement-001.html": [
-         "bfa7920a153a252c834e99a51a9f1f45e7ca3916",
+         "cd19409c93992424a4f0ea373c0d46c54bf2efff",
          [
           null,
           [
@@ -147967,7 +148128,7 @@
          ]
         ],
         "row-explicit-placement-002.html": [
-         "d521900b6244a926594d286f52b3d6e2d0fe5485",
+         "5d3a68ffcf2457a71c831ad54b5bf50b5316ca63",
          [
           null,
           [
@@ -147980,7 +148141,7 @@
          ]
         ],
         "row-explicit-placement-003.html": [
-         "5077c48fa5e8fd1f4e3a107c13816577517f1ee2",
+         "e8f9c9864922f198481d40f09936247b2f78156e",
          [
           null,
           [
@@ -147993,7 +148154,7 @@
          ]
         ],
         "row-explicit-placement-004.html": [
-         "7eac4348a2a9e8ecabb2b22aaa3365a1dab84f9e",
+         "9952188aefa13955078bee18fa19016cc5fa1212",
          [
           null,
           [
@@ -148006,7 +148167,7 @@
          ]
         ],
         "row-explicit-placement-005.html": [
-         "08bfd0efd7972508005a2bd9dd43422509bf018d",
+         "a787f1bb26af87163ba65e8a7b5ef04513a4e3a2",
          [
           null,
           [
@@ -148019,7 +148180,7 @@
          ]
         ],
         "row-explicit-placement-006.html": [
-         "0742177aff4ad6785d05f19af4a42c2a4a13f45c",
+         "2d0fc78ee9f2e541a85e89698e9a4550db2e8f44",
          [
           null,
           [
@@ -148032,7 +148193,7 @@
          ]
         ],
         "row-explicit-placement-007.html": [
-         "78f6c3b3fcb36f7687d26dac93fea6fda124656a",
+         "18f73a0543f7ab5a21f22bdf1b503cf1a61b0e9b",
          [
           null,
           [
@@ -149379,7 +149540,7 @@
          ]
         ],
         "row-negative-margin-001.html": [
-         "bbad2c0c7414b5a1a10e20e1a725e4f3c553a92d",
+         "a0d36a5cc6e7c798877ca27ab3a723ea00f1c1c9",
          [
           null,
           [
@@ -154774,7 +154935,7 @@
       ]
      ],
      "highlight-text-across-elements.html": [
-      "4ff6cff4b0b2f872ad494cefeab8bcc60a95878d",
+      "fab524b1c12e0796a6c20873687265274fc5cda8",
       [
        null,
        [
@@ -154826,7 +154987,7 @@
       ]
      ],
      "highlight-text-replace.html": [
-      "6a47e06f5ca5b39920233166fbfb6ef41f500493",
+      "be2bc8620c11a260b769c925db335e212edf13d0",
       [
        null,
        [
@@ -154839,7 +155000,7 @@
       ]
      ],
      "highlight-text.html": [
-      "1442d9602d87fb239425eddf929559fcad7a7133",
+      "4ada7dace63079b362606e9768853601dfb27ccc",
       [
        null,
        [
@@ -272681,8 +272842,37 @@
         {}
        ]
       ],
+      "clip-on-target-in-callback-2.html": [
+       "8937f299d8420fc0d419b6d8249697c5c84c6d21",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/clip-on-target-in-callback-2-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             48600
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
       "clip-on-target-in-callback.html": [
-       "9116616adeb42ea80c067cd9633d081f939096e9",
+       "ae29a087c2b8c6faef08c605216979c0eaf34b79",
        [
         null,
         [
@@ -272691,7 +272881,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             2
+            ],
+            [
+             0,
+             48600
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "clipper-non-containing-block.html": [
@@ -274407,7 +274613,7 @@
        ]
       ],
       "svg-font-relative-units.html": [
-       "032273e66c44216be7d3ceef73c1e2ebb0937373",
+       "21b066e01ba0ce34287c17fb41941e637ffd5a3b",
        [
         null,
         [
@@ -290845,6 +291051,19 @@
        {}
       ]
      ],
+     "backdrop-filter-border-radius-change.html": [
+      "2b91dd6ba4925317a312e00dd9cff4b6209cffa8",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/backdrop-filter-border-radius-change-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "backdrop-filter-boundary.html": [
       "d7112034a463e9cecc3a6f09e12cf7ac189a8971",
       [
@@ -292702,6 +292921,35 @@
         ]
        ],
        {}
+      ]
+     ],
+     "fecolormatrix-special-value.html": [
+      "4a31cf5315bb17bfebf5874326857113bc479a01",
+      [
+       null,
+       [
+        [
+         "/css/filter-effects/fecolormatrix-special-value-ref.html",
+         "=="
+        ]
+       ],
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            2
+           ],
+           [
+            0,
+            160000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "fecolormatrix-type.html": [
@@ -319705,6 +319953,320 @@
         {}
        ]
       ],
+      "geolocation-element": {
+       "border-radius-different.tentative.html": [
+        "44c11818bb4d2f7c5b4a613d2d42ab2b4e517c67",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/border-radius-different-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "border-radius-identical.tentative.html": [
+        "4310b94435796f0737df992536e70e75d792badf",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/border-radius-identical-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "bounded-css-properties-reftest.tentative.html": [
+        "609b18097381aab9c7e149faaf30f01f59306686",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/bounded-css-properties-reftest-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "geolocation-element-with-comment.tentative.html": [
+        "3bb3bcaa9cc3f7e228a74f2decb9b21f73c846aa",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/geolocation-element-with-comment-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-fill-reftest.html": [
+        "a1284d7a63e7582e3c90e05973cbf205d1b2a8d8",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-fill-reftest-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-height-bounded-reftest.html": [
+        "6159586488ae06d6d291772de6daaa325aa4236d",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-height-bounded-reftest-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-height-reftest.html": [
+        "a5cdb3552c829fedd86caed929addad7d65bef3b",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-margin-bounded-reftest.html": [
+        "6878f8ed0f51033faafdeb731c6f0e0370f5ac7b",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-margin-bounded-reftest-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-margin-inline-end-reftest.html": [
+        "9a348923dedff9f29acac11ec39d4558fbd65f66",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-max-height-reftest.html": [
+        "4a006b5487b9b813f3982d9c9b9259d3f519a7bf",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-max-height-reftest-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-min-height-reftest.html": [
+        "9b6ac4532567688928a89f4f74187ad689029621",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-min-height-reftest-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-stroke-reftest.html": [
+        "d5c1947abb85839dea68f3a097a6543a75e3c63a",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-css-property-stroke-width-reftest.html": [
+        "651b161a72da7006809b831ddbed0fe867e11f93",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/icon-css-property-stroke-width-reftest-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-different-for-precise-location-reftest.html": [
+        "434e487241cdd472659011d5a23c5f88ce523322",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-hidden-reftest.html": [
+        "3689dbb0e64c24b95ccc690ee6532109471713dd",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "!="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-restricted-css-no-effect-reftest.html": [
+        "91a253b6479083b310e2a7a169f8f7b127d84993",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/standard-location-element-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "inherited-css-tentative.html": [
+        "b13083ba97b0732235fcb3b649bc0627e6a56180",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/inherited-css-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "permission-element-with-comment.tentative.html": [
+        "86c1bb3783433fc04f059fb49b2cdc74446e3ae2",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/permission-element-with-comment-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "pseudo-elements-in-div.tentative.html": [
+        "ccdc61ee620c80b67a22584201abe36e818b5c90",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/pseudo-elements-in-div-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "pseudo-elements.tentative.html": [
+        "606b1392ad5909935abb6d793b6acdf4cf562476",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/pseudo-elements-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "quirks-mode-no-height-is-still-bounded.tentative.html": [
+        "c2220a00c3e0a334897fc7138491e168f39b296d",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/quirks-mode-no-height-is-still-bounded-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "text-decoration-tentative.html": [
+        "0a0f430211bcb3001e7d4ad647468218952224d2",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/text-decoration-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "text-stroke-and-fill.tentative.html": [
+        "ac69ae2f6f79f0c2d2d7504aaec10e3f8aa9f5b9",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/text-stroke-and-fill-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "webkit-text-security-on-parent.tentative.html": [
+        "a10ff514990e364d918b8766f434d31ed03775a5",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/geolocation-element/webkit-text-security-on-parent-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ]
+      },
       "inherited-css-tentative.html": [
        "f1a8d3b6f03e1ad09a2fa4e81869636602697f63",
        [
@@ -338388,7 +338950,7 @@
       []
      ],
      "util.js": [
-      "7c3008f90d961aae028574b8d345fa0f82e658ad",
+      "812c8d6aee9725fb48a9ef729694a0fcdad0f837",
       []
      ]
     },
@@ -340459,7 +341021,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "3e5025581fb39627627493838e2a911143651f31",
+     "cbb97c820ecbb7aa5c0c78c4dfd98ff209ea5f73",
      []
     ],
     "clipboard-item.https-expected.txt": [
@@ -340469,6 +341031,12 @@
     "detached-iframe": {
      "WEB_FEATURES.yml": [
       "92abfee3580dcdc7b8c6eb717bcc3d7bfcebab1d",
+      []
+     ]
+    },
+    "events": {
+     "WEB_FEATURES.yml": [
+      "4ed1d9d116f6b0ada12c4e28e614a14a292eae4c",
       []
      ]
     },
@@ -341040,6 +341608,10 @@
      "212e449935d26b6f59f486c69dd23f6cf5aa48af",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "0c4fb967b02c0faa4cc3a060a6d3de2e1d2d26a9",
+     []
+    ],
     "css-style-declaration-alias-enumeration-expected.txt": [
      "606f733f6aad5ac1928e73bb2c86a516183580ff",
      []
@@ -341516,7 +342088,7 @@
     ],
     "resources": {
      "container-timing-helpers.js": [
-      "c66797b60410eb1a73cc2697a42dc165d52d4869",
+      "f3bc21349cb3b6207232e6c03fe06ade74a7b636",
       []
      ],
      "square100.png": [
@@ -344274,6 +344846,14 @@
      "29f84f00feb47f68a2cbaa3357ecebaebcb8d111",
      []
     ],
+    "cookieStore_set_maxAge.https.any-expected.txt": [
+     "d6826097312a18b8b3604642b6ce17db1d691a54",
+     []
+    ],
+    "cookieStore_set_maxAge.https.any.serviceworker-expected.txt": [
+     "d6826097312a18b8b3604642b6ce17db1d691a54",
+     []
+    ],
     "resources": {
      "always_changing_sw.sub.js": [
       "9fdf99848fa50316e275cd6636a5755270a9bb1e",
@@ -344423,7 +345003,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "4e824cc2425fa0cce521f9677833c45931a3f3e7",
+     "3955de02827c60de90e3bcd48a90d9fc6d38caf0",
      []
     ],
     "credentialscontainer-create-basics.https-expected.txt": [
@@ -344497,6 +345077,10 @@
      ],
      "OWNERS": [
       "3cf6b7950a4a7dcf2b9802b01da45bb77830c076",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "16aa389c67396d717a8278c8a22ac7e1d672031c",
       []
      ],
      "abspos": {
@@ -345422,6 +346006,10 @@
       }
      },
      "borders": {
+      "WEB_FEATURES.yml": [
+       "5cdf41561aa8afc4b8bef50d2a02e6eac84bf4e6",
+       []
+      ],
       "border-001-ref.xht": [
        "2fe99002ecc2a7dcb558a5930e7a0887481f030c",
        []
@@ -348400,6 +348988,10 @@
       ]
      },
      "positioning": {
+      "WEB_FEATURES.yml": [
+       "57e8727b0ce64152d0c20a1a571d9132f3a6d240",
+       []
+      ],
       "absolute-non-replaced-height-002-ref.xht": [
        "944c0999de2b10f30f475fd40746aeb08de7e15c",
        []
@@ -349521,7 +350113,7 @@
      },
      "tables": {
       "WEB_FEATURES.yml": [
-       "ccd6c88e7b6c77ec53f0a84f63a48034555d3b1a",
+       "2b9fb0d368424eeb335c43d73d1c06dd8a7bea00",
        []
       ],
       "background-table-README": [
@@ -350103,7 +350695,7 @@
        []
       ],
       "WEB_FEATURES.yml": [
-       "ab94d28cbbbbae51bb74438cd64e27712a6aafff",
+       "7a3a7ebca6fa5421e84130ce2ccf7a3c574bf5b5",
        []
       ],
       "bidi-flag-emoji-02-ref.html": [
@@ -351539,6 +352131,10 @@
       "bc9872a9093680d8584df0e923c658ce589ef271",
       []
      ],
+     "anchor-name-dynamic-reflow-root-ref.html": [
+      "f5ac4e909cda35b1c3db269f9c7f07ebf6eada10",
+      []
+     ],
      "anchor-name-multicol-003-ref.html": [
       "707af50766b8dd2d4a99d7824c7e8ff80ea239e3",
       []
@@ -351631,12 +352227,16 @@
        []
       ]
      },
+     "position-anchor-005-ref.tentative.html": [
+      "a6e290c582a66260336d9b8984295c0a51021304",
+      []
+     ],
      "position-anchor-ref.html": [
-      "4d7de12447c8297b8f0fc04338d80a028a3e9798",
+      "6960de0f563edba91f86afcf6b4cb2a57510b14f",
       []
      ],
      "position-anchor-target-with-children-ref.html": [
-      "dd922b0bb218311665711ca9d14d60bdfb72ba98",
+      "9a6f96160aa6ae4f36533710dc99b76717ceec88",
       []
      ],
      "position-area-alignment-inset-001-ref.html": [
@@ -351764,7 +352364,7 @@
       []
      ],
      "position-visibility-remove-anchors-visible-ref.html": [
-      "135763bf6bb8d705810247b3e6ac6b85e0d54b38",
+      "af42c018e596292461362ce95b57a2897ab7187c",
       []
      ],
      "position-visibility-remove-no-overflow-ref.html": [
@@ -351934,7 +352534,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "c4fef591218ecf6816b8ecd43974184083eb68b6",
+      "390a7cd59cddf3a128fd048849331effd794e15f",
       []
      ],
      "animate-font-size-with-margin-override-ref.html": [
@@ -352090,7 +352690,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "7b332986ce8ad2099c9a39bf12006372c79c25ff",
+      "627c44998e4f8c70fe9e54b2dedebd28f41df595",
       []
      ],
      "animations": {
@@ -353213,7 +353813,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "3f3095f420abe0ebda71ee54670c1808551c0d18",
+       "436e30fe6c9e0bb26c48b6514a30e19a85c87aff",
        []
       ],
       "background-clip-computed-expected.txt": [
@@ -354309,15 +354909,19 @@
       "e1ef68513f7cabfd9c1ec444e8e9c5f00c9e0baf",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "139b7c64a2e561dfe845b8f2e8ef7c3b70404542",
+      []
+     ],
+     "border-radius-currentcolor-ref.html": [
+      "96f4098ba62c4e898f57ef1f28e854b8f2b71838",
+      []
+     ],
      "border-shape-absolute-coords-shape-ref.tentative.html": [
       "a0d1ecb12c62d77dabccdbb2c4c7e3836a879e92",
       []
      ],
      "corner-shape": {
-      "corner-shape-any-ref.html": [
-       "36fc7a88825fea38ad5cfcdf544946e3644cc00b",
-       []
-      ],
       "corner-shape-backdrop-filter-overflow-ref.html": [
        "4aabd7e8e353f90f3ceeaf590eca42854c9552b7",
        []
@@ -354339,7 +354943,7 @@
        []
       ],
       "corner-shape-gallery.manual.html": [
-       "1eb6cbd8df349f0a27b1575b8a77583c95b44a42",
+       "5956681d57a1dc71ae00c4499c5ecddbab26a4c5",
        []
       ],
       "corner-shape-img-border-ref.html": [
@@ -354366,17 +354970,21 @@
        "4576240ef3288a954c9a627cbafd640eacd95444",
        []
       ],
+      "render-corner-shape-ref.html": [
+       "d43106f2786dfb7563516bc003cc99b7c661e180",
+       []
+      ],
       "resources": {
-       "corner-shape.js": [
-        "e0039492b3bf64aae0f5276319d2c6297ac88150",
-        []
-       ],
        "corner-utils.js": [
         "3a156436bc3af3c870a00abdc99368afab3dc2cb",
         []
        ],
        "green.html": [
         "101cfc090018818422aadf004a67148c67179453",
+        []
+       ],
+       "render-corner-shape.js": [
+        "5e12b8907488b64778619702738d7c110d56bb05",
         []
        ],
        "resolve-corner-style.js": [
@@ -354412,6 +355020,12 @@
       ]
      },
      "tentative": {
+      "border-radius-side-shorthands": {
+       "WEB_FEATURES.yml": [
+        "1d522f46721eb26879c7cf4e47cd11f83513e5a0",
+        []
+       ]
+      },
       "border-shape": {
        "border-shape-clips-background-ref.html": [
         "7a19ae7ac3c62d4b0ae8aa098a1f1a32a5edb446",
@@ -354461,6 +355075,10 @@
        }
       },
       "parsing": {
+       "WEB_FEATURES.yml": [
+        "ed8dcb6788ea8ef01ae7eca1814d84c8e9f35c87",
+        []
+       ],
        "border-block-end-radius-computed-expected.txt": [
         "230798c53100ada9d83ec777d7189eb2aa895a33",
         []
@@ -356451,6 +357069,10 @@
       "62cd9f61ce8ef70159268b40d05237aa08ea504f",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "7e84324d2a68cd8f1adc1ed10d9ce9debde9a136",
+      []
+     ],
      "at-supports-001-ref.html": [
       "a8157aa752192e39da0911705d61fb863dba20df",
       []
@@ -356636,6 +357258,10 @@
      "js": {
       "CSS-supports-CSSStyleDeclaration-expected.txt": [
        "c8918e073aa0ddd60253175bad731d206b3d6e35",
+       []
+      ],
+      "WEB_FEATURES.yml": [
+       "9c07a7c658dd18bda558a2c3b9465b0f142b1da2",
        []
       ]
      },
@@ -362456,6 +363082,10 @@
       ],
       "font-unicode-presented-as-emoji-outline-ref.html": [
        "1c6532187cceeb5435a8c352422469a3a31b67c6",
+       []
+      ],
+      "font-weight-search-direction-ref.html": [
+       "1d2b66811b8a0911c22f3af5463ab237b0dfccfa",
        []
       ],
       "range-descriptor-reversed-ref.html": [
@@ -369753,7 +370383,7 @@
        []
       ],
       "multicol-gap-decorations-012-ref.html": [
-       "a22db070a92d304bd8ec1acd63cc218c79549270",
+       "06cf16372c9205b1924d3224c39b46ca4a9d21e9",
        []
       ],
       "multicol-gap-decorations-013-ref.html": [
@@ -369781,7 +370411,7 @@
        []
       ],
       "multicol-gap-decorations-020-ref.html": [
-       "e11c6a14dea1f501dade26ec24d2004f1debcdce",
+       "83252bb942f02230fb23472459332fc46e058c1f",
        []
       ],
       "multicol-gap-decorations-022-ref.html": [
@@ -372636,7 +373266,7 @@
       []
      ],
      "highlight-text-across-elements-ref.html": [
-      "1c3e9110fcf963fa2283e419104c91621068da06",
+      "b82bb8055353c9564f388d6bb2c8a01e8159a07c",
       []
      ],
      "highlight-text-cascade-ref.html": [
@@ -372652,11 +373282,11 @@
       []
      ],
      "highlight-text-ref.html": [
-      "227e950c04b721113ee456bbce5b654d0204d2d3",
+      "780facd78464685d6ff2456926c282dee71d09ce",
       []
      ],
      "highlight-text-replace-ref.html": [
-      "402f0ee622debc5b07a0107913ecb00d9b130b78",
+      "3725670485b77e90a17ac6e32fce6c298576a10e",
       []
      ],
      "painting": {
@@ -374966,7 +375596,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "89ef4a2521b17e1b251f82964bbd380aa5067d9f",
+      "0e90043aa8b7ac7ef747dc87ebf2687fdff32b21",
       []
      ],
      "add-inline-child-after-marker-001-ref.html": [
@@ -377806,7 +378436,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "89d1565d82cf7458bb349b48bec7952331b44c16",
+      "d6af2e01342a7455edad9df2cf34aa1d1527f6ea",
       []
      ],
      "clip-001-ref.html": [
@@ -378655,7 +379285,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "23f8c445d554853895235082290c46f5e8411c7e",
+       "f5ad1b50175ea34e646ed5165b353297124d41cf",
        []
       ],
       "block-ellipsis-valid-expected.txt": [
@@ -380362,7 +380992,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "8e97d0dfa76288cbb9133063e6835aad88eff8e5",
+      "56db73361189a2325c4cbae3425d92197e0f26b7",
       []
      ],
      "absolute-pos-box-inside-fixed-pos-box-with-changing-height-ref.html": [
@@ -380915,6 +381545,12 @@
       "c901a08d39299de0a4d731262b8bd42cd7025637",
       []
      ],
+     "crashtests": {
+      "WEB_FEATURES.yml": [
+       "f6a2a8d9c44b21d6113f7f2ccf2cfb0c256863a2",
+       []
+      ]
+     },
      "registered-property-change-style-002-ref.html": [
       "758e769d7821fa55b82e339883f1f9c4d4f0d5e7",
       []
@@ -380986,7 +381622,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "f5d512332e167d81ae1ea4546a00f9f25f2998c9",
+      "48685b15329f2389ba36ddca7242dcd2cefaa27a",
       []
      ],
      "active-selection-051-ref.html": [
@@ -383831,6 +384467,10 @@
      ],
      "META.yml": [
       "086e654a8e039f259b5e828d024f808c2e95016b",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "a4593ad74348dd37912c976bb507676405caae0c",
       []
      ],
      "aspect-ratio": {
@@ -386949,7 +387589,7 @@
      },
      "parsing": {
       "WEB_FEATURES.yml": [
-       "e8ff8f52e0204a1a241b6b0082f7e3cd44582c2b",
+       "e92d5f2f63186feb54efd59775fdd2774dd8b99d",
        []
       ],
       "hanging-punctuation-valid-expected.txt": [
@@ -387334,6 +387974,10 @@
       ]
      },
      "text-align": {
+      "WEB_FEATURES.yml": [
+       "e356f9bc14ed876c653074014c46f31d54a6e362",
+       []
+      ],
       "reference": {
        "text-align-end-ref-001.html": [
         "480b5681710c9be671bb225ad8e1a9e70f3b8cc6",
@@ -387737,7 +388381,7 @@
      },
      "text-indent": {
       "WEB_FEATURES.yml": [
-       "57632efdb361a65dea836d4761fc217cf465c227",
+       "de6d1c7528737f588babbebda0b9daedde21cb8f",
        []
       ],
       "reference": {
@@ -391870,9 +392514,21 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "e50ab9915dea234b6e562219d4a03501e2d0e1cc",
+      "7aa16b654d2ad3e3bab0d4d73ce4bfd716b2b3c1",
       []
      ],
+     "animations": {
+      "WEB_FEATURES.yml": [
+       "4f70c5d03248bd67c05fd6fc6b585dacbab59d72",
+       []
+      ]
+     },
+     "crashtests": {
+      "WEB_FEATURES.yml": [
+       "aa1d0f4e4b93def4c573febb3765b347c83669de",
+       []
+      ]
+     },
      "custom-property-and-allow-discrete-expected.txt": [
       "c7a2837faf664628af3f67032994b5d0b802ac48",
       []
@@ -391887,7 +392543,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "fd831030523d7df442c688fe0723defca6a8165b",
+       "eded5eb3a3da4b39e4b06ef9e5cb9ccead592fbb",
        []
       ],
       "transition-timing-function-valid-expected.txt": [
@@ -391914,6 +392570,10 @@
       ]
      },
      "render-blocking": {
+      "WEB_FEATURES.yml": [
+       "aa1d0f4e4b93def4c573febb3765b347c83669de",
+       []
+      ],
       "no-transition-from-ua-to-blocking-stylesheet-ref.html": [
        "93b4ae982e80d31df4cb0eac448ceb3341c57a81",
        []
@@ -394122,7 +394782,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "92b34ec1d60a57a033eec016f54cbe705c98e74c",
+      "f31577505f66959daab11258f54685eca9e2b6ef",
       []
      ],
      "attr-all-types-expected.txt": [
@@ -395804,6 +396464,10 @@
        "c75f9d2352976ce45b6b7905304432648a51a0d2",
        []
       ],
+      "clip-on-target-in-callback-2-ref.html": [
+       "274bc40ac46967ebfc3c4c63090ccdf71ddefb95",
+       []
+      ],
       "clip-on-target-in-callback-ref.html": [
        "ed03306b41f08a0f6011a66833c26af9fa88de34",
        []
@@ -396199,7 +396863,7 @@
        []
       ],
       "svg-font-relative-units-ref.html": [
-       "6f2c5364304b98f310e071ccf016498e0d5175c3",
+       "30927226082474cee71e33c78b5d9ac1700c0d62",
        []
       ],
       "svg-path-ref.html": [
@@ -396330,7 +396994,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "74115971ea3dfb806aa2c10823d04cc661f3244a",
+      "c95a6c2908bae890421f1cb41773c9a59e447430",
       []
      ],
      "abs-pos-border-offset-001-ref.html": [
@@ -396843,6 +397507,12 @@
       "da97328c1438f4220e4b64d80266eb335329b356",
       []
      ],
+     "parsing": {
+      "WEB_FEATURES.yml": [
+       "c54a2874235f337346f77800746dbb05297b49ac",
+       []
+      ]
+     },
      "reference": {
       "available-size-001-ref.html": [
        "d59cde45f6e3be71762ca4acf2711f8d3b0bc50e",
@@ -399248,7 +399918,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "8f19ffa7b5cc4d7d7f97df0c5cb8e2a0e1ddcd47",
+      "f03dd00fb5fdc7dc488b7c1caa4b3c3d9a30fe88",
       []
      ],
      "add-background-attachment-fixed-during-smooth-scroll-ref.html": [
@@ -399665,6 +400335,10 @@
       "71e42e5ca7c96b389320f03143c089fa57827797",
       []
      ],
+     "backdrop-filter-border-radius-change-ref.html": [
+      "23c46a73aa42d9f9f89c5740a361a443d0524134",
+      []
+     ],
      "backdrop-filter-clip-radius-zoom-ref.html": [
       "82609f7633265cf5b91ec2224dc0a3cf46ebdb12",
       []
@@ -399891,6 +400565,10 @@
      ],
      "fecolormatrix-negative-ref.html": [
       "95a0051c18a1219012e48ad91e58ecc213ba24b6",
+      []
+     ],
+     "fecolormatrix-special-value-ref.html": [
+      "fe85d2f1f7d98a6fc00284e8a756ac9756b9856c",
       []
      ],
      "fecolormatrix-type-ref.html": [
@@ -400584,7 +401262,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "7f15b7fa475230b42981a3f92f60f434e9ccf1af",
+      "d4043f7c783937ec7b8338c73c550243467283f2",
       []
      ],
      "dynamic-range-expected.txt": [
@@ -401074,7 +401752,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "2093333a08064bce3a33f66ed235c015acdc2c33",
+      "c62f85ca17d93b9e0c51201a40525ea4c930a5ca",
       []
      ],
      "attribute-selectors": {
@@ -402181,7 +402859,7 @@
      ],
      "customized-builtins": {
       "WEB_FEATURES.yml": [
-       "2349d9ad429becd3814f746a84c600ae204bcdbe",
+       "26d17567046d6618e5002cc5ff2897085f3f5554",
        []
       ]
      },
@@ -402318,7 +402996,7 @@
       []
      ],
      "template.window-expected.txt": [
-      "7c7285c6a8010688d496f3cfbdbbabd1f8062cd5",
+      "f09215917fc8fd42a9ad24ccd62e17500f65ef51",
       []
      ]
     },
@@ -402635,7 +403313,7 @@
      []
     ],
     "dc-types.ts": [
-     "bd9fdb79ed9f560e1c299b533edd914bf0e8af81",
+     "355e7e47d73909e92c578ad642f793a6cc314493",
      []
     ],
     "digital-credentials-static-methods.tentative.https-expected.txt": [
@@ -402656,17 +403334,17 @@
     ],
     "permissions-policy": {
      "create.html": [
-      "aafd436282e8b740c713aaeeb6d28c0ab60cc324",
+      "dcb35ab76c3cb32c1510147a10072fc403dc03b5",
       []
      ],
      "get.html": [
-      "543417f230a59b3d09705b20775a38cbabaf7a22",
+      "c9fddbb209f777ec4fb8d3832497ba32961ab00a",
       []
      ]
     },
     "support": {
      "helper.js": [
-      "d79ed26b072e64e91f1579f86d720988f97bbc7e",
+      "74c4cf83c6449abf72033f9399104824b8c61a18",
       []
      ],
      "iframe.html": [
@@ -403313,7 +403991,7 @@
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
-     "01aea40a72b3efbe14450e2ef85a0cb9487e117d",
+     "7f1d787b19eadc1192cf27994131516f4cf6ecf0",
      []
     ],
     "lists": {
@@ -403926,6 +404604,10 @@
      "f392277fbe9949ecfccf54f990972881597d2cd6",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "57d6c8a255968cca1d3f720415f690f76d60792c",
+     []
+    ],
     "XMLSerializer-serializeToString-expected.txt": [
      "875cc37ded295a0a66c746936544fc1eab0a49c2",
      []
@@ -404077,6 +404759,10 @@
      []
     ],
     "crashtests": {
+     "WEB_FEATURES.yml": [
+      "cb002b978f30fd28313ebbc171b7ca3d4505e80b",
+      []
+     ],
      "support": {
       "unloading-editor-in-subdocument-containing-misspelled-word-iframe.html": [
        "cfedfa8d2e809fcd08c77a19fbcb2647df8ae9dd",
@@ -404267,6 +404953,10 @@
      ]
     },
     "other": {
+     "WEB_FEATURES.yml": [
+      "af4334f150d724a117831fbcaf5779570fcf179b",
+      []
+     ],
      "cefalse-boundaries-deletion-expected.txt": [
       "0f10390b423903f8907ffd8df0e3ab013da35a43",
       []
@@ -405276,6 +405966,10 @@
     ],
     "OWNERS": [
      "4a32e24dea92b2c74e431987c86ab899111a58c6",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "0dd7cbd3b336b9aa80409a1fab37e3910dfc8b05",
      []
     ],
     "bom-handling.html.headers": [
@@ -408502,22 +409196,6 @@
        "3c7ae983b201fc566fea8ae086f6289eb674a595",
        []
       ],
-      "http-response-code.any-expected.txt": [
-       "4045507e6fcd9a6c77922648c8437ffb5ef413dd",
-       []
-      ],
-      "http-response-code.any.serviceworker-expected.txt": [
-       "4045507e6fcd9a6c77922648c8437ffb5ef413dd",
-       []
-      ],
-      "http-response-code.any.sharedworker-expected.txt": [
-       "4045507e6fcd9a6c77922648c8437ffb5ef413dd",
-       []
-      ],
-      "http-response-code.any.worker-expected.txt": [
-       "4045507e6fcd9a6c77922648c8437ffb5ef413dd",
-       []
-      ],
       "scheme-blob.sub.any-expected.txt": [
        "df66469d9812460eab38c5c25c8764b0236d5b9e",
        []
@@ -409849,6 +410527,10 @@
      ],
      "README.md": [
       "d4945a0bfb21417f61fca4cf400713089881ba37",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "99a560d56562553df43745f321a723b8c56e800b",
       []
      ],
      "resources": {
@@ -414155,6 +414837,12 @@
          []
         ]
        },
+       "pushstate-replacestate-empty-string": {
+        "WEB_FEATURES.yml": [
+         "7be2f68b712953c5526adf3e1c2a1d8c4e8aafd2",
+         []
+        ]
+       },
        "resources": {
         "message-opener.sub.html": [
          "441c08c0eae84614346c8dd9a160b9ecb5463337",
@@ -414440,6 +415128,22 @@
        "4b3272cebd1b67dca68efcb1078a74ab4eadde12",
        []
       ],
+      "api": {
+       "idlharness.any-expected.txt": [
+        "4268f94f989bad188183f3e408015b5186886e0b",
+        []
+       ],
+       "idlharness.any.worker-expected.txt": [
+        "4268f94f989bad188183f3e408015b5186886e0b",
+        []
+       ],
+       "resources": {
+        "serializations.js": [
+         "dec7fbdd1da7fee8422aa67e4bed073f4d362302",
+         []
+        ]
+       }
+      },
       "cross-origin-objects": {
        "cross-origin-objects-function-common.js": [
         "3b93b498a26cbd7213179dba7254eeb843173d2d",
@@ -414766,16 +415470,6 @@
          "d3d5260af3f143edd702400879cc3d5db4aea40d",
          []
         ]
-       }
-      },
-      "tentative": {
-       "api": {
-        "resources": {
-         "serializations.js": [
-          "dec7fbdd1da7fee8422aa67e4bed073f4d362302",
-          []
-         ]
-        }
        }
       }
      },
@@ -418318,7 +419012,7 @@
         []
        ],
        "the-canvas-state.yaml": [
-        "a8ac1e5787f72a0a881a16cd796245c56bd1f772",
+        "4f36ac04762372232ca43d65006d42a9a6485767",
         []
        ],
        "the-canvas.yaml": [
@@ -419159,6 +419853,10 @@
      },
      "documents": {
       "dom-tree-accessors": {
+       "WEB_FEATURES.yml": [
+        "672f8a7f4904f8521719f82ec7193a7ccaa1304d",
+        []
+       ],
        "cross-domain.js": [
         "32effe3c4580613831be8c140b0af3948bebc479",
         []
@@ -419192,7 +419890,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "6f4af901486cec94fad8ded1132c68b60c0fb1a9",
+        "327ca7a49d5c6ee0e5b53f914c33523bf3f228e0",
         []
        ],
        "cdata-iframe.xhtml": [
@@ -423249,12 +423947,22 @@
      },
      "urls": {
       "base-url": {
+       "WEB_FEATURES.yml": [
+        "aad6604fac3a92e82a533875a9b9244308c1ef32",
+        []
+       ],
        "resources": {
         "send-back-base-url.html": [
          "6fdf81d1db76a752283a740a45b79461aaae071a",
          []
         ]
        }
+      },
+      "dynamic-changes-to-base-urls": {
+       "WEB_FEATURES.yml": [
+        "aad6604fac3a92e82a533875a9b9244308c1ef32",
+        []
+       ]
       },
       "resolving-urls": {
        "query-encoding": {
@@ -423371,6 +424079,10 @@
        }
       },
       "terminology-0": {
+       "WEB_FEATURES.yml": [
+        "906718b80359f2eac8caaec9de8648719fe63ba8",
+        []
+       ],
        "resources": {
         "echo-referrer-text.py": [
          "8a48d3346a6ad71e9fee2b103abfd97148e3bb43",
@@ -423410,19 +424122,19 @@
        "tentative": {
         "resources": {
          "focusgroup-utils.js": [
-          "0cdc146d4797bcfdee32a53380733903b18754f5",
+          "e23e7d92765a7f3b3361ca837e9b0bfd04e0d326",
           []
          ]
         }
        }
       },
       "processing-model": {
-       "focus-fixup-rule-one-no-dialogs-expected.txt": [
-        "6d436a23a61a8b864634e75c1b5d8a3baf9eedc8",
+       "WEB_FEATURES.yml": [
+        "c3d2f7d4f46d1a1fa2491d6b2df2d216ea64bb3f",
         []
        ],
-       "focusVisible-expected.txt": [
-        "680e3b5b97d270ddefb03ee9bc17972f4c216768",
+       "focus-fixup-rule-one-no-dialogs-expected.txt": [
+        "6d436a23a61a8b864634e75c1b5d8a3baf9eedc8",
         []
        ],
        "support": {
@@ -423637,6 +424349,10 @@
        ]
       },
       "the-textarea-element-0": {
+       "WEB_FEATURES.yml": [
+        "409692e6c642d1dd2dfac57556dd0004570fae91",
+        []
+       ],
        "textarea-ref.html": [
         "f2982808f652a1095a7cdaeffa1a6ba221115036",
         []
@@ -423658,7 +424374,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "831b257f72b1619f1f48dab7ed0324ddfa71717a",
+        "655ccb28c1821df1158aef3bdcc82474ae09a85f",
         []
        ],
        "div-align-ref.html": [
@@ -423957,6 +424673,10 @@
        ],
        "META.yml": [
         "f5b533c377160c77541187a301647e174069bd6d",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "3651eba0e4bdddd9a2267391bff9dcd852d222be",
         []
        ],
        "absolute-fixed-in-legend-ref.html": [
@@ -424621,7 +425341,7 @@
      ],
      "widgets": {
       "WEB_FEATURES.yml": [
-       "b4ae339c2f3301bc1845c39923c05095d9e48499",
+       "a4c6137a4edb238186de2a90dcc57d6372f6f7c6",
        []
       ],
       "appearance": {
@@ -424824,6 +425544,10 @@
     },
     "semantics": {
      "disabled-elements": {
+      "WEB_FEATURES.yml": [
+       "30a22361afd8f138bacc12ac45ee78b71f979779",
+       []
+      ],
       "event-propagate-disabled-keyboard.tentative-expected.txt": [
        "2084d9d02c7ace4df391081c2288862bdb38a4ef",
        []
@@ -424875,6 +425599,10 @@
         "ab80546912c8b770a782405659f3978f23d5898a",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "aad6604fac3a92e82a533875a9b9244308c1ef32",
+        []
+       ],
        "example.html": [
         "49dc772f9161d60b63eb910e9f286f27bbdbdd76",
         []
@@ -424887,6 +425615,10 @@
       "the-link-element": {
        "DIR_METADATA": [
         "4b75a8fd95739c9bbc43e57b19ec6f7df5f63a3a",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "bf1043d383670edffbf2fcd15b8e2c5dc7ca057d",
         []
        ],
        "all": [
@@ -425127,6 +425859,12 @@
         "5ac2432547ea7b4caa6e28a563ce3e80832a09c9",
         []
        ]
+      },
+      "the-title-element": {
+       "WEB_FEATURES.yml": [
+        "f87a52f573f02b70c9434419f57cf0a3af933e86",
+        []
+       ]
       }
      },
      "embedded-content": {
@@ -425177,7 +425915,17 @@
        ],
        "interfaces": {
         "HTMLElement": {
+         "HTMLMediaElement": {
+          "WEB_FEATURES.yml": [
+           "3112fcd3a1553866fb4ea7066fc8a2d3a48584ea",
+           []
+          ]
+         },
          "HTMLTrackElement": {
+          "WEB_FEATURES.yml": [
+           "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+           []
+          ],
           "src-expected.txt": [
            "068a1355c9485d345c89b3df2e6080483b017fad",
            []
@@ -425185,18 +425933,42 @@
          }
         },
         "TextTrack": {
+         "WEB_FEATURES.yml": [
+          "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+          []
+         ],
          "activeCues-expected.txt": [
           "fde64f26185e5f59fcf235b5fe3aa2676f85a79b",
           []
          ]
         },
         "TextTrackCue": {
+         "WEB_FEATURES.yml": [
+          "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+          []
+         ],
          "endTime-expected.txt": [
           "727411c7645d6e8945cfee5c2c29157e495e9f68",
           []
          ]
         },
+        "TextTrackCueList": {
+         "WEB_FEATURES.yml": [
+          "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+          []
+         ]
+        },
+        "TextTrackList": {
+         "WEB_FEATURES.yml": [
+          "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+          []
+         ]
+        },
         "TrackEvent": {
+         "WEB_FEATURES.yml": [
+          "fe6d907b2d3200323eecb6ae86e6dda52334eef5",
+          []
+         ],
          "createEvent-expected.txt": [
           "a7bf319bae3392ec5392a2cd560360214c9c37d5",
           []
@@ -425291,6 +426063,10 @@
        ],
        "track": {
         "track-element": {
+         "WEB_FEATURES.yml": [
+          "7c798c3f24ace4088bc8d7a27ea133631a0fc021",
+          []
+         ],
          "resources": {
           "align-positioning-bad.vtt": [
            "ff4c3fb5cd47d5777d91b0d055a84054ab1f1c6b",
@@ -425778,7 +426554,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "a1ff481467e12dc791aff84c9d128d3bb3c7de8a",
+        "40824aff0fd431375354cd1ee8194dfdd8089ec8",
         []
        ],
        "change_child.html": [
@@ -425917,6 +426693,10 @@
        ],
        "sandbox-inherit-to-blank-document-unsandboxed.html.headers": [
         "9850d21f3c6fa83cd87c23f6b0f4150b64011918",
+        []
+       ],
+       "srcdoc-lifecycle-crash-crbug-1472607.https-expected.txt": [
+        "9a674fcf7253f8186f5b77917a87f4ce2bdd72d7",
         []
        ],
        "stash.py": [
@@ -426172,7 +426952,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "910320acfc85beed17d1a072daa24ccaaed46502",
+        "6268788eb13272d71e7fc41421f9102d0a4af95e",
         []
        ],
        "animated-image-update-ref.tentative.html": [
@@ -426595,6 +427375,10 @@
         "17344a077ead14dd2c0949b389a0fbd4b7d9d4f0",
         []
        ],
+       "WEB_FEATURES.yml": [
+        "ff62e00c475515212bf07725452e7eae6690d203",
+        []
+       ],
        "form-target-blank-useractivation-multi-globals-expected.txt": [
         "eecc3d6ffa549417fde8cb6800398cbb15676af4",
         []
@@ -426686,19 +427470,23 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "22612aeb7d1051458256fa1cff0bb81a65b3513b",
+        "b4edb3bca4e888ea47c6de2b3f43415f34f93110",
         []
        ],
        "accessibility": {
         "README.md": [
          "b238a023dc1344b9b35f0850bf75950e49edfdc7",
          []
+        ],
+        "WEB_FEATURES.yml": [
+         "fbe677d1c1ab3823f31cfb4a7cd2be1e723300fb",
+         []
         ]
        }
       },
       "the-form-element": {
        "WEB_FEATURES.yml": [
-        "04c20cb5ece542108f6c82693f6e144c55573f6b",
+        "51602a1c7e2224bb01d1ff5c9ab03b919f753a79",
         []
        ],
        "form-nameditem-expected.txt": [
@@ -426706,6 +427494,10 @@
         []
        ],
        "resources": {
+        "WEB_FEATURES.yml": [
+         "853607c10a47dbe3ca27ac98d39f64db6743dc27",
+         []
+        ],
         "form-no-action-with-base.html": [
          "b3599a45e6aee71c086c17fcd6d0bedb72401ee9",
          []
@@ -426863,6 +427655,10 @@
       "the-legend-element": {
        "DIR_METADATA": [
         "9267a852fb6e2dee93ae8c1bab913c668f9d556b",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "fbe677d1c1ab3823f31cfb4a7cd2be1e723300fb",
         []
        ]
       },
@@ -427224,7 +428020,7 @@
         []
        ],
        "WEB_FEATURES.yml": [
-        "36350df2734df2624b6ed5a074812eecdf14b1dd",
+        "9874b6c1253dbf00b2d3f32e0432cac4878b53b7",
         []
        ],
        "multiline-placeholder-ref.html": [
@@ -427256,6 +428052,18 @@
       }
      },
      "grouping-content": {
+      "the-figcaption-element": {
+       "WEB_FEATURES.yml": [
+        "595f6206f3d548833cfa9a4f869fe541db77f248",
+        []
+       ]
+      },
+      "the-figure-element": {
+       "WEB_FEATURES.yml": [
+        "595f6206f3d548833cfa9a4f869fe541db77f248",
+        []
+       ]
+      },
       "the-li-element": {
        "grouping-li-reftest-001-ref.html": [
         "23b6cdabe8054051356450636e910a636da87a41",
@@ -427790,6 +428598,88 @@
        "462f346edf591e8fa76b52191f00bc2bbe3bbfcc",
        []
       ],
+      "geolocation-element": {
+       "border-radius-different-ref.html": [
+        "08cf952dddb51f95ad9ea99cb025e0e93e5e732d",
+        []
+       ],
+       "border-radius-identical-ref.html": [
+        "ab0e369e0d69c808ef5bb5ff21243d09906de772",
+        []
+       ],
+       "bounded-css-properties-reftest-ref.html": [
+        "7bba1c3456e95e0e72bd0cecab2c8c49203ae554",
+        []
+       ],
+       "geolocation-element-with-comment-ref.html": [
+        "f401727e1103e76932ed3f41e7a805b5ae397bfd",
+        []
+       ],
+       "icon-css-property-fill-reftest-ref.html": [
+        "aa72ccd7010f9ab3de6f2139aaac150b36fe067f",
+        []
+       ],
+       "icon-css-property-height-bounded-reftest-ref.html": [
+        "968bac37d1141a46359e34bc60a442af766e9015",
+        []
+       ],
+       "icon-css-property-margin-bounded-reftest-ref.html": [
+        "11eb0aa5836bf6a4d18c73a681540332e428c3c9",
+        []
+       ],
+       "icon-css-property-max-height-reftest-ref.html": [
+        "9c4cda25588a6d275c6066c6ca05cefa2c048478",
+        []
+       ],
+       "icon-css-property-min-height-reftest-ref.html": [
+        "94fd64246c9f455d6ba7fa3fd1a200eff54aa5ee",
+        []
+       ],
+       "icon-css-property-stroke-width-reftest-ref.html": [
+        "bc3005913ee1aa0097dc1504e2fdf386e40a41b2",
+        []
+       ],
+       "inherited-css-ref.html": [
+        "07a3bd038be5858b4282a4754983d87907ce2577",
+        []
+       ],
+       "permission-element-with-comment-ref.html": [
+        "f401727e1103e76932ed3f41e7a805b5ae397bfd",
+        []
+       ],
+       "pseudo-elements-in-div-ref.html": [
+        "0bb5e31338ed4c6f6b93c4247dbeffea19fe1fc6",
+        []
+       ],
+       "pseudo-elements-ref.html": [
+        "763b3910ffd59b7c33aad565ba6c846fdeaf3ab8",
+        []
+       ],
+       "quirks-mode-no-height-is-still-bounded-ref.html": [
+        "4b3d234f90ed8041e0f35ade66dd4d6a92966a4d",
+        []
+       ],
+       "standard-location-element-ref.html": [
+        "44907fabb1d74057f7445f25ec7a0c678f5aaa78",
+        []
+       ],
+       "standard-location-permission-element-ref.html": [
+        "38dbce83df00bb5d859d9cb9e7076ca2db312045",
+        []
+       ],
+       "text-decoration-ref.html": [
+        "9e174474c210c84455438dfadb9f5a48c1dab321",
+        []
+       ],
+       "text-stroke-and-fill-ref.html": [
+        "9e174474c210c84455438dfadb9f5a48c1dab321",
+        []
+       ],
+       "webkit-text-security-on-parent-ref.html": [
+        "2b3cd41f0b68d5dc235f531ed75c03a1ba81e327",
+        []
+       ]
+      },
       "inherited-css-ref.html": [
        "6714e3116a74e4d1339853cce6c10e1692952422",
        []
@@ -427967,6 +428857,10 @@
        []
       ],
       "the-script-element": {
+       "WEB_FEATURES.yml": [
+        "2c7d93bf4031d75f4200ab3edd749e566ff03a05",
+        []
+       ],
        "cacheable-script-throw.py": [
         "b315afed5639302a099376576cafe07e0b40fc3c",
         []
@@ -428525,6 +429419,10 @@
          []
         ],
         "dynamic-import": {
+         "WEB_FEATURES.yml": [
+          "40d2371e7aeeea93e5995a0a231e5f05f3171568",
+          []
+         ],
          "alpha": {
           "code-cache.js": [
            "8a8530c9b6d18e70bff9e9f234e8a14599ff66de",
@@ -429687,6 +430585,12 @@
       "the-ruby-element": {
        "ruby-usage-notref.html": [
         "f5747811ae40ec6114976d05955e4a85a7c4cf44",
+        []
+       ]
+      },
+      "the-time-element": {
+       "WEB_FEATURES.yml": [
+        "f4a9205116b9a4615c3f929c6990358cb680c0c6",
         []
        ]
       },
@@ -431744,7 +432648,7 @@
      "system-state-and-capabilities": {
       "the-navigator-object": {
        "WEB_FEATURES.yml": [
-        "8d74a882c85880be5620b676bde8875a8ae51985",
+        "beb954645cc560ce593ac7347336a11cb887ce6a",
         []
        ],
        "per-global.window-expected.txt": [
@@ -431832,6 +432736,10 @@
     ],
     "META.yml": [
      "bfca09eadfa361255d89f89bee31af839c3dda0d",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "28bb3bf38dd978f34bc6125c9d0c0ff70b98d246",
      []
     ],
     "figure-name-no-figcaption.tentative-expected.txt": [
@@ -433220,6 +434128,10 @@
      "698746ed1320601fdf2ef74de44918b181197a0f",
      []
     ],
+    "WEB_FEATURES.yml": [
+     "55f65f1f65bcba068176d2c375fd52c3e9cc87ac",
+     []
+    ],
     "input-events-exec-command-expected.txt": [
      "c812c9cf09751e4756cc7df0f496c322de8e89cf",
      []
@@ -434050,10 +434962,6 @@
      "6b258642c3b1a037ce33e59229d75d1a384a5f25",
      []
     ],
-    "origin.tentative.idl": [
-     "4adc41f682bafb27c9d76123d9c8fa76e411c993",
-     []
-    ],
     "page-lifecycle.idl": [
      "26de11c23d0c160f383fb2d6513b6a2ffbb1c6bd",
      []
@@ -434439,7 +435347,7 @@
      []
     ],
     "webcrypto-modern-algos.idl": [
-     "dc2f842794477b6b439eaa20d62e4e1f0195b6b9",
+     "136eed08134fc836c6b2417392e80f56d98aadd8",
      []
     ],
     "webcrypto-secure-curves.idl": [
@@ -434519,7 +435427,7 @@
      []
     ],
     "webtransport.idl": [
-     "e49791cdef0e6da27e5cf42e38d05735ad4261b7",
+     "d14d923661af6a682f20f221c106099836150250",
      []
     ],
     "webusb.idl": [
@@ -436436,6 +437344,10 @@
       }
      },
      "html5-tree": {
+      "WEB_FEATURES.yml": [
+       "09d164030d55aba5a973a342a018f7fd09bc776b",
+       []
+      ],
       "class-1-ref.html": [
        "5afa59ecf2bfd2ec071d735464cd3bd20b0b17ce",
        []
@@ -443695,7 +444607,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "6dac2ad7f81b1a61852c6938d230de51c2f34e3a",
+     "a5973c96d4b8bca74afc55c609b6f432d3ef5e14",
      []
     ],
     "active-lock-expected.txt": [
@@ -444188,6 +445100,10 @@
    "secure-payment-confirmation": {
     "META.yml": [
      "cdcab0e70535014219e2da44a28615004db6a1a4",
+     []
+    ],
+    "WEB_FEATURES.yml": [
+     "0e88a7cddc0eb3a93e892f9ffe57f9f2b806888c",
      []
     ],
     "authentication-accepted.https-expected.txt": [
@@ -449024,6 +449940,10 @@
     }
    },
    "speech-api": {
+    "DIR_METADATA": [
+     "4b16894fa41482f31e5297c5d21f9b1b1bb534de",
+     []
+    ],
     "META.yml": [
      "2b7a03e245ab82310d4637d3a2a4e1dbe3df38db",
      []
@@ -452685,7 +453605,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "4711efc1faf9a97d57c9a48bdff97b1f7951f6d0",
+     "b7a784695aa0cd1c8f7b6ffe8cedf07c92e2b31f",
      []
     ],
     "a-element_include=javascript-expected.txt": [
@@ -454203,6 +455123,10 @@
       "cf5525ae1157f7e5d3fe57b3856735b15c91c5d1",
       []
      ],
+     "WEB_FEATURES.yml": [
+      "e69294f1e41249fb4a9b7a54010008ff7bccd8d7",
+      []
+     ],
      "assertions.js": [
       "3b370190682a3aab7426b3c31712f9b46968d9aa",
       []
@@ -454211,6 +455135,12 @@
       "c7c9c6b6cdd1355f274b8289aed21bb70b91305c",
       []
      ],
+     "constructor": {
+      "WEB_FEATURES.yml": [
+       "65154744f2a27a70fbcbd6f8eb513bd680390e9b",
+       []
+      ]
+     },
      "error-interfaces-no-symbol-tostringtag.js": [
       "572db0c01b620dd317f2079df6d0ea7cff6333fe",
       []
@@ -454456,6 +455386,10 @@
       ]
      },
      "functions": {
+      "WEB_FEATURES.yml": [
+       "d8e24fc0e8f5036132d7a0d730aad6b8870e8700",
+       []
+      ],
       "helper.js": [
        "487791c69ad43043985e38ae7ea37d540695fde4",
        []
@@ -454522,6 +455456,10 @@
       }
      },
      "global": {
+      "WEB_FEATURES.yml": [
+       "d8e24fc0e8f5036132d7a0d730aad6b8870e8700",
+       []
+      ],
       "type.tentative.any-expected.txt": [
        "23666038d2091c922183cff2ad27f0afa3a73661",
        []
@@ -454539,6 +455477,12 @@
       "34a88cc4c4eb145fcc98c7376da9a30f3daf47e3",
       []
      ],
+     "instance": {
+      "WEB_FEATURES.yml": [
+       "d8e24fc0e8f5036132d7a0d730aad6b8870e8700",
+       []
+      ]
+     },
      "instanceTestFactory.js": [
       "2e015af8198a6112a528640bdc6c202dd5785c25",
       []
@@ -454564,6 +455508,10 @@
       ]
      },
      "memory": {
+      "WEB_FEATURES.yml": [
+       "50f9ae19b6707b949bd77fda395692491ffc36ac",
+       []
+      ],
       "assertions.js": [
        "1430c523882307d025c81788ac90322de5a9d66b",
        []
@@ -454618,6 +455566,10 @@
       ]
      },
      "module": {
+      "WEB_FEATURES.yml": [
+       "d8e24fc0e8f5036132d7a0d730aad6b8870e8700",
+       []
+      ],
       "moduleSource.tentative.any-expected.txt": [
        "1e53e51094653d5585dc26a8d23173c5ccc53bfa",
        []
@@ -454632,6 +455584,10 @@
       []
      ],
      "table": {
+      "WEB_FEATURES.yml": [
+       "d8e24fc0e8f5036132d7a0d730aad6b8870e8700",
+       []
+      ],
       "assertions.js": [
        "4fcd3517a6a869545ab62ba7a757c6e432823ca4",
        []
@@ -454779,6 +455735,10 @@
     "webapi": {
      "META.yml": [
       "69715cd7c8dcf53d95af41fdd5396e4ea34dc2ce",
+      []
+     ],
+     "WEB_FEATURES.yml": [
+      "e69294f1e41249fb4a9b7a54010008ff7bccd8d7",
       []
      ],
      "esm-integration": {
@@ -457211,6 +458171,16 @@
          []
         ]
        },
+       "set_screen_settings_override": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ],
+        "conftest.py": [
+         "24182d41f36f2277b34b3b076a76bb92d72aaa62",
+         []
+        ]
+       },
        "set_scripting_enabled": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -458076,6 +459046,12 @@
         []
        ]
       },
+      "global_privacy_control": {
+       "__init__.py": [
+        "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        []
+       ]
+      },
       "is_element_enabled": {
        "__init__.py": [
         "9a6d884000ea8b377f54a38b529a51152d1044ba",
@@ -458293,7 +459269,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "a223c4638a73a327553ccc6d465e01b7dc2e3335",
+       "6cf3d42bee121b1323f056055948b4b32f88fff4",
        []
       ],
       "fixtures_http.py": [
@@ -459792,7 +460768,7 @@
     },
     "resources": {
      "websockets-test-helpers.sub.js": [
-      "2680670cc691b14c25721d2dd474a2a4c15bac3f",
+      "5399a3eb7ced1014fdb6bec494f21c0c379c9dd8",
       []
      ]
     },
@@ -462450,6 +463426,10 @@
      "idlharness.https.window-expected.txt": [
       "743de95b588424c8bdf9c408e4f5b1a2956b8223",
       []
+     ],
+     "xr_layer_promise_test.js": [
+      "06faa765d0019a14494a9ff3d441b0067c269e1d",
+      []
      ]
     },
     "light-estimation": {
@@ -462531,7 +463511,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "d2f14cf3c2c4e7e7677b25674c02a6b9db5bb0a7",
+     "84fba9b1e867e488c43f9240bea0a02ae686d9b4",
      []
     ],
     "Worker-creation-happens-in-parallel.https-expected.txt": [
@@ -462756,6 +463736,10 @@
       ],
       "DedicatedWorkerGlobalScope-members.worker-expected.txt": [
        "cf861b93ae88f5f358f2eade50826cab5a1a079b",
+       []
+      ],
+      "WEB_FEATURES.yml": [
+       "4ab0ff002575e8e292e384adc3be1ea6278bae8c",
        []
       ],
       "expected-self-properties.worker-expected.txt": [
@@ -463085,6 +464069,10 @@
        ],
        "007.js": [
         "38849bc8abc64c7cf681ce4bad62c787299fb5d6",
+        []
+       ],
+       "WEB_FEATURES.yml": [
+        "f0bcafaf63139b5478c50b1769315af057c29fc2",
         []
        ],
        "language.js": [
@@ -464061,7 +465049,7 @@
      []
     ],
     "WEB_FEATURES.yml": [
-     "07f9d430181e82663a0c3154740be2dbd5c4b297",
+     "3144c72a515eb6cf1bf69b2cae7d8dd2e6ba12a6",
      []
     ],
     "abort-after-send.any-expected.txt": [
@@ -464645,7 +465633,7 @@
        }
       ]
      ],
-     "cross-partition-self-fetch.https.tentative.html": [
+     "cross-partition-self-fetch.https.html": [
       "cbff2fa18fa15d34f8eb1d8b2e1cb847319e48be",
       [
        null,
@@ -493281,7 +494269,7 @@
       ]
      ],
      "comp_name_from_content.html": [
-      "cd108a190e3609cd3eb0644eb12251f3390982da",
+      "5cc12b0c21bd9a0ade5f1e0df8dc2d6396f9c4f0",
       [
        null,
        {
@@ -493291,6 +494279,15 @@
      ],
      "comp_name_from_content_alt_counter_invalidation.html": [
       "d659a6e7b3c713c618d002ee08b4c330f2b23494",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "comp_name_from_content_alt_counter_multi_instance.html": [
+      "575062e6e01a04688a348eed90bde3cc8ec4626a",
       [
        null,
        {
@@ -493543,7 +494540,7 @@
       ]
      ],
      "language-model-create-sticky-user-activation.tentative.https.window.js": [
-      "c5f531442ddcbbbc6a257d511a61ac02116cba17",
+      "66bf7669c7c410386bde0a1540a0f9647f8f0955",
       [
        "ai/language-model/language-model-create-sticky-user-activation.tentative.https.window.html",
        {
@@ -493573,39 +494570,8 @@
        }
       ]
      ],
-     "language-model-create-transient-user-activation.tentative.https.window.js": [
-      "0e30299ea15887c5ff20448da87d3554d656638a",
-      [
-       "ai/language-model/language-model-create-transient-user-activation.tentative.https.window.html",
-       {
-        "script_metadata": [
-         [
-          "title",
-          "LanguageModel.create() User Activation Tests"
-         ],
-         [
-          "script",
-          "/resources/testdriver.js"
-         ],
-         [
-          "script",
-          "/resources/testdriver-vendor.js"
-         ],
-         [
-          "script",
-          "../resources/util.js"
-         ],
-         [
-          "timeout",
-          "long"
-         ]
-        ],
-        "timeout": "long"
-       }
-      ]
-     ],
      "language-model-create-user-activation.tentative.https.window.js": [
-      "d316255a2aaf77d9ee4e1ee830f4884194b0f4fe",
+      "c37f0852f4108d85463d8082f56c87bfba7752cd",
       [
        "ai/language-model/language-model-create-user-activation.tentative.https.window.html",
        {
@@ -494075,7 +495041,7 @@
       ]
      ],
      "detector.https.window.js": [
-      "afb0530d1886f0ca8866b131548060cdc541f505",
+      "361a1f6dc8d99489a837fa87291415cd0bba4c16",
       [
        "ai/language_detection/detector.https.window.html",
        {
@@ -494307,7 +495273,7 @@
       ]
      ],
      "rewriter-create-user-activation.tentative.https.window.js": [
-      "243e89ccd89e1b92a8ddb8e33df367f327930501",
+      "c2cc4ac6b4e6b177f468587bad1c9496ad4d1379",
       [
        "ai/rewriter/rewriter-create-user-activation.tentative.https.window.html",
        {
@@ -494319,6 +495285,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ],
          [
           "timeout",
@@ -494589,7 +495559,7 @@
       ]
      ],
      "summarizer-create-user-activation.tentative.https.window.js": [
-      "a4021699a483fa8c9f0f7648d26bf001d7da5da7",
+      "0d9b55b9c52cbca71cf98ab0d8c68a92286c927a",
       [
        "ai/summarizer/summarizer-create-user-activation.tentative.https.window.html",
        {
@@ -494601,6 +495571,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ],
          [
           "timeout",
@@ -495001,7 +495975,7 @@
       ]
      ],
      "writer-create-user-activation.tentative.https.window.js": [
-      "b1e9dc8bf72582aee989a613d9cdfcea75c11a9b",
+      "84e7f2fbdb225bddabe9bac49a3f508e60175da8",
       [
        "ai/writer/writer-create-user-activation.tentative.https.window.html",
        {
@@ -495013,6 +495987,10 @@
          [
           "script",
           "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
          ],
          [
           "timeout",
@@ -518150,6 +519128,47 @@
       }
      ]
     ],
+    "cookieStore_set_maxAge.https.any.js": [
+     "2d8af15ad21e89a108fdb2a37d68fa7425bd6e64",
+     [
+      "cookiestore/cookieStore_set_maxAge.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set() maxAge"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_set_maxAge.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set() maxAge"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
     "cookieStore_set_path.https.window.js": [
      "4ccdda864b6a0279ca6d0b1d35e20cb1f7d38aed",
      [
@@ -521578,6 +522597,13 @@
      ],
      "anchor-scope-basic.html": [
       "ffe3b45ba0de4d119576bc8b2d307ed55c9ea7f0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "anchor-scope-display-contents.tentative.html": [
+      "491e7651e5c6a28f50764b6e28f38157798ccee7",
       [
        null,
        {}
@@ -529149,7 +530175,7 @@
       ]
      },
      "display-contents-blockify-dynamic.html": [
-      "a1e09affc89ca5643ccced8c2aaf312195ab46ba",
+      "38fc01787c454b04a6ef3e20eee0caec808ba4eb",
       [
        null,
        {}
@@ -533507,14 +534533,14 @@
        ]
       ],
       "rule-break-computed.html": [
-       "667965de79852c14aa57c968d4efd6e7cbb277f0",
+       "cd83cc47ac0947d9bf62ff4f90dafd2dc0746acb",
        [
         null,
         {}
        ]
       ],
       "rule-break-invalid.html": [
-       "defd112db1300ebe2c4fb3d4e86e617e4b0451f3",
+       "1693170b77d89142d5c69271e3aec18b2ce4aa58",
        [
         null,
         {}
@@ -533528,7 +534554,7 @@
        ]
       ],
       "rule-break-valid.html": [
-       "682aebaa436189ba60c882f798a3abbe517f5a30",
+       "ed95c52db6168d3ec26478ff94b3d0737addd31a",
        [
         null,
         {}
@@ -543990,6 +545016,13 @@
        {}
       ]
      ],
+     "at-property-optional-initial-value.html": [
+      "3c113b94ff02e47485cdb0e0bbb39128f63f9e94",
+      [
+       null,
+       {}
+      ]
+     ],
      "at-property-shadow.html": [
       "69f4f4c10753ba2ff536c0b237ecd6db357626b2",
       [
@@ -544252,7 +545285,7 @@
       ]
      ],
      "events-on-pseudo-element.tentative.html": [
-      "b6ea343fcb466ed6cf80bb81f00e8f4661556967",
+      "1756721ad708e6ffc46df34f4b01a58fa3720343",
       [
        null,
        {
@@ -547450,7 +548483,7 @@
        ]
       ],
       "shape-function-computed.html": [
-       "a87bc2391a882930d9e068e79a2c831b2fad6f53",
+       "79a08af7bbb516b38b5328068ca05916f3154136",
        [
         null,
         {}
@@ -559271,14 +560304,14 @@
       ]
      ],
      "rcap-invalidation.html": [
-      "5320eab718b38c52213229c16b88f970fe52e352",
+      "e473c959a1e6ae43098a5cfd1ef87df8f8951874",
       [
        null,
        {}
       ]
      ],
      "rch-invalidation.html": [
-      "fa85e94c72778c424b5cf9f525baf119a40b9f65",
+      "226342a1c4ac0be5a224bbea7d2393d498f827fa",
       [
        null,
        {}
@@ -559292,7 +560325,7 @@
       ]
      ],
      "rex-invalidation.html": [
-      "439106b54b21dbc72d6bb130f61f1d2d96d4bd9a",
+      "ab54d8b9ab61ed35297cf906ac84349481251489",
       [
        null,
        {}
@@ -559306,14 +560339,14 @@
       ]
      ],
      "ric-invalidation.html": [
-      "60abb8b5eb4630b16c39e36e77b1e13670c5049b",
+      "beca6131d63d459df2405f271cc9b59866e72f31",
       [
        null,
        {}
       ]
      ],
      "rlh-invalidation.html": [
-      "4618d9e51af1f649df6a843ed5140d2b203d81e1",
+      "0b5fac10341d64e983afdf3339b7420732740b17",
       [
        null,
        {}
@@ -559661,6 +560694,62 @@
      ],
      "viewport-units-extreme-scale.html": [
       "95f0a23a94870a77e329f33991ccb8e04411586b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-001.html": [
+      "2fc09894cc1ef42e3e5d7702981ff891903920a4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-002.html": [
+      "faf10883b3caa046d49bafc4444939ef452a4914",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-003.html": [
+      "5a565a9035c3f74a6ee9e22de0fac3a053d2f5b1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-004.html": [
+      "b984070df119b054b774f9572ffb7dada569509d",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-005.html": [
+      "8bbceeb6240aa55f50bfb22d4c922c4cdcbf962c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-006.html": [
+      "b03693426add6de905784c8cf1b1fd59f21dd2e7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-007.html": [
+      "4954b0e59f71e5fca1ef11478a5f4bcea4de67d0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "viewport-units-gutter-008.html": [
+      "feae0f347dc28f54c9dfe812c61bf8269811fe17",
       [
        null,
        {}
@@ -560933,6 +562022,13 @@
       ]
      ],
      "zoom": {
+      "font-relative-units.html": [
+       "14b09e843403cfb66ab8866aa759222144a4dabb",
+       [
+        null,
+        {}
+       ]
+      ],
       "length-implicit-and-explicit-inheritance.html": [
        "003c7b61c0909f494f02a68e20fad2c152b96a34",
        [
@@ -568426,7 +569522,7 @@
       ]
      ],
      "template.window.js": [
-      "9b908badeaf8abf3aa734badaab068079c165171",
+      "5324f4b5fd5039139103bd2ed82c5c1d5de4bd8e",
       [
        "custom-elements/registries/template.window.html",
        {}
@@ -568989,7 +570085,7 @@
      ]
     ],
     "create.disabled-by-permissions-policy.https.sub.html": [
-     "9f771c8c42c1ea07211bb9a3f048a15515c71025",
+     "b4d75d14b0cff40aab7a850b5eca65b90683ff49",
      [
       null,
       {
@@ -568998,7 +570094,7 @@
      ]
     ],
     "create.tentative.https.html": [
-     "043b59fa448d1b98a6e9966640853a682c5383db",
+     "69e60ea0de17cb8ab9fc040fd828af63f9ddf547",
      [
       null,
       {
@@ -569007,7 +570103,7 @@
      ]
     ],
     "default-permissions-policy.https.sub.html": [
-     "ac50373d8d07471656d03866a2d2ef82774f50e7",
+     "24c2b5fd4a1e17b52b2445812f52f4eb6eda0717",
      [
       null,
       {
@@ -569030,7 +570126,7 @@
      ]
     ],
     "enabled-on-self-origin-by-permissions-policy.https.sub.html": [
-     "e498d22bd80d872f049151af77962ca8e73b2efb",
+     "0f3cba6032514f145d7cc2a06b23669b6cabcbf3",
      [
       null,
       {
@@ -569039,7 +570135,7 @@
      ]
     ],
     "get.disabled-by-permissions-policy.https.sub.html": [
-     "77bbef9589dfb383b2e68ecd3f784e1e9d68d741",
+     "84bdf9c7e64a3c96e1b24562e59feb101729114b",
      [
       null,
       {
@@ -569048,7 +570144,7 @@
      ]
     ],
     "get.tentative.https.html": [
-     "e5d241d4f39e59ff1bb0ad30c636601362576f26",
+     "c10437f63754e7b54721ffd8ac3da1c2b0c0b8e3",
      [
       null,
       {
@@ -569068,7 +570164,7 @@
      ]
     ],
     "non-fully-active.https.html": [
-     "e1fdca39e59f9d7545fb4230ce5a45667beccf65",
+     "de2c6c26c13906aaee8a63d139f2a8727d8e36a0",
      [
       null,
       {
@@ -569077,7 +570173,7 @@
      ]
     ],
     "user-activation.https.html": [
-     "476c9bfafd5dc83f52192dff5a7191783c724a49",
+     "4a79c1b58f0ac29ca0e6c9f8c0cc94ce07826533",
      [
       null,
       {
@@ -575633,18 +576729,24 @@
       ]
      ],
      "exec-command-with-text-editor.tentative.html": [
-      "e3b0931f1663741e8e794ce5c4b3dae12c80d17c",
+      "cfa0758a245e9e67bf520499e142948e22b16a30",
       [
        "editing/other/exec-command-with-text-editor.tentative.html?type=password",
-       {}
+       {
+        "testdriver": true
+       }
       ],
       [
        "editing/other/exec-command-with-text-editor.tentative.html?type=text",
-       {}
+       {
+        "testdriver": true
+       }
       ],
       [
        "editing/other/exec-command-with-text-editor.tentative.html?type=textarea",
-       {}
+       {
+        "testdriver": true
+       }
       ]
      ],
      "exec-command-without-editable-element.tentative.html": [
@@ -636079,6 +637181,389 @@
       }
      },
      "origin": {
+      "api": {
+       "idlharness.any.js": [
+        "7dcc05bde88405ff43be0c761aa5fabc92f139ee",
+        [
+         "html/browsers/origin/api/idlharness.any.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/WebIDLParser.js"
+           ],
+           [
+            "script",
+            "/resources/idlharness.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/idlharness.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "script",
+            "/resources/WebIDLParser.js"
+           ],
+           [
+            "script",
+            "/resources/idlharness.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-comparison.any.js": [
+        "06fe9befaf811cbd58ba3f52c5720793364f03c0",
+        [
+         "html/browsers/origin/api/origin-comparison.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin` comparison"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-comparison.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin` comparison"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-extendablemessageevent.any.js": [
+        "48fff278131fd84cc8e9019bdd413e768432d81b",
+        [
+         "html/browsers/origin/api/origin-from-extendablemessageevent.any.serviceworker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(ExtendableMessageEvent)`"
+           ],
+           [
+            "global",
+            "serviceworker"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-global.any.js": [
+        "e20aafba4c1db1e986624a1aee01e9f45527dc97",
+        [
+         "html/browsers/origin/api/origin-from-global.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(WindowOrWorkerGlobalScope)`"
+           ],
+           [
+            "global",
+            "window,worker"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-global.any.serviceworker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(WindowOrWorkerGlobalScope)`"
+           ],
+           [
+            "global",
+            "window,worker"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-global.any.sharedworker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(WindowOrWorkerGlobalScope)`"
+           ],
+           [
+            "global",
+            "window,worker"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-global.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(WindowOrWorkerGlobalScope)`"
+           ],
+           [
+            "global",
+            "window,worker"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-htmlhyperlinkelementutils.window.js": [
+        "3bb317a2cb482b6b711982df6768534699de0474",
+        [
+         "html/browsers/origin/api/origin-from-htmlhyperlinkelementutils.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(HTMLHyperlinkElementUtils)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-location.window.js": [
+        "2469ff403ef1de798f3f5ada2d000534217ef508",
+        [
+         "html/browsers/origin/api/origin-from-location.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(Location)`"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-messageevent-opaque.window.js": [
+        "961a3aeb9401662c109efab688f5f2b95dc0f4fd",
+        [
+         "html/browsers/origin/api/origin-from-messageevent-opaque.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(MessageEvent)` from opaque origins."
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-messageevent.window.js": [
+        "c2e225b48cfa674def301d943204a1f095652101",
+        [
+         "html/browsers/origin/api/origin-from-messageevent.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(MessageEvent)`"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-origin.any.js": [
+        "c167075672026794626668dd77303b5c6ef8b9b3",
+        [
+         "html/browsers/origin/api/origin-from-origin.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(URL)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-origin.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(URL)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-string.any.js": [
+        "5cf47ccfb8feb15d2d6f0b7d4bede044c1f5da48",
+        [
+         "html/browsers/origin/api/origin-from-string.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(String)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-string.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(String)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-url.any.js": [
+        "e8a128ecc0c96c5d21c7d3eeaf95702b28b756fb",
+        [
+         "html/browsers/origin/api/origin-from-url.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(URL)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from-url.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(URL)`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from-window.window.js": [
+        "78543db246b8da30e6ad3a93f07b6d5ba4fc2238",
+        [
+         "html/browsers/origin/api/origin-from-window.window.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from(Location)`"
+           ],
+           [
+            "script",
+            "/common/get-host-info.sub.js"
+           ]
+          ]
+         }
+        ]
+       ],
+       "origin-from.any.js": [
+        "fcbc993a4986b17caf88e6c51148150c14010d49",
+        [
+         "html/browsers/origin/api/origin-from.any.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from()`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ],
+        [
+         "html/browsers/origin/api/origin-from.any.worker.html",
+         {
+          "script_metadata": [
+           [
+            "title",
+            "`Origin.from()`"
+           ],
+           [
+            "script",
+            "resources/serializations.js"
+           ]
+          ]
+         }
+        ]
+       ]
+      },
       "cross-origin-objects": {
        "cross-origin-due-to-document-domain-only.html": [
         "425374faec02a6ec5f8b64f7e3d109e0bc2e0da3",
@@ -637492,391 +638977,6 @@
          {}
         ]
        ]
-      },
-      "tentative": {
-       "api": {
-        "idlharness.any.js": [
-         "7f76c957d7c33407fadfac5d7e3b9cf68bfac3fe",
-         [
-          "html/browsers/origin/tentative/api/idlharness.any.html",
-          {
-           "script_metadata": [
-            [
-             "script",
-             "/resources/WebIDLParser.js"
-            ],
-            [
-             "script",
-             "/resources/idlharness.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/idlharness.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "script",
-             "/resources/WebIDLParser.js"
-            ],
-            [
-             "script",
-             "/resources/idlharness.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-comparison.any.js": [
-         "06fe9befaf811cbd58ba3f52c5720793364f03c0",
-         [
-          "html/browsers/origin/tentative/api/origin-comparison.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin` comparison"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-comparison.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin` comparison"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-extendablemessageevent.any.js": [
-         "48fff278131fd84cc8e9019bdd413e768432d81b",
-         [
-          "html/browsers/origin/tentative/api/origin-from-extendablemessageevent.any.serviceworker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(ExtendableMessageEvent)`"
-            ],
-            [
-             "global",
-             "serviceworker"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-global.any.js": [
-         "e20aafba4c1db1e986624a1aee01e9f45527dc97",
-         [
-          "html/browsers/origin/tentative/api/origin-from-global.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(WindowOrWorkerGlobalScope)`"
-            ],
-            [
-             "global",
-             "window,worker"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-global.any.serviceworker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(WindowOrWorkerGlobalScope)`"
-            ],
-            [
-             "global",
-             "window,worker"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-global.any.sharedworker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(WindowOrWorkerGlobalScope)`"
-            ],
-            [
-             "global",
-             "window,worker"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-global.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(WindowOrWorkerGlobalScope)`"
-            ],
-            [
-             "global",
-             "window,worker"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-htmlhyperlinkelementutils.window.js": [
-         "78f856f38deff3af41ff814320369d50a77ae7fb",
-         [
-          "html/browsers/origin/tentative/api/origin-from-htmlhyperlinkelementutils.window.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(HTMLHyperlinkElementUtils)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-location.window.js": [
-         "2469ff403ef1de798f3f5ada2d000534217ef508",
-         [
-          "html/browsers/origin/tentative/api/origin-from-location.window.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(Location)`"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-messageevent-opaque.window.js": [
-         "961a3aeb9401662c109efab688f5f2b95dc0f4fd",
-         [
-          "html/browsers/origin/tentative/api/origin-from-messageevent-opaque.window.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(MessageEvent)` from opaque origins."
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-messageevent.window.js": [
-         "c2e225b48cfa674def301d943204a1f095652101",
-         [
-          "html/browsers/origin/tentative/api/origin-from-messageevent.window.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(MessageEvent)`"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-origin.any.js": [
-         "c167075672026794626668dd77303b5c6ef8b9b3",
-         [
-          "html/browsers/origin/tentative/api/origin-from-origin.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(URL)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-origin.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(URL)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-string.any.js": [
-         "5cf47ccfb8feb15d2d6f0b7d4bede044c1f5da48",
-         [
-          "html/browsers/origin/tentative/api/origin-from-string.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(String)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-string.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(String)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-url.any.js": [
-         "e8a128ecc0c96c5d21c7d3eeaf95702b28b756fb",
-         [
-          "html/browsers/origin/tentative/api/origin-from-url.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(URL)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from-url.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(URL)`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from-window.window.js": [
-         "78543db246b8da30e6ad3a93f07b6d5ba4fc2238",
-         [
-          "html/browsers/origin/tentative/api/origin-from-window.window.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from(Location)`"
-            ],
-            [
-             "script",
-             "/common/get-host-info.sub.js"
-            ]
-           ]
-          }
-         ]
-        ],
-        "origin-from.any.js": [
-         "fcbc993a4986b17caf88e6c51148150c14010d49",
-         [
-          "html/browsers/origin/tentative/api/origin-from.any.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from()`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ],
-         [
-          "html/browsers/origin/tentative/api/origin-from.any.worker.html",
-          {
-           "script_metadata": [
-            [
-             "title",
-             "`Origin.from()`"
-            ],
-            [
-             "script",
-             "resources/serializations.js"
-            ]
-           ]
-          }
-         ]
-        ]
-       }
       }
      },
      "sandboxing": {
@@ -639307,7 +640407,7 @@
         ]
        ],
        "2d.canvas.host.initial.reset.2dstate.html": [
-        "81ff8cc43c794a369aa680b536c7069b110d84a2",
+        "1125a6b1b3be68ebf17064b28a1c2ca3c88fff64",
         [
          null,
          {}
@@ -647620,14 +648720,14 @@
         ]
        ],
        "2d.canvas.host.initial.reset.2dstate.html": [
-        "8f3d4e56d218775a255d2671d127c9a4961918ec",
+        "14f673499a004186699b1373d7a793bab6df0bc2",
         [
          null,
          {}
         ]
        ],
        "2d.canvas.host.initial.reset.2dstate.worker.js": [
-        "fe0db573c6df6712640cb26f3a8e425270c8423d",
+        "4b2b4b62a5cb54c1d701c89b672b2db7567f2894",
         [
          "html/canvas/offscreen/canvas-host/2d.canvas.host.initial.reset.2dstate.worker.html",
          {}
@@ -672087,6 +673187,62 @@
           ]
          ]
         },
+        "reading-flow-navigation": {
+         "explicit-visual-reordering.html": [
+          "c459aeb6b4ac86768c1c7d071f1e97f31c204320",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "fallback-to-dom-order.html": [
+          "8322096d5bfeaf7f7c998948107fd6b26a43b5d3",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "flex-visual-order-basic.html": [
+          "4071752307833391797a7b6cea6ee0d899edc91f",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "nested-containers.html": [
+          "2ec152325667391ff3a6dda8e9c4f8fe047f2bcc",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "partial-reordering.html": [
+          "b22e778e5b0d498d52833da777054ae60b1b16dd",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ],
+         "simple-mixed.html": [
+          "51b0a10258e25d89b2340e57787825bfd9bc3206",
+          [
+           null,
+           {
+            "testdriver": true
+           }
+          ]
+         ]
+        },
         "shadow": {
          "shadow-items-basic.html": [
           "e6fb928d0ddf5b07f6f83aefd68a8cc7d6af4042",
@@ -678254,6 +679410,15 @@
          {}
         ]
        ],
+       "srcdoc-lifecycle-crash-crbug-1472607.https.html": [
+        "0e17af2cdb2956300975cc0408a4221624a27144",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "srcdoc_change_hash.html": [
         "fe72333d1a638966e14e46fdb6b0bdf21beaa75d",
         [
@@ -683754,6 +684919,27 @@
        ]
       ],
       "geolocation-element": {
+       "bounded-css-properties.tentative.html": [
+        "29f8f9247df9d3cfa5712fc4d8f3922214e2e95a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "bounded-sizes.tentative.html": [
+        "38525430907ffda10ae8c08b7b01e0a76c3e4fda",
+        [
+         null,
+         {}
+        ]
+       ],
+       "display-values.tentative.html": [
+        "315be9c66b5ebfaefdd17ef86d1acb9867a439ab",
+        [
+         null,
+         {}
+        ]
+       ],
        "get-current-position-error.html": [
         "68b0a793b8ae066c0884e7e5f5ef49192c0d0c70",
         [
@@ -683778,6 +684964,24 @@
          }
         ]
        ],
+       "granted-selector.html": [
+        "f059fc5eb68a08b78b0228994122e007cd6cdf12",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
+       "icon-color-defaults-to-text-color.html": [
+        "f63591246518433e011b6b222565a43c01ff87a9",
+        [
+         null,
+         {
+          "testdriver": true
+         }
+        ]
+       ],
        "idlharness.tentative.window.js": [
         "6da1cb148b240ee49d97add91bd5f54a87ac3a38",
         [
@@ -683794,6 +684998,48 @@
            ]
           ]
          }
+        ]
+       ],
+       "invalid-css-properties.tentative.html": [
+        "3f821a191caf77699efc1f8eee5d4fce7f1100f6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "negative-offset.tentative.html": [
+        "5b95d07fb9372d18181dc922add704821e41cd64",
+        [
+         null,
+         {}
+        ]
+       ],
+       "no-children-rendered.tentative.html": [
+        "5267d2899d0946f8f416537685273dca60766f93",
+        [
+         null,
+         {}
+        ]
+       ],
+       "parent-image-mask.tentative.html": [
+        "92500e440827919f51e4b239e4fac20d6be7c511",
+        [
+         null,
+         {}
+        ]
+       ],
+       "parent-mask.tentative.html": [
+        "5b291f9e3cbf2050c33e3aa6de8139a3a7c84a92",
+        [
+         null,
+         {}
+        ]
+       ],
+       "type-supported-feature-detect.tentative.html": [
+        "fb06f57672e0cb1b176fc72d188ec531eb74edff",
+        [
+         null,
+         {}
         ]
        ]
       },
@@ -699166,8 +700412,17 @@
       {}
      ]
     ],
-    "image-upscaling.html": [
+    "image-upscaling-empty-url.html": [
      "e017594163c6bf1cdc83ba618922fdb6366dd74f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "image-upscaling.html": [
+     "76b9d1d59c331bf4f2eadf200044d75f2642238f",
      [
       null,
       {
@@ -699435,7 +700690,7 @@
      ]
     ],
     "web-font-styled-text-resize-swap-after-interaction.html": [
-     "71affbb4865f7ba33e53aeb245d534907f1f078f",
+     "3ba02bab5ac331913b0570e5c911e9d5b4570fe9",
      [
       null,
       {
@@ -699929,7 +701184,7 @@
      ]
     ],
     "sources-maximpact.html": [
-     "497932b065e170c3a0c04f79fe67f6059e2bf3d1",
+     "2bb502155ffdae544cf2b146c4b611e7e67e8537",
      [
       null,
       {}
@@ -710130,7 +711385,7 @@
        {}
       ]
      ],
-     "transition-to.tentative.html": [
+     "transition-to.html": [
       "9b766ef6a8ed2b7f022162a19c2ae7d966c84bfd",
       [
        null,
@@ -733012,6 +734267,15 @@
       {}
      ]
     ],
+    "decoded-body-size-compressed.https.html": [
+     "6f9c8048025d64565db24bae0e4cb7b8d32a7f13",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "delivery-type.tentative.any.js": [
      "e2b408fdd74f29fff40b11e83e9ecb804b295490",
      [
@@ -733948,6 +735212,13 @@
     ],
     "sanitizer-get.tentative.html": [
      "8bdf3545c3d17f0707dc94355a6e1cf0a5f36eb6",
+     [
+      null,
+      {}
+     ]
+    ],
+    "sanitizer-inert-document.tentative.html": [
+     "ca38ee25b05eac15c6889eab4245c2dba5f208ba",
      [
       null,
       {}
@@ -736339,7 +737610,7 @@
       ]
      ],
      "animation-trigger-untriggered-animations-exposed.tentative.html": [
-      "7f971e202722ad43063f35ee7f5cb5efb4959174",
+      "62227cc050f9d3bc4421829303ba445a8bdc8286",
       [
        null,
        {}
@@ -736467,6 +737738,13 @@
       ],
       "timeline-trigger-source-parsing.tentative.html": [
        "f743d3b87d0bdc4f38ae2af5f31d873e118362b4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "trigger-scope.tentative.html": [
+       "aaf3960f9fa905e18a271bffc33a4114092dafa9",
        [
         null,
         {}
@@ -790390,7 +791668,7 @@
        ]
       ],
       "retrospective-setValueAtTime.html": [
-       "32cdc6307fcfd3ed53abb460702601b39cf8b5ed",
+       "8f271cee0b96f131db7ee23e65fc53a88c81cd66",
        [
         null,
         {}
@@ -795744,7 +797022,7 @@
      ]
     ],
     "per-frame-qp-encoding.https.any.js": [
-     "3669edc630bc4c008c42642c415e1775047cbd5c",
+     "d7f731e3e60871beb3206d02a87c012572256d0f",
      [
       "webcodecs/per-frame-qp-encoding.https.any.html?av1",
       {
@@ -803422,7 +804700,7 @@
       ]
      ],
      "batch_normalization.https.any.js": [
-      "3f7fd84abaa3db49fa99ce4539ac4511b49f884f",
+      "6f3db0e099db4576015ba5e7594aff6d07987bb0",
       [
        "webnn/conformance_tests/batch_normalization.https.any.html?cpu",
        {
@@ -803502,6 +804780,117 @@
          [
           "title",
           "test WebNN API batchNormalization operation"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
+     "batch_normalization_constant.https.any.js": [
+      "36d6d46815e189f7fee295716ff0754c5bc6d4f0",
+      [
+       "webnn/conformance_tests/batch_normalization_constant.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API batchNormalization operation with constant inputs"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/batch_normalization_constant.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API batchNormalization operation with constant inputs"
+         ],
+         [
+          "global",
+          "window"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/batch_normalization_constant.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API batchNormalization operation with constant inputs"
          ],
          [
           "global",
@@ -844950,6 +846339,44 @@
       }
      ]
     ],
+    "back-forward-cache-with-open-websocket-connection-and-close-it-in-pagehide.window.js": [
+     "2abb5b346ff166acdf45b63943804d3cb14fe504",
+     [
+      "websockets/back-forward-cache-with-open-websocket-connection-and-close-it-in-pagehide.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for a page with an open WebSocket connection, but close it in pagehide."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "/websockets/constants.sub.js"
+        ],
+        [
+         "script",
+         "resources/websockets-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "back-forward-cache-with-open-websocket-connection-ccns.tentative.window.js": [
      "f37a04af91a3a785c890b4ec38129cafd39c020a",
      [
@@ -854178,6 +855605,13 @@
        }
       ]
      ],
+     "xrLayerInit.https.html": [
+      "fa7ea7e7b5392b3724ea031b808ad4c302708c59",
+      [
+       null,
+       {}
+      ]
+     ],
      "xrSession_updateRenderState.https.html": [
       "52f4b087bc72a05fd5b6b4b7ec40f4b0e5119abb",
       [
@@ -854187,6 +855621,27 @@
      ],
      "xrWebGLBinding_constructor.https.html": [
       "b3457cf3203005562785b0a93f8e462c01addbc8",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xrWebGLBinding_createCylinderLayer.https.html": [
+      "69e9909a79107cce0ec4185625cbeba25ee81409",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xrWebGLBinding_createEquirectLayer.https.html": [
+      "183fcd7f30bfc04ad8a08d80692c1ac2d95a6464",
+      [
+       null,
+       {}
+      ]
+     ],
+     "xrWebGLBinding_createQuadLayer.https.html": [
+      "123625d73b6c042cc461debbcfc1ab2fcf97349e",
       [
        null,
        {}
@@ -875950,7 +877405,7 @@
          ]
         ],
         "invalid.py": [
-         "2334d37517df00cde8f845e7ec6412d1570e405b",
+         "8e2a755adcf51ad6578b31f301ea8b2be6dd6275",
          [
           null,
           {}
@@ -875973,7 +877428,7 @@
          ]
         ],
         "invalid.py": [
-         "2f7988d4fb15c1ef520c6b9e2d2959da043c4a8d",
+         "c27f2ef7670c75c4f224440000a63b055c840314",
          [
           null,
           {}
@@ -876040,7 +877495,7 @@
          ]
         ],
         "invalid.py": [
-         "88c5cbe39a617e397f1e2a8e52b32b066c146473",
+         "0f56ec7eb79b08a484e32ebd78ee3f1f8ef8f157",
          [
           null,
           {}
@@ -876055,6 +877510,36 @@
         ],
         "user_contexts.py": [
          "b8f0dd373f1d9457f6313db8d993aa04c71dd2c1",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
+       "set_screen_settings_override": {
+        "contexts.py": [
+         "fa00766aadcea4407379a90d9b9d09815131679e",
+         [
+          null,
+          {}
+         ]
+        ],
+        "invalid.py": [
+         "95c799cd7106af8f64b8a9caffb65297163bb06b",
+         [
+          null,
+          {}
+         ]
+        ],
+        "screen_area.py": [
+         "a146eb313ac58952dd1d20793bc127ef3f5bac53",
+         [
+          null,
+          {}
+         ]
+        ],
+        "user_contexts.py": [
+         "b5e48f0c8cd80edaeecfeb092f3592a69ff25f44",
          [
           null,
           {}
@@ -876107,7 +877592,7 @@
          ]
         ],
         "invalid.py": [
-         "f7a39a29cacdae12bbe479886e791493b891fe0d",
+         "40a261755ff3f27da2193a92f4745e25e8bdc8f7",
          [
           null,
           {}
@@ -878895,6 +880380,22 @@
          {
           "timeout": "long"
          }
+        ]
+       ]
+      },
+      "global_privacy_control": {
+       "get.py": [
+        "2682b4de5bf88b9c7c74811c1972ee11acf808a6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "set.py": [
+        "ba6cbfab64073194ac235059c2419b812a4f6f80",
+        [
+         null,
+         {}
         ]
        ]
       },

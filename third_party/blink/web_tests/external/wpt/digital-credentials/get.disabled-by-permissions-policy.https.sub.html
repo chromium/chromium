@@ -19,7 +19,7 @@
         await promise_rejects_dom(
             test,
             "NotAllowedError",
-            navigator.credentials.get(makeGetOptions([]))
+            navigator.credentials.get(makeGetOptions({protocol: []}))
         );
     }, "Permissions-Policy header digital-credentials-get=() disallows the top-level document.");
 

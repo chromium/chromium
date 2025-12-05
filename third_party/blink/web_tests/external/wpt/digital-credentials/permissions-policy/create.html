@@ -11,7 +11,7 @@
         }
         let enabled = undefined;
         try {
-            await navigator.credentials.create(makeCreateOptions([]));
+            await navigator.credentials.create(makeCreateOptions({protocol: []}));
         } catch (e) {
             switch (e.name) {
                 case "NotAllowedError":

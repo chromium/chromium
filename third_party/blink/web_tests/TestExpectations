@@ -56,7 +56,7 @@ wpt_internal/infrastructure/fail-before-timeout.html [ Timeout ]
 # Short-lived expectations for --enable-blink-features=AIPageContentBuildOnLoadForTesting
 # Will be removed in follow-up CL with the fixes.
 # DCHECK failed: visual bounding box does not fit in outer bounding box
-virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Timeout Pass Failure ]
+virtual/content-extraction/compositing/overflow/nested-render-surfaces-with-rotation.html [ Crash Failure Pass Timeout ]
 virtual/content-extraction/css3/filters/nested-filter.html [ Crash Timeout ]
 # DCHECK failed: !GetDocument().InvalidationDisallowed().
 virtual/content-extraction/fast/dom/HTMLObjectElement/update-data.html [ Crash Timeout ]
@@ -3192,6 +3192,15 @@ crbug.com/462821200 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryService
 crbug.com/440811029 [ Win ] external/wpt/bluetooth/bidi/server/getPrimaryServices/gen-disconnect-called-before.https.window.html [ Failure Timeout ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-fonts/matching/font-weight-search-direction.html [ Failure ]
+[ Mac ] external/wpt/css/css-highlight-api/highlight-text-across-elements.html [ Failure ]
+[ Android ] external/wpt/webdriver/tests/bidi/emulation/combined/multiple_emulations.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/contexts.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/screen_area.py [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_screen_settings_override/user_contexts.py [ Failure ]
+external/wpt/webdriver/tests/classic/global_privacy_control/get.py [ Failure ]
+external/wpt/webdriver/tests/classic/global_privacy_control/set.py [ Failure ]
 crbug.com/465595013 [ Linux ] external/wpt/css/css-masking/clip-path/clip-path-inline-001.html [ Failure ]
 crbug.com/465457329 [ Android ] external/wpt/webdriver/tests/bidi/emulation/set_timezone_override/user_contexts.py [ Failure ]
 crbug.com/465457329 external/wpt/webdriver/tests/classic/get_all_cookies/get.py [ Failure ]
@@ -5055,8 +5064,8 @@ crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-anchor-posi
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/abspos-in-clipped-overflow-print.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/abspos-in-opacity-003.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/box-decoration-break-clone-005.tentative.html [ Failure ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/flexbox/* [ Skip Timeout Failure Crash Pass ]
-crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/grid/* [ Skip Timeout Failure Crash Pass ]
+crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/flexbox/* [ Crash Failure Pass Skip Timeout ]
+crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/grid/* [ Crash Failure Pass Skip Timeout ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-001.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-004.html [ Failure ]
 crbug.com/40267498 virtual/fragmented-oof-in-cb/external/wpt/css/css-break/out-of-flow-in-multicolumn-010.html [ Failure ]
@@ -10042,10 +10051,10 @@ crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ F
 
 # Gardener 2025-12-03
 crbug.com/439641227 external/wpt/storage-access-api/requestStorageAccess-cross-origin-iframe-navigation.sub.https.window.html [ Pass Timeout ]
-crbug.com/465812582 external/wpt/storage-access-api/requestStorageAccess-same-site-iframe.sub.https.window.html [ Crash Timeout Failure Pass ]
+crbug.com/465812582 external/wpt/storage-access-api/requestStorageAccess-same-site-iframe.sub.https.window.html [ Crash Failure Pass Timeout ]
 
 # Gardener 2025-12-04
-crbug.com/465643000 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Pass Failure ]
+crbug.com/465643000 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Failure Pass ]
 
 # Gardener 2025-12-05
-crbug.com/466134898 http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Timeout Pass ]
+crbug.com/466134898 http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Pass Timeout ]
