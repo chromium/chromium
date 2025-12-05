@@ -294,23 +294,25 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
       std::map<tab_groups::TabGroupId, TabGroupHeader*> fully_selected_groups =
           GetFullySelectedTabGroups();
 
-      // TODO(crbug.com/425933884): Look into using just the selected tabs.
-      for (int i = 0; i < GetTabCount(); ++i) {
-        Tab* other_tab = GetTabAt(i);
-        if (tab_strip_->IsTabSelected(other_tab)) {
-          if (other_tab->group().has_value()) {
-            const tab_groups::TabGroupId group = other_tab->group().value();
-            if (auto it = fully_selected_groups.find(group);
-                it != fully_selected_groups.end()) {
-              dragging_views.push_back(it->second);
-              fully_selected_groups.erase(it);
-            }
+      const ui::ListSelectionModel& strip_selection_model =
+          tab_strip_->GetSelectionModel();
+      for (size_t i : strip_selection_model.selected_indices()) {
+        Tab* other_tab = GetTabAt(static_cast<int>(i));
+        if (!other_tab) {
+          continue;
+        }
+        if (other_tab->group().has_value()) {
+          const tab_groups::TabGroupId group = other_tab->group().value();
+          if (auto it = fully_selected_groups.find(group);
+              it != fully_selected_groups.end()) {
+            dragging_views.push_back(it->second);
+            fully_selected_groups.erase(it);
           }
+        }
 
-          dragging_views.push_back(other_tab);
-          if (other_tab == source) {
-            x += GetSizeNeededForViews(dragging_views) - other_tab->width();
-          }
+        dragging_views.push_back(other_tab);
+        if (other_tab == source) {
+          x += GetSizeNeededForViews(dragging_views) - other_tab->width();
         }
       }
       if (!original_selection.IsSelected(
