@@ -62,6 +62,7 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
       AccountsCookieMutator::PartitionDelegate* partition_delegate,
       ProfileOAuth2TokenService* token_service,
       gaia::MultiloginMode mode,
+      bool wait_on_connectivity,
       const std::vector<AccountIdGaiaIdPair>& accounts,
       const std::string& external_cc_result,
       const gaia::GaiaSource& gaia_source,
@@ -126,6 +127,7 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   int fetcher_retries_ = 0;
 
   gaia::MultiloginMode mode_;
+  const bool wait_on_connectivity_ = true;
   // Account IDs to set in the cookie.
   const std::vector<AccountIdGaiaIdPair> accounts_;
   // See GaiaCookieManagerService::ExternalCcResultFetcher for details.

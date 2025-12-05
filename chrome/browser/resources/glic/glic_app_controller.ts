@@ -146,10 +146,12 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       this.online();
     });
     window.addEventListener('offline', () => {
-      this.offline();
+      if (!this.isOnline()) {
+        this.offline();
+      }
     });
 
-    if (navigator.onLine && !this.simulateNoConnection) {
+    if (this.isOnline()) {
       this.setState(WebUiState.kBeginLoad);
     } else {
       this.setState(WebUiState.kOffline);
@@ -769,5 +771,11 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
 
   openDisabledByAdminLink(): void {
     this.browserProxy.handler.openDisabledByAdminLinkAndClosePanel();
+  }
+
+  isOnline() {
+    return loadTimeData.getBoolean('ignoreOfflineState') ?
+        true :
+        navigator.onLine && !this.simulateNoConnection;
   }
 }
