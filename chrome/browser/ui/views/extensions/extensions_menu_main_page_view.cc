@@ -280,6 +280,7 @@ void ExtensionsMenuMainPageView::AddOrUpdateExtensionRequestingAccess(
     views::AsViewClass<views::Label>(extension_items[kRequestEntryLabelIndex])
         ->SetText(name);
     requests_entries_view_->ReorderChildView(request_entry, index);
+    return;
   }
 
   // Otherwise, add a new request entry.
