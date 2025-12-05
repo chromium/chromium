@@ -455,4 +455,9 @@ void PageHandler::ResetModelCrashCount() {
   prefs->SetInteger(kOnDeviceModelCrashCount, 0);
 }
 
+void PageHandler::SendDownloadProgress(int64_t downloaded_bytes,
+                                       int64_t total_bytes) {
+  page_->OnDownloadProgressUpdate(downloaded_bytes, total_bytes);
+}
+
 }  // namespace on_device_internals

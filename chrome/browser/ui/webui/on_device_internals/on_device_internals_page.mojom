@@ -84,7 +84,6 @@ interface PageHandlerFactory {
                     pending_receiver<PageHandler> handler);
 };
 
-
 // Primary interface for the chrome://on-device-internals WebUI. Lives in the
 // browser process.
 interface PageHandler {
@@ -138,4 +137,7 @@ interface Page {
                     string source_file,
                     int64 source_line,
                     string message);
+
+  // Called when there is a progress update for the default model.
+  OnDownloadProgressUpdate(uint64 downloaded_bytes, uint64 total_bytes);
 };

@@ -18,6 +18,34 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     this.getPageData_();
   }
 
+  private formatBytes(bytes: number) {
+    if (bytes === 0) {
+      return '0 Bytes';
+    }
+
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+
+    const i =
+        Math.min(Math.round(Math.log(bytes) / Math.log(k)) - 1, sizes.length);
+
+    return `${(bytes / Math.pow(k, i)).toFixed(2)} ${sizes[i]}`;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    BrowserProxy.getInstance()
+        .callbackRouter.onDownloadProgressUpdate.addListener(
+            this.logProgress_.bind(this));
+  }
+
+  private logProgress_(downloadedBytes: number, totalBytes: number) {
+    this.loadProgress = Number(downloadedBytes);
+    this.loadMax = Number(totalBytes);
+    this.readableLoadProgress = this.formatBytes(this.loadProgress);
+    this.readableLoadMax = this.formatBytes(this.loadMax);
+  }
+
   static get is() {
     return 'on-device-internals-model-status';
   }
@@ -30,6 +58,10 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
     return {
       pageData_: {type: Object},
       mayRestartBrowser_: {type: Boolean},
+      loadProgress: {type: Number},
+      loadMax: {type: Number},
+      readableLoadProgress: {type: String},
+      readableLoadMax: {type: String},
     };
   }
 
@@ -56,6 +88,11 @@ export class OnDeviceInternalsModelStatusElement extends CrLitElement {
 
   protected accessor mayRestartBrowser_: boolean = false;
   private proxy_: BrowserProxy = BrowserProxy.getInstance();
+
+  protected accessor loadProgress: number = 0;
+  protected accessor loadMax: number = 100;
+  protected accessor readableLoadProgress: string = '_';
+  protected accessor readableLoadMax: string = '_';
 
   protected async onResetModelCrashCountClick_() {
     await this.proxy_.handler.resetModelCrashCount();

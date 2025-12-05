@@ -46,6 +46,12 @@ export function getHtml(this: OnDeviceInternalsModelStatusElement) {
             </value>
           </div>
         </div>` : html``}
+        <div>
+          <progress value="${this.loadProgress}" max="${this.loadMax}">
+          </progress>
+          <span>${this.readableLoadProgress}</span><span>/</span>
+          <span>${this.readableLoadMax}</span>
+        </div>
         <cr-button class="cr-button-gap"
             @click="${this.uninstallDefaultModel_}">Uninstall</cr-button>
       </div>
