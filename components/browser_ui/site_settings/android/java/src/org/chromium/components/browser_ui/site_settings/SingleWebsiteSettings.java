@@ -739,6 +739,9 @@ public class SingleWebsiteSettings extends BaseSiteSettingsFragment
     @RequiresNonNull({"mSite"})
     private void setupResetSitePreference() {
         Preference preference = findPreference(PREF_RESET_SITE);
+        if (mHideNonPermissionPreferences) {
+            preference.setWidgetLayoutResource(R.layout.reset_permissions_preference);
+        }
         preference.setTitle(
                 mHideNonPermissionPreferences
                         ? R.string.page_info_permissions_reset

@@ -16,6 +16,9 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/permissions/features.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "components/permissions/android/permissions_android_feature_map.h"
+#endif
 #include "components/permissions/permission_util.h"
 #include "url/gurl.h"
 
@@ -31,6 +34,12 @@ constexpr int kDefaultDismissalsBeforeBlock = 3;
 // The number of times that users may ignore a permission prompt from an origin
 // before it is automatically blocked.
 constexpr int kDefaultIgnoresBeforeBlock = 4;
+
+#if BUILDFLAG(IS_ANDROID)
+// The number of times that users may ignore a permission prompt from an origin.
+// before it is automatically blocked. This is used for the Clapper UI.
+constexpr int kClapperIgnoresBeforeBlock = 1;
+#endif
 
 // The number of times that users may dismiss a permission prompt that uses the
 // quiet UI from an origin before it is automatically blocked.
@@ -427,7 +436,14 @@ bool PermissionDecisionAutoBlocker::RecordIgnoreAndEmbargo(
                                           settings_map_)
           : -1;
 
-  if (current_ignore_count >= kDefaultIgnoresBeforeBlock) {
+  int ignores_before_block = kDefaultIgnoresBeforeBlock;
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(permissions::kPermissionsAndroidClapperLoud)) {
+    ignores_before_block = kClapperIgnoresBeforeBlock;
+  }
+#endif
+
+  if (current_ignore_count >= ignores_before_block) {
     PlaceUnderEmbargo(url, permission, kPermissionIgnoreEmbargoKey);
     return true;
   }
