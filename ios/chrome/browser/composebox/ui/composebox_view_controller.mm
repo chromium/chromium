@@ -145,9 +145,7 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
 }
 
 - (void)userInterfaceStyleChanged {
-  BOOL darkStyle =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
-  _blurEffectView.hidden = darkStyle || _theme.incognito;
+  [self updateBlurVisibility];
 }
 
 - (void)addInputViewController:
@@ -345,10 +343,15 @@ UIImage* CloseButtonImage(UIColor* backgroundColor, BOOL highlighted) {
   AddSameConstraints(blurEffectView, containerView);
 
   _blurEffectView = blurEffectView;
-  _blurEffectView.hidden =
-      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  [self updateBlurVisibility];
 
   return containerView;
+}
+
+- (void)updateBlurVisibility {
+  BOOL darkStyle =
+      self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
+  _blurEffectView.hidden = darkStyle || _theme.incognito;
 }
 
 - (void)expandInputPlateForDismissal {
