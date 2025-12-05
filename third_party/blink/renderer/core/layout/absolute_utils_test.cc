@@ -106,9 +106,9 @@ class AbsoluteUtilsTest : public RenderingTest {
             static_position, container_writing_direction,
             node.Style().GetWritingDirection());
     ComputeOofInlineDimensions(
-        node, node.Style(), space, imcb, LogicalAnchorCenterPosition(),
-        LogicalAlignment(), border_padding, std::nullopt, BoxStrut(),
-        container_writing_direction, dimensions);
+        node, /*break_token=*/nullptr, node.Style(), space, imcb,
+        LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
+        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }
@@ -133,10 +133,10 @@ class AbsoluteUtilsTest : public RenderingTest {
             node, space.AvailableSize(), LogicalAlignment(), insets,
             static_position, container_writing_direction,
             node.Style().GetWritingDirection());
-    ComputeOofBlockDimensions(node, node.Style(), space, imcb,
-                              LogicalAnchorCenterPosition(), LogicalAlignment(),
-                              border_padding, std::nullopt, BoxStrut(),
-                              container_writing_direction, dimensions);
+    ComputeOofBlockDimensions(
+        node, /*break_token=*/nullptr, node.Style(), space, imcb,
+        LogicalAnchorCenterPosition(), LogicalAlignment(), border_padding,
+        std::nullopt, BoxStrut(), container_writing_direction, dimensions);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
     GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kLayoutClean);
   }

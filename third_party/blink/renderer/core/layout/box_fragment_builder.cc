@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/positioned_float.h"
 #include "third_party/blink/renderer/core/layout/relative_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -117,7 +118,8 @@ const LayoutResult& BoxFragmentBuilder::LayoutResultForPropagation(
 
 void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
                                              std::optional<BreakAppeal> appeal,
-                                             bool is_forced_break) {
+                                             bool is_forced_break,
+                                             LogicalOffset oof_start_offset) {
   // If there's a pre-set break token, we shouldn't be here.
   DCHECK(!break_token_);
 
@@ -168,7 +170,8 @@ void BoxFragmentBuilder::AddBreakBeforeChild(LayoutInputNode child,
     }
     return;
   }
-  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break);
+  auto* token = BlockBreakToken::CreateBreakBefore(child, is_forced_break,
+                                                   oof_start_offset);
   child_break_tokens_.push_back(token);
 }
 
@@ -587,7 +590,8 @@ void BoxFragmentBuilder::PropagateBreakInfo(
     DCHECK(!child_layout_result.GetColumnSpannerPath());
   }
 
-  if (!child_box_fragment->IsFragmentainerBox() &&
+  if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+      !child_box_fragment->IsFragmentainerBox() &&
       !HasOutOfFlowInFragmentainerSubtree()) {
     SetHasOutOfFlowInFragmentainerSubtree(
         child_box_fragment->HasOutOfFlowInFragmentainerSubtree());
@@ -726,6 +730,7 @@ const LayoutResult* BoxFragmentBuilder::ToBoxFragment(
 void BoxFragmentBuilder::AdjustFragmentainerDescendant(
     LogicalOofNodeForFragmentation& descendant,
     bool only_fixedpos_containing_block) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   LayoutUnit previous_consumed_block_size;
   if (PreviousBreakToken())
     previous_consumed_block_size = PreviousBreakToken()->ConsumedBlockSize();
@@ -754,6 +759,7 @@ void BoxFragmentBuilder::AdjustFragmentainerDescendant(
 
 void BoxFragmentBuilder::
     AdjustFixedposContainingBlockForFragmentainerDescendants() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (!HasOutOfFlowFragmentainerDescendants())
     return;
 
@@ -764,6 +770,7 @@ void BoxFragmentBuilder::
 }
 
 void BoxFragmentBuilder::AdjustFixedposContainingBlockForInnerMulticols() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (!HasMulticolsWithPendingOOFs() || !PreviousBreakToken())
     return;
 

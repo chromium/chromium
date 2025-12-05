@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/layout/table/table_fragment_data.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -574,7 +575,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
 
    public:
     explicit MutableForOofFragmentation(const PhysicalBoxFragment& fragment)
-        : fragment_(const_cast<PhysicalBoxFragment&>(fragment)) {}
+        : fragment_(const_cast<PhysicalBoxFragment&>(fragment)) {
+      DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    }
 
     // Merge relevant parts of the specified fragmentainer into this one. This
     // means that all children will be copied over, and they will all be assumed

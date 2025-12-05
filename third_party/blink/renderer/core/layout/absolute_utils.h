@@ -179,6 +179,7 @@ ComputeIMCBForPositionFallback(const LogicalSize& available_size,
 // Will return true if |BlockNode::ComputeMinMaxSizes| was called.
 CORE_EXPORT bool ComputeOofInlineDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,
@@ -194,6 +195,7 @@ CORE_EXPORT bool ComputeOofInlineDimensions(
 // otherwise it will return nullptr.
 CORE_EXPORT const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode&,
+    const BlockBreakToken*,
     const ComputedStyle& style,
     const ConstraintSpace&,
     const InsetModifiedContainingBlock&,

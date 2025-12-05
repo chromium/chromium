@@ -487,13 +487,14 @@ PhysicalFragment::OofData* PhysicalFragment::OofDataFromBuilder(
     }
     oof_data->OofPositionedDescendants().reserve(
         builder->oof_positioned_descendants_.size());
-    for (const auto& descendant : builder->oof_positioned_descendants_) {
+    for (const LogicalOofPositionedNode& descendant :
+         builder->oof_positioned_descendants_) {
       OofInlineContainer<PhysicalOffset> inline_container(
           descendant.inline_container.container,
           converter.ToPhysical(descendant.inline_container.relative_offset,
                                PhysicalSize()));
       oof_data->OofPositionedDescendants().emplace_back(
-          descendant.Node(),
+          descendant.Node(), descendant.break_token,
           descendant.static_position.ConvertToPhysical(converter),
           descendant.requires_content_before_breaking, inline_container);
     }

@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/layout/style_variant.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -237,6 +238,8 @@ class CORE_EXPORT FragmentBuilder {
   void AddOutOfFlowChildCandidate(const BlockNode&,
                                   const LogicalStaticPosition&,
                                   bool allow_top_layer_nodes = false);
+  void AddOutOfFlowChildCandidate(const BlockNode& child,
+                                  const BlockBreakToken& child_break_token);
 
   // This should only be used for inline-level OOF-positioned nodes.
   // |inline_container_writing_direction| is the current writing mode direction
@@ -340,6 +343,7 @@ class CORE_EXPORT FragmentBuilder {
 
   void SetHasOutOfFlowInFragmentainerSubtree(
       bool has_out_of_flow_in_fragmentainer_subtree) {
+    DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     has_out_of_flow_in_fragmentainer_subtree_ =
         has_out_of_flow_in_fragmentainer_subtree;
   }

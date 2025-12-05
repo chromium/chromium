@@ -10,11 +10,13 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/constraint_space.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
+#include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/static_position.h"
 #include "third_party/blink/renderer/core/layout/length_utils.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -656,6 +658,7 @@ InsetModifiedContainingBlock ComputeIMCBForPositionFallback(
 
 bool ComputeOofInlineDimensions(
     const BlockNode& node,
+    const BlockBreakToken* break_token,
     const ComputedStyle& style,
     const ConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
@@ -693,10 +696,9 @@ bool ComputeOofInlineDimensions(
     // Compute our block-size if we haven't already.
     if (dimensions->size.block_size == kIndefiniteSize) {
       ComputeOofBlockDimensions(
-          node, style, space, imcb, anchor_center_position, alignment,
-          border_padding,
-          /* replaced_size */ std::nullopt, container_insets,
-          container_writing_direction, dimensions);
+          node, break_token, style, space, imcb, anchor_center_position,
+          alignment, border_padding, /*replaced_size=*/std::nullopt,
+          container_insets, container_writing_direction, dimensions);
     }
 
     // Create a new space, setting the fixed block-size.
@@ -814,6 +816,7 @@ bool ComputeOofInlineDimensions(
 
 const LayoutResult* ComputeOofBlockDimensions(
     const BlockNode& node,
+    const BlockBreakToken* break_token,
     const ComputedStyle& style,
     const ConstraintSpace& space,
     const InsetModifiedContainingBlock& imcb,
@@ -877,6 +880,19 @@ const LayoutResult* ComputeOofBlockDimensions(
           space, node, /*fragmentainer_offset_delta=*/LayoutUnit(),
           space.FragmentainerBlockSize(),
           /*requires_content_before_breaking=*/false, &builder);
+    }
+
+    // The block-size estimate here is made without taking block fragmentation
+    // into consideration. Disable side-effects for subsequent fragments, or the
+    // result would be (over-)written back into LayoutBox at index 0 (since
+    // we're pretending not to be block-fragmented).
+    //
+    // TODO(crbug.com/40267498): Maybe we really shouldn't be here more than
+    // once per node, and not visit for every fragment?
+    std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+    if (break_token && !break_token->IsBreakBefore() &&
+        RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      disable_side_effects.emplace();
     }
 
     result = node.Layout(builder.ToConstraintSpace());

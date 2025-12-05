@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/geometry/physical_size.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -706,6 +707,8 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
   // return true for all fragments in the chain from the OOF's CB to the
   // fragmentainer that the CB resides in.
   bool HasOutOfFlowInFragmentainerSubtree() const {
+    DCHECK(!has_out_of_flow_in_fragmentainer_subtree_ ||
+           !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
     return has_out_of_flow_in_fragmentainer_subtree_;
   }
 

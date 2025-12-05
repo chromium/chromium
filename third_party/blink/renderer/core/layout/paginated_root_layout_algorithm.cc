@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/layout/pagination_utils.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -99,16 +100,23 @@ const LayoutResult* PaginatedRootLayoutAlgorithm::Layout() {
       /*intrinsic_size=*/LayoutUnit(), kIndefiniteSize);
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  OutOfFlowLayoutPart oof_part(&container_builder_);
-  oof_part.SetChildFragmentStorage(&page_containers);
-  oof_part.Run();
+  bool needs_another_pass;
+  if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    needs_another_pass = needs_total_page_count;
+  } else {
+    OutOfFlowLayoutPart oof_part(&container_builder_);
+    oof_part.SetChildFragmentStorage(&page_containers);
+    oof_part.Run();
 
-  // It's possible that none of the pages created for regular in-flow layout
-  // needed to know the total page count, but that some page created by the
-  // OOFery needs it.
-  needs_total_page_count |= oof_part.NeedsTotalPageCount();
+    // It's possible that none of the pages created for regular in-flow layout
+    // needed to know the total page count, but that some page created by the
+    // OOFery needs it.
+    needs_total_page_count |= oof_part.NeedsTotalPageCount();
+    needs_another_pass =
+        needs_total_page_count || oof_part.AdditionalPagesWereAdded();
+  }
 
-  if (needs_total_page_count || oof_part.AdditionalPagesWereAdded()) {
+  if (needs_another_pass) {
     // At least one of the pages outputs the total page count (which was unknown
     // at the time of layout, since we hadn't counted yet). Now that we have
     // laid out all pages, we finally know the total page count. Go back and
@@ -160,6 +168,7 @@ const PhysicalBoxFragment& PaginatedRootLayoutAlgorithm::CreateEmptyPage(
     wtf_size_t page_index,
     const PhysicalBoxFragment& previous_fragmentainer,
     bool* needs_total_page_count) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   const BlockBreakToken* break_token = previous_fragmentainer.GetBreakToken();
   PageAreaLayoutParams page_area_params = {
       .break_token = break_token,

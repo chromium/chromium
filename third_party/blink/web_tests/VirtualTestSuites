@@ -1453,6 +1453,26 @@
     "expires": "Jun 1, 2025"
   },
   {
+    "prefix": "fragmented-oof-in-cb",
+    "owners": [ "mstensho@chromium.org" ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/css/css-anchor-position",
+      "external/wpt/css/css-break",
+      "external/wpt/css/css-multicol",
+      "external/wpt/css/css-page",
+      "fast/multicol",
+      "fragmentation",
+      "printing"
+    ],
+    "args": [ "--enable-blink-features=FragmentedOofInCb" ],
+    "expires": "May 17, 2026"
+  },
+  {
     "prefix": "fsa-incognito",
     "owners": [
       "asully@chromium.org",

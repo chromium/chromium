@@ -352,6 +352,10 @@ class FragmentPaintPropertyTreeBuilder {
           oof_context) const {
     context_.current = oof_context;
 
+    if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      return;
+    }
+
     // If we're not block-fragmented, simply setting a new context is all we
     // have to do.
     if (!oof_context.is_in_block_fragmentation)
@@ -3988,7 +3992,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   // to determine whether we need to initialize paint properties for this
   // object.
   const bool is_in_fragment_container =
-      pre_paint_info_ &&
+      !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() && pre_paint_info_ &&
       pre_paint_info_->fragmentainer_is_oof_containing_block &&
       IsA<LayoutBox>(object_) &&
       (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);

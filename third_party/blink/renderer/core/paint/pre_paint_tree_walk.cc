@@ -48,6 +48,7 @@ bool IsLinkHighlighted(const LayoutObject& object) {
 }
 
 bool IsInFragmentationContext(const PhysicalBoxFragment* fragment) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   return fragment && fragment->IsFragmentainerBox();
 }
 
@@ -427,7 +428,8 @@ PrePaintInfo PrePaintTreeWalk::CreatePrePaintInfo(
   return PrePaintInfo(fragment, child.offset, fragment->IsFirstForNode(),
                       !fragment->GetBreakToken(),
                       /* is_inside_fragment_child */ false,
-                      IsInFragmentationContext(context.current_container));
+                      !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+                          IsInFragmentationContext(context.current_container));
 }
 
 FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
@@ -571,7 +573,8 @@ void PrePaintTreeWalk::UpdateContextForOOFContainer(
   // contained by the object participates in the current block fragmentation
   // context. If we're not participating in block fragmentation, the containing
   // fragment of an OOF fragment is always simply the parent.
-  if (!IsInFragmentationContext(context.current_container) ||
+  if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() ||
+      !IsInFragmentationContext(context.current_container) ||
       (fragment && fragment->IsMonolithic())) {
     // Anonymous blocks are not allowed to be containing blocks, so we should
     // skip over any such elements.
@@ -726,7 +729,8 @@ const PhysicalBoxFragment* PrePaintTreeWalk::RebuildContextForMissedDescendant(
     PrePaintInfo pre_paint_info(
         box_fragment, paint_offset, /*is_first_for_node=*/false,
         /*is_last_for_node=*/false, /*is_inside_fragment_child=*/false,
-        IsInFragmentationContext(context.current_container));
+        !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+            IsInFragmentationContext(context.current_container));
 
     // We're going to set up paint properties for the missing ancestors, and
     // update the context, but it should have no side-effects. That is, the
@@ -1231,7 +1235,8 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
       PrePaintInfo pre_paint_info(
           box_fragment, paint_offset, is_first_for_node, is_last_for_node,
           is_inside_fragment_child,
-          IsInFragmentationContext(container_for_child));
+          !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+              IsInFragmentationContext(container_for_child));
       Walk(*child, context, &pre_paint_info);
     } else {
       Walk(*child, context, /* pre_paint_info */ nullptr);

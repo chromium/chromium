@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/layout/oof_positioned_node.h"
 
+#include "third_party/blink/renderer/core/layout/block_break_token.h"
+
 namespace blink {
 
 void PhysicalOofPositionedNode::Trace(Visitor* visitor) const {
@@ -17,6 +19,7 @@ void PhysicalOofPositionedNode::Trace(Visitor* visitor) const {
 
 void PhysicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box);
+  visitor->Trace(break_token);
   visitor->Trace(inline_container);
 }
 
@@ -31,6 +34,7 @@ void LogicalOofPositionedNode::Trace(Visitor* visitor) const {
 
 void LogicalOofPositionedNode::TraceAfterDispatch(Visitor* visitor) const {
   visitor->Trace(box);
+  visitor->Trace(break_token);
   visitor->Trace(inline_container);
 }
 

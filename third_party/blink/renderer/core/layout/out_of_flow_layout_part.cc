@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/column_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/disable_layout_side_effects_scope.h"
+#include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_layout_algorithm.h"
@@ -578,7 +579,8 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
     : container_builder_(container_builder),
       is_absolute_container_(container_builder->Node().IsAbsoluteContainer()),
       is_fixed_container_(container_builder->Node().IsFixedContainer()),
-      has_block_fragmentation_(
+      should_add_outer_fragmentainer_children_(
+          !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
           InvolvedInBlockFragmentation(*container_builder)) {
   // If there are no OOFs inside, we can return early, except if this is the
   // root. There may be top-layer nodes still to be added. Additionally, for
@@ -640,11 +642,12 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
 }
 
 void OutOfFlowLayoutPart::Run() {
-  if (container_builder_->IsPaginatedRoot()) {
-    PropagateOOFsFromPageAreas();
+  if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    if (container_builder_->IsPaginatedRoot()) {
+      PropagateOOFsFromPageAreas();
+    }
+    HandleFragmentation();
   }
-
-  HandleFragmentation();
 
   // If the container is display-locked, then we skip the layout of descendants,
   // so we can early out immediately.
@@ -660,7 +663,7 @@ void OutOfFlowLayoutPart::Run() {
 
   if (!candidates.empty()) {
     LayoutCandidates(candidates);
-  } else {
+  } else if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
     container_builder_
         ->AdjustFixedposContainingBlockForFragmentainerDescendants();
     container_builder_->AdjustFixedposContainingBlockForInnerMulticols();
@@ -692,15 +695,28 @@ void OutOfFlowLayoutPart::Run() {
       // With one top-layer node added, run through the machinery again. Note
       // that we need to do this separately for each node, as laying out a node
       // may cause top-layer nodes to be added or removed.
-      HandleFragmentation();
+      if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+        HandleFragmentation();
+      }
       candidates.Shrink(0);
       container_builder_->SwapOutOfFlowPositionedCandidates(&candidates);
       LayoutCandidates(candidates);
     }
   }
+
+  if (!repeated_fixed_pos_boxes_.empty() &&
+      !container_builder_->HasInsertedChildBreak()) {
+    DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    // This is the last page. Terminate any repeated fixed-pos boxes. The final
+    // fragments shouldn't have outgoing break tokens.
+    for (const Member<LayoutBox>& box : repeated_fixed_pos_boxes_) {
+      BlockNode(box).FinishRepeatableRoot();
+    }
+  }
 }
 
 void OutOfFlowLayoutPart::PropagateOOFsFromPageAreas() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK(container_builder_->IsPaginatedRoot());
   LogicalOffset offset_adjustment;
   for (wtf_size_t i = 0; i < ChildCount(); i++) {
@@ -718,6 +734,8 @@ void OutOfFlowLayoutPart::PropagateOOFsFromPageAreas() {
 }
 
 void OutOfFlowLayoutPart::HandleFragmentation() {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+
   // OOF fragmentation depends on LayoutBox data being up-to-date, which isn't
   // the case if side-effects are disabled. So we cannot safely do anything
   // here.
@@ -727,7 +745,7 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
 
   if (!column_balancing_info_ &&
       (!container_builder_->IsBlockFragmentationContextRoot() ||
-       has_block_fragmentation_)) {
+       should_add_outer_fragmentainer_children_)) {
     return;
   }
 
@@ -1037,6 +1055,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     const HeapVector<LogicalOofNodeForFragmentation>& descendants) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   struct InlineContainingBlockInfo {
     DISALLOW_NEW();
 
@@ -1279,17 +1298,18 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
 
 void OutOfFlowLayoutPart::LayoutCandidates(
     const HeapVector<LogicalOofPositionedNode>& candidates) {
-  if (!has_block_fragmentation_ ||
+  if (!should_add_outer_fragmentainer_children_ ||
       container_builder_->IsInitialColumnBalancingPass()) {
     ComputeInlineContainingBlocks(candidates);
   }
-  for (auto& candidate : candidates) {
+  for (const LogicalOofPositionedNode& candidate : candidates) {
     LayoutBox* layout_box = candidate.box;
     if (!container_builder_->IsBlockFragmentationContextRoot()) {
       SaveStaticPositionOnPaintLayer(layout_box, candidate.static_position);
     }
     if (IsContainingBlockForCandidate(candidate)) {
-      if (has_block_fragmentation_) {
+      if (should_add_outer_fragmentainer_children_) {
+        DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
         container_builder_->SetHasOutOfFlowInFragmentainerSubtree(true);
         if (!container_builder_->IsInitialColumnBalancingPass()) {
           LogicalOofNodeForFragmentation fragmentainer_descendant(candidate);
@@ -1302,11 +1322,40 @@ void OutOfFlowLayoutPart::LayoutCandidates(
         }
       }
 
+      bool is_inside_fragmentation_context =
+          InvolvedInBlockFragmentation(*container_builder_) &&
+          RuntimeEnabledFeatures::FragmentedOofInCbEnabled();
+
+      // TODO(crbug.com/40267498): Should CalculateOffset() be (fully or
+      // partially) avoided when resuming?
       NodeInfo node_info = SetupNodeInfo(candidate);
       NodeToLayout node_to_layout = {
           node_info,
-          CalculateOffset(node_info,
-                          /*is_inside_fragmentation_context=*/false)};
+          CalculateOffset(node_info, is_inside_fragmentation_context)};
+
+      const BlockBreakToken* break_token = node_info.break_token;
+      if (GetConstraintSpace().HasKnownFragmentainerBlockSize() &&
+          !IsBreakInside(break_token) &&
+          RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+        LayoutUnit space_left = FragmentainerSpaceLeft(
+            *container_builder_, /*is_for_children=*/true);
+        LayoutUnit block_overflow =
+            node_to_layout.offset_info.offset.block_offset - space_left;
+        if (block_overflow > LayoutUnit()) {
+          // The block offset is past the end of this fragmentainer, so the OOF
+          // needs to be pushed to a subsequent one. Also store the inline
+          // offset. The value may be based on the hypothetically static offset,
+          // and that one cannot be recomputed in a subsequent fragmentainer, so
+          // we need to carry it with us.
+          LogicalOffset start_inset(
+              node_to_layout.offset_info.offset.inline_offset, block_overflow);
+          container_builder_->AddBreakBeforeChild(
+              node_info.node, /*appeal=*/std::nullopt,
+              /*is_forced_break=*/false, start_inset);
+          continue;
+        }
+      }
+
       const LayoutResult* result = LayoutOOFNode(node_to_layout);
       PhysicalBoxStrut physical_margins =
           node_to_layout.offset_info.node_dimensions.margins.ConvertToPhysical(
@@ -1320,6 +1369,27 @@ void OutOfFlowLayoutPart::LayoutCandidates(
       if (container_builder_->IsInitialColumnBalancingPass()) {
         container_builder_->PropagateTallestUnbreakableBlockSize(
             result->TallestUnbreakableBlockSize());
+      }
+
+      const auto& fragment =
+          To<PhysicalBoxFragment>(result->GetPhysicalFragment());
+      if (const BlockBreakToken* outgoing_break_token =
+              fragment.GetBreakToken()) {
+        if (outgoing_break_token->IsRepeated() &&
+            RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+          DCHECK_EQ(container_builder_->GetBoxType(),
+                    PhysicalFragment::kPageArea);
+          DCHECK(fragment.IsFixedPositioned());
+          // Keep track of all repeated fixed-positioned boxes (pagination).
+          // When we're done with all OOF descendants, and can tell whether this
+          // is going to be the last page or not, we'll terminate them if it's
+          // the last page. If we already know that there'll be more pages,
+          // though, there's no need for this.
+          if (!container_builder_->HasInsertedChildBreak()) {
+            repeated_fixed_pos_boxes_.push_back(
+                fragment.MutableOwnerLayoutBox());
+          }
+        }
       }
 
       // Sweep and lay out any candidates that might have been added as part of
@@ -1343,6 +1413,7 @@ void OutOfFlowLayoutPart::LayoutCandidates(
 
 void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
     BoxFragmentBuilder* container_builder) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (!container_builder->HasMulticolsWithPendingOOFs())
     return;
 
@@ -1374,6 +1445,7 @@ void OutOfFlowLayoutPart::HandleMulticolsWithPendingOOFs(
 void OutOfFlowLayoutPart::LayoutOOFsInMulticol(
     const BlockNode& multicol,
     const MulticolWithPendingOofs<LogicalOffset>* multicol_info) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   HeapVector<LogicalOofNodeForFragmentation> oof_nodes_to_layout;
   ClearCollectionScope<HeapVector<LogicalOofNodeForFragmentation>>
       oof_nodes_scope(&oof_nodes_to_layout);
@@ -1610,6 +1682,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
     LogicalOffset fragmentainer_progression,
     bool outer_context_has_fixedpos_container,
     HeapVector<MulticolChildInfo>* multicol_children) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   multicol_children_ = multicol_children;
   outer_context_has_fixedpos_container_ = outer_context_has_fixedpos_container;
   DCHECK(multicol_children_ || !outer_context_has_fixedpos_container_);
@@ -1860,7 +1933,11 @@ AnchorEvaluatorImpl OutOfFlowLayoutPart::CreateAnchorEvaluator(
 
   const AnchorMap* anchor_map = nullptr;
   const LayoutObject* actual_containing_block = nullptr;
-  if (is_inside_fragmentation_context) {
+  if (is_inside_fragmentation_context &&
+      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // TODO(crbug.com/40267498): Implement this.
+    return AnchorEvaluatorImpl(container_info.writing_direction);
+  } else if (is_inside_fragmentation_context) {
     // The containing block of the OOF is part of the fragmentation context
     // established by this container. Imagine that fragmentainers are stitched
     // together, for the purpose of calculating the bounding box of anchors.
@@ -1990,7 +2067,7 @@ OutOfFlowLayoutPart::NodeInfo OutOfFlowLayoutPart::SetupNodeInfo(
                   GetConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   containing_block, fixedpos_containing_block,
-                  fixedpos_inline_container,
+                  fixedpos_inline_container, oof_node.break_token,
                   oof_node.requires_content_before_breaking);
 }
 
@@ -2069,9 +2146,12 @@ const LayoutResult* OutOfFlowLayoutPart::LayoutOOFNode(
         // token, causing major confusion everywhere.
         //
         // [1] https://drafts.csswg.org/css-break/#varying-size-boxes
-        offset_info = CalculateOffset(
-            node_info,
-            /*is_inside_fragmentation_context=*/fragmentainer_constraint_space);
+        bool is_inside_fragmentation_context =
+            (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+             GetConstraintSpace().HasBlockFragmentation()) ||
+            fragmentainer_constraint_space;
+        offset_info =
+            CalculateOffset(node_info, is_inside_fragmentation_context);
       }
 
       layout_result = Layout(oof_node_to_layout, fragmentainer_constraint_space,
@@ -2543,6 +2623,19 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   static_position.offset +=
       node_info.containing_block.Offset() - container_rect.offset;
 
+  LayoutUnit previously_consumed_block_size;
+  const BlockBreakToken* container_break_token =
+      container_builder_->PreviousBreakToken();
+  if (container_break_token &&
+      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    previously_consumed_block_size = container_break_token->ConsumedBlockSize();
+  }
+
+  // Make the block-offset relative to the first fragment, in the stitched
+  // coordinate space. That's also the coordinate space in which insets are
+  // specified.
+  static_position.offset.block_offset += previously_consumed_block_size;
+
   // Convert to the candidate's writing-direction.
   static_position = static_position
                         .ConvertToPhysical({node_info.default_writing_direction,
@@ -2601,17 +2694,17 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   OffsetInfo offset_info;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
-      node_info.node, candidate_style, space, imcb, anchor_center_position,
-      alignment, border_padding, replaced_size, container_insets,
-      container_writing_direction, &node_dimensions);
+      node_info.node, node_info.break_token, candidate_style, space, imcb,
+      anchor_center_position, alignment, border_padding, replaced_size,
+      container_insets, container_writing_direction, &node_dimensions);
 
   // We may have already pre-computed our block-dimensions when determining
   // our min/max sizes, only run if needed.
   if (node_dimensions.size.block_size == kIndefiniteSize) {
     offset_info.initial_layout_result = ComputeOofBlockDimensions(
-        node_info.node, candidate_style, space, imcb, anchor_center_position,
-        alignment, border_padding, replaced_size, container_insets,
-        container_writing_direction, &node_dimensions);
+        node_info.node, node_info.break_token, candidate_style, space, imcb,
+        anchor_center_position, alignment, border_padding, replaced_size,
+        container_insets, container_writing_direction, &node_dimensions);
   }
 
   if (try_fit_available_space) {
@@ -2669,33 +2762,64 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       ToLogicalSize(container_physical_content_size,
                     candidate_writing_direction.GetWritingMode());
 
-  // Calculate the offsets.
-  const BoxStrut inset =
-      node_dimensions.inset.ConvertToPhysical(candidate_writing_direction)
-          .ConvertToLogical(node_info.default_writing_direction);
+  if (const BlockBreakToken* break_token = node_info.break_token) {
+    DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    // Calculate the offset for a resumed node.
+    //
+    // The inline offset is the same for every fragment.
+    offset_info.offset.inline_offset = break_token->OofInlineStartOffset();
+    if (break_token->IsRepeated()) {
+      // If the node is repeated, the block offset is also the same for every
+      // fragment.
+      offset_info.offset.block_offset = break_token->OofBlockStartOffset();
+    } else {
+      // We store the block offset for OOFs in the break token since they may
+      // not start in the first fragmentainer. Additionally, if there is any
+      // monolitic overflow from previous fragmentainers, and an OOF is to be
+      // resumed in this fragmentainer, we need to adjust the offset to account
+      // for such overflow as well. In all other cases, fragmented nodes resume
+      // at the block-start of the next fragmentainer.
+      LayoutUnit monolithic_overflow;
+      if (container_break_token) {
+        monolithic_overflow = container_break_token->MonolithicOverflow();
+      }
+      offset_info.offset.block_offset =
+          std::max(monolithic_overflow, break_token->OofBlockStartOffset());
+    }
+  } else {
+    // Calculate the offsets for the first fragment.
+    const BoxStrut inset =
+        node_dimensions.inset.ConvertToPhysical(candidate_writing_direction)
+            .ConvertToLogical(node_info.default_writing_direction);
 
-  // |inset| is relative to the container's padding-box. Convert this to being
-  // relative to the default container's border-box.
-  offset_info.offset = container_rect.offset;
-  offset_info.offset.inline_offset += inset.inline_start;
-  offset_info.offset.block_offset += inset.block_start;
+    // |inset| is relative to the container's padding-box. Convert this to being
+    // relative to the default container's border-box.
+    offset_info.offset = container_rect.offset;
+    offset_info.offset.inline_offset += inset.inline_start;
+    offset_info.offset.block_offset += inset.block_start;
 
-  // Calculate the absolutized insets to be stored on |LayoutResult|.
-  // |node_dimensions.inset| doesn't include margins, but |insets| do. We add
-  // margins into |used_insets| for the calculation, and then remove them at the
-  // end.
-  const BoxStrut used_insets = node_dimensions.inset - node_dimensions.margins;
-  BoxStrut insets_to_store;
-  insets_to_store.inline_start =
-      insets.inline_start.value_or(used_insets.inline_start);
-  insets_to_store.inline_end =
-      insets.inline_end.value_or(used_insets.inline_end);
-  insets_to_store.block_start =
-      insets.block_start.value_or(used_insets.block_start);
-  insets_to_store.block_end = insets.block_end.value_or(used_insets.block_end);
-  offset_info.insets_for_get_computed_style =
-      insets_to_store.ConvertToPhysical(candidate_writing_direction)
-          .ConvertToLogical(node_info.default_writing_direction);
+    // Make it relative to the current containing block fragment.
+    offset_info.offset.block_offset -= previously_consumed_block_size;
+
+    // Calculate the absolutized insets to be stored on |LayoutResult|.
+    // |node_dimensions.inset| doesn't include margins, but |insets| do. We add
+    // margins into |used_insets| for the calculation, and then remove them at
+    // the end.
+    const BoxStrut used_insets =
+        node_dimensions.inset - node_dimensions.margins;
+    BoxStrut insets_to_store;
+    insets_to_store.inline_start =
+        insets.inline_start.value_or(used_insets.inline_start);
+    insets_to_store.inline_end =
+        insets.inline_end.value_or(used_insets.inline_end);
+    insets_to_store.block_start =
+        insets.block_start.value_or(used_insets.block_start);
+    insets_to_store.block_end =
+        insets.block_end.value_or(used_insets.block_end);
+    offset_info.insets_for_get_computed_style =
+        insets_to_store.ConvertToPhysical(candidate_writing_direction)
+            .ConvertToLogical(node_info.default_writing_direction);
+  }
 
   bool anchor_center_x = anchor_center_position.inline_offset.has_value();
   bool anchor_center_y = anchor_center_position.block_offset.has_value();
@@ -2721,6 +2845,8 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   // layout pass, if needed. Also do this if we're inside repeatable content, as
   // the pre-computed layout result is unusable then.
   if (fragmentainer_constraint_space ||
+      (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+       GetConstraintSpace().HasBlockFragmentation()) ||
       GetConstraintSpace().IsInsideRepeatableContent()) {
     layout_result = nullptr;
   }
@@ -2754,6 +2880,22 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
       offset_info.display_locks_affected_by_anchors);
 
+  const auto& fragment =
+      To<PhysicalBoxFragment>(layout_result->GetPhysicalFragment());
+  const BlockBreakToken* break_token = fragment.GetBreakToken();
+  if (break_token && RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // If the node is to generate more fragments, store the inline offset on the
+    // outgoing break token. In case the offset is based on the static position,
+    // it cannot be recomputed in the next fragmentainer.
+    auto mutator = break_token->GetMutableForOofFragmentation();
+    mutator.SetInlineStartOffset(offset_info.offset.inline_offset);
+    if (break_token->IsRepeated()) {
+      // When the node is repeated, the block offset also needs to be the same
+      // on every page.
+      mutator.SetBlockStartOffset(offset_info.offset.block_offset);
+    }
+  }
+
   const BlockNode& node = oof_node_to_layout.node_info.node;
 
   UpdatePositionVisibilityAfterLayout(offset_info, node,
@@ -2764,9 +2906,30 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
 
 bool OutOfFlowLayoutPart::IsContainingBlockForCandidate(
     const LogicalOofPositionedNode& candidate) {
-  // Fragmentainers are not allowed to be containing blocks.
+  if (container_builder_->GetBoxType() == PhysicalFragment::kPageArea &&
+      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // Page areas are fragmentainers into which the very document root is
+    // fragmented. Nothing document-specific exists on the outside of those. So
+    // they need to contain all OOFs that are not contained by something further
+    // down the tree.
+    return true;
+  }
+
+  // Other types of fragmentainers are not allowed to be containing blocks.
   if (container_builder_->IsFragmentainerBoxType())
     return false;
+
+  if (candidate.break_token && !candidate.break_token->IsForcedBreak()) {
+    // This OOF node was discovered in an earlier fragmentainer and is now
+    // resumed. Its break token is a direct child of the break token of its
+    // containing block. We are at the containing block now. No need to check
+    // any further. Besides, the inline container check below would always fail,
+    // since we don't bother to set up `inline_container` stuff when
+    // resuming. Forced breaks are excluded here, as those may not have bubbled
+    // up to their containing block.
+    DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+    return true;
+  }
 
   EPosition position = candidate.Node().Style().GetPosition();
 
@@ -2810,6 +2973,10 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   LogicalSize available_size =
       ToLogicalSize(physical_size, GetConstraintSpace().GetWritingMode());
   bool is_repeatable = false;
+  bool is_in_block_fragmentation =
+      (RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
+       GetConstraintSpace().HasBlockFragmentation()) ||
+      fragmentainer_constraint_space;
 
   ConstraintSpaceBuilder builder(GetConstraintSpace(),
                                  style.GetWritingDirection(),
@@ -2826,11 +2993,11 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
   // words, in that case, we may have to lay out, calculate the offset, and then
   // lay out again at the correct block-offset.
   if (offset_info.block_estimate.has_value() &&
-      (!fragmentainer_constraint_space || !offset_info.initial_layout_result)) {
+      (!is_in_block_fragmentation || !offset_info.initial_layout_result)) {
     builder.SetIsFixedBlockSize(true);
   }
 
-  if (fragmentainer_constraint_space) {
+  if (is_in_block_fragmentation) {
     if (container_builder_->Node().IsPaginatedRoot() &&
         style.GetPosition() == EPosition::kFixed &&
         !oof_node_to_layout.containing_block_fragment) {
@@ -2850,11 +3017,20 @@ const LayoutResult* OutOfFlowLayoutPart::GenerateFragment(
       // should behave when contained by something with cloned box decorations.
       //
       // See https://github.com/w3c/csswg-drafts/issues/10553
-      SetupSpaceBuilderForFragmentation(
-          *fragmentainer_constraint_space, node,
-          fragmentainer_constraint_space->FragmentainerOffset() + block_offset,
-          fragmentainer_constraint_space->FragmentainerBlockSize(),
-          node_info.requires_content_before_breaking, &builder);
+
+      if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+        DCHECK(!fragmentainer_constraint_space);
+        SetupSpaceBuilderForFragmentation(*container_builder_, node,
+                                          block_offset, &builder);
+      } else {
+        DCHECK(fragmentainer_constraint_space);
+        SetupSpaceBuilderForFragmentation(
+            *fragmentainer_constraint_space, node,
+            fragmentainer_constraint_space->FragmentainerOffset() +
+                block_offset,
+            fragmentainer_constraint_space->FragmentainerBlockSize(),
+            node_info.requires_content_before_breaking, &builder);
+      }
 
       // Out-of-flow positioned elements whose containing block is inside
       // clipped overflow shouldn't generate any additional fragmentainers. Just
@@ -2898,6 +3074,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
     LayoutUnit* monolithic_overflow,
     bool* has_actual_break_inside,
     HeapVector<NodeToLayout>* fragmented_descendants) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   wtf_size_t num_children = ChildCount();
   bool is_new_fragment = index >= num_children;
   bool is_last_fragmentainer_so_far = index + 1 >= num_children;
@@ -3022,6 +3199,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
     bool* has_actual_break_inside,
     SimplifiedOofLayoutAlgorithm* algorithm,
     HeapVector<NodeToLayout>* fragmented_descendants) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   const LayoutResult* result = LayoutOOFNode(descendant, fragmentainer_space,
                                              is_last_fragmentainer_so_far);
   DCHECK_EQ(result->Status(), LayoutResult::kSuccess);
@@ -3140,6 +3318,7 @@ void OutOfFlowLayoutPart::AddOOFToFragmentainer(
 
 ConstraintSpace OutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
     wtf_size_t index) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK_LT(index, ChildCount());
   const PhysicalBoxFragment& fragment = GetChildFragment(index);
   DCHECK(fragment.IsFragmentainerBox());
@@ -3172,6 +3351,7 @@ void OutOfFlowLayoutPart::ComputeStartFragmentIndexAndRelativeOffset(
     std::optional<LayoutUnit> clipped_container_block_offset,
     wtf_size_t* start_index,
     LogicalOffset* offset) const {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   // The sum of all previous fragmentainers' block size.
   LayoutUnit used_block_size;
   // The sum of all previous fragmentainers' block size + the current one.
@@ -3252,6 +3432,7 @@ void OutOfFlowLayoutPart::SaveStaticPositionOnPaintLayer(
 
 const PhysicalBoxFragment& OutOfFlowLayoutPart::GetChildFragment(
     wtf_size_t index) const {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   const LogicalFragmentLink& link = FragmentationContextChildren()[index];
   if (!container_builder_->Node().IsPaginatedRoot()) {
     return To<PhysicalBoxFragment>(*link.get());
@@ -3262,6 +3443,7 @@ const PhysicalBoxFragment& OutOfFlowLayoutPart::GetChildFragment(
 
 const BlockBreakToken* OutOfFlowLayoutPart::PreviousFragmentainerBreakToken(
     wtf_size_t index) const {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   for (wtf_size_t i = index; i > 0; --i) {
     const PhysicalBoxFragment& previous_fragment = GetChildFragment(i - 1);
     if (previous_fragment.IsFragmentainerBox()) {

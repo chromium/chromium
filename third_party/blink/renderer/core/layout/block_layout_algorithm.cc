@@ -975,14 +975,8 @@ inline const LayoutResult* BlockLayoutAlgorithm::Layout(
     const BreakToken* child_break_token = entry.token;
 
     if (child.IsOutOfFlowPositioned()) {
-      // Out-of-flow fragmentation is a special step that takes place after
-      // regular layout, so we should never resume anything here. However, we
-      // may have break-before tokens, when a column spanner is directly
-      // followed by an OOF.
-      DCHECK(!child_break_token ||
-             (child_break_token->IsBlockType() &&
-              To<BlockBreakToken>(child_break_token)->IsBreakBefore()));
-      HandleOutOfFlowPositioned(previous_inflow_position, To<BlockNode>(child));
+      HandleOutOfFlowPositioned(previous_inflow_position, To<BlockNode>(child),
+                                To<BlockBreakToken>(child_break_token));
     } else if (child.IsFloating()) {
       HandleFloat(previous_inflow_position, To<BlockNode>(child),
                   To<BlockBreakToken>(child_break_token));
@@ -1556,7 +1550,18 @@ bool BlockLayoutAlgorithm::TryReuseFragmentsFromCache(
 
 void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
     const PreviousInflowPosition& previous_inflow_position,
-    BlockNode child) {
+    const BlockNode& child,
+    const BlockBreakToken* child_break_token) {
+#if DCHECK_IS_ON()
+  if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // Unless the above feature is enabled, out-of-flow fragmentation is a
+    // special step that takes place after regular layout, so we should never
+    // resume anything here. However, we may have break-before tokens, when a
+    // column spanner is directly followed by an OOF.
+    DCHECK(!child_break_token || child_break_token->IsBreakBefore());
+  }
+#endif
+
   if (GetConstraintSpace().HasBlockFragmentation()) {
     // Forced breaks cannot be specified directly on out-of-flow positioned
     // elements, but if the preceding block has a forced break after, we need to
@@ -1569,6 +1574,16 @@ void BlockLayoutAlgorithm::HandleOutOfFlowPositioned(
                                              /* is_forced_break*/ true);
       return;
     }
+  }
+
+  if (child_break_token && !child_break_token->IsForcedBreak() &&
+      RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    // This OOF is either being resumed (after a break inside), or has been
+    // attempted placed earlier, and therefore has the correct offsets stored on
+    // the break token (and running through the offset calculation code below
+    // would give incorrect results).
+    container_builder_.AddOutOfFlowChildCandidate(child, *child_break_token);
+    return;
   }
 
   DCHECK(child.IsOutOfFlowPositioned());

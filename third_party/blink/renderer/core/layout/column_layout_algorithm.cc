@@ -28,13 +28,16 @@
 #include "third_party/blink/renderer/core/layout/table/table_layout_utils.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 namespace {
 
 // An itinerary of multicol container parts to walk separately for layout. A
-// part is either a chunk of regular column content, or a column spanner.
+// part is either a chunk of regular column content, a column spanner, or a
+// fragmented out-of-flow positioned node (whose containing block is a
+// fragmented multicol container).
 class MulticolPartWalker {
   STACK_ALLOCATED();
 
@@ -45,16 +48,17 @@ class MulticolPartWalker {
 
    public:
     Entry() = default;
-    Entry(const BlockBreakToken* token, BlockNode spanner)
-        : break_token(token), spanner(spanner) {}
+    Entry(const BlockBreakToken* token, const BlockNode& descendant_node)
+        : break_token(token), descendant_node(descendant_node) {}
 
     // The incoming break token for the content to process, or null if we're at
     // the start.
     const BlockBreakToken* break_token = nullptr;
 
-    // The column spanner node to process, or null if we're dealing with regular
-    // column content.
-    BlockNode spanner = nullptr;
+    // The node to process (if this is either a column spanner or an out-of-flow
+    // positioned node contained by the multicol container), or null if we're
+    // dealing with regular column content.
+    BlockNode descendant_node = nullptr;
   };
 
   MulticolPartWalker(BlockNode multicol_container,
@@ -99,7 +103,7 @@ class MulticolPartWalker {
   void UpdateCurrent();
 
   Entry current_;
-  BlockNode spanner_ = nullptr;
+  BlockNode descendant_node_ = nullptr;
   BlockNode multicol_container_;
   const BlockBreakToken* parent_break_token_;
   const BlockBreakToken* next_column_token_ = nullptr;
@@ -124,7 +128,7 @@ void MulticolPartWalker::MoveToSpanner(
     const BlockBreakToken* next_column_token) {
   *this = MulticolPartWalker(multicol_container_, nullptr);
   DCHECK(spanner.IsColumnSpanAll());
-  spanner_ = spanner;
+  descendant_node_ = spanner;
   next_column_token_ = next_column_token;
   UpdateCurrent();
 }
@@ -158,30 +162,33 @@ void MulticolPartWalker::UpdateCurrent() {
       const auto* child_break_token =
           To<BlockBreakToken>(child_break_tokens[child_token_idx_].Get());
       if (child_break_token->InputNode() == multicol_container_) {
-        current_.spanner = nullptr;
+        current_.descendant_node = nullptr;
       } else {
-        current_.spanner = To<BlockNode>(child_break_token->InputNode());
-        DCHECK(current_.spanner.IsColumnSpanAll());
+        current_.descendant_node =
+            To<BlockNode>(child_break_token->InputNode());
+        DCHECK(current_.descendant_node.IsColumnSpanAll() ||
+               (current_.descendant_node.IsOutOfFlowPositioned() &&
+                RuntimeEnabledFeatures::FragmentedOofInCbEnabled()));
       }
       current_.break_token = child_break_token;
       return;
     }
   }
 
-  if (spanner_) {
-    current_ = Entry(/* break_token */ nullptr, spanner_);
+  if (descendant_node_) {
+    current_ = Entry(/* break_token */ nullptr, descendant_node_);
     return;
   }
 
   if (next_column_token_) {
-    current_ = Entry(next_column_token_, /* spanner */ nullptr);
+    current_ = Entry(next_column_token_, /*descendant_node=*/nullptr);
     return;
   }
 
   // The current entry is empty. That's only the case when we're at the very
   // start of the multicol container, or if we're past all children.
   DCHECK(!is_finished_);
-  DCHECK(!current_.spanner);
+  DCHECK(!current_.descendant_node);
   DCHECK(!current_.break_token);
 }
 
@@ -197,14 +204,14 @@ void MulticolPartWalker::MoveToNext() {
     }
   }
 
-  if (spanner_) {
-    LayoutInputNode next = spanner_.NextSibling();
+  if (descendant_node_) {
+    LayoutInputNode next = descendant_node_.NextSibling();
     // Otherwise, if there's a next spanner, we'll use that.
     if (next && next.IsColumnSpanAll()) {
-      spanner_ = To<BlockNode>(next);
+      descendant_node_ = To<BlockNode>(next);
       return;
     }
-    spanner_ = nullptr;
+    descendant_node_ = nullptr;
 
     // Otherwise, if we have column content to resume at, use that.
     if (next_column_token_)
@@ -508,6 +515,7 @@ const PhysicalBoxFragment& ColumnLayoutAlgorithm::CreateEmptyColumn(
     const BlockNode& node,
     const ConstraintSpace& parent_space,
     const PhysicalBoxFragment& previous_column) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   WritingMode writing_mode = parent_space.GetWritingMode();
   DCHECK(previous_column.IsColumnBox());
   const BlockBreakToken* break_token = previous_column.GetBreakToken();
@@ -568,7 +576,7 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
     // how we create a break token for the column content to resume at. With no
     // break token, we wouldn't be able to resume layout after the any initial
     // spanners.
-    if (!entry.spanner) {
+    if (!entry.descendant_node) {
       const LayoutResult* result =
           LayoutFragmentationContext(child_break_token, &margin_strut);
 
@@ -608,9 +616,22 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
       break;
     }
 
+    if (entry.descendant_node.IsOutOfFlowPositioned()) {
+      // Resumed out-of-flow positioned node whose containing block is this
+      // multicol container.
+      DCHECK(RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+      CHECK(child_break_token);
+      container_builder_.AddOutOfFlowChildCandidate(entry.descendant_node,
+                                                    *child_break_token);
+      walker.Next();
+      continue;
+    }
+
+    DCHECK(entry.descendant_node.IsColumnSpanAll());
+
     // Attempt to lay out one column spanner.
 
-    BlockNode spanner_node = entry.spanner;
+    BlockNode spanner_node = entry.descendant_node;
 
     // If this is the child we had previously determined to break before, do so
     // now and finish layout.
@@ -618,9 +639,11 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
         IsEarlyBreakTarget(*early_break_, container_builder_, spanner_node))
       break;
 
-    // Handle any OOF fragmentainer descendants that were found before the
-    // spanner.
-    OutOfFlowLayoutPart(&container_builder_).HandleFragmentation();
+    if (!RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+      // Handle any OOF fragmentainer descendants that were found before the
+      // spanner.
+      OutOfFlowLayoutPart(&container_builder_).HandleFragmentation();
+    }
     walker.UpdateNextColumnBreakToken(container_builder_.Children());
 
     BreakStatus break_status =
@@ -653,13 +676,15 @@ BreakStatus ColumnLayoutAlgorithm::LayoutChildren() {
         // Copy unhandled incoming break tokens, for the next (outer)
         // fragmentainer.
         container_builder_.AddBreakToken(entry.break_token);
-      } else if (entry.spanner) {
+      } else if (entry.descendant_node) {
+        CHECK(entry.descendant_node.IsColumnSpanAll());
         // Create break tokens for the spanners that were discovered (but not
         // handled) while laying out this (outer) fragmentainer, so that they
         // get resumed in the next one (or pushed again, if it won't fit there
         // either).
-        container_builder_.AddBreakBeforeChild(
-            entry.spanner, kBreakAppealPerfect, /* is_forced_break */ false);
+        container_builder_.AddBreakBeforeChild(entry.descendant_node,
+                                               kBreakAppealPerfect,
+                                               /*is_forced_break=*/false);
       }
     }
   } else {
@@ -956,6 +981,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
       if (!has_oof_fragmentainer_descendants && balance_columns &&
           FragmentedOofData::HasOutOfFlowPositionedFragmentainerDescendants(
               column)) {
+        DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
         has_oof_fragmentainer_descendants = true;
       }
 
@@ -1066,6 +1092,7 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutLine(
     // layout will affect column balancing in any way (without actually adding
     // the OOF results to the builder - this will be handled at a later point).
     if (has_oof_fragmentainer_descendants) {
+      DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
       // If, for example, the columns get split by a column spanner, the offset
       // of an OOF's containing block will be relative to the first
       // fragmentainer in the first line. However, we are only concerned about

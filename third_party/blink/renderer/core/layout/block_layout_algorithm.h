@@ -266,7 +266,9 @@ class CORE_EXPORT BlockLayoutAlgorithm
       PreviousInflowPosition*,
       const InlineBreakToken** inline_break_token_out);
 
-  void HandleOutOfFlowPositioned(const PreviousInflowPosition&, BlockNode);
+  void HandleOutOfFlowPositioned(const PreviousInflowPosition&,
+                                 const BlockNode&,
+                                 const BlockBreakToken*);
   void HandleFloat(const PreviousInflowPosition&,
                    BlockNode,
                    const BlockBreakToken*);

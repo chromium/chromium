@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_break_token.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -20,6 +21,7 @@ struct SameSizeAsBlockBreakToken : BreakToken {
   Member<LayoutBox> data;
   LayoutUnit consumed_block_size;
   LayoutUnit monolithic_overflow;
+  LogicalOffset oof_start_offset;
   unsigned sequence_number;
   unsigned numbers[1];
 };
@@ -72,6 +74,22 @@ BlockBreakToken::BlockBreakToken(PassKey key, BoxFragmentBuilder* builder)
   consumed_block_size_ = builder->consumed_block_size_;
   monolithic_overflow_ = builder->monolithic_overflow_;
   sequence_number_ = builder->sequence_number_;
+
+  // Place OOF break tokens first. They need to be visited before in-flow
+  // breaks, since the container will stop layout if resuming at an in-flow
+  // break causes another in-flow break. Note that since the OutOfFlowLayoutPart
+  // step is run after in-flow child layout, the OOF fragments themselves will
+  // still end up after in-flow siblings.
+  if (RuntimeEnabledFeatures::FragmentedOofInCbEnabled()) {
+    std::stable_sort(builder->child_break_tokens_.begin(),
+                     builder->child_break_tokens_.end(),
+                     [](const Member<const BreakToken>& a,
+                        const Member<const BreakToken>& b) {
+                       return !a->InputNode().IsOutOfFlowPositioned() <
+                              !b->InputNode().IsOutOfFlowPositioned();
+                     });
+  }
+
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     // SAFETY: `const_num_children_` ensures buffer access never goes out of
     // range.
@@ -85,6 +103,7 @@ BlockBreakToken::BlockBreakToken(PassKey key, LayoutInputNode node)
 
 void BlockBreakToken::MutableForOofFragmentation::Merge(
     const BlockBreakToken& new_break_token) {
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   if (LayoutUnit monolithic_overflow = new_break_token.MonolithicOverflow()) {
     DCHECK_GT(monolithic_overflow, LayoutUnit());
     break_token_.monolithic_overflow_ =
@@ -117,6 +136,12 @@ String BlockBreakToken::ToString(bool skip_node_info) const {
   if (is_at_block_end_) {
     string_builder.Append(" (at block-end)");
   }
+
+  if (oof_start_offset_ != LogicalOffset()) {
+    string_builder.Append(" oof-offset:");
+    string_builder.Append(oof_start_offset_.ToString());
+  }
+
   string_builder.Append(" consumed:");
   string_builder.Append(ConsumedBlockSize().ToString());
   string_builder.Append("px");

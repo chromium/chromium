@@ -2706,6 +2706,12 @@
       public: true,
     },
     {
+      // Generate layout fragments for out-of-flow positioned elements as
+      // children of their actual containing block - ALSO when inside block
+      // fragmentation, such as multicol. See crbug.com/40267498
+      name: "FragmentedOofInCb",
+    },
+    {
       name: "FreezeFramesOnVisibility",
       status: "experimental",
     },
