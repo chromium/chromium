@@ -47,8 +47,8 @@ namespace content {
 class WebContents;
 
 using BtmRedirectChainHandler =
-    base::RepeatingCallback<void(std::vector<BtmRedirectInfoPtr>,
-                                 BtmRedirectChainInfoPtr)>;
+    base::RepeatingCallback<void(std::vector<BtmRedirectPtr>,
+                                 BtmRedirectChainPtr)>;
 using BtmIssueHandler =
     base::RepeatingCallback<void(std::set<std::string> sites)>;
 using Btm3PcSettingsCallback = base::RepeatingCallback<bool()>;
@@ -80,7 +80,7 @@ class ClientBounceDetectionState {
 // redirect connecting the navigation to the currently-committed chain.
 // TODO: crbug.com/324573484 - rename to remove association with DIPS.
 using BtmNavigationStart =
-    std::variant<std::pair<GURL, ukm::SourceId>, BtmRedirectInfoPtr>;
+    std::variant<std::pair<GURL, ukm::SourceId>, BtmRedirectPtr>;
 
 // In case of a client-side redirect loop, we need to impose a limit on the
 // stored redirect chain to avoid boundless memory use. Past this limit,
@@ -110,13 +110,13 @@ class CONTENT_EXPORT BtmRedirectContext {
   // navigation. It will take into account the length and initial URL of the
   // current chain (without modifying it).
   void HandleUncommitted(BtmNavigationStart navigation_start,
-                         std::vector<BtmRedirectInfoPtr> server_redirects);
+                         std::vector<BtmRedirectPtr> server_redirects);
 
   // Either calls for termination of the in-progress redirect chain, with a
   // start of a new one, or extends it, according to the value of
   // `navigation_start`.
   void AppendCommitted(BtmNavigationStart navigation_start,
-                       std::vector<BtmRedirectInfoPtr> server_redirects,
+                       std::vector<BtmRedirectPtr> server_redirects,
                        const GURL& final_url,
                        ukm::SourceId final_source_id,
                        bool current_page_has_interaction);
@@ -153,11 +153,11 @@ class CONTENT_EXPORT BtmRedirectContext {
     return redirects_.size() + redirect_prefix_count_;
   }
 
-  const BtmRedirectInfo& operator[](size_t index) const {
+  const BtmRedirect& operator[](size_t index) const {
     return *redirects_.at(index);
   }
 
-  std::optional<std::pair<size_t, BtmRedirectInfo*>> GetRedirectInfoFromChain(
+  std::optional<std::pair<size_t, BtmRedirect*>> GetRedirectInfoFromChain(
       const std::string& site) const;
 
   // Return whether `site` had a user activation or authentication interaction
@@ -168,14 +168,14 @@ class CONTENT_EXPORT BtmRedirectContext {
   std::set<std::string> AllSitesWithUserActivationOrAuthn() const;
 
   // Returns the server redirects from the last navigation. Note that due to
-  // limitations in C++ the BtmRedirectInfo objects are unavoidably mutable.
+  // limitations in C++ the BtmRedirect objects are unavoidably mutable.
   // Clients MUST NOT modify them.
-  base::span<const BtmRedirectInfoPtr>
+  base::span<const BtmRedirectPtr>
   GetServerRedirectsSinceLastPrimaryPageChange() const;
 
  private:
-  void AppendClientRedirect(BtmRedirectInfoPtr client_redirect);
-  void AppendServerRedirects(std::vector<BtmRedirectInfoPtr> server_redirects);
+  void AppendClientRedirect(BtmRedirectPtr client_redirect);
+  void AppendServerRedirects(std::vector<BtmRedirectPtr> server_redirects);
   // Evicts the first redirect from the front of the in-progress redirect chain
   // if it exceeds its max allowed length of `kBtmRedirectChainMax`, and passes
   // any evicted redirects as partial chains to the `BtmRedirectChainHandler`.
@@ -194,7 +194,7 @@ class CONTENT_EXPORT BtmRedirectContext {
 
   // TODO(amaliev): Make redirects_ a circular queue to handle the memory bound
   // more gracefully.
-  std::vector<BtmRedirectInfoPtr> redirects_;
+  std::vector<BtmRedirectPtr> redirects_;
   std::set<std::string> redirectors_;
   // The number of redirects preceding this chain, that should be counted toward
   // this chain's total length. Includes both committed redirects (for an
@@ -212,8 +212,8 @@ class CONTENT_EXPORT BtmBounceDetectorDelegate {
   virtual ~BtmBounceDetectorDelegate();
   virtual GURL GetLastCommittedURL() const = 0;
   virtual ukm::SourceId GetLastCommittedSourceId() const = 0;
-  virtual void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
-                                   BtmRedirectChainInfoPtr chain) = 0;
+  virtual void HandleRedirectChain(std::vector<BtmRedirectPtr> redirects,
+                                   BtmRedirectChainPtr chain) = 0;
   // Report `sites` as redirectors to the inspector (e.g., DevTools).
   virtual void ReportRedirectors(std::set<std::string> sites) = 0;
   virtual bool Are3PcsGenerallyEnabled() const = 0;
@@ -235,7 +235,7 @@ class CONTENT_EXPORT ServerBounceDetectionState
     const GURL destination_url;
   };
 
-  // A BtmRedirectInfoPtr if the navigation started with a client redirect; a
+  // A BtmRedirectPtr if the navigation started with a client redirect; a
   // UrlAndSourceId otherwise.
   BtmNavigationStart navigation_start;
   CookieAccessFilter filter;
@@ -382,8 +382,8 @@ class DelayedChainHandler {
   explicit DelayedChainHandler(BtmRedirectChainHandler handler);
   ~DelayedChainHandler();
 
-  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
-                           BtmRedirectChainInfoPtr chain);
+  void HandleRedirectChain(std::vector<BtmRedirectPtr> redirects,
+                           BtmRedirectChainPtr chain);
   [[nodiscard]] bool AddLateCookieAccess(const GURL& url, CookieOperation op);
   void HandlePreviousChainNow() {
     HandlePreviousChainNowImpl(/*timer_fired=*/false);
@@ -393,8 +393,7 @@ class DelayedChainHandler {
   void HandlePreviousChainNowImpl(bool timer_fired);
 
   BtmRedirectChainHandler handler_;
-  std::optional<
-      std::pair<std::vector<BtmRedirectInfoPtr>, BtmRedirectChainInfoPtr>>
+  std::optional<std::pair<std::vector<BtmRedirectPtr>, BtmRedirectChainPtr>>
       prev_chain_pair_;
   base::RetainingOneShotTimer timer_;
 };
@@ -417,8 +416,8 @@ class CONTENT_EXPORT RedirectChainDetector
     virtual void OnNavigationCommitted(NavigationHandle* navigation_handle) {}
     // Called when any redirect chain ends, including ones that end with an
     // uncommitted navigation.
-    virtual void OnRedirectChainEnded(const std::vector<BtmRedirectInfoPtr>&,
-                                      const BtmRedirectChainInfo&) {}
+    virtual void OnRedirectChainEnded(const std::vector<BtmRedirectPtr>&,
+                                      const BtmRedirectChain&) {}
     // Called before OnRedirectChainEnded() with set of redirector sites in the
     // chain, omitting the initial and final sites.
     // TODO(rtarpine) - replace with more general purpose method
@@ -451,8 +450,8 @@ class CONTENT_EXPORT RedirectChainDetector
   // BtmBounceDetectorDelegate overrides:
   GURL GetLastCommittedURL() const override;
   ukm::SourceId GetLastCommittedSourceId() const override;
-  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
-                           BtmRedirectChainInfoPtr chain) override;
+  void HandleRedirectChain(std::vector<BtmRedirectPtr> redirects,
+                           BtmRedirectChainPtr chain) override;
   void ReportRedirectors(std::set<std::string> sites) override;
   bool Are3PcsGenerallyEnabled() const override;
   // End BtmBounceDetectorDelegate overrides.
@@ -479,8 +478,8 @@ class CONTENT_EXPORT RedirectChainDetector
   void WebContentsDestroyed() override;
   // End WebContentsObserver overrides:
 
-  void NotifyOnRedirectChainEnded(std::vector<BtmRedirectInfoPtr> redirects,
-                                  BtmRedirectChainInfoPtr chain);
+  void NotifyOnRedirectChainEnded(std::vector<BtmRedirectPtr> redirects,
+                                  BtmRedirectChainPtr chain);
 
   BtmBounceDetector detector_;
   DelayedChainHandler delayed_handler_;
@@ -534,8 +533,8 @@ class CONTENT_EXPORT BtmWebContentsObserver
 
   // Start RedirectChainDetector::Observer overrides:
   void ReportRedirectors(const std::set<std::string>& sites) override;
-  void OnRedirectChainEnded(const std::vector<BtmRedirectInfoPtr>& redirects,
-                            const BtmRedirectChainInfo& chain) override;
+  void OnRedirectChainEnded(const std::vector<BtmRedirectPtr>& redirects,
+                            const BtmRedirectChain& chain) override;
   // End RedirectChainDetector::Observer overrides.
 
   // Start WebContentsObserver overrides:
@@ -571,12 +570,11 @@ ukm::SourceId GetRedirectSourceId(NavigationHandle* navigation_handle,
 CONTENT_EXPORT bool IsOrWasInPrimaryPage(RenderFrameHost& render_frame_host);
 
 // Sets the `has_3pc_exception` field of each element of `redirects`.
-CONTENT_EXPORT void Populate3PcExceptions(
-    BrowserContext* browser_context,
-    WebContents* web_contents,
-    const GURL& initial_url,
-    const GURL& final_url,
-    base::span<BtmRedirectInfoPtr> redirects);
+CONTENT_EXPORT void Populate3PcExceptions(BrowserContext* browser_context,
+                                          WebContents* web_contents,
+                                          const GURL& initial_url,
+                                          const GURL& final_url,
+                                          base::span<BtmRedirectPtr> redirects);
 
 // Checks whether third-party cookies are generally enabled within this browser
 // session.

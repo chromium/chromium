@@ -68,8 +68,8 @@ std::string FormatURL(const GURL& url) {
 }
 
 void AppendRedirect(std::vector<std::string>* redirects,
-                    const BtmRedirectInfo& redirect,
-                    const BtmRedirectChainInfo& chain) {
+                    const BtmRedirect& redirect,
+                    const BtmRedirectChain& chain) {
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect.chain_index.value() + 1,
       chain.length, FormatURL(chain.initial_url).c_str(),
@@ -91,8 +91,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   GURL GetLastCommittedURL() const override { return committed_url_; }
   ukm::SourceId GetLastCommittedSourceId() const override { return source_id_; }
 
-  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
-                           BtmRedirectChainInfoPtr chain) override {
+  void HandleRedirectChain(std::vector<BtmRedirectPtr> redirects,
+                           BtmRedirectChainPtr chain) override {
     chain->cookie_mode = BtmCookieMode::kBlock3PC;
     size_t redirect_index = chain->length - redirects.size();
 
@@ -172,8 +172,8 @@ class TestBounceDetectorDelegate : public BtmBounceDetectorDelegate {
   int stateful_bounce_count() const { return stateful_bounce_count_; }
 
  private:
-  void RecordBounce(const BtmRedirectInfo& redirect,
-                    const BtmRedirectChainInfo& chain) {
+  void RecordBounce(const BtmRedirect& redirect,
+                    const BtmRedirectChain& chain) {
     bool stateful = redirect.access_type > BtmDataAccessType::kRead;
 
     recorded_bounces_.insert(
@@ -1091,21 +1091,20 @@ TEST_F(BtmBounceDetectorTest, ClientCookieAccessDuringNavigation) {
   EXPECT_EQ(stateful_bounce_count(), 1);
 }
 
-using ChainPair =
-    std::pair<BtmRedirectChainInfoPtr, std::vector<BtmRedirectInfoPtr>>;
+using ChainPair = std::pair<BtmRedirectChainPtr, std::vector<BtmRedirectPtr>>;
 
 void AppendChainPair(std::vector<ChainPair>& vec,
-                     std::vector<BtmRedirectInfoPtr> redirects,
-                     BtmRedirectChainInfoPtr chain) {
+                     std::vector<BtmRedirectPtr> redirects,
+                     BtmRedirectChainPtr chain) {
   vec.emplace_back(std::move(chain), std::move(redirects));
 }
 
-std::vector<BtmRedirectInfoPtr> MakeServerRedirects(
+std::vector<BtmRedirectPtr> MakeServerRedirects(
     std::vector<std::string> urls,
     BtmDataAccessType access_type = BtmDataAccessType::kReadWrite) {
-  std::vector<BtmRedirectInfoPtr> redirects;
+  std::vector<BtmRedirectPtr> redirects;
   for (const auto& url : urls) {
-    redirects.push_back(BtmRedirectInfo::CreateForServer(
+    redirects.push_back(BtmRedirect::CreateForServer(
         /*redirector_url=*/GURL(url),
         /*redirector_source_id=*/ukm::AssignNewSourceId(),
         /*access_type=*/access_type,
@@ -1117,12 +1116,12 @@ std::vector<BtmRedirectInfoPtr> MakeServerRedirects(
   return redirects;
 }
 
-BtmRedirectInfoPtr MakeClientRedirect(
+BtmRedirectPtr MakeClientRedirect(
     std::string url,
     BtmDataAccessType access_type = BtmDataAccessType::kReadWrite,
     bool has_sticky_activation = false,
     bool has_web_authn_assertion = false) {
-  return BtmRedirectInfo::CreateForClient(
+  return BtmRedirect::CreateForClient(
       /*redirector_url=*/GURL(url),
       /*redirector_source_id=*/ukm::AssignNewSourceId(),
       /*access_type=*/access_type,
@@ -1327,7 +1326,7 @@ TEST(BtmRedirectContextTest, OverflowMaxChain_TrimsFromFront) {
               AllOf(HasUrl("http://0.test/"),
                     HasRedirectType(BtmRedirectType::kClient)));
 
-  // BtmRedirectChainInfo.length is computed from BtmRedirectInfo.index, so it
+  // BtmRedirectChain.length is computed from BtmRedirect.index, so it
   // includes the length of the partial chains.
   EXPECT_THAT(chains[1].first, AllOf(HasInitialUrl("http://a.test/"),
                                      HasFinalUrl("http://c.test/"),
@@ -1546,7 +1545,7 @@ TEST(BtmRedirectContextTest,
       /*redirect_prefix_count=*/0);
   ASSERT_EQ(context.size(), 0u);
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const BtmRedirectPtr> server_redirects =
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 0u);
@@ -1565,7 +1564,7 @@ TEST(BtmRedirectContextTest,
       {}, GURL("http://b.test/"), ukm::AssignNewSourceId(), false);
   ASSERT_EQ(context.size(), 1u);
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const BtmRedirectPtr> server_redirects =
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 0u);
@@ -1584,7 +1583,7 @@ TEST(BtmRedirectContextTest,
       GURL("http://d.test"), ukm::AssignNewSourceId(), false);
   ASSERT_EQ(context.size(), 2u);
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const BtmRedirectPtr> server_redirects =
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 2u);
@@ -1612,7 +1611,7 @@ TEST(
       {}, GURL("http://d.test/"), ukm::AssignNewSourceId(), false);
   ASSERT_EQ(context.size(), 2u);
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const BtmRedirectPtr> server_redirects =
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 0u);
@@ -1640,7 +1639,7 @@ TEST(
   ASSERT_EQ(context[1].redirect_type, BtmRedirectType::kClient);
   ASSERT_EQ(context[2].redirect_type, BtmRedirectType::kServer);
 
-  base::span<const BtmRedirectInfoPtr> server_redirects =
+  base::span<const BtmRedirectPtr> server_redirects =
       context.GetServerRedirectsSinceLastPrimaryPageChange();
 
   EXPECT_EQ(server_redirects.size(), 1u);

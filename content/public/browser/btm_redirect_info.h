@@ -34,17 +34,17 @@ enum class BtmDataAccessType {
 };
 
 // Properties of a redirect chain common to all the URLs within the chain.
-struct CONTENT_EXPORT BtmRedirectChainInfo {
+struct CONTENT_EXPORT BtmRedirectChain {
  public:
-  BtmRedirectChainInfo(const GURL& initial_url,
-                       ukm::SourceId initial_source_id,
-                       const GURL& final_url,
-                       ukm::SourceId final_source_id,
-                       size_t length,
-                       bool is_partial_chain,
-                       bool are_3pcs_generally_enabled);
-  BtmRedirectChainInfo(const BtmRedirectChainInfo&);
-  ~BtmRedirectChainInfo();
+  BtmRedirectChain(const GURL& initial_url,
+                   ukm::SourceId initial_source_id,
+                   const GURL& final_url,
+                   ukm::SourceId final_source_id,
+                   size_t length,
+                   bool is_partial_chain,
+                   bool are_3pcs_generally_enabled);
+  BtmRedirectChain(const BtmRedirectChain&);
+  ~BtmRedirectChain();
 
   // A randomly-generated ID to associate redirects within the same chain for
   // metrics reporting.
@@ -74,9 +74,9 @@ struct CONTENT_EXPORT BtmRedirectChainInfo {
 };
 
 // Properties of one URL within a redirect chain.
-struct CONTENT_EXPORT BtmRedirectInfo {
+struct CONTENT_EXPORT BtmRedirect {
  public:
-  static std::unique_ptr<BtmRedirectInfo> CreateForServer(
+  static std::unique_ptr<BtmRedirect> CreateForServer(
       const GURL& redirector_url,
       ukm::SourceId redirector_source_id,
       BtmDataAccessType access_type,
@@ -85,7 +85,7 @@ struct CONTENT_EXPORT BtmRedirectInfo {
       int response_code,
       base::TimeDelta server_bounce_delay);
 
-  static std::unique_ptr<BtmRedirectInfo> CreateForClient(
+  static std::unique_ptr<BtmRedirect> CreateForClient(
       const GURL& redirector_url,
       ukm::SourceId redirector_source_id,
       BtmDataAccessType access_type,
@@ -94,8 +94,8 @@ struct CONTENT_EXPORT BtmRedirectInfo {
       bool has_sticky_activation,
       bool web_authn_assertion_request_succeeded);
 
-  BtmRedirectInfo(const BtmRedirectInfo&);
-  ~BtmRedirectInfo();
+  BtmRedirect(const BtmRedirect&);
+  ~BtmRedirect();
 
   // These properties are required for all redirects:
 
@@ -116,7 +116,7 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   std::optional<bool> site_had_user_activation;
   std::optional<bool> site_had_webauthn_assertion;
   std::optional<size_t> chain_index;
-  // See BtmRedirectChainInfo::chain_id.
+  // See BtmRedirectChain::chain_id.
   std::optional<int32_t> chain_id;
   std::optional<bool> has_3pc_exception;
 
@@ -138,24 +138,24 @@ struct CONTENT_EXPORT BtmRedirectInfo {
   const base::TimeDelta server_bounce_delay;
 
  private:
-  BtmRedirectInfo(const GURL& redirector_url,
-                  ukm::SourceId redirector_source_id,
-                  BtmRedirectType redirect_type,
-                  BtmDataAccessType access_type,
-                  base::Time time,
-                  base::TimeDelta client_bounce_delay,
-                  bool has_sticky_activation,
-                  bool web_authn_assertion_request_succeeded,
-                  bool was_response_cached,
-                  int response_code,
-                  base::TimeDelta server_bounce_delay);
+  BtmRedirect(const GURL& redirector_url,
+              ukm::SourceId redirector_source_id,
+              BtmRedirectType redirect_type,
+              BtmDataAccessType access_type,
+              base::Time time,
+              base::TimeDelta client_bounce_delay,
+              bool has_sticky_activation,
+              bool web_authn_assertion_request_succeeded,
+              bool was_response_cached,
+              int response_code,
+              base::TimeDelta server_bounce_delay);
 };
 
-// a movable BtmRedirectInfo, essentially
-using BtmRedirectInfoPtr = std::unique_ptr<BtmRedirectInfo>;
+// a movable BtmRedirect, essentially
+using BtmRedirectPtr = std::unique_ptr<BtmRedirect>;
 
-// a movable BtmRedirectChainInfo, essentially
-using BtmRedirectChainInfoPtr = std::unique_ptr<BtmRedirectChainInfo>;
+// a movable BtmRedirectChain, essentially
+using BtmRedirectChainPtr = std::unique_ptr<BtmRedirectChain>;
 
 }  // namespace content
 

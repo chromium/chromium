@@ -80,12 +80,12 @@ inline void UmaHistogramTimeToBounce(base::TimeDelta sample) {
                           sample);
 }
 
-std::vector<BtmRedirectInfoPtr> CloneRedirects(
-    const std::vector<BtmRedirectInfoPtr>& redirects) {
-  std::vector<BtmRedirectInfoPtr> clones;
+std::vector<BtmRedirectPtr> CloneRedirects(
+    const std::vector<BtmRedirectPtr>& redirects) {
+  std::vector<BtmRedirectPtr> clones;
   clones.reserve(redirects.size());
   for (const auto& ptr : redirects) {
-    clones.push_back(std::make_unique<BtmRedirectInfo>(*ptr));
+    clones.push_back(std::make_unique<BtmRedirect>(*ptr));
   }
   return clones;
 }
@@ -211,8 +211,7 @@ BtmRedirectContext::BtmRedirectContext(
 
 BtmRedirectContext::~BtmRedirectContext() = default;
 
-void BtmRedirectContext::AppendClientRedirect(
-    BtmRedirectInfoPtr client_redirect) {
+void BtmRedirectContext::AppendClientRedirect(BtmRedirectPtr client_redirect) {
   DCHECK_EQ(client_redirect->redirect_type, BtmRedirectType::kClient);
   redirectors_.insert(client_redirect->site);
   redirects_.push_back(std::move(client_redirect));
@@ -220,7 +219,7 @@ void BtmRedirectContext::AppendClientRedirect(
 }
 
 void BtmRedirectContext::AppendServerRedirects(
-    std::vector<BtmRedirectInfoPtr> server_redirects) {
+    std::vector<BtmRedirectPtr> server_redirects) {
   for (auto& redirect : server_redirects) {
     DCHECK_EQ(redirect->redirect_type, BtmRedirectType::kServer);
     redirectors_.insert(redirect->site);
@@ -239,13 +238,13 @@ void BtmRedirectContext::MaybeTrimAndHandlePartialRedirectChain() {
 
   // Use an empty `final_url`. This processes the redirect as different from the
   // final URL, which allows recording in the BTM database.
-  auto chain = std::make_unique<BtmRedirectChainInfo>(
+  auto chain = std::make_unique<BtmRedirectChain>(
       initial_url_, initial_source_id_,
       /*final_url=*/GURL(),
       /*final_source_id=*/ukm::kInvalidSourceId, GetRedirectChainLength(),
       /*is_partial_chain=*/true, are_3pcs_generally_enabled_callback_.Run());
 
-  std::vector<BtmRedirectInfoPtr> redirect_subchain;
+  std::vector<BtmRedirectPtr> redirect_subchain;
   for (size_t ind = 0; ind < trim_count; ind++) {
     redirect_subchain.push_back(std::move(redirects_.at(ind)));
   }
@@ -272,7 +271,7 @@ void BtmRedirectContext::ReportIssue(const GURL& final_url) {
   redirectors_.clear();
 }
 
-std::optional<std::pair<size_t, BtmRedirectInfo*>>
+std::optional<std::pair<size_t, BtmRedirect*>>
 BtmRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
   // Iterate in reverse order to obtain the most recent occurrence of the site.
   for (int ind = redirects_.size() - 1; ind >= 0; ind--) {
@@ -318,11 +317,11 @@ std::set<std::string> BtmRedirectContext::AllSitesWithUserActivationOrAuthn()
   return sites;
 }
 
-base::span<const BtmRedirectInfoPtr>
+base::span<const BtmRedirectPtr>
 BtmRedirectContext::GetServerRedirectsSinceLastPrimaryPageChange() const {
   size_t index = size();
   for (; index > 0; --index) {
-    const BtmRedirectInfo& redirect = *redirects_.at(index - 1);
+    const BtmRedirect& redirect = *redirects_.at(index - 1);
     if (redirect.redirect_type != BtmRedirectType::kServer) {
       break;
     }
@@ -336,12 +335,12 @@ BtmRedirectContext::GetServerRedirectsSinceLastPrimaryPageChange() const {
 
 void BtmRedirectContext::HandleUncommitted(
     BtmNavigationStart navigation_start,
-    std::vector<BtmRedirectInfoPtr> server_redirects) {
+    std::vector<BtmRedirectPtr> server_redirects) {
   // Uncommitted navigations leave the user on the last-committed page; use that
   // for `final_url`.
   std::visit(
       absl::Overload{
-          [&](BtmRedirectInfoPtr client_redirect) {
+          [&](BtmRedirectPtr client_redirect) {
             // The uncommitted navigation began with a client redirect, so its
             // chain is considered an extension of *this*
             // `BtmRedirectContext`'s in-progress chain within the temp
@@ -387,7 +386,7 @@ void BtmRedirectContext::HandleUncommitted(
 
 void BtmRedirectContext::AppendCommitted(
     BtmNavigationStart navigation_start,
-    std::vector<BtmRedirectInfoPtr> server_redirects,
+    std::vector<BtmRedirectPtr> server_redirects,
     const GURL& final_url,
     ukm::SourceId final_source_id,
     bool current_page_has_interaction) {
@@ -396,7 +395,7 @@ void BtmRedirectContext::AppendCommitted(
   // chain. Otherwise, end it.
   std::visit(  //
       absl::Overload{
-          [this](BtmRedirectInfoPtr client_redirect) {
+          [this](BtmRedirectPtr client_redirect) {
             // The committed navigation began with a client redirect, so extend
             // the in-progress redirect chain.
             AppendClientRedirect(std::move(client_redirect));
@@ -422,7 +421,7 @@ void BtmRedirectContext::EndChain(GURL final_url,
                                   ukm::SourceId final_source_id,
                                   bool current_page_has_interaction) {
   if (!initial_url_.is_empty()) {
-    auto chain = std::make_unique<BtmRedirectChainInfo>(
+    auto chain = std::make_unique<BtmRedirectChain>(
         initial_url_, initial_source_id_, final_url, final_source_id,
         GetRedirectChainLength(),
         /*is_partial_chain=*/false, are_3pcs_generally_enabled_callback_.Run());
@@ -441,7 +440,7 @@ namespace {
 // `redirects`, and false otherwise.
 bool AddLateCookieAccess(const GURL& url,
                          CookieOperation op,
-                         std::vector<BtmRedirectInfoPtr>& redirects) {
+                         std::vector<BtmRedirectPtr>& redirects) {
   const size_t kMaxLookback = 5;
   const size_t lookback = std::min(kMaxLookback, redirects.size());
   for (size_t i = 1; i <= lookback; i++) {
@@ -549,7 +548,7 @@ void Populate3PcExceptions(BrowserContext* browser_context,
                            WebContents* web_contents,
                            const GURL& initial_url,
                            const GURL& final_url,
-                           base::span<BtmRedirectInfoPtr> redirects) {
+                           base::span<BtmRedirectPtr> redirects) {
   // For non-HTTP(S) URLs, we create a StorageKey with an empty URL. This
   // prevents IsFullCookieAccessAllowed() from returning true because the
   // initial or final URL has a non-HTTP(S) scheme. This is the desired behavior
@@ -567,7 +566,7 @@ void Populate3PcExceptions(BrowserContext* browser_context,
   });
 
   ContentBrowserClient* browser_client = GetContentClient()->browser();
-  for (BtmRedirectInfoPtr& redirect : redirects) {
+  for (BtmRedirectPtr& redirect : redirects) {
     redirect->has_3pc_exception =
         browser_client->IsFullCookieAccessAllowed(browser_context, web_contents,
                                                   redirect->redirector_url,
@@ -586,8 +585,8 @@ bool Are3PcsGenerallyEnabled(BrowserContext* browser_context,
 }  // namespace btm
 
 void RedirectChainDetector::HandleRedirectChain(
-    std::vector<BtmRedirectInfoPtr> redirects,
-    BtmRedirectChainInfoPtr chain) {
+    std::vector<BtmRedirectPtr> redirects,
+    BtmRedirectChainPtr chain) {
   // We have to set `has_3pc_exception` on each redirect before passing them to
   // the BtmService, because calculating it depends on the WebContents.
   btm::Populate3PcExceptions(web_contents()->GetBrowserContext(),
@@ -597,20 +596,20 @@ void RedirectChainDetector::HandleRedirectChain(
 }
 
 void RedirectChainDetector::NotifyOnRedirectChainEnded(
-    std::vector<BtmRedirectInfoPtr> redirects,
-    BtmRedirectChainInfoPtr chain) {
+    std::vector<BtmRedirectPtr> redirects,
+    BtmRedirectChainPtr chain) {
   for (auto& observer : observers_) {
     observer.OnRedirectChainEnded(redirects, *chain);
   }
 }
 
 void BtmWebContentsObserver::OnRedirectChainEnded(
-    const std::vector<BtmRedirectInfoPtr>& redirects,
-    const BtmRedirectChainInfo& chain) {
+    const std::vector<BtmRedirectPtr>& redirects,
+    const BtmRedirectChain& chain) {
   // We need to pass in a WeakPtr to BtmWebContentsObserver as it's not
   // guaranteed to outlive the call.
   btm_service_->HandleRedirectChain(
-      CloneRedirects(redirects), std::make_unique<BtmRedirectChainInfo>(chain),
+      CloneRedirects(redirects), std::make_unique<BtmRedirectChain>(chain),
       base::BindRepeating(&BtmWebContentsObserver::OnStatefulBounce,
                           weak_factory_.GetWeakPtr()));
 }
@@ -725,7 +724,7 @@ void BtmBounceDetector::DidStartNavigation(
   // immediately, because we don't know if the navigation will commit. We must
   // wait until DidFinishNavigation() is triggered.
   server_bounce_detection_state->navigation_start =
-      BtmRedirectInfo::CreateForClient(
+      BtmRedirect::CreateForClient(
           /*redirector_url=*/delegate_->GetLastCommittedURL(),
           /*redirector_source_id=*/delegate_->GetLastCommittedSourceId(),
           /*access_type=*/client_detection_state_->site_data_access_type,
@@ -951,8 +950,8 @@ void BtmBounceDetector::DidFinishNavigation(
     return;
   }
 
-  if (BtmRedirectInfoPtr* client_redirect =
-          std::get_if<BtmRedirectInfoPtr>(&server_state->navigation_start)) {
+  if (BtmRedirectPtr* client_redirect =
+          std::get_if<BtmRedirectPtr>(&server_state->navigation_start)) {
     if (prev_page_access_type.has_value()) {
       // In case there were any late storage notifications, update the client
       // redirect info.
@@ -960,7 +959,7 @@ void BtmBounceDetector::DidFinishNavigation(
     }
   }
 
-  std::vector<BtmRedirectInfoPtr> redirects;
+  std::vector<BtmRedirectPtr> redirects;
   std::vector<BtmDataAccessType> access_types;
 
   // Cookie accesses can race each other causing order of navigations to not
@@ -985,7 +984,7 @@ void BtmBounceDetector::DidFinishNavigation(
   CHECK_GT(access_types.size(), server_state->server_redirects.size());
   // Use the length difference between the redirect chain and number of server
   // redirects to calculate an offset. When creating instances of
-  // `BtmRedirectInfo`, we avoid earlier entries within the redirect chain.
+  // `BtmRedirect`, we avoid earlier entries within the redirect chain.
   size_t offset =
       access_types.size() - (server_state->server_redirects.size() + 1);
   for (size_t i = 0; i < server_state->server_redirects.size(); i++) {
@@ -996,7 +995,7 @@ void BtmBounceDetector::DidFinishNavigation(
     //
     // TODO(crbug.com/371802472): Add back the checks removed during
     // crrev.com/c/5912983 after investigating why the checks fail on Windows.
-    redirects.push_back(BtmRedirectInfo::CreateForServer(
+    redirects.push_back(BtmRedirect::CreateForServer(
         /*redirector_url=*/navigation_handle->GetRedirectChain()[i + offset],
         /*redirector_source_id=*/
         navigation_handle->GetRedirectSourceId(i + offset),
@@ -1020,7 +1019,7 @@ void BtmBounceDetector::DidFinishNavigation(
     // redirect, so it is considered a potential tracker.
     const size_t i = access_types.size() - 1;
     const GURL& last_url = navigation_handle->GetRedirectChain()[i];
-    redirects.push_back(BtmRedirectInfo::CreateForServer(
+    redirects.push_back(BtmRedirect::CreateForServer(
         /*redirector_url=*/last_url,
         /*redirector_source_id=*/
         navigation_handle->MakeRedirectSourceId(last_url),
@@ -1179,8 +1178,8 @@ DelayedChainHandler::DelayedChainHandler(BtmRedirectChainHandler handler)
 DelayedChainHandler::~DelayedChainHandler() = default;
 
 void DelayedChainHandler::HandleRedirectChain(
-    std::vector<BtmRedirectInfoPtr> redirects,
-    BtmRedirectChainInfoPtr chain) {
+    std::vector<BtmRedirectPtr> redirects,
+    BtmRedirectChainPtr chain) {
   HandlePreviousChainNow();
 
   prev_chain_pair_ = std::make_pair(std::move(redirects), std::move(chain));

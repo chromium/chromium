@@ -674,7 +674,7 @@ testing::AssertionResult SimulateBtmBounce(content::WebContents* web_contents,
                                        << final_observer.redirects()->size();
   }
 
-  const content::BtmRedirectInfo& redirect = *final_observer.redirects()->at(0);
+  const content::BtmRedirect& redirect = *final_observer.redirects()->at(0);
   if (redirect.redirector_url != bounce_url) {
     return testing::AssertionFailure() << "Expected redirect at " << bounce_url
                                        << "; found " << redirect.redirector_url;

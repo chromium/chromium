@@ -37,8 +37,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   using StatefulBounceCallback = base::RepeatingCallback<void(const GURL&)>;
 
   using RecordBounceCallback =
-      base::RepeatingCallback<void(const BtmRedirectInfo& redirect,
-                                   const BtmRedirectChainInfo& chain)>;
+      base::RepeatingCallback<void(const BtmRedirect& redirect,
+                                   const BtmRedirectChain& chain)>;
 
   BtmServiceImpl(base::PassKey<BrowserContextImpl>, BrowserContext* context);
   ~BtmServiceImpl() override;
@@ -47,8 +47,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
 
   base::SequenceBound<BtmStorage>* storage() { return &storage_; }
 
-  void RecordBounceForTesting(const BtmRedirectInfo& redirect,
-                              const BtmRedirectChainInfo& chain,
+  void RecordBounceForTesting(const BtmRedirect& redirect,
+                              const BtmRedirectChain& chain,
                               StatefulBounceCallback stateful_bounce_callback) {
     RecordBounce(stateful_bounce_callback, redirect, chain);
   }
@@ -66,8 +66,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
 
   // Processes a redirect chain to identify and record bounces. The main
   // entrypoint for the BTM feature to act on navigations.
-  void HandleRedirectChain(std::vector<BtmRedirectInfoPtr> redirects,
-                           BtmRedirectChainInfoPtr chain,
+  void HandleRedirectChain(std::vector<BtmRedirectPtr> redirects,
+                           BtmRedirectChainPtr chain,
                            StatefulBounceCallback stateful_bounce_callback);
 
   void RecordUserActivationForTesting(const GURL& url) override;
@@ -79,9 +79,8 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
 
   // This allows unit-testing the metrics recording without instantiating
   // BtmService. Just calls the internal RecordRedirectMetrics function.
-  static void RecordRedirectMetricsForTesting(
-      const BtmRedirectInfo& redirect,
-      const BtmRedirectChainInfo& chain);
+  static void RecordRedirectMetricsForTesting(const BtmRedirect& redirect,
+                                              const BtmRedirectChain& chain);
 
   void SetStorageClockForTesting(base::Clock* clock) {
     DCHECK(storage_);
@@ -118,14 +117,14 @@ class CONTENT_EXPORT BtmServiceImpl : public BtmService {
   std::unique_ptr<PersistentRepeatingTimer> CreateTimer();
 
   // Processes redirects to identify and record bounces.
-  void HandleRedirects(std::vector<BtmRedirectInfoPtr> redirects,
-                       BtmRedirectChainInfoPtr chain,
+  void HandleRedirects(std::vector<BtmRedirectPtr> redirects,
+                       BtmRedirectChainPtr chain,
                        StatefulBounceCallback stateful_bounce_callback,
                        std::pair<std::set<std::string>, std::set<std::string>>
                            sites_with_protective_events);
   void RecordBounce(StatefulBounceCallback stateful_bounce_callback,
-                    const BtmRedirectInfo& redirect,
-                    const BtmRedirectChainInfo& chain);
+                    const BtmRedirect& redirect,
+                    const BtmRedirectChain& chain);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunnerForResource(

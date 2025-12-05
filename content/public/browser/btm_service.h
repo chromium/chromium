@@ -40,9 +40,8 @@ class CONTENT_EXPORT BtmService : public base::SupportsUserData {
     virtual void OnStatefulBounce(WebContents* web_contents) {}
     // Called whenever the BtmService finishes handling a redirect chain (so
     // metadata for its redirects have been written to the DIPS database).
-    virtual void OnChainHandled(
-        const std::vector<BtmRedirectInfoPtr>& redirects,
-        const BtmRedirectChainInfoPtr& chain) {}
+    virtual void OnChainHandled(const std::vector<BtmRedirectPtr>& redirects,
+                                const BtmRedirectChainPtr& chain) {}
   };
 
   static BtmService* Get(BrowserContext* context);

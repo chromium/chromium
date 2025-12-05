@@ -129,8 +129,8 @@ std::string FormatURL(const GURL& url) {
 }
 
 void AppendRedirect(std::vector<std::string>* redirects,
-                    const BtmRedirectInfo& redirect,
-                    const BtmRedirectChainInfo& chain,
+                    const BtmRedirect& redirect,
+                    const BtmRedirectChain& chain,
                     size_t redirect_index) {
   redirects->push_back(base::StringPrintf(
       "[%zu/%zu] %s -> %s (%s) -> %s", redirect_index + 1, chain.length,
@@ -141,8 +141,8 @@ void AppendRedirect(std::vector<std::string>* redirects,
 }
 
 void AppendRedirects(std::vector<std::string>* vec,
-                     std::vector<BtmRedirectInfoPtr> redirects,
-                     BtmRedirectChainInfoPtr chain) {
+                     std::vector<BtmRedirectPtr> redirects,
+                     BtmRedirectChainPtr chain) {
   size_t redirect_index = chain->length - redirects.size();
   for (const auto& redirect : redirects) {
     AppendRedirect(vec, *redirect, *chain, redirect_index);
@@ -181,7 +181,7 @@ testing::AssertionResult WaitForRedirectCookieWrite(WebContents* web_contents,
   }
 
   // Make sure the last redirect was at the expected URL.
-  const BtmRedirectInfo& redirect =
+  const BtmRedirect& redirect =
       detector->CommittedRedirectContext()
           [detector->CommittedRedirectContext().size() - 1];
   if (redirect.redirector_url != redirect_url) {
@@ -3695,7 +3695,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
   const BtmRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const BtmRedirectInfo& redirect = context[0];
+  const BtmRedirect& redirect = context[0];
   EXPECT_EQ(redirect.redirector_url, bounce_url);
   // A request to /favicon.ico may cause a cookie read in addition to the write
   // we explicitly performed.
@@ -3781,7 +3781,7 @@ IN_PROC_BROWSER_TEST_P(BtmBounceDetectorBFCacheTest,
 
   const BtmRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const BtmRedirectInfo& redirect = context[0];
+  const BtmRedirect& redirect = context[0];
   EXPECT_EQ(redirect.redirector_url, bounce_url);
   EXPECT_THAT(redirect.has_sticky_activation, true);
 }
