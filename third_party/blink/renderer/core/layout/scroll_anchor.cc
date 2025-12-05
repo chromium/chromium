@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
 
 namespace blink {
@@ -147,8 +148,12 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     // returns (0, 0) when changes are made that |DeleteLineBoxes()| or clear
     // |SetPaintFragment()|, e.g., |SplitFlow()|. crbug.com/965352
     local_bounds.Unite(text->PhysicalLinesBoundingBox());
+
+  } else if (const auto* inline_layout =
+                 DynamicTo<LayoutInline>(layout_object)) {
+    local_bounds.Unite(inline_layout->PhysicalLinesBoundingBox());
   } else {
-    // Only LayoutBox and LayoutText are supported.
+    // Only LayoutBox, LayoutText and LayoutInline are supported.
     NOTREACHED();
   }
 
@@ -168,6 +173,22 @@ static LogicalOffset ComputeRelativeOffset(const LayoutObject* layout_object,
       CornerPointOfRect(RelativeBounds(layout_object, scroller), corner);
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller);
   return scroller_box->CreateWritingModeConverter().ToLogical(offset, {});
+}
+
+// Use parent element for text nodes to ensure consistency with
+// ComputeUniqueSelector(), which uses ElementTraversal::FirstAncestorOrSelf.
+static LogicalOffset ComputeRelativeOffsetForSerialization(
+    const LayoutObject* layout_object,
+    const ScrollableArea* scroller,
+    Corner corner) {
+  if (RuntimeEnabledFeatures::
+          ScrollAnchorSerializationUseParentForTextNodeEnabled() &&
+      layout_object->IsText()) {
+    layout_object = layout_object->NearestAncestorForElement();
+    DCHECK(layout_object);
+  }
+
+  return ComputeRelativeOffset(layout_object, scroller, corner);
 }
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
@@ -840,7 +861,8 @@ const SerializedAnchor ScrollAnchor::GetSerializedAnchor() {
   DCHECK(anchor_object_->GetNode());
   SerializedAnchor new_anchor(
       saved_selector_ ? saved_selector_ : ComputeUniqueSelector(anchor_object_),
-      ComputeRelativeOffset(anchor_object_, scroller_, corner_));
+      ComputeRelativeOffsetForSerialization(anchor_object_, scroller_,
+                                            corner_));
 
   if (saved_selector_.empty() && new_anchor.IsValid()) {
     saved_selector_ = new_anchor.selector;

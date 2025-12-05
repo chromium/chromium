@@ -4475,6 +4475,13 @@
       status: "stable",
     },
     {
+      // Use parent element for text node to compute relative offset when
+      // serializing scroll anchor to ensure consistency with
+      // ComputeUniqueSelector()
+      name: "ScrollAnchorSerializationUseParentForTextNode",
+      status: "stable",
+    },
+    {
       name: "ScrollbarColor",
       status: "stable",
     },

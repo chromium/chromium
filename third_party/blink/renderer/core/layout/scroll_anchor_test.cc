@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -526,6 +527,114 @@ TEST_F(ScrollAnchorTest, SerializeAnchorSimple) {
 
   ScrollLayoutViewport(ScrollOffset(0, 150));
   ValidateSerializedAnchor("#block2", LogicalOffset(0, -50));
+}
+
+TEST_F(ScrollAnchorTest, SerializeAnchorWithVariousLineHeights) {
+  ScopedScrollAnchorSerializationUseParentForTextNodeForTest
+      scroll_anchor_serialization(true);
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+        }
+        body { height: 2000px; }
+        p, div {
+          font-size: 20px;
+          width: 180px;
+        }
+        #line-height-normal {
+          height: 100px;
+          width: 200px;
+        }
+        #line-height-90 {
+          line-height: 90%;
+          height: 50px;
+        }
+        #line-height-200 {
+          line-height: 200%;
+          height: 100px;
+        }
+        #line-height-150 {
+          line-height: 150%;
+          height: 100px;
+        }
+        #line-span-200 {
+          line-height: 200%;
+        }
+      </style>
+      <p id="line-height-normal">
+        line-height-normal
+        line-height-normal
+      </p>
+      <p id="line-height-90">
+        line-height-90
+        line-height-90
+      </p>
+      <p id="line-height-200">
+        line-height-200
+        line-height-200
+      </p>
+      <!-- for text node's parent layout_object is anonymous.  -->
+      <div id="line-height-150">
+        line-height-150
+        <div>line-height-150</div>
+      </div>
+      <!-- for text node's parent layout_object is layout_inline.  -->
+      <p id="line-span-200">
+        <span>line-span-200</span>
+        <span>line-span-200</span>
+      </p>")HTML");
+
+  // scroll to (0, 10)
+  ScrollLayoutViewport(ScrollOffset(0, 10));
+  ValidateSerializedAnchor("#line-height-normal", LogicalOffset(0, -10));
+  // expect the anchor object to be the text node inside the paragraph
+  ScrollAnchor scroll_anchor = GetScrollAnchor(LayoutViewport());
+  EXPECT_TRUE(scroll_anchor.AnchorObject()->IsText());
+
+  // scroll to (0, 110)
+  ScrollLayoutViewport(ScrollOffset(0, 100));
+  ValidateSerializedAnchor("#line-height-90", LogicalOffset(0, -10));
+  // expect the anchor object to be the text node inside the paragraph
+  scroll_anchor = GetScrollAnchor(LayoutViewport());
+  EXPECT_TRUE(scroll_anchor.AnchorObject()->IsText());
+
+  // scroll to (0, 170)
+  ScrollLayoutViewport(ScrollOffset(0, 60));
+  ValidateSerializedAnchor("#line-height-200", LogicalOffset(0, -20));
+  // expect the anchor object to be the text node inside the paragraph
+  scroll_anchor = GetScrollAnchor(LayoutViewport());
+  EXPECT_TRUE(scroll_anchor.AnchorObject()->IsText());
+
+  // scroll to (0, 270)
+  ScrollLayoutViewport(ScrollOffset(0, 100));
+  ValidateSerializedAnchor("#line-height-150", LogicalOffset(0, -20));
+  // expect the anchor object to be the text node inside the div
+  scroll_anchor = GetScrollAnchor(LayoutViewport());
+  EXPECT_TRUE(scroll_anchor.AnchorObject()->IsText());
+
+  // scroll to (0, 370)
+  ScrollLayoutViewport(ScrollOffset(0, 100));
+  int scroll_y = 370;
+  // Because the PhysicalLinesBoundingBox of a span's LayoutObject is
+  // affected by the content, font, and line-height, its PhysicalRect offset is
+  // not always (0, 0). To simplify the calculation, we verify that the
+  // restored scroll position is correct.
+  scroll_anchor = GetScrollAnchor(LayoutViewport());
+  SerializedAnchor serialized_anchor = scroll_anchor.GetSerializedAnchor();
+  EXPECT_EQ(serialized_anchor.selector, "#line-span-200>:nth-child(1)");
+  // expect the anchor object to be the text node inside the paragraph
+  EXPECT_TRUE(scroll_anchor.AnchorObject()->IsText());
+
+  // scroll to (0, 0)
+  ScrollLayoutViewport(ScrollOffset(0, -scroll_y));
+  EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), 0);
+
+  // then restore the anchor
+  EXPECT_TRUE(
+      GetScrollAnchor(LayoutViewport()).RestoreAnchor(serialized_anchor));
+  EXPECT_EQ(LayoutViewport()->ScrollOffsetInt().y(), scroll_y);
 }
 
 TEST_F(ScrollAnchorTest, SerializeAnchorUsesTagname) {
