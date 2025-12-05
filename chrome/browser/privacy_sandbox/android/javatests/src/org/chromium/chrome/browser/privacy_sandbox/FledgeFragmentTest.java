@@ -74,7 +74,7 @@ import java.io.IOException;
 public final class FledgeFragmentTest {
     private static final String SITE_NAME_1 = "first.com";
     private static final String SITE_NAME_2 = "second.com";
-    private static final int RENDER_TEST_REVISION = 2;
+    private static final int RENDER_TEST_REVISION = 3;
     private String mSeeAllSitesLabel;
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -546,7 +546,11 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures({
+        ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY,
+        ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT
+    })
     public void testFooterTopicsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();
@@ -560,6 +564,8 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     @EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_AD_TOPICS_CONTENT_PARITY)
     public void testFooterTopicsLinkAdTopicsContentParity() throws IOException {
         setFledgePrefEnabled(true);
@@ -574,6 +580,8 @@ public final class FledgeFragmentTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testFooterCookieSettingsLink() throws IOException {
         setFledgePrefEnabled(true);
         startFledgeSettings();

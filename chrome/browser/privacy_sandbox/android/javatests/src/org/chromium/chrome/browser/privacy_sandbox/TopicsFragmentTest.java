@@ -75,7 +75,7 @@ import java.io.IOException;
 public final class TopicsFragmentTest {
     private static final String TOPIC_NAME_1 = "Topic 1";
     private static final String TOPIC_NAME_2 = "Topic 2";
-    private static final int RENDER_TEST_REVISION = 3;
+    private static final int RENDER_TEST_REVISION = 4;
     private String mBlockedTopicsHeadingText;
 
     @Rule public ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -377,6 +377,8 @@ public final class TopicsFragmentTest {
 
     @Test
     @SmallTest
+    // TODO(crbug.com/433576895): Re-enable containment feature once the test is fixed.
+    @DisableFeatures(ChromeFeatureList.ANDROID_SETTINGS_CONTAINMENT)
     public void testBlockTopics() {
         setTopicsPrefEnabled(true);
         mFakePrivacySandboxBridge.setCurrentTopTopics(TOPIC_NAME_1, TOPIC_NAME_2);
