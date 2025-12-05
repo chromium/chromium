@@ -315,6 +315,9 @@ BASE_DECLARE_FEATURE(kModifiedESBFetchErrorHandling);
 // security' page.
 BASE_DECLARE_FEATURE(kMovePasswordLeakDetectionToggleIos);
 
+// Enables the notice queue integration for the ESB notice.
+BASE_DECLARE_FEATURE(kNoticeQueueForEsb);
+
 // Enable the collection of Notification Telemetry to track potentially abusive
 // notifications.
 BASE_DECLARE_FEATURE(kNotificationTelemetry);

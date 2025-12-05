@@ -85,9 +85,11 @@ class TailoredSecurityDesktopDialogManagerTest
         gfx::ScopedAnimationDurationScaleMode::ZERO_DURATION);
     const std::string& actual_name = name.substr(0, name.find("/"));
     if (actual_name == "enabledDialog") {
-      dialog_manager_->ShowEnabledDialogForBrowser(browser());
+      dialog_manager_->ShowEnabledDialogForBrowser(browser(),
+                                                   base::DoNothing());
     } else if (actual_name == "disabledDialog") {
-      dialog_manager_->ShowDisabledDialogForBrowser(browser());
+      dialog_manager_->ShowDisabledDialogForBrowser(browser(),
+                                                    base::DoNothing());
     } else {
       FAIL() << "No dialog case defined for this string: " << name;
     }
@@ -103,7 +105,7 @@ class TailoredSecurityDesktopDialogManagerTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);
-    dialog_manager_->ShowEnabledDialogForBrowser(browser);
+    dialog_manager_->ShowEnabledDialogForBrowser(browser, base::DoNothing());
 
     return waiter.WaitIfNeededAndGet();
   }
@@ -112,7 +114,7 @@ class TailoredSecurityDesktopDialogManagerTest
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         safe_browsing::kTailoredSecurityNoticeDialog);
-    dialog_manager_->ShowDisabledDialogForBrowser(browser);
+    dialog_manager_->ShowDisabledDialogForBrowser(browser, base::DoNothing());
 
     return waiter.WaitIfNeededAndGet();
   }

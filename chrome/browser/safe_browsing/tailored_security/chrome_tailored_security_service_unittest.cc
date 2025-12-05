@@ -286,6 +286,15 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
         original_tailored_security_service_value);
   }
 
+  // Force async tasks to complete. Primarily used to force-trigger the
+  // processing of the notice queue.
+  void FlushEvents() {
+    base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -323,6 +332,7 @@ TEST_F(ChromeTailoredSecurityServiceTest,
 
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
+  FlushEvents();
 
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
@@ -429,11 +439,13 @@ TEST_F(ChromeTailoredSecurityServiceTest,
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
 
+  FlushEvents();
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 1);
   // Then detect that TailoredSecurity was disabled.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
+  FlushEvents();
   EXPECT_EQ(tailored_security_service()->times_dialog_displayed(),
             initial_times_displayed + 2);
   EXPECT_FALSE(

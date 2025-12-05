@@ -510,7 +510,10 @@ static_library("safe_browsing") {
         ]
       }
       if (!is_android) {
-        deps += [ "//chrome/browser/ui:browser_list" ]
+        deps += [
+          "//chrome/browser/ui:browser_list",
+          "//chrome/browser/user_education",
+        ]
       }
     } else if (safe_browsing_mode == 2) {
       sources += [
