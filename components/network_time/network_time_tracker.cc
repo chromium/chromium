@@ -192,14 +192,45 @@ NetworkTimeTracker::NetworkTimeTracker(
     base::span<const uint8_t> pubkey)
     : server_url_(kTimeServiceURL),
       max_response_size_(1024),
-      backoff_(kBackoffInterval.Get()),
-      url_loader_factory_(std::move(url_loader_factory)),
       query_signer_(kKeyVersion, pubkey.empty() ? kPubKey : pubkey),
       clock_(std::move(clock)),
       tick_clock_(std::move(tick_clock)),
-      pref_service_(pref_service),
       time_query_completed_(false),
       fetch_behavior_(fetch_behavior) {
+  // If `pref_service` is null, defer the remaining initialization. This allows
+  // the NetworkTimeTracker to be created, and subscribed-to, very early in
+  // startup, before the PrefService, NetworkService, FieldTrials, etc are
+  // fully initialized.
+  if (pref_service) {
+    Initialize(pref_service, std::move(url_loader_factory));
+  }
+}
+
+NetworkTimeTracker::~NetworkTimeTracker() {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  for (auto& observer : observers_) {
+    observer.OnNetworkTimeTrackerDestroyed(this);
+  }
+  CHECK(observers_.empty());
+}
+
+void NetworkTimeTracker::Initialize(
+    PrefService* pref_service,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  CHECK(!is_initialized());
+  CHECK(pref_service);
+  pref_service_ = pref_service;
+
+  url_loader_factory_ = std::move(url_loader_factory);
+
+  // Set the backoff interval to the default value. This is done here, instead
+  // of in the constructor, because the backoff interval is a feature parameter
+  // whose value is not known until the feature list is initialized.
+  backoff_ = kBackoffInterval.Get();
+
+  // Finish initialization by checking whether network time mapping data is
+  // available in the prefs, and if so, use it to initialize the time tracker.
   const base::Value::Dict& time_mapping =
       pref_service_->GetDict(prefs::kNetworkTimeMapping);
   std::optional<double> time_js = time_mapping.FindDouble(kPrefTime);
@@ -233,15 +264,8 @@ NetworkTimeTracker::NetworkTimeTracker(
     }
   }
 
+  // Start the loop to check the time.
   QueueCheckTime(base::Seconds(0));
-}
-
-NetworkTimeTracker::~NetworkTimeTracker() {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  for (auto& observer : observers_) {
-    observer.OnNetworkTimeTrackerDestroyed(this);
-  }
-  CHECK(observers_.empty());
 }
 
 void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
@@ -300,7 +324,8 @@ void NetworkTimeTracker::UpdateNetworkTime(base::Time network_time,
 }
 
 bool NetworkTimeTracker::AreTimeFetchesEnabled() const {
-  return base::FeatureList::IsEnabled(kNetworkTimeServiceQuerying);
+  return is_initialized() &&
+         base::FeatureList::IsEnabled(kNetworkTimeServiceQuerying);
 }
 
 NetworkTimeTracker::FetchBehavior NetworkTimeTracker::GetFetchBehavior() const {

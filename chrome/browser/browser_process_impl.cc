@@ -301,13 +301,20 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       active_primary_accounts_metrics_recorder_(
           std::make_unique<signin::ActivePrimaryAccountsMetricsRecorder>(
               *local_state_)),
-      platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
+      platform_part_(std::make_unique<BrowserProcessPlatformPart>()),
+      network_time_tracker_(startup_data->chrome_feature_list_creator()
+                                ->TakeNetworkTimeTracker()) {
   CHECK(!g_browser_process);
   g_browser_process = this;
 
   DCHECK(browser_policy_connector_);
   DCHECK(local_state_);
   DCHECK(startup_data);
+
+  // The network time tracker is created (so that other early objects can
+  // subscribe to it) but it is not yet initialized.
+  CHECK(network_time_tracker_);
+
   // Most work should be done in Init().
 }
 
@@ -1094,7 +1101,6 @@ WebRtcLogUploader* BrowserProcessImpl::webrtc_log_uploader() {
 }
 
 network_time::NetworkTimeTracker* BrowserProcessImpl::network_time_tracker() {
-  CreateNetworkTimeTracker();
   return network_time_tracker_.get();
 }
 
@@ -1456,7 +1462,7 @@ void BrowserProcessImpl::PreMainMessageLoopRun() {
 
   platform_part_->PreMainMessageLoopRun();
 
-  CreateNetworkTimeTracker();
+  InitializeNetworkTimeTracker();
 
   CreateNetworkQualityObserver();
 
@@ -1627,15 +1633,11 @@ void BrowserProcessImpl::CreateGCMDriver() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-void BrowserProcessImpl::CreateNetworkTimeTracker() {
-  if (network_time_tracker_) {
-    return;
-  }
-  network_time_tracker_ = std::make_unique<network_time::NetworkTimeTracker>(
-      base::WrapUnique(new base::DefaultClock()),
-      base::WrapUnique(new base::DefaultTickClock()), local_state(),
-      system_network_context_manager()->GetSharedURLLoaderFactory(),
-      std::nullopt);
+void BrowserProcessImpl::InitializeNetworkTimeTracker() {
+  CHECK(!network_time_tracker_->is_initialized());
+  network_time_tracker_->Initialize(
+      local_state(),
+      system_network_context_manager()->GetSharedURLLoaderFactory());
 }
 
 void BrowserProcessImpl::ApplyDefaultBrowserPolicy() {
