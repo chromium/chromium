@@ -310,6 +310,79 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
       }));
 }
 
+IN_PROC_BROWSER_TEST_F(
+    ContextualTasksSidePanelCoordinatorInteractiveUiTest,
+    SidePanelOpenByTranferWebContentsFromTab_HistoryCleared) {
+  SetUpTasks();
+  // Add tab4 that will eventually move to the side panel.
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUIVersionURL), -1, true);
+  int detach_index = tab_strip_model->GetIndexOfWebContents(
+      tab_strip_model->GetActiveWebContents());
+  EXPECT_EQ(4, detach_index);
+
+  // Navigate the tab a few times to create a back stack. Make sure to end on
+  // the contextual tasks URL.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(chrome::kChromeUIAboutURL)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIContextualTasksURL)));
+  EXPECT_EQ(
+      3,
+      tab_strip_model->GetActiveWebContents()->GetController().GetEntryCount());
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+
+  content::WebContents* tab_web_contents;
+  ContextualTask task3 = contextual_tasks_controller->CreateTask();
+
+  // Associate tab_web_contents to task3.
+  contextual_tasks_controller->AssociateTabWithTask(
+      task3.GetTaskId(), sessions::SessionTabHelper::IdForTab(
+                             tab_strip_model->GetActiveWebContents()));
+
+  RunTestSequence(
+      Do([&]() {
+        // Add tab5. Create a new task and associate with it.
+        chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1,
+                         true);
+        int current_index = tab_strip_model->GetIndexOfWebContents(
+            tab_strip_model->GetActiveWebContents());
+        EXPECT_EQ(5, current_index);
+        contextual_tasks_controller->AssociateTabWithTask(
+            task3.GetTaskId(),
+            sessions::SessionTabHelper::IdForTab(
+                tab_strip_model->GetWebContentsAt(current_index)));
+
+        // Transfer the WebContents from tab 4 to the side panel.
+        std::unique_ptr<content::WebContents> contextual_task_contents =
+            tab_strip_model->DetachWebContentsAtForInsertion(
+                detach_index,
+                TabStripModelChange::RemoveReason::kInsertedIntoSidePanel);
+        tab_web_contents = contextual_task_contents.get();
+
+        coordinator->TransferWebContentsFromTab(
+            task3.GetTaskId(), std::move(contextual_task_contents));
+        coordinator->Show();
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId), Do([&]() {
+        // Verify there are 5 tabs in the tab strip.
+        EXPECT_EQ(5, tab_strip_model->count());
+
+        // Verify the tab web contents is transferred into the side panel.
+        EXPECT_EQ(tab_web_contents,
+                  coordinator->GetActiveWebContentsForTesting());
+
+        // Moving the WebContents to the side panel should also clear the back
+        // stack.
+        EXPECT_EQ(1, tab_web_contents->GetController().GetEntryCount());
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
                        SidePanelCreateNewTask) {
   SetUpTasks();
