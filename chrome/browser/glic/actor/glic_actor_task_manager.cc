@@ -31,6 +31,11 @@
 
 namespace glic {
 
+namespace {
+BASE_FEATURE(kGlicReloadAfterPerformActionsCrash,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+}  // namespace
+
 GlicActorTaskManager::GlicActorTaskManager(
     Profile* profile,
     actor::ActorKeyedService* actor_keyed_service)
@@ -96,6 +101,7 @@ void GlicActorTaskManager::PerformActionsFinished(
   }
 
   if (!attempted_reload_ &&
+      base::FeatureList::IsEnabled(kGlicReloadAfterPerformActionsCrash) &&
       result_code == actor::mojom::ActionResultCode::kRendererCrashed) {
     // We call back into PerformActionsFinished once we've reloaded the tab.
     auto peform_actions_done = base::BindOnce(
