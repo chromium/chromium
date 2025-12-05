@@ -80,14 +80,18 @@ source_set("impl") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "fake_variations_client.cc",
+    "fake_variations_client.h",
     "mock_contextual_search_context_controller.cc",
     "mock_contextual_search_context_controller.h",
     "mock_contextual_search_session_handle.cc",
     "mock_contextual_search_session_handle.h",
   ]
+  public_deps = [ "//components/variations:variations_mojom" ]
   deps = [
     ":public",
     "//components/lens/proto/server:proto",
+    "//components/variations",
     "//testing/gmock",
   ]
 }

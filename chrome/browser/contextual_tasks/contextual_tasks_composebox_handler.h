@@ -43,6 +43,10 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
 
   void CreateAndSendQueryMessage(const std::string& query);
 
+  OmniboxController* GetOmniboxControllerForTesting() {
+    return omnibox_controller();
+  }
+
  private:
 
   raw_ptr<ContextualTasksUI> web_ui_controller_;

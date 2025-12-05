@@ -5,6 +5,7 @@
 #include "components/contextual_search/contextual_search_service.h"
 
 #include "base/test/task_environment.h"
+#include "components/contextual_search/fake_variations_client.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
@@ -22,19 +23,6 @@ namespace {
 using testing::_;
 using testing::IsNull;
 using testing::NotNull;
-
-class FakeVariationsClient : public variations::VariationsClient {
- public:
-  FakeVariationsClient() = default;
-  ~FakeVariationsClient() override = default;
-
-  // variations::VariationsClient:
-  bool IsOffTheRecord() const override { return false; }
-  variations::mojom::VariationsHeadersPtr GetVariationsHeaders()
-      const override {
-    return variations::mojom::VariationsHeaders::New();
-  }
-};
 
 }  // namespace
 
