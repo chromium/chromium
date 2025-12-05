@@ -145,8 +145,6 @@ class CompositorView : public content::CompositorClient,
   bool overlay_video_mode_;
   bool overlay_immersive_ar_mode_;
   bool overlay_xr_full_screen_mode_;
-
-  base::WeakPtrFactory<CompositorView> weak_factory_{this};
 };
 
 }  // namespace android
