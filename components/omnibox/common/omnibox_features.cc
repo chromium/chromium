@@ -360,7 +360,7 @@ bool IsGeminiPrototypeProviderEnabled() {
 #endif
 
 // Controls whether the composebox
-BASE_FEATURE(kComposeboxUsesChromeComposeClient, DISABLED);
+BASE_FEATURE(kComposeboxUsesChromeComposeClient, ENABLED);
 
 #if BUILDFLAG(IS_ANDROID)
 // Accelerates time from cold start to focused Omnibox on low-end devices,
