@@ -19,6 +19,7 @@
 #include "pdf/page_character_index.h"
 #include "pdf/page_orientation.h"
 #include "pdf/pdf_caret_client.h"
+#include "pdf/pdf_utils/text_util.h"
 #include "pdf/region_data.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -83,6 +84,14 @@ ui::KeyboardCode GetLogicalKey(int key,
     default:
       NOTREACHED();
   }
+}
+
+bool ContainsMoveByWordBoundaryModifier(int modifiers) {
+#if BUILDFLAG(IS_MAC)
+  return !!(modifiers & blink::WebInputEvent::Modifiers::kAltKey);
+#else
+  return !!(modifiers & blink::WebInputEvent::Modifiers::kControlKey);
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 }  // namespace
@@ -190,22 +199,19 @@ bool PdfCaret::OnKeyDown(const blink::WebKeyboardEvent& event) {
       static_cast<ui::KeyboardCode>(event.windows_key_code));
   bool should_select =
       !!(event.GetModifiers() & blink::WebInputEvent::Modifiers::kShiftKey);
-  switch (key) {
-    case ui::KeyboardCode::VKEY_LEFT:
-      MoveHorizontallyToNextChar(/*move_right=*/false, should_select);
-      return true;
-    case ui::KeyboardCode::VKEY_RIGHT:
-      MoveHorizontallyToNextChar(/*move_right=*/true, should_select);
-      return true;
-    case ui::KeyboardCode::VKEY_UP:
-      MoveVerticallyToNextChar(/*move_down=*/false, should_select);
-      return true;
-    case ui::KeyboardCode::VKEY_DOWN:
-      MoveVerticallyToNextChar(/*move_down=*/true, should_select);
-      return true;
-    default:
-      NOTREACHED();
+  bool move_right = key == ui::KeyboardCode::VKEY_RIGHT;
+  if (move_right || key == ui::KeyboardCode::VKEY_LEFT) {
+    if (ContainsMoveByWordBoundaryModifier(event.GetModifiers())) {
+      MoveHorizontallyToNextWordBoundary(move_right, should_select);
+    } else {
+      MoveHorizontallyToNextChar(move_right, should_select);
+    }
+  } else {
+    bool move_down = key == ui::KeyboardCode::VKEY_DOWN;
+    CHECK(move_down || key == ui::KeyboardCode::VKEY_UP);
+    MoveVerticallyToNextChar(move_down, should_select);
   }
+  return true;
 }
 
 bool PdfCaret::ShouldDrawCaret() const {
@@ -481,6 +487,19 @@ void PdfCaret::MoveVerticallyToNextChar(bool move_down, bool should_select) {
       should_select);
 }
 
+void PdfCaret::MoveHorizontallyToNextWordBoundary(bool move_right,
+                                                  bool should_select) {
+  if (WillCaretExitPage(index_, move_right)) {
+    std::optional<PageCharacterIndex> next_char =
+        GetCaretPosOnAdjacentPage(index_, move_right);
+    MoveToChar(next_char.value_or(index_), should_select);
+    return;
+  }
+  MoveToChar(move_right ? GetCaretPosAtRightWordBoundary()
+                        : GetCaretPosAtLeftWordBoundary(),
+             should_select);
+}
+
 bool PdfCaret::StartSelection(bool move_right) const {
   if (client_->GetCharCount(index_.page_index) != 0) {
     client_->StartSelection(index_);
@@ -537,28 +556,17 @@ bool PdfCaret::IndexHasChar(const PageCharacterIndex& index) const {
   return index.char_index < client_->GetCharCount(index.page_index);
 }
 
+bool PdfCaret::IsIndexWordBoundary(const PageCharacterIndex& index) const {
+  return IndexHasChar(index) && IsWordBoundary(client_->GetCharUnicode(index));
+}
+
 bool PdfCaret::IsSynthesizedNewline(const PageCharacterIndex& index) const {
   return IndexHasChar(index) && client_->IsSynthesizedNewline(index);
 }
 
-std::optional<PageCharacterIndex> PdfCaret::GetAdjacentCaretPos(
+std::optional<PageCharacterIndex> PdfCaret::GetCaretPosOnAdjacentPage(
     const PageCharacterIndex& index,
     bool move_right) const {
-  if (!WillCaretExitPage(index, move_right)) {
-    const int delta = move_right ? 1 : -1;
-    PageCharacterIndex next_char = {index.page_index, index.char_index + delta};
-    // Newlines synthetically created by PDFium have empty screen rects.
-    // Skip consecutive newlines.
-    if (IsSynthesizedNewline(index) && IsSynthesizedNewline(next_char)) {
-      // Synthetic newlines cannot be the first or last char on a page.
-      CHECK(!WillCaretExitPage(next_char, move_right));
-
-      // There cannot be more than two consecutive synthetic newlines.
-      next_char.char_index += delta;
-    }
-    return next_char;
-  }
-
   uint32_t page_index = index.page_index;
 
   // If `move_right` is true, move one page to the right if possible.
@@ -579,6 +587,116 @@ std::optional<PageCharacterIndex> PdfCaret::GetAdjacentCaretPos(
 
   --page_index;
   return PageCharacterIndex(page_index, client_->GetCharCount(page_index));
+}
+
+std::optional<PageCharacterIndex> PdfCaret::GetAdjacentCaretPos(
+    const PageCharacterIndex& index,
+    bool move_right) const {
+  if (WillCaretExitPage(index, move_right)) {
+    return GetCaretPosOnAdjacentPage(index, move_right);
+  }
+
+  const int delta = move_right ? 1 : -1;
+  PageCharacterIndex next_char = {index.page_index, index.char_index + delta};
+  // Newlines synthetically created by PDFium have empty screen rects.
+  // Skip consecutive newlines.
+  if (IsSynthesizedNewline(index) && IsSynthesizedNewline(next_char)) {
+    // Synthetic newlines cannot be the first or last char on a page.
+    CHECK(!WillCaretExitPage(next_char, move_right));
+
+    // There cannot be more than two consecutive synthetic newlines.
+    next_char.char_index += delta;
+  }
+  return next_char;
+}
+
+PageCharacterIndex PdfCaret::GetCaretPosAtLeftWordBoundary() const {
+  PageCharacterIndex index = index_;
+
+  // Blink's behavior with word boundaries is complex, so just use a simpler
+  // algorithm that almost matches Blink's.
+  //
+  // Move the caret left once to check for word boundaries or newlines.
+  CHECK(!WillCaretExitPage(index, /*move_right=*/false));
+  --index.char_index;
+
+  if (IsSynthesizedNewline(index)) {
+    // When skipping newlines, moving to the left should place the caret at the
+    // end of the word.
+    while (!WillCaretExitPage(index, /*move_right=*/false) &&
+           IsSynthesizedNewline(index)) {
+      --index.char_index;
+    }
+
+    // Move the caret once to the right to the start of the word.
+    ++index.char_index;
+    return index;
+  }
+
+  SetIndexToAdjacentWordBoundary(index, /*move_right=*/false);
+
+  // Move the caret once to the right to the start of the word, except for the
+  // edge case where the word boundary is at the start of the page.
+  if (index.char_index > 0) {
+    ++index.char_index;
+  }
+
+  return index;
+}
+
+PageCharacterIndex PdfCaret::GetCaretPosAtRightWordBoundary() const {
+  PageCharacterIndex index = index_;
+
+  // Blink's behavior with word boundaries is complex, so just use a simpler
+  // algorithm that almost matches Blink's.
+  if (IsSynthesizedNewline(index)) {
+    // When skipping newlines, moving right should place the caret at the start
+    // of the word.
+    while (!WillCaretExitPage(index, /*move_right=*/true) &&
+           IsSynthesizedNewline(index)) {
+      ++index.char_index;
+    }
+    // Then skip word boundaries.
+    while (!WillCaretExitPage(index, /*move_right=*/true) &&
+           IsIndexWordBoundary(index)) {
+      ++index.char_index;
+    }
+    return index;
+  }
+
+  if (IsIndexWordBoundary(index)) {
+    // Handle an edge case when moving right where the current char is a word
+    // boundary adjacent to more word boundaries. Skip any of the same word
+    // boundaries (e.g. "  "), but stop at any different word boundaries (e.g.
+    // ", ").
+    uint32_t prev_char = client_->GetCharUnicode(index);
+    while (!WillCaretExitPage(index, /*move_right=*/true) &&
+           prev_char == client_->GetCharUnicode(index)) {
+      ++index.char_index;
+    }
+    if (IsSynthesizedNewline(index) || IsIndexWordBoundary(index)) {
+      return index;
+    }
+  }
+
+  SetIndexToAdjacentWordBoundary(index, /*move_right=*/true);
+  return index;
+}
+
+void PdfCaret::SetIndexToAdjacentWordBoundary(PageCharacterIndex& index,
+                                              bool move_right) const {
+  const int delta = move_right ? 1 : -1;
+
+  // Skip consecutive word boundaries.
+  while (!WillCaretExitPage(index, move_right) && IsIndexWordBoundary(index)) {
+    index.char_index += delta;
+  }
+
+  // Find the word boundary or newline adjacent to the word.
+  while (!WillCaretExitPage(index, move_right) &&
+         !IsSynthesizedNewline(index) && !IsIndexWordBoundary(index)) {
+    index.char_index += delta;
+  }
 }
 
 std::optional<PageCharacterIndex> PdfCaret::GetNextNonNewlineOnPage(

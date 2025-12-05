@@ -161,6 +161,11 @@ class PdfCaret {
   // direction.
   void MoveVerticallyToNextChar(bool move_down, bool should_select);
 
+  // Moves the caret horizontally to the next word boundary, handling different
+  // pages and newlines when necessary. Moves to its original position if there
+  // is no valid word boundary.
+  void MoveHorizontallyToNextWordBoundary(bool move_right, bool should_select);
+
   // This should only be called when the caret is moving. Starts a new text
   // selection at the current caret position, adjusting the exact index
   // depending on the direction specified by `move_right`.
@@ -181,8 +186,20 @@ class PdfCaret {
   // last caret position of a page.
   bool IndexHasChar(const PageCharacterIndex& index) const;
 
+  // Returns whether `index` is a word boundary or not.
+  bool IsIndexWordBoundary(const PageCharacterIndex& index) const;
+
   // Returns whether `index` is a synthesized newline or not.
   bool IsSynthesizedNewline(const PageCharacterIndex& index) const;
+
+  // Returns the nearest caret position of the page adjacent to index, in the
+  // `move_right` direction. Returns `std::nullopt` if there is no adjacent
+  // page. If there is an adjacent page, then if `move_right` is true, this will
+  // return the first char on the next page, otherwise it will return the last
+  // char on the previous page.
+  std::optional<PageCharacterIndex> GetCaretPosOnAdjacentPage(
+      const PageCharacterIndex& index,
+      bool move_right) const;
 
   // Returns the adjacent caret position to `index`, moving in the direction
   // indicated by `move_right`. Moves across pages if necessary. This can return
@@ -191,6 +208,21 @@ class PdfCaret {
   std::optional<PageCharacterIndex> GetAdjacentCaretPos(
       const PageCharacterIndex& index,
       bool move_right) const;
+
+  // Returns the caret position of the nearest word boundary on the left.
+  // Handles different pages when necessary. May return the original position if
+  // there are no other left word boundaries.
+  PageCharacterIndex GetCaretPosAtLeftWordBoundary() const;
+
+  // Returns the caret position of the nearest word boundary on the right.
+  // Handles different pages when necessary. May return the original position if
+  // there are no other right word boundaries.
+  PageCharacterIndex GetCaretPosAtRightWordBoundary() const;
+
+  // Sets `index` to the nearest adjacent word boundary in the `move_right`
+  // direction.
+  void SetIndexToAdjacentWordBoundary(PageCharacterIndex& index,
+                                      bool move_right) const;
 
   // Gets the `PageCharacterIndex` of the next non-newline char. Starts from
   // `index` and skips past consecutive newlines on a page, moving in the

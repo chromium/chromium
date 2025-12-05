@@ -37,6 +37,11 @@ class MockPdfCaretClient : public PdfCaretClient {
 
   MOCK_METHOD(uint32_t, GetCharCount, (uint32_t page_index), (const override));
 
+  MOCK_METHOD(uint32_t,
+              GetCharUnicode,
+              (const PageCharacterIndex& index),
+              (const override));
+
   MOCK_METHOD(PageOrientation, GetCurrentOrientation, (), (const override));
 
   MOCK_METHOD(std::vector<gfx::Rect>,

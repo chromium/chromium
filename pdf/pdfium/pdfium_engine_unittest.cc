@@ -907,6 +907,25 @@ TEST_P(PDFiumEngineTest, MultiPagesPdfInTwoUpViewAfterSelectedText) {
   EXPECT_EQ("Goodbye", engine->GetSelectedText());
 }
 
+TEST_P(PDFiumEngineTest, GetCharUnicode) {
+  TestClient client;
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+  ASSERT_EQ(2, engine->GetNumberOfPages());
+  ASSERT_EQ(30u, engine->GetCharCount(0));
+  ASSERT_EQ(30u, engine->GetCharCount(1));
+
+  // "H" on page 0.
+  EXPECT_EQ(72u, engine->GetCharUnicode({0, 0}));
+  // "," on page 0.
+  EXPECT_EQ(44u, engine->GetCharUnicode({0, 5}));
+  // " " on page 1.
+  EXPECT_EQ(32u, engine->GetCharUnicode({1, 6}));
+  // Line feed on page 1.
+  EXPECT_EQ(10u, engine->GetCharUnicode({1, 14}));
+}
+
 TEST_P(PDFiumEngineTest, GetScreenRectsForCaret) {
   TestClient client;
   std::unique_ptr<PDFiumEngine> engine =

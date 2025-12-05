@@ -973,6 +973,11 @@ uint32_t PDFiumEngine::GetCharCount(uint32_t page_index) const {
   return base::checked_cast<uint32_t>(pages_[page_index]->GetCharCount());
 }
 
+uint32_t PDFiumEngine::GetCharUnicode(const PageCharacterIndex& index) const {
+  CHECK(PageIndexInBounds(index.page_index));
+  return pages_[index.page_index]->GetCharUnicode(index.char_index);
+}
+
 PageOrientation PDFiumEngine::GetCurrentOrientation() const {
   return layout_.options().default_page_orientation();
 }
@@ -1029,7 +1034,7 @@ bool PDFiumEngine::IsSynthesizedNewline(const PageCharacterIndex& index) const {
     return false;
   }
 
-  uint32_t char_code = page->GetCharUnicode(index.char_index);
+  uint32_t char_code = GetCharUnicode(index);
   return char_code == '\r' || char_code == '\n';
 }
 

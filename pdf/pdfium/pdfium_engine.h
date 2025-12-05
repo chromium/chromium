@@ -511,6 +511,7 @@ class PDFiumEngine : public DocumentLoader::Client,
   void ExtendAndInvalidateSelectionByChar(
       const PageCharacterIndex& index) override;
   uint32_t GetCharCount(uint32_t page_index) const override;
+  uint32_t GetCharUnicode(const PageCharacterIndex& index) const override;
   PageOrientation GetCurrentOrientation() const override;
   std::vector<gfx::Rect> GetScreenRectsForCaret(
       const PageCharacterIndex& index) const override;

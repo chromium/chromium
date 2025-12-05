@@ -33,6 +33,10 @@ class PdfCaretClient {
   // index, otherwise crashes.
   virtual uint32_t GetCharCount(uint32_t page_index) const = 0;
 
+  // Returns the unicode char of `index`. `index` must be a valid char on a
+  // page, otherwise crashes.
+  virtual uint32_t GetCharUnicode(const PageCharacterIndex& index) const = 0;
+
   // Returns the current layout orientation.
   virtual PageOrientation GetCurrentOrientation() const = 0;
 
