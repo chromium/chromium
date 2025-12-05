@@ -205,7 +205,7 @@ MultiStep GlicActorUiTest::ExecuteInGlic(
 MultiStep GlicActorUiTest::CreateTask(actor::TaskId& out_task,
                                       std::string_view title) {
   return Steps(
-      Do([this, &out_task, title = std::string(title)]() mutable {
+      Do([this, &out_task, title = std::string(title)]() {
         content::WebContents* glic_contents = GetGlicContents();
         const int result =
             content::EvalJs(
@@ -372,7 +372,7 @@ MultiStep GlicActorUiTest::RoundTrip(actor::TaskId& task_id) {
 }
 
 MultiStep GlicActorUiTest::StopActorTask() {
-  return Steps(Do([this, &task_id = task_id_]() mutable {
+  return Steps(Do([this, &task_id = task_id_]() {
                  content::WebContents* glic_contents = GetGlicContents();
                  std::string script = content::JsReplace(
                      "client.browser.stopActorTask($1);", task_id.value());
@@ -383,8 +383,7 @@ MultiStep GlicActorUiTest::StopActorTask() {
 
 MultiStep GlicActorUiTest::PauseActorTask() {
   return Steps(Do(
-                   [this, &task_id = task_id_,
-                    &tab_handle = tab_handle_]() mutable {
+                   [this, &task_id = task_id_, &tab_handle = tab_handle_]() {
                      content::WebContents* glic_contents = GetGlicContents();
                      std::string script = content::JsReplace(
                          "client.browser.pauseActorTask($1, /* pauseReason= "
@@ -450,7 +449,7 @@ MultiStep GlicActorUiTest::ResumeActorTask(
 }
 
 MultiStep GlicActorUiTest::InterruptActorTask() {
-  return Steps(Do([this, &task_id = task_id_]() mutable {
+  return Steps(Do([this, &task_id = task_id_]() {
                  content::WebContents* glic_contents = GetGlicContents();
                  std::string script = content::JsReplace(
                      "client.browser.interruptActorTask($1);", task_id.value());
@@ -467,7 +466,7 @@ MultiStep GlicActorUiTest::WaitForActorTaskState(
   EXPECT_NE(expected_state, mojom::ActorTaskState::kStopped);
 
   return Steps(
-      Do([this, &task_id = task_id_, expected_state]() mutable {
+      Do([this, &task_id = task_id_, expected_state]() {
         content::WebContents* glic_contents = GetGlicContents();
         std::string script = content::JsReplace(
             R"js(
@@ -482,7 +481,7 @@ MultiStep GlicActorUiTest::WaitForActorTaskState(
 
 MultiStep GlicActorUiTest::PrepareForStopStateChange() {
   return Steps(
-      Do([this, &task_id = task_id_]() mutable {
+      Do([this, &task_id = task_id_]() {
         content::WebContents* glic_contents = GetGlicContents();
         std::string script = content::JsReplace(
             "window.taskStateObs = "
@@ -506,7 +505,7 @@ MultiStep GlicActorUiTest::WaitForActorTaskStateChangeToStopped() {
 }
 
 MultiStep GlicActorUiTest::ActivateTaskTab() {
-  return Steps(Do([this, &tab_handle = tab_handle_]() mutable {
+  return Steps(Do([this, &tab_handle = tab_handle_]() {
                  content::WebContents* glic_contents = GetGlicContents();
                  std::string script =
                      content::JsReplace("client.browser.activateTab('$1');",
@@ -518,7 +517,7 @@ MultiStep GlicActorUiTest::ActivateTaskTab() {
 
 MultiStep GlicActorUiTest::WaitForTaskTabForeground(bool expected_foreground) {
   return Steps(
-      Do([this, &tab_handle = tab_handle_, expected_foreground]() mutable {
+      Do([this, &tab_handle = tab_handle_, expected_foreground]() {
         content::WebContents* glic_contents = GetGlicContents();
         std::string script = content::JsReplace(
             R"js(
