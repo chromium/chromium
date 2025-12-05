@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
 
 namespace features {
@@ -80,6 +81,10 @@ BASE_FEATURE(kMacAVFoundationPlayback, base::FEATURE_DISABLED_BY_DEFAULT);
 // keep capturing the same device when default output device is changed, and
 // will report an error if the sample rate is changed.
 BASE_FEATURE(kMacCatapRestartOnDeviceChange, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables application audio capture for getDisplayMedia (gDM) window capture in
+// macOS.
+BASE_FEATURE(kApplicationAudioCaptureMac, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 }  // namespace features
@@ -89,6 +94,11 @@ namespace media {
 bool IsApplicationAudioCaptureSupported() {
 #if BUILDFLAG(IS_WIN)
   return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+  return base::FeatureList::IsEnabled(features::kApplicationAudioCaptureMac) &&
+         media::IsMacCatapSystemLoopbackCaptureSupported() &&
+         base::FeatureList::IsEnabled(
+             media::kMacCatapLoopbackAudioForScreenShare);
 #else
   return false;
 #endif  // BUILDFLAG(IS_WIN)

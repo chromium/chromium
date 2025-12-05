@@ -753,6 +753,8 @@ class DesktopMediaPickerViewsPerTypeAndAudioTest
   void SetUp() override {
 #if BUILDFLAG(IS_WIN)
     feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+    feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
 #endif  // BUILDFLAG(IS_WIN)
     DesktopMediaPickerViewsTestBase::SetUp();
   }
@@ -769,9 +771,7 @@ class DesktopMediaPickerViewsPerTypeAndAudioTest
   }
 
  private:
-#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list_;
-#endif  // BUILDFLAG(IS_WIN)
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -939,12 +939,12 @@ TEST_F(DesktopMediaPickerViewsSystemAudioTest,
                     : IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB));
 }
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Verifies the conditions that make the media picker audio checkbox enabled for
 // each type of pane (Tab, Window, Screen) when application audio capture is
 // available/unavailable. Also checks that the checkbox string is correct for
 // each type of pane. Application audio capture is currently only supported on
-// Windows.
+// Windows and macOS.
 class DesktopMediaPickerViewsApplicationAudioTest
     : public DesktopMediaPickerViewsTestBase,
       public testing::WithParamInterface<
@@ -959,10 +959,19 @@ class DesktopMediaPickerViewsApplicationAudioTest
 
   void SetUp() override {
     if (ShouldEnableApplicationAudioCapture()) {
+#if BUILDFLAG(IS_WIN)
       feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+      feature_list_.InitAndEnableFeature(features::kApplicationAudioCaptureMac);
+#endif
     } else {
+#if BUILDFLAG(IS_WIN)
       feature_list_.InitAndDisableFeature(
           features::kApplicationAudioCaptureWin);
+#elif BUILDFLAG(IS_MAC)
+      feature_list_.InitAndDisableFeature(
+          features::kApplicationAudioCaptureMac);
+#endif
     }
     DesktopMediaPickerViewsTestBase::SetUp();
   }
@@ -987,11 +996,23 @@ class DesktopMediaPickerViewsApplicationAudioTest
 
   // Returns true if the screen tab should offer audio sharing.
   bool ShouldOfferScreenAudio() const {
+#if BUILDFLAG(IS_MAC)
+    // If system audio capture is not supported screen audio is never offered.
+    if (!media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_MAC)
     return RequestAudio() && !ScreenExcludeSystemAudio();
   }
 
   // Returns true if the window tab should offer audio sharing.
   bool ShouldOfferWindowAudio() const {
+#if BUILDFLAG(IS_MAC)
+    // If system audio capture is not supported window audio is never offered.
+    if (!media::IsMacCatapSystemLoopbackCaptureSupported()) {
+      return false;
+    }
+#endif  // BUILDFLAG(IS_MAC)
     return RequestAudio() &&
            WindowAudioPreference() !=
                blink::mojom::WindowAudioPreference::kExclude &&
@@ -1096,7 +1117,7 @@ TEST_P(DesktopMediaPickerViewsApplicationAudioTest, AudioCheckbox) {
   test_api_.SelectTabForSourceType(DesktopMediaList::Type::kWebContents);
   EXPECT_EQ(test_api_.HasAudioShareControl(), RequestAudio());
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 // Creates a single pane DesktopMediaPickerImpl that only has a tab list.
 class DesktopMediaPickerViewsSingleTabPaneTest
