@@ -2680,6 +2680,35 @@ class WebClientThatOpensOnce extends WebClient {
   }
 }
 
+class DaisyChainApiTests extends ApiTestFixtureBase {
+  async clickLinkInGlicUi() {
+    const link = document.createElement('a');
+    link.setAttribute('href', location.href);
+    link.setAttribute('target', '_blank');
+    document.body.appendChild(link);
+    link.click();
+  }
+
+  // Helper to handle the daisy chain actions.
+  async handleDaisyChainStep(action: string) {
+    if (action === 'createTab') {
+      await this.clickLinkInGlicUi();
+    } else if (action === 'inputSubmitted') {
+      assertDefined(this.host.getMetrics);
+      const metrics = this.host.getMetrics();
+      assertDefined(metrics);
+      assertDefined(metrics.onUserInputSubmitted);
+      metrics.onUserInputSubmitted(WebClientMode.TEXT);
+    } else {
+      assertTrue(false, `Unexpected daisy chain action: ${action}`);
+    }
+  }
+
+  async testDaisyChainRecursiveAndInput() {
+    await this.handleDaisyChainStep(this.testParams);
+  }
+}
+
 class NotifyPanelWillOpenTest extends ApiTestFixtureBase {
   override createWebClient(): WebClient {
     return new WebClientThatOpensOnce();
@@ -2714,6 +2743,7 @@ class InitiallyNotResizableTest extends ApiTestFixtureBase {
 // Therefore all tests must have unique names.
 const TEST_FIXTURES = [
   ApiTests,
+  DaisyChainApiTests,
   NotifyPanelWillOpenTest,
   InitiallyNotResizableTest,
   ApiTestWithoutOpen,

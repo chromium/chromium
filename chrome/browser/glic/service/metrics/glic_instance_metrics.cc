@@ -20,6 +20,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/glic/service/glic_state_tracker.h"
 #include "chrome/browser/glic/service/metrics/glic_metrics_session_manager.h"
 #include "components/tabs/public/tab_interface.h"
@@ -82,7 +83,8 @@ GlicInstanceMetrics::GlicInstanceMetrics(GlicSharingManager* sharing_manager)
       pinned_tabs_changed_subscription_(
           sharing_manager->AddPinnedTabsChangedCallback(
               base::BindRepeating(&GlicInstanceMetrics::OnPinnedTabsChanged,
-                                  base::Unretained(this)))) {
+                                  base::Unretained(this)))),
+      sharing_manager_(sharing_manager) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Created"));
   activity_tracker_ = std::make_unique<GlicStateTracker>(
       false, "Glic.Instance.UninterruptedActiveDuration");
@@ -219,7 +221,8 @@ void GlicInstanceMetrics::OnInstanceCreatedWithoutWarming() {
 }
 
 void GlicInstanceMetrics::OnSwitchFromConversation(
-    const ShowOptions& show_options) {
+    const ShowOptions& show_options,
+    const std::optional<EmbedderKey>& key) {
   if (std::holds_alternative<FloatingShowOptions>(
           show_options.embedder_options)) {
     base::RecordAction(
@@ -229,6 +232,16 @@ void GlicInstanceMetrics::OnSwitchFromConversation(
     base::RecordAction(base::UserMetricsAction(
         "Glic.Instance.SwitchFromConversation.SidePanel"));
     LogEvent(GlicInstanceEvent::kConversationSwitchedFromSidePanel);
+  }
+
+  // If there's an active side panel, record the switch action on its helper.
+  if (key.has_value()) {
+    if (const auto* tab_ptr = std::get_if<tabs::TabInterface*>(&key.value())) {
+      if (auto* helper = GlicInstanceHelper::From(*tab_ptr)) {
+        helper->OnDaisyChainAction(
+            DaisyChainFirstAction::kSwitchedConversation);
+      }
+    }
   }
 }
 
@@ -301,6 +314,11 @@ void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
   if (!tab) {
     return;
   }
+
+  if (auto* helper = GlicInstanceHelper::From(tab)) {
+    helper->OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+  }
+
   tabs::TabHandle tab_handle = tab->GetHandle();
   auto it = side_panel_open_times_.find(tab_handle);
   if (it == side_panel_open_times_.end()) {
@@ -324,7 +342,13 @@ void GlicInstanceMetrics::OnDetach() {
 void GlicInstanceMetrics::OnUnbindEmbedder(EmbedderKey key) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.UnBind"));
   LogEvent(GlicInstanceEvent::kUnbindEmbedder);
-
+  if (std::holds_alternative<tabs::TabInterface*>(key)) {
+    if (auto* helper =
+            GlicInstanceHelper::From(*std::get_if<tabs::TabInterface*>(&key))) {
+      // Log NoAction if instance is unbound before any other actions occur.
+      helper->OnDaisyChainAction(DaisyChainFirstAction::kNoAction);
+    }
+  }
   tabs::TabInterface** tab_ptr = std::get_if<tabs::TabInterface*>(&key);
   if (tab_ptr) {
     tabs::TabInterface* tab = *tab_ptr;
@@ -374,6 +398,17 @@ void GlicInstanceMetrics::OnDaisyChain(DaisyChainSource source,
       if (source == DaisyChainSource::kTabContents) {
         base::UmaHistogramExactLinear("Glic.Tab.DaisyChainDepth", depth, 50);
       }
+
+      if (auto* new_helper = GlicInstanceHelper::From(new_tab)) {
+        new_helper->SetIsDaisyChained();
+      }
+    }
+    // If the new tab is opened from a daisy chain source, propagate the state
+    // to the new tab's helper and record the recursive action on the source
+    // tab.
+    if (auto* source_helper = GlicInstanceHelper::From(source_tab)) {
+      source_helper->OnDaisyChainAction(
+          DaisyChainFirstAction::kRecursiveDaisyChain);
     }
   } else {
     LogEvent(GlicInstanceEvent::kDaisyChainFailed);
@@ -581,6 +616,16 @@ int GlicInstanceMetrics::GetEventCount(GlicInstanceEvent event) {
 }
 
 void GlicInstanceMetrics::OnUserInputSubmitted(mojom::WebClientMode mode) {
+  // Try to attribute the input submission to the currently focused tab for
+  // daisy chain metrics.
+  if (current_ui_mode_ == EmbedderType::kSidePanel && sharing_manager_) {
+    if (auto* tab = sharing_manager_->GetFocusedTabData().focus()) {
+      if (auto* helper = GlicInstanceHelper::From(tab)) {
+        helper->OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+      }
+    }
+  }
+
   if (turn_.response_started_) {
     base::UmaHistogramEnumeration(
         "Glic.Instance.Metrics.Error",
