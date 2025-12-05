@@ -81,6 +81,11 @@ extern const char kHistogramInputToNavigation[];
 extern const char kHistogramInputToNavigationLinkClick[];
 extern const char kHistogramInputToNavigationOmnibox[];
 extern const char kHistogramInputToFirstContentfulPaint[];
+extern const char kHistogramInputCoverageWithUserGestureBrowserInitiated[];
+extern const char kHistogramInputCoverageWithUserGestureRendererInitiated[];
+extern const char kHistogramInputCoverageWithoutUserGestureBrowserInitiated[];
+extern const char kHistogramInputCoverageWithoutUserGestureRendererInitiated[];
+
 extern const char kHistogramBackForwardCacheEvent[];
 
 // Navigation metrics from the navigation start.

@@ -2836,6 +2836,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
   GURL url = embedded_test_server()->GetURL("/page_load_metrics/link.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   waiter->Wait();
+
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
+
   content::SimulateMouseClickAt(
       browser()->tab_strip_model()->GetActiveWebContents(), 0,
       blink::WebMouseEvent::Button::kLeft, gfx::Point(100, 100));
@@ -2849,6 +2859,14 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MAYBE_InputEventsForClick) {
       internal::kHistogramInputToNavigationLinkClick, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramInputToFirstContentfulPaint, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
@@ -2977,6 +2995,15 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, InputEventsForOmniboxMatch) {
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramInputToFirstContentfulPaint, 1);
 
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
+
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.
   NavigateToUntrackedUrl();
@@ -3003,6 +3030,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       embedded_test_server()->GetURL("/page_load_metrics/javascript_href.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   waiter->Wait();
+
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
+
   waiter = CreatePageLoadMetricsTestWaiter("waiter");
   content::SimulateMouseClickAt(
       browser()->tab_strip_model()->GetActiveWebContents(), 0,
@@ -3016,6 +3053,14 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
       internal::kHistogramInputToNavigationLinkClick, 1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramInputToFirstContentfulPaint, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureBrowserInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithUserGestureRendererInitiated, 1);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated, 0);
+  histogram_tester_->ExpectTotalCount(
+      internal::kHistogramInputCoverageWithoutUserGestureRendererInitiated, 0);
 
   // Force navigation to another page, which should force logging of histograms
   // persisted at the end of the page load lifetime.

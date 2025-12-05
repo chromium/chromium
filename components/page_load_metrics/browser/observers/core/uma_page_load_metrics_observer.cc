@@ -232,6 +232,22 @@ const char kHistogramInputToNavigationOmnibox[] =
     "PageLoad.Experimental.InputTiming.InputToNavigationStart.FromOmnibox";
 const char kHistogramInputToFirstContentfulPaint[] =
     "PageLoad.Experimental.PaintTiming.InputToFirstContentfulPaint";
+const char kHistogramInputCoverageWithUserGestureBrowserInitiated[] =
+    "PageLoad.Experimental.InputTiming.InputToNavigationStart.Coverage"
+    ".WithUserGesture"
+    ".BrowserInitiated";
+const char kHistogramInputCoverageWithUserGestureRendererInitiated[] =
+    "PageLoad.Experimental.InputTiming.InputToNavigationStart.Coverage"
+    ".WithUserGesture"
+    ".RendererInitiated";
+const char kHistogramInputCoverageWithoutUserGestureBrowserInitiated[] =
+    "PageLoad.Experimental.InputTiming.InputToNavigationStart.Coverage"
+    ".WithoutUserGesture"
+    ".BrowserInitiated";
+const char kHistogramInputCoverageWithoutUserGestureRendererInitiated[] =
+    "PageLoad.Experimental.InputTiming.InputToNavigationStart.Coverage"
+    ".WithoutUserGesture"
+    ".RendererInitiated";
 
 const char kHistogramBackForwardCacheEvent[] =
     "PageLoad.BackForwardCache.Event";
@@ -477,6 +493,33 @@ void UmaPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
                                               ui::PAGE_TRANSITION_TYPED)) {
         PAGE_LOAD_HISTOGRAM(internal::kHistogramInputToNavigationOmnibox,
                             timing.input_to_navigation_start.value());
+      }
+    }
+
+    if (GetDelegate().GetUserInitiatedInfo().user_gesture) {
+      const bool record_input_to_navigation =
+          timing.input_to_navigation_start.has_value();
+      if (GetDelegate().GetUserInitiatedInfo().browser_initiated) {
+        base::UmaHistogramBoolean(
+            internal::kHistogramInputCoverageWithUserGestureBrowserInitiated,
+            record_input_to_navigation);
+      } else {
+        base::UmaHistogramBoolean(
+            internal::kHistogramInputCoverageWithUserGestureRendererInitiated,
+            record_input_to_navigation);
+      }
+    } else {
+      const bool record_input_to_navigation =
+          timing.input_to_navigation_start.has_value();
+      if (GetDelegate().GetUserInitiatedInfo().browser_initiated) {
+        base::UmaHistogramBoolean(
+            internal::kHistogramInputCoverageWithoutUserGestureBrowserInitiated,
+            record_input_to_navigation);
+      } else {
+        base::UmaHistogramBoolean(
+            internal::
+                kHistogramInputCoverageWithoutUserGestureRendererInitiated,
+            record_input_to_navigation);
       }
     }
 
