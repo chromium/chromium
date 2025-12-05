@@ -261,6 +261,7 @@ static_library("ui") {
     "//build:branding_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",
     "//build/config/linux/dbus:buildflags",
+    "//build/util:chromium_git_revision",
     "//cc/paint",
     "//chrome:resources",
     "//chrome:strings",

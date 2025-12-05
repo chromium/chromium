@@ -36,7 +36,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/embedder_support/user_agent_utils.h"
+#include "build/util/chromium_git_revision.h"
 #include "content/browser/devtools/devtools_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -125,6 +125,12 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info) {
     return true;
   GURL url = GURL("https://" + header);
   return url.HostIsIPAddress() || net::IsLocalHostname(url.GetHost());
+}
+
+// Returns the (incorrectly named, for historical reasons) WebKit version, in
+// the form "major.minor (@chromium_git_revision)".
+std::string GetWebKitVersion() {
+  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
 }
 
 }  // namespace
@@ -529,7 +535,7 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
     const std::string& id,
     const std::string& host) {
   std::string frontend_url;
-  std::string git_revision = embedder_support::GetChromiumGitRevision();
+  const std::string git_revision = CHROMIUM_GIT_REVISION;
   if (git_revision == kMissingGitRevision &&
       delegate_->HasBundledFrontendResources()) {
     frontend_url = "/devtools/inspector.html";
@@ -603,7 +609,7 @@ void DevToolsHttpHandler::OnJsonRequest(
   if (command == "version") {
     base::Value::Dict version;
     version.Set("Protocol-Version", DevToolsAgentHost::GetProtocolVersion());
-    version.Set("WebKit-Version", embedder_support::GetWebKitVersion());
+    version.Set("WebKit-Version", GetWebKitVersion());
     version.Set("Browser", GetContentClient()->browser()->GetProduct());
     version.Set("User-Agent", GetContentClient()->browser()->GetUserAgent());
     version.Set("V8-Version", V8_VERSION_STRING);

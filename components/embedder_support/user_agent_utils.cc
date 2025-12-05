@@ -26,7 +26,6 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "build/util/chromium_git_revision.h"
 #include "components/embedder_support/pref_names.h"
 #include "components/embedder_support/switches.h"
 #include "components/policy/core/common/policy_pref_names.h"
@@ -717,15 +716,6 @@ int GetHighestKnownUniversalApiContractVersionForTesting() {
 
 std::string GetUnifiedPlatformForTesting() {
   return GetUnifiedPlatform();
-}
-
-// Inaccurately named for historical reasons
-std::string GetWebKitVersion() {
-  return base::StringPrintf("537.36 (%s)", CHROMIUM_GIT_REVISION);
-}
-
-std::string GetChromiumGitRevision() {
-  return CHROMIUM_GIT_REVISION;
 }
 
 // Return the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty string

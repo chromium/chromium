@@ -93,12 +93,6 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
 int GetHighestKnownUniversalApiContractVersionForTesting();
 #endif  // BUILDFLAG(IS_WIN)
 
-// Returns the (incorrectly named, for historical reasons) WebKit version, in
-// the form "major.minor (@chromium_git_revision)".
-std::string GetWebKitVersion();
-
-std::string GetChromiumGitRevision();
-
 // Returns the CPU architecture in Windows/Mac/POSIX/Fuchsia and the empty
 // string on Android or if unknown.
 std::string GetCpuArchitecture();

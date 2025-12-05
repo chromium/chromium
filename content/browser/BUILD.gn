@@ -97,6 +97,7 @@ source_set("browser") {
     "//build:branding_buildflags",
     "//build:chromecast_buildflags",
     "//build/config/compiler:compiler_buildflags",
+    "//build/util:chromium_git_revision",
     "//cc",
     "//cc/animation",
     "//cc/mojo_embedder",
