@@ -176,9 +176,7 @@ class GeolocationLocationProviderManagerTest : public testing::Test {
   // (as defined in the FeatureParam options) are used, simplifying test setup
   // and avoiding invalid configurations.
   bool SetExperimentMode(mojom::LocationProviderManagerMode mode) {
-    auto options = UNSAFE_TODO(
-        base::span(features::kLocationProviderManagerParam.options.get(),
-                   features::kLocationProviderManagerParam.option_count));
+    auto options = features::kLocationProviderManagerParam.options;
     auto it = std::ranges::find(
         options, mode,
         &base::FeatureParam<

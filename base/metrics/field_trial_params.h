@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -191,13 +192,12 @@ struct FeatureParam<Enum, true> {
       const Feature* feature,
       const char* name,
       const Enum default_value,
-      const std::array<Option, option_count>& options,
+      const std::array<Option, option_count>& options_array,
       Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
       : feature(feature),
         name(name),
         default_value(default_value),
-        options(options.data()),
-        option_count(option_count),
+        options(options_array),
         cache_getter(cache_getter) {
     static_assert(option_count >= 1, "FeatureParam<enum> has no options");
   }
@@ -207,13 +207,12 @@ struct FeatureParam<Enum, true> {
       const Feature* feature,
       const char* name,
       const Enum default_value,
-      const Option (*options)[option_count],
+      const Option (*options_array)[option_count],
       Enum (*cache_getter)(const FeatureParam<Enum>*) = nullptr)
       : feature(feature),
         name(name),
         default_value(default_value),
-        options(*options),
-        option_count(option_count),
+        options(*options_array),
         cache_getter(cache_getter) {
     static_assert(option_count >= 1, "FeatureParam<enum> has no options");
   }
@@ -227,16 +226,15 @@ struct FeatureParam<Enum, true> {
     return GetWithoutCache();
   }
   Enum GetWithoutCache() const {
-    return GetFieldTrialParamByFeatureAsEnum(
-        *feature, name, default_value,
-        UNSAFE_TODO(base::span(&*options, option_count)));
+    return GetFieldTrialParamByFeatureAsEnum(*feature, name, default_value,
+                                             options);
   }
 
   // Returns the param-string for the given enum value.
   std::string GetName(Enum value) const {
-    for (size_t i = 0; i < option_count; ++i) {
-      if (value == UNSAFE_TODO(options[i].value)) {
-        return UNSAFE_TODO(options[i].name);
+    for (const auto& option : options) {
+      if (value == option.value) {
+        return option.name;
       }
     }
     NOTREACHED();
@@ -245,10 +243,7 @@ struct FeatureParam<Enum, true> {
   const raw_ptr<const base::Feature> feature;
   const char* const name;
   const Enum default_value;
-  // TODO(crbug.com/40284755): Remove AllowPtrArithmetic if possible after
-  // unsafe buffers have been evaluated.
-  const raw_ptr<const Option, AllowPtrArithmetic> options;
-  const size_t option_count;
+  const raw_span<const Option> options;
   Enum (*const cache_getter)(const FeatureParam<Enum>*);
 };
 
