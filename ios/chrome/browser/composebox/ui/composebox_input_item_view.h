@@ -11,10 +11,12 @@
 #import "ios/chrome/browser/composebox/ui/composebox_input_item.h"
 
 namespace composeboxAttachments {
+/// The height of input items.
+const float kAttachmentHeight = 44.0f;
 /// Image input item size.
-const CGSize kImageInputItemSize = {86.0f, 44.0f};
+const CGSize kImageInputItemSize = {86.0f, kAttachmentHeight};
 /// Tab/File input item size.
-const CGSize kTabFileInputItemSize = {136.0f, 44.0f};
+const CGSize kTabFileInputItemSize = {136.0f, kAttachmentHeight};
 }  // namespace composeboxAttachments
 
 // The aim input item view.
