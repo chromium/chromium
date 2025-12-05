@@ -8703,6 +8703,7 @@ HTMLElement* Document::TopmostPopoverOrHint() const {
   return nullptr;
 }
 void Document::SetPopoverPointerdownTarget(const HTMLElement* popover) {
+  CHECK(!RuntimeEnabledFeatures::LightDismissFromClickEnabled());
   DCHECK(!popover || popover->IsPopover());
   popover_pointerdown_target_ = popover;
 }
@@ -8712,6 +8713,7 @@ const HTMLDialogElement* Document::DialogPointerdownTarget() const {
 }
 
 void Document::SetDialogPointerdownTarget(const HTMLDialogElement* dialog) {
+  CHECK(!RuntimeEnabledFeatures::LightDismissFromClickEnabled());
   DCHECK(!dialog || dialog->IsOpen());
   dialog_pointerdown_target_ = dialog;
 }

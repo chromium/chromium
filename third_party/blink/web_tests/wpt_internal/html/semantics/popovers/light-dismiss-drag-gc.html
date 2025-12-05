@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+<link rel=help href="https://github.com/whatwg/html/issues/10905">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+
+<div id=container></div>
+
+<div id=popover popover>popover</div>
+
+<script>
+const container = document.getElementById('container');
+const popover = document.getElementById('popover');
+popover.showPopover();
+
+function setup() {
+  container.innerHTML = `
+  <div id=a>A</div>
+  <div id=b>B</div>
+  `;
+}
+
+[true, false].forEach(isTouch => {
+  promise_test(async () => {
+    setup();
+    let mouseupFired = false;
+    const weaka = new WeakRef(document.getElementById('a'));
+
+    container.addEventListener('mouseup', () => {
+      mouseupFired = true;
+      window.gc();
+      assert_false(!!weaka.deref());
+    }, {once: true});
+
+    container.addEventListener('pointerdown', event => {
+      event.target.releasePointerCapture(event.pointerId);
+      event.target.remove();
+    }, {once: true});
+
+    const rect = weaka.deref().getBoundingClientRect();
+    const actions = new test_driver.Actions();
+    if (isTouch) {
+      actions.addPointer('finger', 'touch');
+    }
+    actions.pointerMove(
+      rect.x + (rect.width / 2),
+      rect.y + (rect.height / 2));
+    actions.pointerDown();
+    actions.pointerUp();
+    await actions.send();
+
+    assert_true(mouseupFired, 'mouseup should have been fired.');
+    // Ideally this would trigger a light dismiss, but removing the
+    // pointerdown/mousedown node before a click is fired causes no click to be
+    // fired, which means we don't get light dismiss.
+    // https://github.com/w3c/uievents/issues/141
+    assert_true(popover.matches(':popover-open'), 'popover should be open.');
+  }, `${isTouch ? 'touch' : 'mouse'}: click on a`);
+});
+</script>

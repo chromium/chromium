@@ -8,6 +8,7 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/public_buildflags.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/core/annotation/annotation_agent_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/selection_controller.h"
@@ -361,11 +362,44 @@ WebInputEventResult GestureManager::HandleGestureTap(
       Node* click_target_node = current_hit_test.InnerNode()->CommonAncestor(
           *tapped_element, event_handling_util::ParentForClickEvent);
       auto* click_target_element = DynamicTo<Element>(click_target_node);
-      fake_mouse_up.id = GetPointerIdFromWebGestureEvent(gesture_event);
+      PointerId pointer_id = GetPointerIdFromWebGestureEvent(gesture_event);
+      fake_mouse_up.id = pointer_id;
       fake_mouse_up.pointer_type = gesture_event.primary_pointer_type;
+
+      PointerEventFactory::PointerTarget* pointer_down_target =
+          pointer_event_manager_->GetPointerDownTarget(pointer_id);
+      PointerEventFactory::PointerTarget* pointer_up_target =
+          pointer_event_manager_->GetPointerUpTarget(pointer_id);
+      if (!pointer_down_target) {
+        CHECK(!pointer_up_target);
+        // The browser didn't send any pointer events for this touch, so we need
+        // to fake the information for light dismiss. This can happen when the
+        // page has no pointerdown/pointerup event handlers.
+        // TODO(crbug.com/465787221): We should prevent this from happening by
+        // making pointerdown/pointerup get fired when there is a popover or
+        // dialog in the page which may be light dismissed.
+        MouseEventInit* init_for_coords =
+            MakeGarbageCollected<MouseEventInit>();
+        MouseEvent::SetCoordinatesFromWebPointerProperties(
+            fake_mouse_up.FlattenTransform(),
+            frame_->GetDocument()->domWindow(), init_for_coords);
+        pointer_down_target =
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                click_target_element, init_for_coords->clientX(),
+                init_for_coords->clientY());
+        pointer_up_target =
+            MakeGarbageCollected<PointerEventFactory::PointerTarget>(
+                click_target_element, init_for_coords->clientX(),
+                init_for_coords->clientY());
+      } else {
+        CHECK(pointer_up_target);
+      }
+
       click_event_result =
           mouse_event_manager_->SetElementUnderMouseAndDispatchMouseEvent(
-              click_target_element, event_type_names::kClick, fake_mouse_up);
+              click_target_element, event_type_names::kClick, fake_mouse_up,
+              pointer_down_target, pointer_up_target);
+      pointer_event_manager_->RemovePointerTargets(pointer_id);
 
       // Dispatching a JS event could have detached the frame.
       if (frame_->View())
