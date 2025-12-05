@@ -74,6 +74,9 @@ declare namespace chrome {
     let contentFinishedStopSource: number;
     let unexpectedUpdateContentStopSource: number;
 
+    // Whether the Immersive Read Anything feature flag is enabled.
+    let isImmersiveEnabled: boolean;
+
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 

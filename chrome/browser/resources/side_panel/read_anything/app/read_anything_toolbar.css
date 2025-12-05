@@ -98,6 +98,16 @@
   flex-wrap: var(--toolbar-flex-wrap);
 }
 
+.immersive-toolbar-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: end;
+  overflow: visible;
+  padding: 6px 8px;
+  flex-wrap: var(--toolbar-flex-wrap);
+}
+
 .announce-block {
   width:1px;
   height:1px;

@@ -99,6 +99,25 @@ suite('Toolbar', () => {
 
       assertTrue(toolbar.$.fontMenu.$.menu.$.lazyMenu.get().open);
     });
+
+    suite('with immersive reading mode', () => {
+      setup(() => {
+        chrome.readingMode.isImmersiveEnabled = true;
+        return createToolbar();
+      });
+
+      test('does not have highlight menu', () => {
+        stubAnimationFrame();
+        const highlightButton = getButton('highlight');
+        assertFalse(!!highlightButton);
+      });
+
+      test('does not have voice menu', () => {
+        stubAnimationFrame();
+        const voiceButton = getButton('voice-selection');
+        assertFalse(!!voiceButton);
+      });
+    });
   });
 
   suite('without read aloud', () => {
@@ -406,6 +425,72 @@ suite('Toolbar', () => {
       assertStringContains(
           'play / pause, keyboard shortcut k',
           playPauseButton.ariaLabel!.toLowerCase());
+    });
+
+    suite('with immersive reading mode enabled', () => {
+      setup(async () => {
+        chrome.readingMode.isImmersiveEnabled = true;
+        await createToolbar();
+        const next = getButton('nextGranularity');
+        assertTrue(!!next, 'next');
+        nextButton = next;
+        const previous = getButton('previousGranularity');
+        assertTrue(!!previous, 'previous');
+        previousButton = previous;
+
+        toolbar.isReadAloudPlayable = true;
+        return microtasksFinished();
+      });
+
+      test(
+          'granularity buttons are visible when speech is inactive',
+          async () => {
+            toolbar.isSpeechActive = false;
+            await microtasksFinished();
+            assertTrue(isVisible(previousButton) && isVisible(nextButton));
+          });
+
+      test('next button emits next event if speech is active', async () => {
+        toolbar.isSpeechActive = true;
+        await microtasksFinished();
+
+        let nextEmitted = false;
+        const handler = () => nextEmitted = true;
+
+        toolbar.addEventListener(ToolbarEvent.NEXT_GRANULARITY, handler);
+
+        nextButton.click();
+        await microtasksFinished();
+
+        assertTrue(nextEmitted);
+      });
+
+      test(
+          'previous button emits previous event if speech is active',
+          async () => {
+            toolbar.isSpeechActive = true;
+            await microtasksFinished();
+
+            let previousEmitted = false;
+            document.addEventListener(
+                ToolbarEvent.PREVIOUS_GRANULARITY,
+                () => previousEmitted = true);
+
+            previousButton.click();
+            await microtasksFinished();
+
+            assertTrue(previousEmitted);
+          });
+
+      test(
+          'next and previous buttons are disabled if speech is not activee',
+          async () => {
+            toolbar.isSpeechActive = false;
+            await microtasksFinished();
+
+            assertTrue(nextButton.disabled);
+            assertTrue(previousButton.disabled);
+          });
     });
   });
 

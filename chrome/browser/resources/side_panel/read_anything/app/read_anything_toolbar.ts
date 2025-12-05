@@ -167,6 +167,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   accessor pageLanguage: string = '';
   protected accessor hideSpinner_: boolean = true;
   protected isReadAloudEnabled_: boolean = true;
+  protected isImmersiveEnabled_: boolean = false;
   // Overflow buttons on the toolbar that open a menu of options.
   protected accessor moreOptionsButtons_: MenuButton[] = [];
   protected accessor speechRate_: number = 1;
@@ -207,6 +208,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private maybeUpdateMoreOptions_() {
+    if (this.isImmersiveEnabled_) {
+      return;
+    }
+
     // Hide the more options button first to calculate if we need it
     const toolbar = this.$.toolbarContainer;
     const moreOptionsButton = toolbar.querySelector<HTMLElement>('#more');
@@ -292,6 +297,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     this.logger_.logTimeFrom(
         TimeFrom.TOOLBAR, this.startTime_, this.constructorTime_);
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
+    this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
 
     // Only add the button to the toolbar if the feature is enabled.
     if (chrome.readingMode.imagesFeatureEnabled) {
@@ -328,17 +334,23 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private initializeMenuButtons_() {
+    const fontSizeElement = {
+      id: 'font-size',
+      icon: 'read-anything:font-size',
+      ariaLabel: loadTimeData.getString('fontSizeTitle'),
+      openMenu: (target: HTMLElement) =>
+          openMenu(this.$.fontSizeMenu.get(), target),
+      announceBlock: html`<div id='size-announce' class='announce-block'
+            aria-live='polite'></div>`,
+    };
+    if (this.isImmersiveEnabled_) {
+      this.textStyleOptions_ = [fontSizeElement];
+      return;
+    }
+
     if (this.isReadAloudEnabled_) {
       this.textStyleOptions_.push(
-          {
-            id: 'font-size',
-            icon: 'read-anything:font-size',
-            ariaLabel: loadTimeData.getString('fontSizeTitle'),
-            openMenu: (target: HTMLElement) =>
-                openMenu(this.$.fontSizeMenu.get(), target),
-            announceBlock: html`<div id='size-announce' class='announce-block'
-       aria-live='polite'></div>`,
-          },
+          fontSizeElement,
           {
             id: 'font',
             icon: 'read-anything:font',
