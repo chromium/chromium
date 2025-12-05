@@ -797,9 +797,12 @@ chromium-metrics-reviews@google.com.
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
-    Compression ratio of the serialized protobuf that will be uploaded to the
-    UMA server. This serialized protobuf is compressed using gzip. See also
-    UMA.LogSize.OnSuccess.
+    Note: This is not a compression ratio. It is computed as 100 * compressed
+    size / original size.
+
+    Compressed size fraction of the uncompressed size for a protobuf that will
+    be uploaded to the UMA server. This serialized protobuf is compressed using
+    gzip. See also UMA.LogSize.OnSuccess.
   </summary>
 </histogram>
 
