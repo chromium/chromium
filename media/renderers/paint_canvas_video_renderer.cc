@@ -777,7 +777,6 @@ class VideoTextureBacking : public cc::TextureBacking {
                                          kPremul_SkAlphaType,
                                          color_space.ToSkColorSpace())) {
     raster_context_provider_ = std::move(raster_context_provider);
-    CHECK(raster_context_provider_->ContextCapabilities().gpu_rasterization);
     auto* sii = raster_context_provider_->SharedImageInterface();
 
     // This SI is used to cache the VideoFrame. We copy the contents of the
@@ -890,7 +889,6 @@ void PaintCanvasVideoRenderer::Paint(
           << "Can't render textured frames w/o viz::RasterContextProvider";
       return;  // Unable to get/create a shared main thread context.
     }
-    CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   }
 
   gfx::RectF dest_rect = params.dest_rect.value_or(
@@ -1039,9 +1037,6 @@ void PaintCanvasVideoRenderer::Copy(
     scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
     viz::RasterContextProvider* raster_context_provider) {
-  CHECK(!raster_context_provider ||
-        raster_context_provider->ContextCapabilities().gpu_rasterization);
-
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
@@ -1408,7 +1403,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   if (!raster_context_provider) {
     return false;
   }
-  CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   gpu::raster::RasterInterface* canvas_ri =
       raster_context_provider->RasterInterface();
   DCHECK(canvas_ri);
@@ -1517,7 +1511,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // We copy the contents of the source VideoFrame into the intermediate SI
   // over the raster interface and read out the contents of the intermediate
   // SI into the destination GL texture via the GLES2 interface.
-  CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
   gpu::SharedImageUsageSet src_usage =
       gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
 
@@ -1688,7 +1681,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   // could cause problems since the pool of VideoFrames has a fixed size.
   if (video_frame->HasSharedImage()) {
     CHECK(raster_context_provider);
-    CHECK(raster_context_provider->ContextCapabilities().gpu_rasterization);
     auto* ri = raster_context_provider->RasterInterface();
     DCHECK(ri);
     const auto video_frame_si = video_frame->shared_image();
