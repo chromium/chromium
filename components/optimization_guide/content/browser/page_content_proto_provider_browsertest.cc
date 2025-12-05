@@ -442,7 +442,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
       testing::UnorderedElementsAre(
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL,
           optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER,
-          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_EVENTS,
           optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER,
           optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK,
           optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS,

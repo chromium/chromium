@@ -4105,10 +4105,6 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseHover) {
       div_node.content_attributes->node_interaction_info->clickability_reasons,
       testing::Contains(
           mojom::blink::AIPageContentClickabilityReason::kMouseHover));
-  EXPECT_THAT(
-      div_node.content_attributes->node_interaction_info->clickability_reasons,
-      testing::Contains(
-          mojom::blink::AIPageContentClickabilityReason::kMouseEvents));
 }
 
 TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseClick) {
@@ -4131,10 +4127,6 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMouseClick) {
       div_node.content_attributes->node_interaction_info->clickability_reasons,
       testing::Contains(
           mojom::blink::AIPageContentClickabilityReason::kMouseClick));
-  EXPECT_THAT(
-      div_node.content_attributes->node_interaction_info->clickability_reasons,
-      testing::Contains(
-          mojom::blink::AIPageContentClickabilityReason::kMouseEvents));
 }
 
 TEST_F(AIPageContentAgentTest, ClickabilityReasonKeyEvents) {
@@ -4237,7 +4229,6 @@ TEST_F(AIPageContentAgentTest, ClickabilityReasonMultipleReasons) {
       testing::UnorderedElementsAre(
           mojom::blink::AIPageContentClickabilityReason::kClickableControl,
           mojom::blink::AIPageContentClickabilityReason::kClickEvents,
-          mojom::blink::AIPageContentClickabilityReason::kMouseEvents,
           mojom::blink::AIPageContentClickabilityReason::kMouseHover,
           mojom::blink::AIPageContentClickabilityReason::kMouseClick,
           mojom::blink::AIPageContentClickabilityReason::kKeyEvents,

@@ -403,11 +403,6 @@ void AddClickabilityReasons(
   if (has_mouse_click) {
     interaction_info.clickability_reasons.push_back(Reason::kMouseClick);
   }
-  // TODO(linnan): Remove this once consumers move to use kMouseClick and
-  // kMouseHover.
-  if (has_mouse_hover || has_mouse_click) {
-    interaction_info.clickability_reasons.push_back(Reason::kMouseEvents);
-  }
 
   if (element.HasJSBasedEventListeners(event_type_names::kKeydown) ||
       element.HasJSBasedEventListeners(event_type_names::kKeypress) ||

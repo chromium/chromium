@@ -119,8 +119,6 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL;
     case blink::mojom::AIPageContentClickabilityReason::kClickEvents:
       return optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER;
-    case blink::mojom::AIPageContentClickabilityReason::kMouseEvents:
-      return optimization_guide::proto::CLICKABILITY_REASON_MOUSE_EVENTS;
     case blink::mojom::AIPageContentClickabilityReason::kKeyEvents:
       return optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS;
     case blink::mojom::AIPageContentClickabilityReason::kEditable:

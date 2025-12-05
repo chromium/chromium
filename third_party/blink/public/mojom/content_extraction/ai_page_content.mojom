@@ -143,13 +143,6 @@ enum AIPageContentClickabilityReason {
   // The node has a click event handler.
   kClickEvents,
 
-  // The node has mouse event handlers like mouseup, mousedown, mouseover and
-  // mouseenter.
-  //
-  // TODO(linnan): Remove this once consumers move to use kMouseClick and
-  // kMouseHover.
-  kMouseEvents,
-
     // The node has mouse event handlers like mouseup and mousedown.
   kMouseClick,
 
