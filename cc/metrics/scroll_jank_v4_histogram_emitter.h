@@ -9,7 +9,7 @@
 
 #include "base/containers/enum_set.h"
 #include "cc/cc_export.h"
-#include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 
 namespace cc {
 

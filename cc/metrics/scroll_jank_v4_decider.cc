@@ -12,9 +12,9 @@
 #include "base/check_op.h"
 #include "base/time/time.h"
 #include "cc/base/features.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
 namespace cc {
@@ -27,8 +27,7 @@ using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
 
 }  // namespace
 
-ScrollUpdateEventMetrics::ScrollJankV4Result
-ScrollJankV4Decider::DecideJankForFrameWithRealScrollUpdates(
+ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithRealScrollUpdates(
     const ScrollJankV4FrameStage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args) {
@@ -37,7 +36,7 @@ ScrollJankV4Decider::DecideJankForFrameWithRealScrollUpdates(
                                              IsFastScroll(*updates.real()));
 }
 
-ScrollUpdateEventMetrics::ScrollJankV4Result
+ScrollJankV4Result
 ScrollJankV4Decider::DecideJankForFrameWithSyntheticScrollUpdatesOnly(
     const ScrollJankV4FrameStage::ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
@@ -49,8 +48,7 @@ ScrollJankV4Decider::DecideJankForFrameWithSyntheticScrollUpdatesOnly(
       future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);
 }
 
-ScrollUpdateEventMetrics::ScrollJankV4Result
-ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
+ScrollJankV4Result ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
     const ScrollUpdates& updates,
     const ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
@@ -62,7 +60,7 @@ ScrollJankV4Decider::DecideJankForFrameWithScrollUpdates(
   base::TimeDelta vsync_interval = args.interval;
   const DamagingFrame* damaging_frame = std::get_if<DamagingFrame>(&damage);
 
-  ScrollUpdateEventMetrics::ScrollJankV4Result result = {
+  ScrollJankV4Result result = {
       .is_damaging_frame = !!damaging_frame,
   };
   if (updates.real().has_value()) {
@@ -242,7 +240,7 @@ JankReasonArray<int> ScrollJankV4Decider::CalculateMissedVsyncsPerReason(
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
     bool treat_as_fast_scroll,
-    ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
+    ScrollJankV4Result& result) const {
   DCHECK_GT(vsyncs_since_previous_frame, 1);
 
   static const double kStabilityCorrection =
@@ -335,7 +333,7 @@ ScrollJankV4Decider::CalculateRunningDeliveryCutoff(
     const ScrollUpdates& updates,
     const ScrollJankV4Frame::ScrollDamage& damage,
     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
-    ScrollUpdateEventMetrics::ScrollJankV4Result& result) const {
+    ScrollJankV4Result& result) const {
   // We should consider Chrome's past performance
   // (`*prev_frame_data_->running_delivery_cutoff`) to update
   // the running delivery cut-off as long as there's data available for the

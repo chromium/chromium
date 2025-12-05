@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/test/metrics/histogram_tester.h"
-#include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {

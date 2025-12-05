@@ -11,8 +11,8 @@
 
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
-#include "cc/metrics/event_metrics.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -35,7 +35,6 @@ using NonDamagingFrame = ScrollJankV4Frame::NonDamagingFrame;
 using ScrollUpdates = ScrollJankV4FrameStage::ScrollUpdates;
 using Real = ScrollUpdates::Real;
 using Synthetic = ScrollUpdates::Synthetic;
-using ScrollJankV4Result = ScrollUpdateEventMetrics::ScrollJankV4Result;
 
 /* Matches a result iff `matcher` matches `result->missed_vsyncs_per_reason`. */
 ::testing::Matcher<const ScrollJankV4Result&> HasMissedVsyncsPerReasonMatching(

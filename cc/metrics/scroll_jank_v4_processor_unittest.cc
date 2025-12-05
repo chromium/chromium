@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "cc/test/event_metrics_test_creator.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -45,8 +46,7 @@ constexpr JankReasonArray<int> MakeMissedVsyncCounts(
 // `result_matcher` matches `event_metrics->AsScrollUpdate()->scroll_jank_v4()`.
 ::testing::Matcher<const std::unique_ptr<EventMetrics>&>
 ScrollJankV4DataMatches(
-    ::testing::Matcher<
-        const std::optional<ScrollUpdateEventMetrics::ScrollJankV4Result>&>
+    ::testing::Matcher<const std::optional<ScrollJankV4Result>&>
         result_matcher) {
   // We need to wrap `->AsScrollUpdate()` in a `::testing::Pointee()` because
   // `event_metrics` is a `std::unique_ptr`.
@@ -68,9 +68,9 @@ const ::testing::Matcher<const std::unique_ptr<EventMetrics>&> kNullJankV4Data =
 ::testing::Matcher<const std::unique_ptr<EventMetrics>&>
 HasMissedVsyncsPerReasonV4(::testing::Matcher<const JankReasonArray<int>&>
                                missed_vsyncs_per_reason_matcher) {
-  return ScrollJankV4DataMatches(::testing::Optional(::testing::Field(
-      &ScrollUpdateEventMetrics::ScrollJankV4Result::missed_vsyncs_per_reason,
-      missed_vsyncs_per_reason_matcher)));
+  return ScrollJankV4DataMatches(::testing::Optional(
+      ::testing::Field(&ScrollJankV4Result::missed_vsyncs_per_reason,
+                       missed_vsyncs_per_reason_matcher)));
 }
 
 // Matches a pointer to event metrics iff

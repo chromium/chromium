@@ -14,6 +14,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -85,7 +86,7 @@ ToProtoEnum(JankReason reason) {
 }
 
 void PopulateScrollJankV4ResultProto(
-    const ScrollUpdateEventMetrics::ScrollJankV4Result& result,
+    const ScrollJankV4Result& result,
     perfetto::protos::pbzero::EventLatency_ScrollJankV4Result& out) {
   bool is_janky = false;
   for (int i = 0; i <= static_cast<int>(JankReason::kMaxValue); i++) {

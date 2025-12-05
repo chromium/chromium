@@ -14,6 +14,7 @@
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
 #include "cc/metrics/scroll_jank_v4_histogram_emitter.h"
+#include "cc/metrics/scroll_jank_v4_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 
@@ -24,7 +25,7 @@ namespace {
 class ProcessorResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
-  void OnFrameResult(ScrollUpdateEventMetrics::ScrollJankV4Result result,
+  void OnFrameResult(ScrollJankV4Result result,
                      ScrollUpdateEventMetrics* earliest_event) override {
     bool counts_towards_histogram_frame_count =
         result.is_damaging_frame ||
