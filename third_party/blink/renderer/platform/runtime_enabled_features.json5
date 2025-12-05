@@ -3778,7 +3778,7 @@
     },
     {
       name: "PaintTimingMixin",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "PaintTimingRecordTimingForDetachedPaintedElements",
