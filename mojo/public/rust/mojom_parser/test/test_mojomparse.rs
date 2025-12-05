@@ -78,6 +78,9 @@ macro_rules! bare_leaf {
     ($leaf_ty:expr) => {
         MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: false }
     };
+    ($leaf_ty:expr, $nullable:expr) => {
+        MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: $nullable }
+    };
 }
 
 macro_rules! struct_leaf {
@@ -85,6 +88,12 @@ macro_rules! struct_leaf {
         StructuredBodyElement::SingleValue(
             $ord,
             MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: false },
+        )
+    };
+    ($ord:expr, $leaf_ty:expr, $nullable:expr) => {
+        StructuredBodyElement::SingleValue(
+            $ord,
+            MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: $nullable },
         )
     };
 }
@@ -107,6 +116,16 @@ impl TestType {
             // Everything else is represented as itself.
             _ => self.packed_type.clone(),
         }
+    }
+
+    // These are separate functions mostly to avoid cluttering all the existing
+    // calls to as_struct_field with an extra, unused parameter
+    fn as_nullable_struct_field(&self, ordinal: Ordinal) -> StructuredBodyElementOwned {
+        StructuredBodyElement::SingleValue(ordinal, self.packed_type.clone().make_nullable())
+    }
+
+    fn as_nullable_union_field(&self) -> MojomWireType {
+        self.as_union_field().make_nullable()
     }
 
     /// Given the rust type T corresponding to this TestType, validate that:
@@ -1785,5 +1804,418 @@ fn test_complex_union() {
             "u".to_string(),
             holds_complex_types_mojom_m([(19, 120), (29, 210)].into()),
         )]),
+    );
+}
+
+macro_rules! nullable_ty {
+    ($inner_ty:expr) => {
+        MojomType::Nullable { inner_type: Box::new($inner_ty) }
+    };
+}
+
+macro_rules! nullable_val {
+    ($inner_val:expr) => {
+        MojomValue::Nullable($inner_val.map(Box::new))
+    };
+}
+
+// Mojom Definition:
+// struct NullableBasics {
+//   bool? b;
+//   uint16? u16;
+//   int8? i8;
+//   Empty? empty;
+//   TestEnum? e;
+//   FourInts? fourints;
+// }
+static NULLABLE_BASICS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "NullableBasics",
+    base_type: wrap_struct_fields_type(vec![
+        ("b".to_string(), nullable_ty!(MojomType::Bool)),
+        ("n1".to_string(), nullable_ty!(MojomType::UInt16)),
+        ("n2".to_string(), nullable_ty!(MojomType::Int8)),
+        ("empty".to_string(), nullable_ty!(EMPTY_TY.base_type.clone())),
+        ("e".to_string(), nullable_ty!(MojomType::Enum { is_valid: TEST_ENUM_PRED })),
+        ("fourints".to_string(), nullable_ty!(FOUR_INTS_TY.base_type.clone())),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            (
+                "b_tag".to_string(),
+                StructuredBodyElement::Bitfield([
+                    Some((0, true)),
+                    Some((0, false)),
+                    Some((1, true)),
+                    Some((2, true)),
+                    Some((4, true)),
+                    None,
+                    None,
+                    None,
+                ]),
+            ),
+            ("n2_val".to_string(), struct_leaf!(2, PackedLeafType::Int8, true)),
+            ("n1_val".to_string(), struct_leaf!(1, PackedLeafType::UInt16, true)),
+            (
+                "e_val".to_string(),
+                struct_leaf!(4, PackedLeafType::Enum { is_valid: TEST_ENUM_PRED }, true),
+            ),
+            ("empty".to_string(), EMPTY_TY.as_nullable_struct_field(3)),
+            ("fourints".to_string(), FOUR_INTS_TY.as_nullable_struct_field(5)),
+        ],
+        6,
+    ),
+});
+
+fn nullable_basics_mojom(
+    b: Option<bool>,
+    n1: Option<u16>,
+    n2: Option<i8>,
+    empty: Option<MojomValue>,
+    e: Option<u32>,
+    fourints: Option<MojomValue>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("b".to_string(), nullable_val!(b.map(MojomValue::Bool))),
+        ("n1".to_string(), nullable_val!(n1.map(MojomValue::UInt16))),
+        ("n2".to_string(), nullable_val!(n2.map(MojomValue::Int8))),
+        ("empty".to_string(), nullable_val!(empty)),
+        ("e".to_string(), nullable_val!(e.map(MojomValue::Enum))),
+        ("fourints".to_string(), nullable_val!(fourints)),
+    ])
+}
+
+// Mojom Definition:
+// array<bool?>
+static ARRAY_NULL_BOOL_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<bool?>",
+    base_type: array!(nullable_ty!(MojomType::Bool), None),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Bool, true), None),
+});
+
+fn array_null_bool_mojom(elts: Vec<Option<bool>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter().map(|elt| nullable_val!(elt.map(MojomValue::Bool))).collect(),
+    )
+}
+
+// Mojom Definition:
+// array<Empty?>
+static ARRAY_NULL_EMPTY_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<Empty?>",
+    base_type: array!(nullable_ty!(EMPTY_TY.base_type.clone()), None),
+    packed_type: packed_array!(EMPTY_TY.packed_type.clone().make_nullable(), None),
+});
+
+fn array_null_empty_mojom(elts: Vec<Option<Empty>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter().map(|elt| nullable_val!(elt.map(|e| MojomValue::from(e)))).collect(),
+    )
+}
+
+// Mojom Definition:
+// array<TestEnum?>
+static ARRAY_NULL_ENUM_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<TestEnum?>",
+    base_type: array!(nullable_ty!(MojomType::Enum { is_valid: TEST_ENUM_PRED }), None),
+    packed_type: packed_array!(
+        bare_leaf!(PackedLeafType::Enum { is_valid: TEST_ENUM_PRED }, true),
+        None
+    ),
+});
+
+fn array_null_enum_mojom(elts: Vec<Option<TestEnum>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter()
+            .map(|elt| nullable_val!(elt.map(|e| MojomValue::Enum(e.into()))))
+            .collect(),
+    )
+}
+
+// Mojom Definition:
+// array<BaseUnion?>
+static ARRAY_NULL_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<BaseUnion?>",
+    base_type: array!(nullable_ty!(BASE_UNION_TY.base_type.clone()), None),
+    packed_type: packed_array!(BASE_UNION_TY.packed_type.clone().make_nullable(), None),
+});
+
+fn array_null_union_mojom(elts: Vec<Option<BaseUnion>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter().map(|elt| nullable_val!(elt.map(|u| MojomValue::from(u)))).collect(),
+    )
+}
+
+// Mojom Definition:
+// struct ArraysOfNullables {
+//   array<bool?> bools;
+//   array<Empty?> empties;
+//   array<TestEnum?> enums;
+//   array<BaseUnion?> unions;
+// }
+static ARRAYS_OF_NULLABLES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "ArraysOfNullables",
+    base_type: wrap_struct_fields_type(vec![
+        ("bools".to_string(), ARRAY_NULL_BOOL_TY.base_type.clone()),
+        ("empties".to_string(), ARRAY_NULL_EMPTY_TY.base_type.clone()),
+        ("enums".to_string(), ARRAY_NULL_ENUM_TY.base_type.clone()),
+        ("unions".to_string(), ARRAY_NULL_UNION_TY.base_type.clone()),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("bools".to_string(), ARRAY_NULL_BOOL_TY.as_struct_field(0)),
+            ("empties".to_string(), ARRAY_NULL_EMPTY_TY.as_struct_field(1)),
+            ("enums".to_string(), ARRAY_NULL_ENUM_TY.as_struct_field(2)),
+            ("unions".to_string(), ARRAY_NULL_UNION_TY.as_struct_field(3)),
+        ],
+        4,
+    ),
+});
+
+fn arrays_of_nullables_mojom(
+    bools: Vec<Option<bool>>,
+    empties: Vec<Option<Empty>>,
+    enums: Vec<Option<TestEnum>>,
+    unions: Vec<Option<BaseUnion>>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("bools".to_string(), array_null_bool_mojom(bools)),
+        ("empties".to_string(), array_null_empty_mojom(empties)),
+        ("enums".to_string(), array_null_enum_mojom(enums)),
+        ("unions".to_string(), array_null_union_mojom(unions)),
+    ])
+}
+
+// Mojom Definition:
+// array<bool>?
+static NULL_ARRAY_BOOL_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<bool>?",
+    base_type: nullable_ty!(array!(MojomType::Bool, None)),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Bool, false), None).make_nullable(),
+});
+
+fn null_array_bool_mojom(elts: Option<Vec<bool>>) -> MojomValue {
+    nullable_val!(elts.map(|e| MojomValue::Array(e.into_iter().map(MojomValue::Bool).collect())))
+}
+
+// Mojom Definition:
+// array<bool?>?
+static NULL_ARRAY_NULL_BOOL_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<bool?>?",
+    base_type: nullable_ty!(array!(nullable_ty!(MojomType::Bool), None)),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Bool, true), None).make_nullable(),
+});
+
+fn null_array_null_bool_mojom(elts: Option<Vec<Option<bool>>>) -> MojomValue {
+    nullable_val!(elts.map(array_null_bool_mojom))
+}
+
+// Mojom Definition:
+// struct NullableArrays {
+//   array<bool>? null_arr;
+//   array<bool?>? double_null_arr;
+// }
+static NULLABLE_ARRAYS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "NullableArrays",
+    base_type: wrap_struct_fields_type(vec![
+        ("null_arr".to_string(), NULL_ARRAY_BOOL_TY.base_type.clone()),
+        ("double_null_arr".to_string(), NULL_ARRAY_NULL_BOOL_TY.base_type.clone()),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("null_arr".to_string(), NULL_ARRAY_BOOL_TY.as_struct_field(0)),
+            ("double_null_arr".to_string(), NULL_ARRAY_NULL_BOOL_TY.as_struct_field(1)),
+        ],
+        2,
+    ),
+});
+
+fn nullable_arrays_mojom(
+    null_arr: Option<Vec<bool>>,
+    double_null_arr: Option<Vec<Option<bool>>>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("null_arr".to_string(), null_array_bool_mojom(null_arr)),
+        ("double_null_arr".to_string(), null_array_null_bool_mojom(double_null_arr)),
+    ])
+}
+
+// Mojom Definition:
+// union UnionWithNullables {
+//   Empty? e;
+//   string? str;
+//   BaseUnion? u;
+// }
+static UNION_WITH_NULLABLES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "UnionWithNullables",
+    base_type: MojomType::Union {
+        variants: [
+            (0, nullable_ty!(EMPTY_TY.base_type.clone())),
+            (1, nullable_ty!(MojomType::String)),
+            (2, nullable_ty!(BASE_UNION_TY.base_type.clone())),
+        ]
+        .into(),
+    },
+    packed_type: MojomWireType::Union {
+        variants: [
+            (0, EMPTY_TY.as_nullable_union_field()),
+            (1, STRING_TY.as_nullable_union_field()),
+            (2, BASE_UNION_TY.as_nullable_union_field()),
+        ]
+        .into(),
+        is_nullable: false,
+    },
+});
+
+fn union_with_nullables_mojom_e(e: Option<Empty>) -> MojomValue {
+    MojomValue::Union(0, Box::new(nullable_val!(e.map(|_| empty_mojom()))))
+}
+
+fn union_with_nullables_mojom_str(str: Option<&str>) -> MojomValue {
+    MojomValue::Union(
+        1,
+        Box::new(nullable_val!(str.map(|s| MojomValue::String(MojomString::from_str(s))))),
+    )
+}
+
+fn union_with_nullables_mojom_u(u: Option<MojomValue>) -> MojomValue {
+    MojomValue::Union(2, Box::new(nullable_val!(u)))
+}
+
+// Mojom Definition:
+// struct NullableOthers {
+//   UnionWithNullables? u;
+//   map<uint8, uint8>? m;
+//   string? str;
+// }
+static NULLABLE_OTHERS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "NullableOthers",
+    base_type: wrap_struct_fields_type(vec![
+        ("u".to_string(), nullable_ty!(UNION_WITH_NULLABLES_TY.base_type.clone())),
+        ("m".to_string(), nullable_ty!(MAP_U8_U8_TY.base_type.clone())),
+        ("str".to_string(), nullable_ty!(STRING_TY.base_type.clone())),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("u".to_string(), UNION_WITH_NULLABLES_TY.as_nullable_struct_field(0)),
+            ("m".to_string(), MAP_U8_U8_TY.as_nullable_struct_field(1)),
+            ("str".to_string(), STRING_TY.as_nullable_struct_field(2)),
+        ],
+        3,
+    ),
+});
+
+fn nullable_others_mojom(
+    u: Option<MojomValue>,
+    m: Option<HashMap<u8, u8>>,
+    str: Option<&str>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("u".to_string(), nullable_val!(u)),
+        ("m".to_string(), nullable_val!(m.map(map_u8_u8_mojom))),
+        (
+            "str".to_string(),
+            nullable_val!(str.map(|s| MojomValue::String(MojomString::from_str(s)))),
+        ),
+    ])
+}
+
+#[gtest(MojomParser, TestNullables)]
+fn test_nullables() {
+    NULLABLE_BASICS_TY.validate_mojomparse(
+        NullableBasics { b: None, n1: None, n2: None, empty: None, e: None, fourints: None },
+        nullable_basics_mojom(None, None, None, None, None, None),
+    );
+    NULLABLE_BASICS_TY.validate_mojomparse(
+        NullableBasics {
+            b: Some(true),
+            n1: Some(33),
+            n2: Some(12),
+            empty: Some(Empty {}),
+            e: Some(TestEnum::Four),
+            fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+        },
+        nullable_basics_mojom(
+            Some(true),
+            Some(33),
+            Some(12),
+            Some(empty_mojom()),
+            Some(4),
+            Some(four_ints_mojom(1, 2, 3, 4)),
+        ),
+    );
+
+    ARRAYS_OF_NULLABLES_TY.validate_mojomparse(
+        ArraysOfNullables {
+            bools: vec![Some(true), None, Some(false)],
+            empties: vec![None, Some(Empty {}), None, None, None],
+            enums: vec![Some(TestEnum::Seven), None, Some(TestEnum::Zero), Some(TestEnum::Seven)],
+            unions: vec![Some(BaseUnion::n1(5)), None, Some(BaseUnion::b1(true))],
+        },
+        arrays_of_nullables_mojom(
+            vec![Some(true), None, Some(false)],
+            vec![None, Some(Empty {}), None, None, None],
+            vec![Some(TestEnum::Seven), None, Some(TestEnum::Zero), Some(TestEnum::Seven)],
+            vec![Some(BaseUnion::n1(5)), None, Some(BaseUnion::b1(true))],
+        ),
+    );
+
+    NULLABLE_ARRAYS_TY.validate_mojomparse(
+        NullableArrays {
+            null_arr: Some(vec![true, false, true]),
+            double_null_arr: Some(vec![Some(true), None, Some(false)]),
+        },
+        nullable_arrays_mojom(
+            Some(vec![true, false, true]),
+            Some(vec![Some(true), None, Some(false)]),
+        ),
+    );
+    NULLABLE_ARRAYS_TY.validate_mojomparse(
+        NullableArrays { null_arr: None, double_null_arr: None },
+        nullable_arrays_mojom(None, None),
+    );
+
+    UNION_WITH_NULLABLES_TY
+        .validate_mojomparse(UnionWithNullables::e(None), union_with_nullables_mojom_e(None));
+    UNION_WITH_NULLABLES_TY
+        .validate_mojomparse(UnionWithNullables::str(None), union_with_nullables_mojom_str(None));
+    UNION_WITH_NULLABLES_TY
+        .validate_mojomparse(UnionWithNullables::u(None), union_with_nullables_mojom_u(None));
+
+    UNION_WITH_NULLABLES_TY.validate_mojomparse(
+        UnionWithNullables::e(Some(Empty {})),
+        union_with_nullables_mojom_e(Some(Empty {})),
+    );
+    UNION_WITH_NULLABLES_TY.validate_mojomparse(
+        UnionWithNullables::str(Some(MojomString::from_str("hello"))),
+        union_with_nullables_mojom_str(Some("hello")),
+    );
+    UNION_WITH_NULLABLES_TY.validate_mojomparse(
+        UnionWithNullables::u(Some(BaseUnion::n1(123))),
+        union_with_nullables_mojom_u(Some(base_union_mojom_n1(123))),
+    );
+    UNION_WITH_NULLABLES_TY.validate_mojomparse(
+        UnionWithNullables::u(Some(BaseUnion::b1(true))),
+        union_with_nullables_mojom_u(Some(base_union_mojom_b1(true))),
+    );
+    UNION_WITH_NULLABLES_TY.validate_mojomparse(
+        UnionWithNullables::u(Some(BaseUnion::f1(FourInts { a: 1, b: 2, c: 3, d: 4 }))),
+        union_with_nullables_mojom_u(Some(base_union_mojom_f1(four_ints_mojom(1, 2, 3, 4)))),
+    );
+
+    NULLABLE_OTHERS_TY.validate_mojomparse(
+        NullableOthers { u: None, m: None, str: None },
+        nullable_others_mojom(None, None, None),
+    );
+    NULLABLE_OTHERS_TY.validate_mojomparse(
+        NullableOthers {
+            u: Some(UnionWithNullables::u(Some(BaseUnion::n1(42)))),
+            m: Some([(1, 2), (3, 4)].into()),
+            str: Some(MojomString::from_str("hello")),
+        },
+        nullable_others_mojom(
+            Some(union_with_nullables_mojom_u(Some(base_union_mojom_n1(42)))),
+            Some([(1, 2), (3, 4)].into()),
+            Some("hello"),
+        ),
     );
 }

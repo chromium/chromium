@@ -265,3 +265,33 @@ where
         }
     }
 }
+
+// Implement MojomParse for Options
+
+impl<T: MojomParse> From<Option<T>> for MojomValue {
+    fn from(value: Option<T>) -> MojomValue {
+        MojomValue::Nullable(value.map(|v| Box::new(v.into())))
+    }
+}
+
+impl<T: MojomParse> TryFrom<MojomValue> for Option<T> {
+    type Error = anyhow::Error;
+
+    fn try_from(value: MojomValue) -> anyhow::Result<Self> {
+        if let MojomValue::Nullable(opt) = value {
+            return Ok(opt.map(|v| (*v).try_into()).transpose()?);
+        } else {
+            anyhow::bail!(
+                "Cannot construct a value of type {} from this MojomValue: {:?}",
+                std::any::type_name::<Self>(),
+                value
+            );
+        }
+    }
+}
+
+impl<T: MojomParse> MojomParse for Option<T> {
+    fn mojom_type() -> MojomType {
+        MojomType::Nullable { inner_type: Box::new(T::mojom_type()) }
+    }
+}

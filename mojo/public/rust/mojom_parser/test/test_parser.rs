@@ -897,3 +897,182 @@ fn test_complex_union_parsing() -> anyhow::Result<()> {
     )?;
     Ok(())
 }
+
+#[gtest(MojomParser, TestNullableParsing)]
+fn test_nullable_parsing() -> anyhow::Result<()> {
+    validate_parsing::<NullableBasics>(
+        NullableBasics { b: None, n1: None, n2: None, empty: None, e: None, fourints: None },
+        "[u4]32 [u4]0 [b]00000000 [u1]0 [u2]0 [u4]0 [u8]0 [u8]0",
+    )?;
+
+    validate_parsing::<NullableBasics>(
+        NullableBasics {
+            b: Some(true),
+            n1: None,
+            n2: Some(12),
+            empty: None,
+            e: None,
+            fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+        },
+        concat!(
+            "[u4]32 [u4]0 [b]00001011 [u1]12 [u2]0 [u4]0 [u8]0 [dist8]fourints_ptr ",
+            "[anchr]fourints_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4",
+        ),
+    )?;
+
+    validate_parsing::<NullableBasics>(
+        NullableBasics {
+            b: None,
+            n1: Some(33),
+            n2: None,
+            empty: Some(Empty {}),
+            e: Some(TestEnum::Four),
+            fourints: None,
+        },
+        concat!(
+            "[u4]32 [u4]0 [b]00010100 [u1]0 [u2]33 [u4]4 [dist8]empty_ptr [u8]0 ",
+            "[anchr]empty_ptr [u4]8 [u4]0",
+        ),
+    )?;
+
+    validate_parsing::<NullableBasics>(
+        NullableBasics {
+            b: Some(false),
+            n1: Some(44),
+            n2: Some(22),
+            empty: Some(Empty {}),
+            e: Some(TestEnum::Zero),
+            fourints: Some(FourInts { a: 1, b: 2, c: 3, d: 4 }),
+        },
+        concat!(
+            "[u4]32 [u4]0 [b]00011101 [u1]22 [u2]44 [u4]0 [dist8]empty_ptr [dist8]fourints_ptr ",
+            "[anchr]empty_ptr [u4]8 [u4]0 ",
+            "[anchr]fourints_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4",
+        ),
+    )?;
+
+    validate_parsing::<ArraysOfNullables>(
+        ArraysOfNullables {
+            bools: vec![
+                Some(true),
+                None,
+                Some(false),
+                None,
+                None,
+                Some(true),
+                Some(true),
+                Some(false),
+                Some(true),
+                None,
+                None,
+                Some(false),
+            ],
+            empties: vec![None, Some(Empty {}), None, Some(Empty {})],
+            enums: vec![Some(TestEnum::Seven), None, Some(TestEnum::Zero), Some(TestEnum::Seven)],
+            unions: vec![Some(BaseUnion::n1(5)), None, Some(BaseUnion::b1(true))],
+        },
+        concat!(
+            "[u4]40 [u4]0 [dist8]bools_ptr [dist8]empties_ptr [dist8]enums_ptr [dist8]unions_ptr ",
+            "[anchr]bools_ptr [u4]12 [u4]12 [b]11100101 [b]00001001 [b]01100001 [b]00000001 [u4]0 ",
+            "[anchr]empties_ptr [u4]40 [u4]4 [u8]0 [dist8]empty_ptr_1 [u8]0 [dist8]empty_ptr_2 ",
+            "[anchr]empty_ptr_1 [u4]8 [u4]0 ",
+            "[anchr]empty_ptr_2 [u4]8 [u4]0 ",
+            "[anchr]enums_ptr [u4]28 [u4]4 [b]00001101 [u1]0 [u2]0 [u4]7 [u4]0 [u4]0 [u4]7 [u4]0 ",
+            "[anchr]unions_ptr [u4]56 [u4]3 ",
+            "[u4]16 [u4]0 [u8]5 ",
+            "[u8]0 [u8]0 ",
+            "[u4]16 [u4]3 [u8]1"
+        ),
+    )?;
+
+    validate_parsing::<NullableArrays>(
+        NullableArrays { null_arr: None, double_null_arr: None },
+        "[u4]24 [u4]0 [u8]0 [u8]0",
+    )?;
+
+    validate_parsing::<NullableArrays>(
+        NullableArrays {
+            null_arr: Some(vec![true, false, true]),
+            double_null_arr: Some(vec![Some(true), None, Some(false), Some(true)]),
+        },
+        concat!(
+            "[u4]24 [u4]0 [dist8]null_arr_ptr [dist8]double_null_arr_ptr ",
+            "[anchr]null_arr_ptr [u4]9 [u4]3 [b]00000101 [u1]0 [u2]0 [u4]0 ",
+            "[anchr]double_null_arr_ptr [u4]10 [u4]4 [b]00001101 [b]00001001 [u2]0 [u4]0"
+        ),
+    )?;
+
+    validate_parsing::<UnionWithNullables>(UnionWithNullables::e(None), "[u4]16 [u4]0 [u8]0")?;
+    validate_parsing::<UnionWithNullables>(UnionWithNullables::str(None), "[u4]16 [u4]1 [u8]0")?;
+    validate_parsing::<UnionWithNullables>(UnionWithNullables::u(None), "[u4]16 [u4]2 [u8]0")?;
+
+    validate_parsing::<UnionWithNullables>(
+        UnionWithNullables::e(Some(Empty {})),
+        "[u4]16 [u4]0 [dist8]empty_ptr [anchr]empty_ptr [u4]8 [u4]0",
+    )?;
+    validate_parsing::<UnionWithNullables>(
+        UnionWithNullables::str(Some(MojomString::from_str("union_string"))),
+        &format!(
+            "[u4]16 [u4]1 [dist8]union_str_ptr [anchr]union_str_ptr {}",
+            &str_wire_format("union_string")
+        ),
+    )?;
+    validate_parsing::<UnionWithNullables>(
+        UnionWithNullables::u(Some(BaseUnion::n1(123))),
+        "[u4]16 [u4]2 [dist8]u_ptr [anchr]u_ptr [u4]16 [u4]0 [u8]123",
+    )?;
+
+    validate_parsing::<NullableOthers>(
+        NullableOthers { u: None, m: None, str: None },
+        "[u4]40 [u4]0 [u8]0 [u8]0 [u8]0 [u8]0",
+    )?;
+    validate_parsing::<NullableOthers>(
+        NullableOthers {
+            u: Some(UnionWithNullables::u(None)),
+            m: None,
+            str: Some(MojomString::from_str("holla")),
+        },
+        &format!(
+            "{} {} {}",
+            "[u4]40 [u4]0 [u4]16 [u4]2 [u8]0 [u8]0 [dist8]str_ptr ",
+            "[anchr]str_ptr ",
+            &str_wire_format("holla")
+        ),
+    )?;
+    validate_parsing::<NullableOthers>(
+        NullableOthers {
+            u: Some(UnionWithNullables::u(Some(BaseUnion::f1(FourInts {
+                a: 1,
+                b: 2,
+                c: 3,
+                d: 4,
+            })))),
+            m: None,
+            str: None,
+        },
+        concat!(
+            "[u4]40 [u4]0 [u4]16 [u4]2 [dist8]u_inner_ptr [u8]0 [u8]0 ",
+            "[anchr]u_inner_ptr [u4]16 [u4]6 [dist8]f1_ptr ",
+            "[anchr]f1_ptr [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4"
+        ),
+    )?;
+    validate_parsing::<NullableOthers>(
+        NullableOthers {
+            u: Some(UnionWithNullables::u(Some(BaseUnion::n1(42)))),
+            m: Some([(1, 2), (3, 4)].into()),
+            str: Some(MojomString::from_str("hello")),
+        },
+        &format!(
+            "{} {} {} {} {} {} {}",
+            "[u4]40 [u4]0 [u4]16 [u4]2 [dist8]u_inner_ptr [dist8]m_ptr [dist8]str_ptr ",
+            "[anchr]u_inner_ptr [u4]16 [u4]0 [u8]42 ",
+            "[anchr]m_ptr [u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            "[anchr]keys_ptr [u4]10 [u4]2 [u1]1 [u1]3 [u2]0 [u4]0 ",
+            "[anchr]values_ptr [u4]10 [u4]2 [u1]2 [u1]4 [u2]0 [u4]0 ",
+            "[anchr]str_ptr ",
+            &str_wire_format("hello")
+        ),
+    )?;
+
+    Ok(())
+}

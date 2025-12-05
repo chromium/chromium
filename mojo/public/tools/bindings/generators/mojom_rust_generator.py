@@ -29,6 +29,10 @@ _mojom_primitive_type_to_rust_type = {
 
 def _MojomTypeToRustType(ty: mojom.Kind) -> str:
   '''Return the name of the input type in rust syntax'''
+  if mojom.IsNullableKind(ty):
+    inner_ty = _MojomTypeToRustType(ty.MakeUnnullableKind())
+    return f"Option<{inner_ty}>"
+
   # FOR_RELEASE: We don't support nested enums yet
   if mojom.IsStructKind(ty) or mojom.IsEnumKind(ty) or mojom.IsUnionKind(ty):
     return ty.name

@@ -190,3 +190,40 @@ union HoldsComplexTypes {
 struct ComplexUnionHolder {
   HoldsComplexTypes u;
 };
+
+////// TESTS FOR NULLABLES //////
+
+// Packing: [b, nullable tags] n2 n1 e empty fourints
+struct NullableBasics {
+  bool? b;
+  uint16? n1;
+  int8? n2;
+  Empty? empty;
+  TestEnum? e;
+  FourInts? fourints;
+};
+
+struct ArraysOfNullables {
+  array<bool?> bools;
+  array<Empty?> empties;
+  array<TestEnum?> enums;
+  array<BaseUnion?> unions;
+};
+
+struct NullableArrays {
+  array<bool>? null_arr;
+  array<bool?>? double_null_arr;
+};
+
+union UnionWithNullables {
+  // Nullable primitives aren't allowed in unions
+  Empty? e;
+  string? str;
+  BaseUnion? u;
+};
+
+struct NullableOthers {
+  UnionWithNullables? u;
+  map<uint8, uint8>? m;
+  string? str;
+};
