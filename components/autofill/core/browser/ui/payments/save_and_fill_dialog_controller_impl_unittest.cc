@@ -279,9 +279,10 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Local) {
   controller->ShowLocalDialog(create_and_show_view_callback.Get(),
                               card_save_and_fill_dialog_callback.Get());
 
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Local",
-                                      /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogShown2",
+      autofill_metrics::SaveAndFillDialogShown::kLocalDialogShown,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
@@ -300,9 +301,10 @@ TEST_F(SaveAndFillDialogControllerImplTest, Metrics_DialogShown_Upload) {
   controller->ShowUploadDialog({}, create_and_show_view_callback.Get(),
                                card_save_and_fill_dialog_callback.Get());
 
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Upload",
-                                      /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogShown2",
+      autofill_metrics::SaveAndFillDialogShown::kUploadDialogShown,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace autofill

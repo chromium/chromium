@@ -6523,18 +6523,33 @@ Called by update_autofill_enums.py. This is a manual comment.-->
 </histogram>
 
 <histogram name="Autofill.SaveAndFill.DialogShown.{SaveType}" enum="Boolean"
-    expires_after="2026-06-01">
+    expires_after="M145">
+  <owner>averina@google.com</owner>
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Obsolete metric, replaced by Autofill.SaveAndFill.DialogShown2. Records when
+    the Save and Fill dialog is shown, broken down by whether it is a local or
+    upload save.
+  </summary>
+  <token key="SaveType">
+    <variant name="Local" summary="Local save"/>
+    <variant name="Upload" summary="Server save"/>
+  </token>
+</histogram>
+
+<histogram name="Autofill.SaveAndFill.DialogShown2"
+    enum="SaveAndFillDialogShown" expires_after="2026-06-01">
   <owner>averina@google.com</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records when the Save and Fill dialog is shown, broken down by whether it is
     a local or upload save.
+
+    Note that a previous version of this histogram was a boolean histogram split
+    by {SaveType} and was obsoleted in December 2025.
   </summary>
-  <token key="SaveType">
-    <variant name="Local" summary="Local save"/>
-    <variant name="Upload" summary="Server save"/>
-  </token>
 </histogram>
 
 <histogram name="Autofill.SaveAndFill.Funnel.{SaveType}.{Result}"

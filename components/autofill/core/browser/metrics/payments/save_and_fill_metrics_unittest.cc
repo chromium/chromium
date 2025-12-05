@@ -190,9 +190,9 @@ TEST_F(SaveAndFillMetricsTest, LogDialogShown_Upload) {
 
   LogSaveAndFillDialogShown(/*is_upload=*/true);
 
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Upload",
-                                      /*sample=*/true,
-                                      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.SaveAndFill.DialogShown2",
+      SaveAndFillDialogShown::kUploadDialogShown, /*expected_bucket_count=*/1);
 }
 
 TEST_F(SaveAndFillMetricsTest, LogDialogShown_Local) {
@@ -200,8 +200,8 @@ TEST_F(SaveAndFillMetricsTest, LogDialogShown_Local) {
 
   LogSaveAndFillDialogShown(/*is_upload=*/false);
 
-  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown.Local",
-                                      /*sample=*/true,
+  histogram_tester.ExpectUniqueSample("Autofill.SaveAndFill.DialogShown2",
+                                      SaveAndFillDialogShown::kLocalDialogShown,
                                       /*expected_bucket_count=*/1);
 }
 

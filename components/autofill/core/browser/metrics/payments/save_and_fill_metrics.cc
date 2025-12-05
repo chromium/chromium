@@ -58,9 +58,10 @@ void LogSaveAndFillDialogResult(SaveAndFillDialogResult result) {
 }
 
 void LogSaveAndFillDialogShown(bool is_upload) {
-  base::UmaHistogramBoolean(base::StrCat({"Autofill.SaveAndFill.DialogShown.",
-                                          is_upload ? "Upload" : "Local"}),
-                            /*sample=*/true);
+  base::UmaHistogramEnumeration(
+      "Autofill.SaveAndFill.DialogShown2",
+      is_upload ? SaveAndFillDialogShown::kUploadDialogShown
+                : SaveAndFillDialogShown::kLocalDialogShown);
 }
 
 void LogSaveAndFillFunnelMetrics(bool succeeded,

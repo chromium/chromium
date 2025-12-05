@@ -60,6 +60,19 @@ enum class SaveAndFillDialogResult {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogResult)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SaveAndFillDialogShown)
+enum class SaveAndFillDialogShown {
+  // The local Save and Fill dialog was shown.
+  kLocalDialogShown = 0,
+  // The upload Save and Fill dialog was shown.
+  kUploadDialogShown = 1,
+  kMaxValue = kUploadDialogShown,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:SaveAndFillDialogShown)
+
 void LogSaveAndFillFormEvent(SaveAndFillFormEvent event);
 
 // Logs the reason why the Save and Fill suggestion was not shown.
