@@ -193,10 +193,8 @@ void TapMagicStackEditButton() {
 
   // Check the page has been correctly opened.
   [ChromeEarlGrey selectTabAtIndex:1];
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
 }
 
 // Tests the "Open in New Incognito Tab" action of the Most Visited context
@@ -214,10 +212,8 @@ void TapMagicStackEditButton() {
   [ChromeEarlGrey waitForIncognitoTabCount:1];
 
   // Check that the tab has been opened in foreground.
+  [ChromeEarlGrey waitForWebStateVisibleURL:pageURL];
   [ChromeEarlGrey waitForWebStateContainingText:kPageLoadedString];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          pageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
 
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Test did not switch to incognito");
