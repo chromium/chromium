@@ -583,17 +583,18 @@ int OpaqueBrowserFrameView::GetTopAreaHeight() const {
   int top_height = layout_->NonClientTopHeight(false);
   const gfx::Rect web_app_toolbar_bounds = GetBoundsForWebAppFrameToolbar(
       browser_view()->GetWebAppFrameToolbarPreferredSize());
+  const bool should_draw_tabstrip = browser_view()->ShouldDrawTabStrip();
   if (!web_app_toolbar_bounds.IsEmpty()) {
     top_height = std::max({top_height, web_app_toolbar_bounds.bottom(),
-                           layout_->FrameEdgeInsets(false).top() +
-                               GetTabstripMinimumSize().height()});
-  } else {
-    if (browser_view()->ShouldDrawTabStrip()) {
-      top_height = std::max(
-          top_height,
-          GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
-              GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
+                           layout_->FrameEdgeInsets(false).top()});
+    if (should_draw_tabstrip) {
+      top_height = std::max(top_height, GetTabstripMinimumSize().height());
     }
+  } else if (should_draw_tabstrip) {
+    top_height =
+        std::max(top_height,
+                 GetBoundsForTabStripRegion(GetTabstripMinimumSize()).bottom() -
+                     GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP));
   }
   return top_height;
 }
