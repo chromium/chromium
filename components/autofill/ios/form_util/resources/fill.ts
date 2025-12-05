@@ -5,12 +5,9 @@
 import '//components/autofill/ios/form_util/resources/fill_util.js';
 
 import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {formOrFieldsetsToFormData, getFieldName, getFrameUrlOrOrigin, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
-import {getFieldIdentifier} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import type {AutofillFormData} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {formOrFieldsetsToFormData, getFrameUrlOrOrigin, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {isTextField} from '//ios/web/public/js_messaging/resources/utils.js';
 
 // This file provides methods used to fill forms in JavaScript.
 
@@ -24,124 +21,18 @@ const autofillFormFeaturesApi =
   gCrWeb.getRegisteredApi('autofill_form_features');
 
 /**
- * Fills out a FormField object from a given form control element.
- *
- * It is based on the logic in
- *     void WebFormControlElementToFormField(
- *         const blink::WebFormControlElement& element,
- *         ExtractMask extract_mask,
- *         FormFieldData* field);
- * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
- *
- * @param element The element to be processed.
- * @param field Field to fill in the element information.
- */
-gCrWebLegacy.fill.webFormControlElementToFormField = function(
-    element: fillConstants.FormControlElement,
-    field: fillUtil.AutofillFormFieldData) {
-  if (!field || !element) {
-    return;
-  }
-  // The label is not officially part of a form control element; however, the
-  // labels for all form control elements are scraped from the DOM and set in
-  // form data.
-  field.identifier = getFieldIdentifier(element);
-  field.name = getFieldName(element);
-
-  // The raw name and id attributes, which may be empty.
-  field.name_attribute = element.getAttribute('name') || '';
-  field.id_attribute = element.getAttribute('id') || '';
-
-  field.renderer_id = fillUtil.getUniqueID(element);
-
-  field.form_control_type = element.type;
-  const autocompleteAttribute = element.getAttribute('autocomplete');
-  if (autocompleteAttribute) {
-    field.autocomplete_attribute = autocompleteAttribute;
-  }
-  if (field.autocomplete_attribute != null &&
-    field.autocomplete_attribute.length > fillConstants.MAX_DATA_LENGTH) {
-    // Discard overly long attribute values to avoid DOS-ing the browser
-    // process. However, send over a default string to indicate that the
-    // attribute was present.
-    field.autocomplete_attribute = 'x-max-data-length-exceeded';
-  }
-
-  const roleAttribute = element.getAttribute('role');
-  if (roleAttribute && roleAttribute.toLowerCase() === 'presentation') {
-    field.role = fillConstants.ROLE_ATTRIBUTE_PRESENTATION;
-  }
-
-  field.pattern_attribute = element.getAttribute('pattern') ?? '';
-
-  field.placeholder_attribute = element.getAttribute('placeholder') || '';
-  if (field.placeholder_attribute != null &&
-    field.placeholder_attribute.length > fillConstants.MAX_DATA_LENGTH) {
-    // Discard overly long attribute values to avoid DOS-ing the browser
-    // process. However, send over a default string to indicate that the
-    // attribute was present.
-    field.placeholder_attribute = 'x-max-data-length-exceeded';
-  }
-
-  field.aria_label = fillUtil.getAriaLabel(element);
-  field.aria_description = fillUtil.getAriaDescription(element);
-
-  if (!inferenceUtil.isAutofillableElement(element)) {
-    return;
-  }
-
-  if (inferenceUtil.isAutofillableInputElement(element) ||
-      inferenceUtil.isTextAreaElement(element) ||
-      inferenceUtil.isSelectElement(element)) {
-    field.is_autofilled = (element as any).isAutofilled;
-    field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
-    field.should_autocomplete = fillUtil.shouldAutocomplete(element);
-    field.is_focusable = !element.disabled && !(element as any).readOnly &&
-        element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
-  }
-
-  if (inferenceUtil.isAutofillableInputElement(element)) {
-    if (isTextField(element)) {
-      field.max_length = (element as HTMLInputElement).maxLength;
-      if (field.max_length === -1) {
-        // Take default value as defined by W3C.
-        field.max_length = 524288;
-      }
-    }
-    field.is_checkable = inferenceUtil.isCheckableElement(element);
-  } else if (inferenceUtil.isTextAreaElement(element)) {
-    // Nothing more to do in this case.
-  } else {
-    fillUtil.getOptionStringsFromElement(element as HTMLSelectElement, field);
-  }
-
-  let value = fillUtil.valueForElement(element);
-
-  // There is a constraint on the maximum data length in method
-  // WebFormControlElementToFormField() in form_autofill_util.h in order to
-  // prevent a malicious site from DOS'ing the browser: http://crbug.com/49332,
-  // which isn't really meaningful here, but we need to follow the same logic to
-  // get the same form signature wherever possible (to get the benefits of the
-  // existing crowdsourced field detection corpus).
-  if (value.length > fillConstants.MAX_DATA_LENGTH) {
-    value = value.substr(0, fillConstants.MAX_DATA_LENGTH);
-  }
-  field.value = value;
-};
-
-/**
  * Returns a serialized version of |form| to send to the host on form
  * submission.
  *
  * @param form The form to serialize.
  * @return a JSON encoded version of |form|
  */
-gCrWebLegacy.fill.autofillSubmissionData =
-    function(form: HTMLFormElement): fillUtil.AutofillFormData {
-  const formData = new gCrWebLegacy['common'].JSONSafeObject();
-  webFormElementToFormData(window, form, null, formData);
-  return formData;
-};
+gCrWebLegacy.fill.autofillSubmissionData = function(form: HTMLFormElement):
+    AutofillFormData {
+      const formData = new gCrWebLegacy['common'].JSONSafeObject();
+      webFormElementToFormData(window, form, null, formData);
+      return formData;
+    };
 
 /**
  * Fills |form| with the form data object corresponding to the unowned elements
@@ -186,7 +77,7 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
     controlElements: fillConstants.FormControlElement[],
     iframeElements: HTMLIFrameElement[],
     restrictUnownedFieldsToFormlessCheckout: boolean,
-    form: fillUtil.AutofillFormData): boolean {
+    form: AutofillFormData): boolean {
   if (!frame) {
     return false;
   }
@@ -198,7 +89,7 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
   // quantity exceeds the allowed threshold.
   if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
     autofillFormFeaturesApi.getFunction('isAutofillAcrossIframesThrottlingEnabled')()) {
-      iframeElements = [];
+    iframeElements = [];
   }
 
   if (!restrictUnownedFieldsToFormlessCheckout) {
@@ -245,4 +136,3 @@ gCrWebLegacy.fill.unownedFormElementsAndFieldSetsToFormData = function(
       controlElementsWithAutocomplete, /* iframeElements= */ iframeElements,
       form);
 };
-

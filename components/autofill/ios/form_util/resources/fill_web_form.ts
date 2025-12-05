@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 import {registerChildFrame} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
+import * as fillConstants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import type {FormControlElement} from '//components/autofill/ios/form_util/resources/fill_constants.js';
-import {CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE, MAX_DATA_LENGTH, MAX_EXTRACTABLE_FIELDS, MAX_EXTRACTABLE_FRAMES} from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import {inferLabelForElement, inferLabelFromNext} from '//components/autofill/ios/form_util/resources/fill_element_inference.js';
-import {findChildText, isAutofillableElement} from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
-import type {AutofillFormData, AutofillFormFieldData, FrameTokenWithPredecessor} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
+import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
 import {getCanonicalActionForForm, getUniqueID} from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
+import {getFieldIdentifier, getFormControlElements, getFormIdentifier, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {gCrWeb, gCrWebLegacy} from '//ios/web/public/js_messaging/resources/gcrweb.js';
-import {removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+import {isTextField, removeQueryAndReferenceFromURL, trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
 /**
  * Retrieves the registered 'autofill_form_features' CrWebApi
@@ -74,8 +74,8 @@ export function getFrameUrlOrOrigin(frame: Window): string {
  */
 export function webFormElementToFormData(
     frame: Window, formElement: HTMLFormElement,
-    formControlElement: FormControlElement|null, form: AutofillFormData,
-    field?: AutofillFormFieldData,
+    formControlElement: FormControlElement|null,
+    form: fillUtil.AutofillFormData, field?: fillUtil.AutofillFormFieldData,
     extractChildFrames: boolean = true): boolean {
   if (!frame) {
     return false;
@@ -112,7 +112,7 @@ export function webFormElementToFormData(
 
   // To avoid performance bottlenecks, do not keep child frames if their
   // quantity exceeds the allowed threshold.
-  if (iframeElements.length > MAX_EXTRACTABLE_FRAMES &&
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
       autofillFormFeaturesApi.getFunction(
           'isAutofillAcrossIframesThrottlingEnabled')()) {
     iframeElements = [];
@@ -121,6 +121,112 @@ export function webFormElementToFormData(
   return formOrFieldsetsToFormData(
       formElement, formControlElement, /*fieldsets=*/[], controlElements,
       iframeElements, form, field);
+}
+
+/**
+ * Fills out a FormField object from a given form control element.
+ *
+ * It is based on the logic in
+ *     void WebFormControlElementToFormField(
+ *         const blink::WebFormControlElement& element,
+ *         ExtractMask extract_mask,
+ *         FormFieldData* field);
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param element The element to be processed.
+ * @param field Field to fill in the element information.
+ */
+export function webFormControlElementToFormField(
+    element: fillConstants.FormControlElement,
+    field: fillUtil.AutofillFormFieldData) {
+  if (!field || !element) {
+    return;
+  }
+  // The label is not officially part of a form control element; however, the
+  // labels for all form control elements are scraped from the DOM and set in
+  // form data.
+  field.identifier = getFieldIdentifier(element);
+  field.name = getFieldName(element);
+
+  // The raw name and id attributes, which may be empty.
+  field.name_attribute = element.getAttribute('name') || '';
+  field.id_attribute = element.getAttribute('id') || '';
+
+  field.renderer_id = getUniqueID(element);
+
+  field.form_control_type = element.type;
+  const autocompleteAttribute = element.getAttribute('autocomplete');
+  if (autocompleteAttribute) {
+    field.autocomplete_attribute = autocompleteAttribute;
+  }
+  if (field.autocomplete_attribute != null &&
+      field.autocomplete_attribute.length > fillConstants.MAX_DATA_LENGTH) {
+    // Discard overly long attribute values to avoid DOS-ing the browser
+    // process. However, send over a default string to indicate that the
+    // attribute was present.
+    field.autocomplete_attribute = 'x-max-data-length-exceeded';
+  }
+
+  const roleAttribute = element.getAttribute('role');
+  if (roleAttribute && roleAttribute.toLowerCase() === 'presentation') {
+    field.role = fillConstants.ROLE_ATTRIBUTE_PRESENTATION;
+  }
+
+  field.pattern_attribute = element.getAttribute('pattern') ?? '';
+
+  field.placeholder_attribute = element.getAttribute('placeholder') || '';
+  if (field.placeholder_attribute != null &&
+      field.placeholder_attribute.length > fillConstants.MAX_DATA_LENGTH) {
+    // Discard overly long attribute values to avoid DOS-ing the browser
+    // process. However, send over a default string to indicate that the
+    // attribute was present.
+    field.placeholder_attribute = 'x-max-data-length-exceeded';
+  }
+
+  field.aria_label = fillUtil.getAriaLabel(element);
+  field.aria_description = fillUtil.getAriaDescription(element);
+
+  if (!inferenceUtil.isAutofillableElement(element)) {
+    return;
+  }
+
+  if (inferenceUtil.isAutofillableInputElement(element) ||
+      inferenceUtil.isTextAreaElement(element) ||
+      inferenceUtil.isSelectElement(element)) {
+    field.is_autofilled = (element as any).isAutofilled;
+    field.is_user_edited = gCrWebLegacy.form.fieldWasEditedByUser(element);
+    field.should_autocomplete = fillUtil.shouldAutocomplete(element);
+    field.is_focusable = !element.disabled && !(element as any).readOnly &&
+        element.tabIndex >= 0 && fillUtil.isVisibleNode(element);
+  }
+
+  if (inferenceUtil.isAutofillableInputElement(element)) {
+    if (isTextField(element)) {
+      field.max_length = (element as HTMLInputElement).maxLength;
+      if (field.max_length === -1) {
+        // Take default value as defined by W3C.
+        field.max_length = 524288;
+      }
+    }
+    field.is_checkable = inferenceUtil.isCheckableElement(element);
+  } else if (inferenceUtil.isTextAreaElement(element)) {
+    // Nothing more to do in this case.
+  } else {
+    fillUtil.getOptionStringsFromElement(element as HTMLSelectElement, field);
+  }
+
+  let value = fillUtil.valueForElement(element);
+
+  // There is a constraint on the maximum data length in method
+  // WebFormControlElementToFormField() in form_autofill_util.h in order to
+  // prevent a malicious site from DOS'ing the browser: http://crbug.com/49332,
+  // which isn't really meaningful here, but we need to follow the same logic to
+  // get the same form signature wherever possible (to get the benefits of the
+  // existing crowdsourced field detection corpus).
+  if (value.length > fillConstants.MAX_DATA_LENGTH) {
+    value = value.substr(0, fillConstants.MAX_DATA_LENGTH);
+  }
+  field.value = value;
 }
 
 /**
@@ -163,16 +269,17 @@ export function formOrFieldsetsToFormData(
     formElement: HTMLFormElement|null,
     formControlElement: FormControlElement|null, fieldsets: Element[],
     controlElements: FormControlElement[], iframeElements: HTMLIFrameElement[],
-    form: AutofillFormData, _field?: AutofillFormFieldData): boolean {
+    form: fillUtil.AutofillFormData,
+    _field?: fillUtil.AutofillFormFieldData): boolean {
   // This should be a map from a control element to the AutofillFormFieldData.
   // However, without Map support, it's just an Array of AutofillFormFieldData.
-  const elementArray: AutofillFormFieldData[] = [];
+  const elementArray: fillUtil.AutofillFormFieldData[] = [];
 
   // The extracted FormFields.
-  const formFields: AutofillFormFieldData[] = [];
+  const formFields: fillUtil.AutofillFormFieldData[] = [];
 
   // The extracted child frames.
-  const childFrames: FrameTokenWithPredecessor[] = [];
+  const childFrames: fillUtil.FrameTokenWithPredecessor[] = [];
 
   // A vector of booleans that indicate whether each element in
   // |controlElements| meets the requirements and thus will be in the resulting
@@ -236,8 +343,9 @@ export function formOrFieldsetsToFormData(
           inferLabelForElement(controlElement as FormControlElement)?.label ||
           '';
     }
-    if (currentField.label!.length > MAX_DATA_LENGTH) {
-      currentField.label = currentField.label!.substr(0, MAX_DATA_LENGTH);
+    if (currentField.label!.length > fillConstants.MAX_DATA_LENGTH) {
+      currentField.label =
+          currentField.label!.substr(0, fillConstants.MAX_DATA_LENGTH);
     }
 
     if (controlElement === formControlElement) {
@@ -303,11 +411,11 @@ export function formOrFieldsetsToFormData(
 function matchLabelsAndFields(
     labels: HTMLCollectionOf<HTMLLabelElement>,
     formElement: HTMLFormElement|null, controlElements: FormControlElement[],
-    elementArray: AutofillFormFieldData[]) {
+    elementArray: fillUtil.AutofillFormFieldData[]) {
   for (let index = 0; index < labels.length; ++index) {
     const label = labels[index]!;
     const fieldElement = label!.control as FormControlElement;
-    let fieldData: AutofillFormFieldData|null = null;
+    let fieldData: fillUtil.AutofillFormFieldData|null = null;
     if (!fieldElement) {
       // Sometimes site authors will incorrectly specify the corresponding
       // field element's name rather than its id, so we compensate here.
@@ -350,7 +458,7 @@ function matchLabelsAndFields(
     if (!('label' in fieldData)) {
       fieldData.label = '';
     }
-    let labelText = findChildText(label);
+    let labelText = inferenceUtil.findChildText(label);
     if (labelText.length === 0 && !label.htmlFor) {
       labelText = inferLabelFromNext(fieldElement)?.label || '';
     }
@@ -376,7 +484,7 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
   // Either register a new token when in the isolated world or read the last
   // registered token from the page content world.
   return registerChildFrame(frame) ??
-      frame.getAttribute(CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
+      frame.getAttribute(fillConstants.CHILD_FRAME_REMOTE_TOKEN_ATTRIBUTE);
 }
 
 /**
@@ -402,16 +510,17 @@ function getChildFrameRemoteToken(frame: HTMLIFrameElement|null): string|null {
 
 function extractFieldsFromControlElements(
     controlElements: FormControlElement[], iframeElements: HTMLIFrameElement[],
-    formFields: AutofillFormFieldData[],
-    childFrames: FrameTokenWithPredecessor[], fieldsExtracted: boolean[],
-    elementArray: Array<AutofillFormFieldData|null>): boolean {
+    formFields: fillUtil.AutofillFormFieldData[],
+    childFrames: fillUtil.FrameTokenWithPredecessor[],
+    fieldsExtracted: boolean[],
+    elementArray: Array<fillUtil.AutofillFormFieldData|null>): boolean {
   for (const _i of iframeElements) {
     childFrames.push({token: '', predecessor: -1});
   }
 
   if (!elementArray) {
     elementArray =
-        new Array<AutofillFormFieldData|null>(controlElements.length);
+        new Array<fillUtil.AutofillFormFieldData|null>(controlElements.length);
   }
 
   for (let i = 0; i < controlElements.length; ++i) {
@@ -419,15 +528,14 @@ function extractFieldsFromControlElements(
     elementArray[i] = null;
 
     const controlElement = controlElements[i] as FormControlElement;
-    if (!isAutofillableElement(controlElement)) {
+    if (!inferenceUtil.isAutofillableElement(controlElement)) {
       continue;
     }
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
     const formField = new gCrWebLegacy['common'].JSONSafeObject();
-    gCrWebLegacy.fill.webFormControlElementToFormField(
-        controlElement, formField);
+    webFormControlElementToFormField(controlElement, formField);
     formFields.push(formField);
     elementArray[i] = formField;
     fieldsExtracted[i] = true;
@@ -438,7 +546,7 @@ function extractFieldsFromControlElements(
 
     // To avoid overly expensive computation, we impose a maximum number of
     // allowable fields.
-    if (formFields.length > MAX_EXTRACTABLE_FIELDS) {
+    if (formFields.length > fillConstants.MAX_EXTRACTABLE_FIELDS) {
       childFrames.length = 0;
       formFields.length = 0;
       return false;

@@ -1477,27 +1477,28 @@ void AutofillControllerJsTest::TestWebFormControlElementToFormField(
     // `field`.
     NSString* verifying_javascripts = GenerateElementItemVerifyingJavaScripts(
         @"field", expected, attributes_to_check, -1);
-    EXPECT_NSEQ(
-        @YES,
-        ExecuteJavaScript([NSString
-            stringWithFormat:@"%@; var field = {};"
-                              "__gCrWeb.fill.webFormControlElementToFormField("
-                              "    element, field);"
-                              "%@",
-                             get_element_to_test, verifying_javascripts]))
-        << base::SysNSStringToUTF8([NSString
-               stringWithFormat:
-                   @"webFormControlElementToFormField actual results are: "
-                   @"%@, \n"
-                    "expected to be verified by %@",
-                   ExecuteJavaScript([NSString
-                       stringWithFormat:@"%@; var field = {};"
-                                         "__gCrWeb.fill."
-                                         "webFormControlElementToFormField("
-                                         "    element, "
-                                         "field);__gCrWeb.stringify(field);",
-                                        get_element_to_test]),
-                   verifying_javascripts]);
+    NSString* java_script = [NSString
+        stringWithFormat:@"%@; var field = {};"
+                          "__gCrWeb.getRegisteredApi('fill_test_api')."
+                          "getFunction('webFormControlElementToFormField')"
+                          "(element, field);%@",
+                         get_element_to_test, verifying_javascripts];
+    NSString* script =
+        j == 1 ? RollupJavaScriptWithUserScript(java_script, @"fill_util_test")
+               : java_script;
+    NSString* actual = ExecuteJavaScript(script);
+    java_script = [NSString
+        stringWithFormat:@"%@; var field = {};"
+                          "__gCrWeb.getRegisteredApi('fill_test_api')."
+                          "getFunction('webFormControlElementToFormField')"
+                          "(element, field);__gCrWeb.stringify(field);",
+                         get_element_to_test];
+    EXPECT_NSEQ(@YES, actual) << base::SysNSStringToUTF8(
+        [NSString stringWithFormat:
+                      @"webFormControlElementToFormField actual results are: "
+                      @"%@, \n"
+                       "expected to be verified by %@",
+                      ExecuteJavaScript(java_script), verifying_javascripts]);
   }
 }
 
