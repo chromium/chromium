@@ -45,6 +45,14 @@ class VerticalTabStripTopContainer : public views::View,
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
+  // These methods provide the toolbar height and exclusion width, before the
+  // layout of this view, for use in calculating positioning of child views. If
+  // an exclusion width is provided, nothing can be rendered within the
+  // rectangle defined by `(exclusion_width, toolbar_height)` that is aligned to
+  // the leading, top corner.
+  void SetToolbarHeightForLayout(const int toolbar_height);
+  void SetExclusionWidthForLayout(const int exclusion_width);
+
  private:
   raw_ptr<tabs::VerticalTabStripStateController> state_controller_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
@@ -52,6 +60,15 @@ class VerticalTabStripTopContainer : public views::View,
   raw_ptr<views::LabelButton> collapse_button_ = nullptr;
 
   std::unique_ptr<views::ActionViewController> action_view_controller_;
+
+  // This represents the toolbar (element containing toolbar buttons, omnibox,
+  // app menu, etc) height.
+  int toolbar_height_ = 0;
+  // When provided, a rectangle formed by the exclusion width and toolbar height
+  // and anchored to the top leading edge of this container cannot have any
+  // elements rendered inside of it becaused that area is reserved for outside
+  // UI elements.
+  int exclusion_width_ = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_TOP_CONTAINER_H_

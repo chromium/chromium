@@ -65,6 +65,7 @@ source_set("browser_tests") {
   sources = [
     "tab_collection_node_browsertest.cc",
     "vertical_split_tab_view_browsertest.cc",
+    "vertical_tab_strip_top_container_browsertest.cc",
     "vertical_tab_view_browsertest.cc",
   ]
   deps = [
