@@ -217,7 +217,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   gfx::ColorSpace GetColorSpace() const { return color_space_; }
   SkAlphaType GetAlphaType() const { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
-  virtual bool IsValid() const = 0;
   virtual base::ByteCount EstimatedSizeInBytes() const {
     return base::ByteCount(format_.EstimatedSizeInBytes(size_));
   }

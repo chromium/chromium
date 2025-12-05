@@ -54,7 +54,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_init_util.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_rect_util.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_hash_traits.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_snapshot_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/sk_image_info_hash.h"
@@ -342,7 +342,7 @@ class CanvasResourceProviderCache
       delete;
   CanvasResourceProviderCache(const CanvasResourceProviderCache&) = delete;
 
-  CanvasResourceProvider* CreateProvider(gfx::Size size) {
+  CanvasSnapshotProvider* CreateProvider(gfx::Size size) {
     // TODO(https://crbug.com/1341235): The choice of color type, alpha type,
     // and color space is inappropriate in many circumstances.
     const auto info =
@@ -412,7 +412,7 @@ class CanvasResourceProviderCache
   }
 
   Member<ExecutionContext> execution_context_;
-  HashMap<SkImageInfo, std::unique_ptr<CanvasResourceProvider>>
+  HashMap<SkImageInfo, std::unique_ptr<CanvasSnapshotProvider>>
       info_to_provider_;
   base::TimeTicks last_access_time_;
   TaskHandle task_handle_;

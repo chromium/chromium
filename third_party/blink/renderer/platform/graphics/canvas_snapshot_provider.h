@@ -20,9 +20,11 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
       ImageOrientation orientation) {
     NOTREACHED();
   }
+  virtual ~CanvasSnapshotProvider() = default;
 
   virtual bool IsAccelerated() const = 0;
   virtual gfx::Size Size() const = 0;
+  virtual bool IsValid() const = 0;
 };
 
 }  // namespace blink
