@@ -754,6 +754,16 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDns) {
   RunTest("settings/secure_dns_test.js", "runMochaSuite('SettingsSecureDns')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2Input) {
+  RunTest("settings/secure_dns_v2_test.js",
+          "runMochaSuite('SettingsSecureDnsV2Input')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsTest, SecureDnsV2) {
+  RunTest("settings/secure_dns_v2_test.js",
+          "runMochaSuite('SettingsSecureDnsV2')");
+}
+
 IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityKeysBioEnrollment) {
   RunTest("settings/security_keys_bio_enrollment_test.js", "mocha.run()");
 }

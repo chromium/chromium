@@ -146,6 +146,7 @@ build_webui("build") {
     "privacy_page/security/fingerprint_progress_arc.ts",
     "privacy_page/security/secure_dns.ts",
     "privacy_page/security/secure_dns_input.ts",
+    "privacy_page/security/secure_dns_v2.ts",
     "privacy_page/security/security_keys_bio_enroll_dialog.ts",
     "privacy_page/security/security_keys_credential_management_dialog.ts",
     "privacy_page/security/security_keys_pin_field.ts",

@@ -115,6 +115,7 @@ build_webui_tests("build") {
     "search_settings_test.ts",
     "secure_dns_interactive_test.ts",
     "secure_dns_test.ts",
+    "secure_dns_v2_test.ts",
     "security_keys_bio_enrollment_test.ts",
     "security_keys_credential_management_test.ts",
     "security_keys_reset_dialog_test.ts",
