@@ -688,59 +688,6 @@ bool ExecutionContext::RequireTrustedTypes() const {
   return require_trusted_types_;
 }
 
-namespace {
-using ContextType = ExecutionContext::Proto::ContextType;
-ContextType GetContextType(const ExecutionContext& execution_context) {
-  if (execution_context.IsWorkletGlobalScope()) {
-    return ContextType::WORKLET;
-  } else if (execution_context.IsDedicatedWorkerGlobalScope()) {
-    return ContextType::DEDICATED_WORKER;
-  } else if (execution_context.IsSharedWorkerGlobalScope()) {
-    return ContextType::SHARED_WORKER;
-  } else if (execution_context.IsServiceWorkerGlobalScope()) {
-    return ContextType::SERVICE_WORKER;
-  } else if (execution_context.IsWindow()) {
-    return ContextType::WINDOW;
-  }
-  return ContextType::UNKNOWN_CONTEXT;
-}
-
-using WorldType = ExecutionContext::Proto::WorldType;
-WorldType GetWorldType(const ExecutionContext& execution_context) {
-  auto* current_world = execution_context.GetCurrentWorld();
-  if (current_world == nullptr) {
-    return WorldType::WORLD_UNKNOWN;
-  }
-
-  switch (current_world->GetWorldType()) {
-    case DOMWrapperWorld::WorldType::kMain:
-      return WorldType::WORLD_MAIN;
-    case DOMWrapperWorld::WorldType::kIsolated:
-      return WorldType::WORLD_ISOLATED;
-    case DOMWrapperWorld::WorldType::kInspectorIsolated:
-      return WorldType::WORLD_INSPECTOR_ISOLATED;
-    case DOMWrapperWorld::WorldType::kRegExp:
-      return WorldType::WORLD_REG_EXP;
-    case DOMWrapperWorld::WorldType::kForV8ContextSnapshotNonMain:
-      return WorldType::WORLD_FOR_V8_CONTEXT_SNAPSHOT_NON_MAIN;
-    case DOMWrapperWorld::WorldType::kWorkerOrWorklet:
-      return WorldType::WORLD_WORKER;
-    case DOMWrapperWorld::WorldType::kShadowRealm:
-      return WorldType::WORLD_SHADOW_REALM;
-    default:
-      return WorldType::WORLD_UNKNOWN;
-  }
-}
-}  // namespace
-
-void ExecutionContext::WriteIntoTrace(
-    perfetto::TracedProto<ExecutionContext::Proto> proto) const {
-  proto->set_url(Url().GetString().Utf8());
-  proto->set_origin(GetSecurityOrigin()->ToString().Utf8());
-  proto->set_type(GetContextType(*this));
-  proto->set_world_type(GetWorldType(*this));
-}
-
 bool ExecutionContext::CrossOriginIsolatedCapabilityOrDisabledWebSecurity()
     const {
   return Agent::IsWebSecurityDisabled() || CrossOriginIsolatedCapability();

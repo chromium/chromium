@@ -16,10 +16,6 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "v8/include/v8-inspector.h"
 
-namespace perfetto::protos::pbzero {
-class BlinkSourceLocation;
-}  // namespace perfetto::protos::pbzero
-
 namespace blink {
 
 class ExecutionContext;
@@ -82,9 +78,6 @@ class PLATFORM_EXPORT SourceLocation final : public GarbageCollected<SourceLocat
   // CrossThreadSourceLocation instead.
   SourceLocation* Clone() const;
 
-  // Write a representation of this object into a trace.
-  using Proto = perfetto::protos::pbzero::BlinkSourceLocation;
-  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
   // TODO(altimin): Remove TracedValue version.
   void WriteIntoTrace(perfetto::TracedValue context) const;
 

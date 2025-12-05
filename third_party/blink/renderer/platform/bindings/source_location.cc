@@ -112,35 +112,6 @@ SourceLocation* SourceLocation::Clone() const {
       stack_trace_ ? stack_trace_->clone() : nullptr, script_id_);
 }
 
-void SourceLocation::WriteIntoTrace(
-    perfetto::TracedProto<SourceLocation::Proto> proto) const {
-  if (!stack_trace_ || stack_trace_->isEmpty()) {
-    return;
-  }
-
-  proto->set_function_name(
-      ToPlatformString(stack_trace_->topFunctionName()).Utf8());
-  proto->set_script_id(stack_trace_->topScriptId());
-  proto->set_url(ToPlatformString(stack_trace_->topSourceURL()).Utf8());
-  proto->set_line_number(stack_trace_->topLineNumber());
-  proto->set_column_number(stack_trace_->topColumnNumber());
-  proto->set_stack_trace(ToString().Utf8());
-
-  // TODO(https://crbug.com/1396277): This should be a WriteIntoTrace function
-  // once v8 has support for perfetto tracing (which is currently missing for v8
-  // chromium).
-  for (const auto& frame : stack_trace_->frames()) {
-    auto& stack_trace_pb = *(proto->add_stack_frames());
-    stack_trace_pb.set_function_name(
-        ToPlatformString(frame.functionName).Utf8());
-
-    auto& script_location = *(stack_trace_pb.set_script_location());
-    script_location.set_source_url(ToPlatformString(frame.sourceURL).Utf8());
-    script_location.set_line_number(frame.lineNumber);
-    script_location.set_column_number(frame.columnNumber);
-  }
-}
-
 void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
   if (!stack_trace_ || stack_trace_->isEmpty()) {
     return;

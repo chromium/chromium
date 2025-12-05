@@ -72,10 +72,6 @@ namespace v8 {
 class MicrotaskQueue;
 }  // namespace v8
 
-namespace perfetto::protos::pbzero {
-class BlinkExecutionContext;
-}  // namespace perfetto::protos::pbzero
-
 namespace blink {
 
 class AbortSignalRegistry;
@@ -482,10 +478,6 @@ class CORE_EXPORT ExecutionContext : public MojoBindingContext,
   bool IsInRequestAnimationFrame() const {
     return is_in_request_animation_frame_;
   }
-
-  // Write a representation of this object into a trace.
-  using Proto = perfetto::protos::pbzero::BlinkExecutionContext;
-  void WriteIntoTrace(perfetto::TracedProto<Proto> proto) const;
 
   // For use by FrameRequestCallbackCollection::ExecuteFrameCallbacks();
   // IsInRequestAnimationFrame() for the corresponding ExecutionContext will
