@@ -6,16 +6,15 @@ package org.chromium.base.supplier;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier.NotifyBehavior;
-import org.chromium.build.annotations.NullUnmarked;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 /** An interface for classes that can be observed. */
-@NullUnmarked // TODO(455874046): Change to NullMarked once warnings are fixed.
-// TODO(455874046): Supplier<T> -> Supplier<@Nullable T>
-public interface NullableObservableSupplier<T> extends Supplier<T> {
+@NullMarked
+public interface NullableObservableSupplier<T> extends Supplier<@Nullable T> {
     /**
      * Adds an observer to the supplier.
      *

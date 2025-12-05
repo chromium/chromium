@@ -12,6 +12,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 /**
  * Implementation for Settable{NonNull}ObservableSupplier.
@@ -24,9 +25,11 @@ import java.util.Objects;
  */
 @NullMarked
 @SuppressWarnings("NullAway") // Implementation for both Nullable and NonNull.
+// TODO(455874046): Remove "T extends @Nullable Object".
 public class ObservableSupplierImpl<T extends @Nullable Object>
         extends BaseObservableSupplierImpl<T>
-        implements SettableNullableObservableSupplier<T>,
+        implements Supplier<T>,
+                SettableNullableObservableSupplier<T>,
                 SettableObservableSupplier<T>,
                 SettableNonNullObservableSupplier<T> {
     protected final ThreadChecker mThreadChecker = new ThreadChecker();

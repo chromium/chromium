@@ -21,7 +21,7 @@ import java.util.Objects;
  * @param <T> The type to observe.
  */
 @NullMarked
-public class ValueChangedCallback<T> implements Callback<T> {
+public class ValueChangedCallback<T extends @Nullable Object> implements Callback<T> {
     /**
      * Interface for observers that care about monitoring both the old and new values when a
      * callback is invoked.
@@ -29,7 +29,7 @@ public class ValueChangedCallback<T> implements Callback<T> {
      * @param <T> The type to observe.
      */
     @FunctionalInterface
-    public interface ValueChangedObserver<T> {
+    public interface ValueChangedObserver<T extends @Nullable Object> {
         /**
          * Called when the {@link Callback} is invoked with both new and old values.
          *
@@ -37,7 +37,7 @@ public class ValueChangedCallback<T> implements Callback<T> {
          * @param oldValue The previous value. Depending on what is being observed this might not be
          *     valid to use anymore.
          */
-        void onValueChanged(@Nullable T newValue, @Nullable T oldValue);
+        void onValueChanged(T newValue, @Nullable T oldValue);
     }
 
     private final ValueChangedObserver<T> mValueChangedObserver;

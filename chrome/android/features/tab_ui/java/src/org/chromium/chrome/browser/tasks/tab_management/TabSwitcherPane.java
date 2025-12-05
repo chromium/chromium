@@ -97,7 +97,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 }
             };
 
-    private final Callback<@Nullable TabSwitcherPaneCoordinator> mOnPaneCoordinatorChanged =
+    private final Callback<TabSwitcherPaneCoordinator> mOnPaneCoordinatorChanged =
             new ValueChangedCallback<>(this::onTabSwitcherPaneCoordinatorChanged);
     private final Callback<Boolean> mScrollingObserver = this::onScrollingChanged;
     private final Callback<Boolean> mVisibilityObserver = this::onVisibilityChanged;
@@ -269,8 +269,7 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
     }
 
     private void onTabSwitcherPaneCoordinatorChanged(
-            @Nullable TabSwitcherPaneCoordinator newValue,
-            @Nullable TabSwitcherPaneCoordinator oldValue) {
+            TabSwitcherPaneCoordinator newValue, @Nullable TabSwitcherPaneCoordinator oldValue) {
         if (oldValue != null) {
             OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
                     oldValue.getIsScrollingSupplier();
@@ -279,14 +278,12 @@ public class TabSwitcherPane extends TabSwitcherPaneBase implements TabSwitcherD
                 wrapped.removeObserver(mScrollingObserver);
             }
         }
-        if (newValue != null) {
-            OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
-                    newValue.getIsScrollingSupplier();
-            wrappedSupplier.onAvailable(
-                    supplier -> {
-                        supplier.addObserver(mScrollingObserver);
-                    });
-        }
+        OneshotSupplier<ObservableSupplier<Boolean>> wrappedSupplier =
+                newValue.getIsScrollingSupplier();
+        wrappedSupplier.onAvailable(
+                supplier -> {
+                    supplier.addObserver(mScrollingObserver);
+                });
     }
 
     private void onProfileProviderAvailable(ProfileProvider profileProvider) {
