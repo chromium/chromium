@@ -115,8 +115,8 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  bool is_mappable_si_enabled = input->HasMappableGpuBuffer();
-  if (input->HasMappableGpuBuffer()) {
+  bool is_mappable_si_enabled = input->HasMappableSharedImage();
+  if (input->HasMappableSharedImage()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
     // STORAGE_MAPPABLE_SHARED_IMAGE may carry meaningful or dummy shared_image.
@@ -141,7 +141,7 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
   }
 
   if (input->HasSharedImage()) {
-    // Mappable SI should only be used with `HasMappableGpuBuffer()`
+    // Mappable SI should only be used with `HasMappableSharedImage()`
     // VideoFrames.
     CHECK(!is_mappable_si_enabled);
     gpu::ExportedSharedImage shared_image = input->shared_image()->Export();

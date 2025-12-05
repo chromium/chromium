@@ -56,7 +56,7 @@ GpuMemoryBufferVideoFramePool::ReserveVideoFrame(media::VideoPixelFormat format,
 media::mojom::VideoBufferHandlePtr
 GpuMemoryBufferVideoFramePool::CloneHandleForDelivery(
     const media::VideoFrame& frame) {
-  CHECK(frame.HasMappableGpuBuffer());
+  CHECK(frame.HasMappableSharedImage());
 
   gfx::GpuMemoryBufferHandle handle = frame.GetGpuMemoryBufferHandle();
 

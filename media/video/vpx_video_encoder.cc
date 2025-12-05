@@ -577,7 +577,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableGpuBuffer()) {
+  if (frame->format() == PIXEL_FORMAT_NV12 && frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(

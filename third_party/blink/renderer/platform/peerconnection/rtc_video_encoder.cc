@@ -2368,7 +2368,7 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
     // reports it as supported, we just need to verify the sync token.
     bool shared_image_encoding =
         vea_supports_shared_images_ && !frame->HasNativeGpuMemoryBuffer() &&
-        !frame->HasMappableGpuBuffer() && frame->HasSharedImage();
+        !frame->HasMappableSharedImage() && frame->HasSharedImage();
     if (shared_image_encoding) {
       TRACE_EVENT0("webrtc",
                    "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput::"

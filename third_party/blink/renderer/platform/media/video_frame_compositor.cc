@@ -500,7 +500,7 @@ void VideoFrameCompositor::OnContextLost() {
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock lock(current_frame_lock_);
   if (!current_frame_ || (!current_frame_->HasSharedImage() &&
-                          !current_frame_->HasMappableGpuBuffer())) {
+                          !current_frame_->HasMappableSharedImage())) {
     return;
   }
   scoped_refptr<media::VideoFrame> black_frame =

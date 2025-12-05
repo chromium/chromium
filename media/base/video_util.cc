@@ -567,7 +567,7 @@ gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> video_frame) {
   CHECK(video_frame);
-  CHECK(video_frame->HasMappableGpuBuffer());
+  CHECK(video_frame->HasMappableSharedImage());
 
   auto scoped_mapping = video_frame->MapSharedImage();
   if (!scoped_mapping) {
@@ -609,7 +609,7 @@ void ConvertToMemoryMappedFrameAsync(
     scoped_refptr<VideoFrame> video_frame,
     base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb) {
   CHECK(video_frame);
-  CHECK(video_frame->HasMappableGpuBuffer());
+  CHECK(video_frame->HasMappableSharedImage());
 
   video_frame->MapSharedImageAsync(base::BindOnce(
       &ProcessAsyncMappingResult, video_frame, std::move(result_cb)));

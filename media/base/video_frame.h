@@ -501,9 +501,8 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // Returns true if the video frame uses ClientSharedImage.
   bool HasSharedImage() const;
 
-  // Returns true if the |storage_type_| is STOAGE_GPU_MEMORY_BUFFER which
-  // indicates that the VideoFrame is backed by a MappableSharedImage.
-  bool HasMappableGpuBuffer() const;
+  // Returns true if the VideoFrame is backed by a MappableSharedImage.
+  bool HasMappableSharedImage() const;
 
   // Returns true if the GpuMemoruBuffer backing the video frame is native
   // buffer and not shared memory buffer. A native GPU memory buffer is a
@@ -535,7 +534,7 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
 
   // Returns true if the underlying SharedImage can be mapped truly
   // asynchronously: with an unblocking request to the GPU process.
-  // Only call if `HasMappableGpuBuffer() == true`.
+  // Only call if `HasMappableSharedImage() == true`.
   bool AsyncMappingIsNonBlocking() const;
 
   // Gets the GpuMemoryBufferHandle backing the VideoFrame.

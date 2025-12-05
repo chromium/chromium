@@ -211,9 +211,9 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("webrtc"), "MappingParams",
               "require_mapped_frame",
               adapter_resources_->GetFeedback().require_mapped_frame,
-              "HasMappableGmb", current_frame->HasMappableGpuBuffer(),
+              "HasMappableGmb", current_frame->HasMappableSharedImage(),
               "AsyncMappingIsNonBlocking",
-              current_frame->HasMappableGpuBuffer() &&
+              current_frame->HasMappableSharedImage() &&
                   current_frame->AsyncMappingIsNonBlocking());
   // Map the GMB here if we know that the mapped image is required downstream.
   // If the feedback has reached the capturer, this is a no-op as the frame is
@@ -221,7 +221,7 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
   // thus not inflating the encode time metrics.
   if (base::FeatureList::IsEnabled(kWebrtcVideoTrackSourcePremap) &&
       adapter_resources_->GetFeedback().require_mapped_frame &&
-      current_frame->HasMappableGpuBuffer() &&
+      current_frame->HasMappableSharedImage() &&
       current_frame->AsyncMappingIsNonBlocking()) {
     using CallbackWithFrame =
         base::OnceCallback<void(scoped_refptr<media::VideoFrame>)>;

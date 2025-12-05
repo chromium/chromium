@@ -779,7 +779,7 @@ void D3D12VideoEncodeAccelerator::EncodeTask(
     scoped_refptr<VideoFrame> frame,
     const VideoEncoder::EncodeOptions& options) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
-  if (!frame->HasMappableGpuBuffer() && frame->HasSharedImage()) {
+  if (!frame->HasMappableSharedImage() && frame->HasSharedImage()) {
     InputFrameRef input_frame(frame, options,
                               /*resolving_shared_image=*/true);
     input_frame.shared_image_token = frame->shared_image()->mailbox();
@@ -816,7 +816,7 @@ void D3D12VideoEncodeAccelerator::TryEncodeFrames() {
   while (!input_frames_queue_.empty() && !bitstream_buffers_.empty()) {
     auto& next_input = input_frames_queue_.front();
     if (next_input.resolving_shared_image ||
-        (!next_input.frame->HasMappableGpuBuffer() &&
+        (!next_input.frame->HasMappableSharedImage() &&
          next_input.frame->HasSharedImage() && !next_input.resolved_resource)) {
       // D3D12 VEA encodes frames one-by-one, so we will not try following
       // frames.
@@ -1008,7 +1008,7 @@ void D3D12VideoEncodeAccelerator::ResolveQueuedSharedImages() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
 
   for (auto& input_frame : input_frames_queue_) {
-    if (!input_frame.frame->HasMappableGpuBuffer() &&
+    if (!input_frame.frame->HasMappableSharedImage() &&
         input_frame.frame->HasSharedImage() &&
         !input_frame.resolve_shared_image_requested) {
       input_frame.resolve_shared_image_requested = true;

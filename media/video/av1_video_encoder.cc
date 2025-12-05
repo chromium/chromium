@@ -447,7 +447,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  if (frame->HasMappableGpuBuffer()) {
+  if (frame->HasMappableSharedImage()) {
     frame = ConvertToMemoryMappedFrame(frame);
     if (!frame) {
       std::move(done_cb).Run(

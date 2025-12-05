@@ -284,7 +284,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
 #if BUILDFLAG(IS_WIN)
         // For shared memory GMBs on Windows we needed to explicitly request a
         // copy from the shared image GPU texture to the GMB.
-        CHECK(dst_frame->HasMappableGpuBuffer());
+        CHECK(dst_frame->HasMappableSharedImage());
         CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
 
         auto* sii = raster_context_provider->SharedImageInterface();
@@ -355,7 +355,7 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
 
   if (frame->natural_size() == frame->visible_rect().size() &&
       frame->natural_size() == frame->coded_size() &&
-      frame->HasMappableGpuBuffer()) {
+      frame->HasMappableSharedImage()) {
     media::ConvertToMemoryMappedFrameAsync(frame, std::move(callback));
     return;
   }
@@ -509,7 +509,7 @@ void WebRtcVideoFrameAdapter::SharedResources::ScaleAndMapFrameAsync(
 
   // if not succeeded in scaling above, just map the frame as is via
   // ConvertToMemoryMappedFrameAsync();
-  if (frame->HasMappableGpuBuffer()) {
+  if (frame->HasMappableSharedImage()) {
     media::ConvertToMemoryMappedFrameAsync(frame, std::move(callback));
   } else {
     frame = media::ReadbackTextureBackedFrameToMemorySync(

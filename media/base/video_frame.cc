@@ -1171,14 +1171,14 @@ bool VideoFrame::HasSharedImage() const {
                         : shared_image_ != nullptr;
 }
 
-bool VideoFrame::HasMappableGpuBuffer() const {
+bool VideoFrame::HasMappableSharedImage() const {
   return storage_type_ == STORAGE_MAPPABLE_SHARED_IMAGE;
 }
 
 bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   if (wrapped_frame_) {
     return wrapped_frame_->HasNativeGpuMemoryBuffer();
-  } else if (HasMappableGpuBuffer()) {
+  } else if (HasMappableSharedImage()) {
     CHECK(shared_image_);
     return !shared_image_->IsSharedMemoryForVideoFrame();
   }
@@ -1192,7 +1192,7 @@ void VideoFrame::MapSharedImageAsync(
     wrapped_frame_->MapSharedImageAsync(std::move(result_cb));
     return;
   }
-  if (HasMappableGpuBuffer()) {
+  if (HasMappableSharedImage()) {
     CHECK(HasSharedImage());
     // `base::Unretained()` is safe because of the requirement for callers to
     // keep the VideoFrame alive until the callback executes.
@@ -1208,7 +1208,7 @@ bool VideoFrame::AsyncMappingIsNonBlocking() const {
   if (wrapped_frame_) {
     return wrapped_frame_->AsyncMappingIsNonBlocking();
   }
-  CHECK(HasMappableGpuBuffer());
+  CHECK(HasMappableSharedImage());
   CHECK(shared_image_);
   return shared_image_->AsyncMappingIsNonBlocking();
 }
@@ -1217,7 +1217,7 @@ gfx::GpuMemoryBufferHandle VideoFrame::GetGpuMemoryBufferHandle() const {
   if (wrapped_frame_) {
     return wrapped_frame_->GetGpuMemoryBufferHandle();
   }
-  if (HasMappableGpuBuffer()) {
+  if (HasMappableSharedImage()) {
     // If MappableSI is used, there must be a shared image.
     CHECK(HasSharedImage());
     return shared_image_->CloneGpuMemoryBufferHandle();
@@ -1766,7 +1766,7 @@ std::unique_ptr<VideoFrame::ScopedMapping> VideoFrame::MapSharedImage() const {
   if (wrapped_frame_) {
     return wrapped_frame_->MapSharedImage();
   }
-  if (HasMappableGpuBuffer()) {
+  if (HasMappableSharedImage()) {
     // If MappableSI is used, there must be a shared image.
     CHECK(HasSharedImage());
     if (auto mapping = shared_image_->Map()) {

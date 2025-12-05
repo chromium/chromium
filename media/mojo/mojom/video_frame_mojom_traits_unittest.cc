@@ -671,7 +671,7 @@ TEST_F(VideoFrameStructTraitsTest, MappableSharedImageVideoFrame) {
   ASSERT_TRUE(RoundTrip(&frame));
   ASSERT_TRUE(frame);
   ASSERT_EQ(frame->storage_type(), VideoFrame::STORAGE_MAPPABLE_SHARED_IMAGE);
-  EXPECT_TRUE(frame->HasMappableGpuBuffer());
+  EXPECT_TRUE(frame->HasMappableSharedImage());
   EXPECT_FALSE(frame->metadata().end_of_stream);
   EXPECT_EQ(frame->format(), PIXEL_FORMAT_ABGR);
   EXPECT_EQ(frame->coded_size(), coded_size);

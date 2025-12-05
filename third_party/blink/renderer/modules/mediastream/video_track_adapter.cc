@@ -458,7 +458,7 @@ void VideoTrackAdapter::VideoFrameResolutionAdapter::DeliverFrame(
     // Instead of soft-applied scaling, we convert the frame to be mappable and
     // then scale it. This ensures that the frame has the same behavior as when
     // the restriction is applied to the capturer.
-    if (video_frame->HasMappableGpuBuffer()) {
+    if (video_frame->HasMappableSharedImage()) {
       video_frame = ConvertToMemoryMappedFrame(video_frame);
       if (!video_frame || !video_frame->IsMappable()) {
         OnFrameDropped(media::VideoCaptureFrameDropReason::

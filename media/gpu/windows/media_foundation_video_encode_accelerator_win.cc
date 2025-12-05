@@ -739,7 +739,7 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
 
   result.generate_sample_on_wait_sync_token =
       command_buffer_helper_ && !frame->HasNativeGpuMemoryBuffer() &&
-      !frame->HasMappableGpuBuffer() && frame->HasSharedImage();
+      !frame->HasMappableSharedImage() && frame->HasSharedImage();
   if (result.generate_sample_on_wait_sync_token) {
     TRACE_EVENT0("media",
                  "MediaFoundationVideoEncodeAccelerator::"
@@ -1883,7 +1883,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
     scoped_refptr<VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto input_sample = input.input_sample;
-  if (!frame->HasMappableGpuBuffer() && !frame->IsMappable() &&
+  if (!frame->HasMappableSharedImage() && !frame->IsMappable() &&
       !input.generate_sample_on_wait_sync_token) {
     LOG(ERROR) << "Unsupported video frame storage type";
     return MF_E_INVALID_STREAM_DATA;
@@ -1936,7 +1936,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBuffer(
   hr = input_sample->SetSampleDuration(sample_duration);
   RETURN_ON_HR_FAILURE(hr, "SetSampleDuration() failed", hr);
 
-  if (frame->HasMappableGpuBuffer() ||
+  if (frame->HasMappableSharedImage() ||
       input.generate_sample_on_wait_sync_token) {
     if ((frame->HasNativeGpuMemoryBuffer() ||
          input.generate_sample_on_wait_sync_token) &&

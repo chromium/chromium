@@ -151,7 +151,7 @@ void CopyToGpuMemoryBuffer(
     media::VideoFrame* dst_frame,
     const gpu::SyncToken& blit_done_sync_token,
     base::OnceClosure callback) {
-  CHECK(dst_frame->HasMappableGpuBuffer());
+  CHECK(dst_frame->HasMappableSharedImage());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
   CHECK(dst_frame->HasSharedImage());
 

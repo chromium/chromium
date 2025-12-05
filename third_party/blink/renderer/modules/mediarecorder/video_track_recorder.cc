@@ -480,7 +480,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
 
   const bool is_format_supported =
-      (video_frame->HasMappableGpuBuffer() &&
+      (video_frame->HasMappableSharedImage() &&
        video_frame->format() == media::PIXEL_FORMAT_NV12) ||
       (video_frame->IsMappable() &&
        (video_frame->format() == media::PIXEL_FORMAT_NV12 ||
@@ -493,7 +493,7 @@ void VideoTrackRecorderImpl::Encoder::StartFrameEncode(
   }
   if (frame && frame->format() == media::PIXEL_FORMAT_I420A &&
       !CanEncodeAlphaChannel()) {
-    CHECK(!frame->HasMappableGpuBuffer());
+    CHECK(!frame->HasMappableSharedImage());
     // Drop alpha channel if the encoder does not support it yet.
     frame = media::WrapAsI420VideoFrame(std::move(frame));
   }
@@ -672,7 +672,7 @@ VideoTrackRecorderImpl::Encoder::ConvertToI420ForSoftwareEncoder(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_EQ(frame->format(), media::VideoPixelFormat::PIXEL_FORMAT_NV12);
 
-  if (frame->HasMappableGpuBuffer()) {
+  if (frame->HasMappableSharedImage()) {
     frame = media::ConvertToMemoryMappedFrame(frame);
   }
   if (!frame) {

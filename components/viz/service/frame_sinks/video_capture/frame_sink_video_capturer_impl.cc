@@ -1405,7 +1405,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
     CHECK_LE(result->size().width(), content_rect.width());
     CHECK_LE(result->size().height(), content_rect.height());
 
-    if (!frame->HasMappableGpuBuffer()) {
+    if (!frame->HasMappableSharedImage()) {
       const VideoCaptureOverlay::CapturedFrameProperties frame_properties{
           frame_capture.region_properties, content_rect, frame->format()};
 
@@ -1425,7 +1425,7 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
         gfx::Rect(content_rect.origin(), result->size());
     DCHECK(IsCompatibleWithFormat(result_rect, pixel_format_));
     if (frame->visible_rect() != result_rect &&
-        !frame->HasMappableGpuBuffer()) {
+        !frame->HasMappableSharedImage()) {
       // If there are parts of the frame that are visible but we have not wrote
       // into them, letterbox them. This is not needed for GMB-backed frames as
       // the letterboxing happens on GPU.

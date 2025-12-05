@@ -926,7 +926,7 @@ HRESULT GenerateSampleFromVideoFrame(
   // GenerateSampleFromSharedImageVideoFrame. Note that this is not true for
   // mappable shared image since it has a GpuMemoryBufferHandle. So skipping the
   // CHECK when frame has a mappable buffer.
-  if (!frame->HasMappableGpuBuffer()) {
+  if (!frame->HasMappableSharedImage()) {
     CHECK(!frame->HasSharedImage());
   }
 
