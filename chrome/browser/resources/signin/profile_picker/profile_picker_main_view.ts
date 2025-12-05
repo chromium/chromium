@@ -82,6 +82,8 @@ export class ProfilePickerMainViewElement extends
       shouldShowOpenAllProfilesButton_: {type: Boolean},
       // Exposed to CSS as 'is-glic_'.
       isGlic_: {type: Boolean, reflect: true},
+      // Exposed to CSS as 'is-open-all-profiles-button-experiment-enabled_'.
+      isOpenAllProfilesButtonExperimentEnabled_: {type: Boolean, reflect: true},
     };
   }
 
@@ -115,7 +117,7 @@ export class ProfilePickerMainViewElement extends
   private accessor forceSigninErrorProfilePath_: string = '';
   protected accessor shouldShownSigninButton_: boolean = false;
 
-  private isOpenAllProfilesButtonExperimentEnabled_: boolean =
+  protected accessor isOpenAllProfilesButtonExperimentEnabled_: boolean =
       loadTimeData.getBoolean('isOpenAllProfilesButtonExperimentEnabled');
   private maxProfilesCountToShowOpenAllProfilesButton_: number =
       loadTimeData.getInteger('maxProfilesCountToShowOpenAllProfilesButton');
