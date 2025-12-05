@@ -421,7 +421,15 @@ void FormStructure::RetrieveFromCache(const FormStructure& cached_form,
 
     field->set_initial_value(cached_field->initial_value(),
                              /*pass_key=*/{});
-    field->set_server_predictions(cached_field->server_predictions());
+    if (!cached_field->server_predictions().empty()) {
+      // Calling field->set_server_predictions({}) does actually add a
+      // `NO_SERVER_DATA`  prediction to the field, which wouldn't be preserving
+      // the old state of the cached field. An empty
+      // `AutofillField::server_predictions_` means the server response is still
+      // pending, whereas `NO_SERVER_DATA` means the server replied and couldn't
+      // classify the field.
+      field->set_server_predictions(cached_field->server_predictions());
+    }
     if (reason == RetrieveFromCacheReason::kFormCacheUpdateWithoutParsing ||
         reason == RetrieveFromCacheReason::kFormCacheUpdateAfterParsing) {
       field->set_is_autofilled(cached_field->is_autofilled());
