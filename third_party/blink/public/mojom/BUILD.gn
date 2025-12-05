@@ -287,6 +287,7 @@ mojom("mojom_platform") {
   public_deps = [
     ":android_mojo_bindings",
     ":color_scheme_mojo_bindings",
+    ":credentialmanagement_mojo_bindings",
     ":mojom_mhtml_load_result",
     ":script_type_mojo_bindings",
     ":web_feature_mojo_bindings",
@@ -1125,8 +1126,6 @@ mojom("android_mojo_bindings") {
     "blob/file_backed_blob_factory.mojom",
     "blob/serialized_blob.mojom",
     "contacts/contacts_manager.mojom",
-    "credentialmanagement/credential_manager.mojom",
-    "credentialmanagement/credential_type_flags.mojom",
     "digital_goods/digital_goods.mojom",
     "document_metadata/document_metadata.mojom",
     "facilitated_payments/payment_link_handler.mojom",
@@ -1147,6 +1146,7 @@ mojom("android_mojo_bindings") {
   ]
 
   public_deps = [
+    ":credentialmanagement_mojo_bindings",
     "//components/digital_goods/mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",
@@ -1242,33 +1242,8 @@ mojom("android_mojo_bindings") {
       traits_sources = [ "authenticator_mojom_traits.cc" ]
       traits_public_deps = [
         "//base",
-        "//device/fido",
-      ]
-    },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.CredentialType"
-          cpp = "::password_manager::CredentialType"
-        },
-        {
-          mojom = "blink.mojom.CredentialMediationRequirement"
-          cpp = "::password_manager::CredentialMediationRequirement"
-        },
-        {
-          mojom = "blink.mojom.CredentialInfo"
-          cpp = "::password_manager::CredentialInfo"
-        },
-        {
-          mojom = "blink.mojom.CredentialManagerError"
-          cpp = "::password_manager::CredentialManagerError"
-        },
-      ]
-      traits_headers = [ "//components/password_manager/content/common/credential_manager_mojom_traits.h" ]
-      traits_sources = [ "//components/password_manager/content/common/credential_manager_mojom_traits.cc" ]
-      traits_public_deps = [
-        "//base",
         "//components/password_manager/core/common",
+        "//device/fido",
       ]
     },
   ]
@@ -1931,4 +1906,55 @@ mojom("color_scheme_mojo_bindings") {
   export_class_attribute = "BLINK_COMMON_EXPORT"
   export_define = "BLINK_COMMON_IMPLEMENTATION=1"
   export_header = "third_party/blink/public/common/common_export.h"
+}
+
+mojom_component("credentialmanagement_mojo_bindings") {
+  generate_java = true
+
+  sources = [
+    "credentialmanagement/credential_manager.mojom",
+    "credentialmanagement/credential_type_flags.mojom",
+  ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_scheme_host_port",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "blink.mojom.CredentialType"
+          cpp = "::password_manager::CredentialType"
+        },
+        {
+          mojom = "blink.mojom.CredentialMediationRequirement"
+          cpp = "::password_manager::CredentialMediationRequirement"
+        },
+        {
+          mojom = "blink.mojom.CredentialInfo"
+          cpp = "::password_manager::CredentialInfo"
+        },
+        {
+          mojom = "blink.mojom.CredentialManagerError"
+          cpp = "::password_manager::CredentialManagerError"
+        },
+      ]
+      traits_headers = [ "//components/password_manager/content/common/credential_manager_mojom_traits.h" ]
+      traits_sources = [ "//components/password_manager/content/common/credential_manager_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//base",
+        "//components/password_manager/core/common",
+      ]
+    },
+  ]
+
+  macro_prefix = "CREDENTIALMANAGEMENT_MOJOM"
+  output_prefix = "credentialmanagement_mojom"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
 }

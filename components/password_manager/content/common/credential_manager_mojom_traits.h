@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/component_export.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom.h"
@@ -15,8 +16,8 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<blink::mojom::CredentialType,
-                  password_manager::CredentialType> {
+struct COMPONENT_EXPORT(CREDENTIALMANAGEMENT_MOJOM)
+    EnumTraits<blink::mojom::CredentialType, password_manager::CredentialType> {
   static blink::mojom::CredentialType ToMojom(
       password_manager::CredentialType input);
   static bool FromMojom(blink::mojom::CredentialType input,
@@ -24,8 +25,9 @@ struct EnumTraits<blink::mojom::CredentialType,
 };
 
 template <>
-struct EnumTraits<blink::mojom::CredentialManagerError,
-                  password_manager::CredentialManagerError> {
+struct COMPONENT_EXPORT(CREDENTIALMANAGEMENT_MOJOM)
+    EnumTraits<blink::mojom::CredentialManagerError,
+               password_manager::CredentialManagerError> {
   static blink::mojom::CredentialManagerError ToMojom(
       password_manager::CredentialManagerError input);
   static bool FromMojom(blink::mojom::CredentialManagerError input,
@@ -33,8 +35,9 @@ struct EnumTraits<blink::mojom::CredentialManagerError,
 };
 
 template <>
-struct EnumTraits<blink::mojom::CredentialMediationRequirement,
-                  password_manager::CredentialMediationRequirement> {
+struct COMPONENT_EXPORT(CREDENTIALMANAGEMENT_MOJOM)
+    EnumTraits<blink::mojom::CredentialMediationRequirement,
+               password_manager::CredentialMediationRequirement> {
   static blink::mojom::CredentialMediationRequirement ToMojom(
       password_manager::CredentialMediationRequirement input);
   static bool FromMojom(
@@ -43,8 +46,9 @@ struct EnumTraits<blink::mojom::CredentialMediationRequirement,
 };
 
 template <>
-struct StructTraits<blink::mojom::CredentialInfoDataView,
-                    password_manager::CredentialInfo> {
+struct COMPONENT_EXPORT(CREDENTIALMANAGEMENT_MOJOM)
+    StructTraits<blink::mojom::CredentialInfoDataView,
+                 password_manager::CredentialInfo> {
   static password_manager::CredentialType type(
       const password_manager::CredentialInfo& r) {
     return r.type;
