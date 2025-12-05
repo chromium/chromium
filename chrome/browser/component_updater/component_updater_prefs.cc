@@ -9,7 +9,6 @@
 #include "chrome/browser/component_updater/wasm_tts_engine_component_installer.h"
 #include "chrome/common/buildflags.h"
 #include "components/component_updater/component_updater_service.h"
-#include "components/component_updater/installer_policies/autofill_states_component_installer.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/soda_component_installer.h"
@@ -19,7 +18,6 @@ namespace component_updater {
 
 void RegisterPrefs(PrefRegistrySimple* registry) {
   RegisterComponentUpdateServicePrefs(registry);
-  AutofillStatesComponentInstallerPolicy::RegisterPrefs(registry);
   WasmTtsEngineComponentInstallerPolicy::RegisterPrefs(registry);
 }
 

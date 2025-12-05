@@ -219,7 +219,8 @@ void RegisterComponentsForUpdate() {
   RegisterRealTimeUrlChecksAllowlistComponent(cus);
 #endif  // BUIDLFLAG(IS_ANDROID)
 
-  RegisterAutofillStatesComponent(cus, g_browser_process->local_state());
+  // TODO(crbug.com/466086121) - Remove this cleanup code in M153+.
+  DeleteAutofillStatesComponent(path);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   ManageScreenAIComponentRegistration(cus, g_browser_process->local_state());

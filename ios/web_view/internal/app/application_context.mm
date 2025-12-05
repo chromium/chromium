@@ -12,7 +12,6 @@
 #import "base/path_service.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/component_updater/component_updater_service.h"
-#import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/timer_update_scheduler.h"
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/os_crypt/async/browser/keychain_key_provider.h"
@@ -130,8 +129,6 @@ PrefService* ApplicationContext::GetLocalState() {
     signin::IdentityManager::RegisterLocalStatePrefs(pref_registry.get());
     component_updater::RegisterComponentUpdateServicePrefs(pref_registry.get());
     update_client::RegisterPrefs(pref_registry.get());
-    component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
-        pref_registry.get());
     metrics::RegisterDemographicsLocalStatePrefs(pref_registry.get());
     sessions::SessionIdGenerator::RegisterPrefs(pref_registry.get());
 

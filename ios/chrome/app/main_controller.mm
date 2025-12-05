@@ -27,7 +27,6 @@
 #import "base/timer/timer.h"
 #import "components/application_locale_storage/application_locale_storage.h"
 #import "components/component_updater/component_updater_service.h"
-#import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/component_updater/installer_policies/on_device_head_suggest_component_installer.h"
 #import "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #import "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
@@ -242,8 +241,6 @@ void RegisterComponentsForUpdate() {
   RegisterOnDeviceHeadSuggestComponent(
       cus, GetApplicationContext()->GetApplicationLocaleStorage()->Get());
   RegisterSafetyTipsComponent(cus);
-  RegisterAutofillStatesComponent(cus,
-                                  GetApplicationContext()->GetLocalState());
   RegisterOptimizationHintsComponent(cus);
   RegisterPlusAddressBlocklistComponent(cus);
 }

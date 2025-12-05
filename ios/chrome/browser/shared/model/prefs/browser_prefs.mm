@@ -20,7 +20,6 @@
 #import "components/commerce/core/pref_names.h"
 #import "components/commerce/core/prefs.h"
 #import "components/component_updater/component_updater_service.h"
-#import "components/component_updater/installer_policies/autofill_states_component_installer.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/contextual_search/contextual_search_service.h"
 #import "components/dom_distiller/core/distilled_page_prefs.h"
@@ -455,8 +454,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   update_client::RegisterPrefs(registry);
   variations::VariationsService::RegisterPrefs(registry);
   component_updater::RegisterComponentUpdateServicePrefs(registry);
-  component_updater::AutofillStatesComponentInstallerPolicy::RegisterPrefs(
-      registry);
   segmentation_platform::SegmentationPlatformService::RegisterLocalStatePrefs(
       registry);
   optimization_guide::prefs::RegisterLocalStatePrefs(registry);
