@@ -3227,12 +3227,13 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
     // This is important when this test is run with other tests, as then
     // BrowsingInstanceId will not be '1' in general.
     p->Add(kRendererID, &context);
-    p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
-                   /*is_process_used=*/false,
-                   ProcessLock::CreateAllowAnySite(
-                       StoragePartitionConfig::CreateDefault(&context),
-                       WebExposedIsolationInfo::CreateNonIsolated(),
-                       /*cross_origin_isolation_key=*/std::nullopt));
+    p->LockProcess(
+        foo_instance->GetIsolationContext(), kRendererID,
+        /*is_process_used=*/false,
+        ProcessLock::CreateAllowAnySite(
+            StoragePartitionConfig::CreateDefault(&context),
+            WebExposedIsolationInfo::CreateNonIsolated(),
+            /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId()));
 
     EXPECT_TRUE(foo_instance->HasSite());
     if (ShouldUseDefaultSiteInstanceGroup()) {
@@ -3278,12 +3279,13 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
 
   // Start by putting foo.com into an allows-any-site process.
   p->Add(kRendererID, &context);
-  p->LockProcess(foo_instance->GetIsolationContext(), kRendererID,
-                 /*is_process_used=*/false,
-                 ProcessLock::CreateAllowAnySite(
-                     StoragePartitionConfig::CreateDefault(&context),
-                     WebExposedIsolationInfo::CreateNonIsolated(),
-                     /*cross_origin_isolation_key=*/std::nullopt));
+  p->LockProcess(
+      foo_instance->GetIsolationContext(), kRendererID,
+      /*is_process_used=*/false,
+      ProcessLock::CreateAllowAnySite(
+          StoragePartitionConfig::CreateDefault(&context),
+          WebExposedIsolationInfo::CreateNonIsolated(),
+          /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId()));
   EXPECT_TRUE(p->GetProcessLock(kRendererID).AllowsAnySite());
   EXPECT_FALSE(p->GetProcessLock(kRendererID).IsLockedToSite());
 

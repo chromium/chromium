@@ -16,7 +16,8 @@ ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
     const WebExposedIsolationInfo& web_exposed_isolation_info,
     const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
-        cross_origin_isolation_key) {
+        cross_origin_isolation_key,
+    const std::string& browser_context_id) {
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
           web_exposed_isolation_info);
@@ -38,7 +39,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       web_exposed_isolation_level, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false));
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context_id));
 }
 
 // static

@@ -981,7 +981,8 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
               ProcessLock::CreateAllowAnySite(
                   StoragePartitionConfig::CreateDefault(browser_context),
                   WebExposedIsolationInfo::CreateNonIsolated(),
-                  /*cross_origin_isolation_key=*/std::nullopt));
+                  /*cross_origin_isolation_key=*/std::nullopt,
+                  browser_context->UniqueId()));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(int child_id) {

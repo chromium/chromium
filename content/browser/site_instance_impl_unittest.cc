@@ -68,7 +68,8 @@ bool DoesURLRequireDedicatedProcess(const IsolationContext& isolation_context,
 }
 
 SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
-                              bool requires_origin_keyed_process) {
+                              bool requires_origin_keyed_process,
+                              const std::string& browser_context_id) {
   AgentClusterKey agent_cluster_key =
       requires_origin_keyed_process
           ? AgentClusterKey::CreateOriginKeyed(
@@ -86,13 +87,14 @@ SiteInfo CreateSimpleSiteInfo(const GURL& process_lock_url,
                   /*does_site_request_dedicated_process_for_coop=*/false,
                   /*is_jit_disabled=*/false,
                   /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
-                  /*is_fenced=*/false);
+                  /*is_fenced=*/false, browser_context_id);
 }
 
 }  // namespace
 
 const char kPrivilegedScheme[] = "privileged";
 const char kCustomStandardScheme[] = "custom-standard";
+const char kBrowserContextId[] = "browser_context_id";
 
 class SiteInstanceTestBrowserClient : public TestContentBrowserClient {
  public:
@@ -251,21 +253,31 @@ class SiteInstanceTest : public testing::Test {
 // variations of each that are origin keyed ("ok").
 TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   auto site_info_1 = CreateSimpleSiteInfo(
-      GURL("https://foo.com"), false /* requires_origin_keyed_process */);
+      GURL("https://foo.com"), false /* requires_origin_keyed_process */,
+      kBrowserContextId);
   auto site_info_1ok = CreateSimpleSiteInfo(
-      GURL("https://foo.com"), true /* requires_origin_keyed_process */);
+      GURL("https://foo.com"), true /* requires_origin_keyed_process */,
+      kBrowserContextId);
   auto site_info_2 = CreateSimpleSiteInfo(
-      GURL("https://www.foo.com"), false /* requires_origin_keyed_process */);
+      GURL("https://www.foo.com"), false /* requires_origin_keyed_process */,
+      kBrowserContextId);
   auto site_info_2ok = CreateSimpleSiteInfo(
-      GURL("https://www.foo.com"), true /* requires_origin_keyed_process */);
+      GURL("https://www.foo.com"), true /* requires_origin_keyed_process */,
+      kBrowserContextId);
   auto site_info_3 = CreateSimpleSiteInfo(
-      GURL("https://sub.foo.com"), false /* requires_origin_keyed_process */);
+      GURL("https://sub.foo.com"), false /* requires_origin_keyed_process */,
+      kBrowserContextId);
   auto site_info_3ok = CreateSimpleSiteInfo(
-      GURL("https://sub.foo.com"), true /* requires_origin_keyed_process */);
-  auto site_info_4 =
-      CreateSimpleSiteInfo(GURL(), false /* requires_origin_keyed_process */);
-  auto site_info_4ok =
-      CreateSimpleSiteInfo(GURL(), true /* requires_origin_keyed_process */);
+      GURL("https://sub.foo.com"), true /* requires_origin_keyed_process */,
+      kBrowserContextId);
+  auto site_info_4 = CreateSimpleSiteInfo(
+      GURL(), false /* requires_origin_keyed_process */, kBrowserContextId);
+  auto site_info_4ok = CreateSimpleSiteInfo(
+      GURL(), true /* requires_origin_keyed_process */, kBrowserContextId);
+
+  auto site_info_1_other_context = CreateSimpleSiteInfo(
+      GURL("https://foo.com"), false /* requires_origin_keyed_process */,
+      "other_context");
 
   // Test IsSamePrincipalWith.
   EXPECT_TRUE(site_info_1.IsSamePrincipalWith(site_info_1));
@@ -282,6 +294,42 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
   EXPECT_FALSE(site_info_3.IsSamePrincipalWith(site_info_4));
   EXPECT_TRUE(site_info_4.IsSamePrincipalWith(site_info_4));
   EXPECT_FALSE(site_info_4.IsSamePrincipalWith(site_info_4ok));
+  EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_other_context));
+
+  // Test IsExactMatch
+  EXPECT_TRUE(site_info_1.IsExactMatch(site_info_1));
+  EXPECT_FALSE(site_info_1.IsExactMatch(site_info_1ok));
+  EXPECT_FALSE(site_info_1.IsExactMatch(site_info_2));
+  EXPECT_FALSE(site_info_1.IsExactMatch(site_info_3));
+  EXPECT_FALSE(site_info_1.IsExactMatch(site_info_4));
+  EXPECT_TRUE(site_info_2.IsExactMatch(site_info_2));
+  EXPECT_FALSE(site_info_2.IsExactMatch(site_info_2ok));
+  EXPECT_FALSE(site_info_2.IsExactMatch(site_info_3));
+  EXPECT_FALSE(site_info_2.IsExactMatch(site_info_4));
+  EXPECT_TRUE(site_info_3.IsExactMatch(site_info_3));
+  EXPECT_FALSE(site_info_3.IsExactMatch(site_info_3ok));
+  EXPECT_FALSE(site_info_3.IsExactMatch(site_info_4));
+  EXPECT_TRUE(site_info_4.IsExactMatch(site_info_4));
+  EXPECT_FALSE(site_info_4.IsExactMatch(site_info_4ok));
+  EXPECT_FALSE(site_info_1.IsExactMatch(site_info_1_other_context));
+
+  // Test ProcessLockCompareTo.
+  // ProcessLockCompareTo returns zero when locks are equal, and -1/1 when not.
+  EXPECT_EQ(0, site_info_1.ProcessLockCompareTo(site_info_1));
+  EXPECT_NE(0, site_info_1.ProcessLockCompareTo(site_info_1ok));
+  EXPECT_NE(0, site_info_1.ProcessLockCompareTo(site_info_2));
+  EXPECT_NE(0, site_info_1.ProcessLockCompareTo(site_info_3));
+  EXPECT_NE(0, site_info_1.ProcessLockCompareTo(site_info_4));
+  EXPECT_EQ(0, site_info_2.ProcessLockCompareTo(site_info_2));
+  EXPECT_NE(0, site_info_2.ProcessLockCompareTo(site_info_2ok));
+  EXPECT_NE(0, site_info_2.ProcessLockCompareTo(site_info_3));
+  EXPECT_NE(0, site_info_2.ProcessLockCompareTo(site_info_4));
+  EXPECT_EQ(0, site_info_3.ProcessLockCompareTo(site_info_3));
+  EXPECT_NE(0, site_info_3.ProcessLockCompareTo(site_info_3ok));
+  EXPECT_NE(0, site_info_3.ProcessLockCompareTo(site_info_4));
+  EXPECT_EQ(0, site_info_4.ProcessLockCompareTo(site_info_4));
+  EXPECT_NE(0, site_info_4.ProcessLockCompareTo(site_info_4ok));
+  EXPECT_NE(0, site_info_1.ProcessLockCompareTo(site_info_1_other_context));
 
   // Test SiteInfoOperators.
   EXPECT_EQ(site_info_1, site_info_1);
@@ -314,7 +362,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*does_site_request_dedicated_process_for_coop=*/true,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false,
-               /*is_pdf=*/false, /*is_fenced=*/false);
+               /*is_pdf=*/false, /*is_fenced=*/false, kBrowserContextId);
   EXPECT_TRUE(
       site_info_1.IsSamePrincipalWith(site_info_1_with_isolation_request));
   EXPECT_EQ(site_info_1, site_info_1_with_isolation_request);
@@ -333,7 +381,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/true,
                /*are_v8_optimizations_disabled=*/false,
-               /*is_pdf=*/false, /*is_fenced=*/false);
+               /*is_pdf=*/false, /*is_fenced=*/false, kBrowserContextId);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_jit_disabled));
 
   // Check that SiteInfos with differing values of
@@ -350,7 +398,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/true,
-               /*is_pdf=*/false, /*is_fenced=*/false);
+               /*is_pdf=*/false, /*is_fenced=*/false, kBrowserContextId);
   EXPECT_FALSE(
       site_info_1.IsSamePrincipalWith(site_info_1_with_optimizations_disabled));
 
@@ -368,7 +416,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/true,
-               /*is_fenced=*/false);
+               /*is_fenced=*/false, kBrowserContextId);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_pdf));
 
   auto site_info_1_with_is_fenced =
@@ -383,7 +431,7 @@ TEST_F(SiteInstanceTest, SiteInfoAsContainerKey) {
                /*does_site_request_dedicated_process_for_coop=*/false,
                /*is_jit_disabled=*/false,
                /*are_v8_optimizations_disabled=*/false, /*is_pdf=*/false,
-               /*is_fenced=*/true);
+               /*is_fenced=*/true, kBrowserContextId);
   EXPECT_FALSE(site_info_1.IsSamePrincipalWith(site_info_1_with_is_fenced));
 
   {
@@ -859,12 +907,12 @@ TEST_F(SiteInstanceTest, GetSiteForURL) {
   EXPECT_EQ(GURL("http://google.com"), site_url);
 
   // Error page URLs.
-  auto error_site_info =
-      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
-                                   /*is_guest=*/false, /*is_fenced=*/false,
-                                   WebExposedIsolationInfo::CreateNonIsolated(),
-                                   WebExposedIsolationLevel::kNotIsolated,
-                                   /*cross_origin_isolation_key=*/std::nullopt);
+  auto error_site_info = SiteInfo::CreateForErrorPage(
+      CreateStoragePartitionConfigForTesting(),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated,
+      /*cross_origin_isolation_key=*/std::nullopt, context.UniqueId());
   test_url = GURL(kUnreachableWebDataURL);
   site_url = GetSiteForURL(test_url);
   EXPECT_EQ(error_site_info.site_url(), site_url);
@@ -929,7 +977,7 @@ TEST_F(SiteInstanceTest, ProcessLockDoesNotUseEffectiveURL) {
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false);
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.
   {
@@ -1034,9 +1082,8 @@ TEST_F(SiteInstanceTest, IsSameSiteForFileURLs) {
 TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kProcessPerSite));
-  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
   BrowsingInstance* browsing_instance = new BrowsingInstance(
-      browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
+      context(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false);
 
@@ -1049,7 +1096,6 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   // A separate site should create a separate SiteInstance.
   const GURL url_b1("http://www.yahoo.com/");
   scoped_refptr<SiteInstanceImpl> site_instance_b1(
-
       browsing_instance->GetSiteInstanceForURL(
           UrlInfo::CreateForTesting(url_b1), false));
   EXPECT_NE(site_instance_a1.get(), site_instance_b1.get());
@@ -1071,7 +1117,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
   // A visit to the original site in a new BrowsingInstance (same or different
   // browser context) should return a different SiteInstance.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
-      browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
+      context(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false);
   // Ensure the new SiteInstance is ref counted so that it gets deleted.
@@ -1115,9 +1161,9 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSite) {
 TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kProcessPerSite);
-  std::unique_ptr<TestBrowserContext> browser_context(new TestBrowserContext());
+
   scoped_refptr<BrowsingInstance> browsing_instance = new BrowsingInstance(
-      browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
+      context(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false);
 
@@ -1153,7 +1199,7 @@ TEST_F(SiteInstanceTest, OneSiteInstancePerSiteInBrowserContext) {
   // A visit to the original site in a new BrowsingInstance (same browser
   // context) should return a different SiteInstance with the same process.
   BrowsingInstance* browsing_instance2 = new BrowsingInstance(
-      browser_context.get(), WebExposedIsolationInfo::CreateNonIsolated(),
+      context(), WebExposedIsolationInfo::CreateNonIsolated(),
       /*is_guest=*/false, /*is_fenced=*/false,
       /*is_fixed_storage_partition=*/false);
   scoped_refptr<SiteInstanceImpl> site_instance_a1_2(
@@ -1734,7 +1780,7 @@ TEST_F(SiteInstanceTest, OriginalURL) {
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false);
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId());
 
   // New SiteInstance in a new BrowsingInstance with a predetermined URL.  In
   // this and subsequent cases, the site URL should consist of the effective
@@ -1867,7 +1913,7 @@ ProcessLock ProcessLockFromString(const std::string& url) {
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false));
+      /*is_pdf=*/false, /*is_fenced=*/false, kBrowserContextId));
 }
 
 }  // namespace
@@ -2165,12 +2211,12 @@ TEST_F(SiteInstanceTest, ErrorPage) {
 
   // Verify that error SiteInfos are marked by is_error_page() set to true and
   // are not cross origin isolated.
-  const auto error_site_info =
-      SiteInfo::CreateForErrorPage(CreateStoragePartitionConfigForTesting(),
-                                   /*is_guest=*/false, /*is_fenced=*/false,
-                                   WebExposedIsolationInfo::CreateNonIsolated(),
-                                   WebExposedIsolationLevel::kNotIsolated,
-                                   /*cross_origin_isolation_key=*/std::nullopt);
+  const auto error_site_info = SiteInfo::CreateForErrorPage(
+      CreateStoragePartitionConfigForTesting(),
+      /*is_guest=*/false, /*is_fenced=*/false,
+      WebExposedIsolationInfo::CreateNonIsolated(),
+      WebExposedIsolationLevel::kNotIsolated,
+      /*cross_origin_isolation_key=*/std::nullopt, context()->UniqueId());
   EXPECT_TRUE(error_site_info.is_error_page());
   EXPECT_FALSE(error_site_info.web_exposed_isolation_info().is_isolated());
   EXPECT_FALSE(error_site_info.is_guest());

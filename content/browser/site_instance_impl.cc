@@ -1514,7 +1514,8 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
     if (process_lock.is_invalid()) {
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
-          /*cross_origin_isolation_key=*/std::nullopt);
+          /*cross_origin_isolation_key=*/std::nullopt,
+          GetBrowserContext()->UniqueId());
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())
@@ -1571,7 +1572,8 @@ void SiteInstanceImpl::LockProcessIfNeeded() {
       // all documents in the Browsing Instance with COOP and COEP.
       auto new_process_lock = ProcessLock::CreateAllowAnySite(
           storage_partition->GetConfig(), GetWebExposedIsolationInfo(),
-          /*cross_origin_isolation_key=*/std::nullopt);
+          /*cross_origin_isolation_key=*/std::nullopt,
+          GetBrowserContext()->UniqueId());
       process->SetProcessLock(GetIsolationContext(), new_process_lock);
     } else {
       CHECK(process_lock.AllowsAnySite())

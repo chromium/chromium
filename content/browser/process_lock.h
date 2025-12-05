@@ -51,7 +51,8 @@ class CONTENT_EXPORT ProcessLock {
       const StoragePartitionConfig& storage_partition_config,
       const WebExposedIsolationInfo& web_exposed_isolation_info,
       const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
-          cross_origin_isolation_key);
+          cross_origin_isolation_key,
+      const std::string& browser_context_id);
 
   // Create a lock for a specific UrlInfo. This method can be called from both
   // the UI and IO threads. Locks created with the same parameters must always

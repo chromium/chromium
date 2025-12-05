@@ -30,6 +30,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -149,7 +150,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-        /*is_pdf=*/false, /*is_fenced=*/false));
+        /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId()));
   }
 
   WebContentsImpl* web_contents() const {
@@ -179,7 +180,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-        /*is_pdf=*/false, /*is_fenced=*/false));
+        /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId()));
   }
 
  protected:
@@ -1737,7 +1738,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false));
+      /*is_pdf=*/false, /*is_fenced=*/false, browser_context->UniqueId()));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 
