@@ -679,6 +679,7 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
     ParserContentPolicy parser_content_policy,
     Element::ParseDeclarativeShadowRoots parse_declarative_shadows,
     Element::ForceHtml force_html,
+    ForceInertTemplate force_inert,
     CustomElementRegistry* registry,
     ExceptionState& exception_state) {
   DCHECK(context_element);
@@ -689,7 +690,8 @@ DocumentFragment* CreateFragmentForInnerOuterHTML(
   }
 
   Document& document =
-      IsA<HTMLTemplateElement>(*context_element)
+      (IsA<HTMLTemplateElement>(*context_element) ||
+       force_inert == ForceInertTemplate::kForce)
           ? context_element->GetDocument().EnsureTemplateDocument()
           : context_element->GetDocument();
   DocumentFragment* fragment = DocumentFragment::Create(document);
@@ -820,7 +822,7 @@ DocumentFragment* CreateContextualFragment(
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, element, parser_content_policy,
       Element::ParseDeclarativeShadowRoots::kDontParse,
-      Element::ForceHtml::kDontForce,
+      Element::ForceHtml::kDontForce, ForceInertTemplate::kDontForce,
       RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
           ? element->customElementRegistry()
           : element->GetDocument().customElementRegistry(),

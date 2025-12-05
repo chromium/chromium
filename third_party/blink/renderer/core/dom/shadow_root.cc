@@ -155,8 +155,8 @@ void ShadowRoot::SetInnerHTMLWithoutTrustedTypes(
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kDontParse,
-          Element::ForceHtml::kDontForce, customElementRegistry(),
-          exception_state)) {
+          Element::ForceHtml::kDontForce, ForceInertTemplate::kDontForce,
+          customElementRegistry(), exception_state)) {
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
 }
@@ -184,10 +184,11 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           compliant_html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
-          Element::ForceHtml::kDontForce, customElementRegistry(),
-          exception_state)) {
+          Element::ForceHtml::kDontForce, ForceInertTemplate::kForce,
+          customElementRegistry(), exception_state)) {
     if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-      SanitizerAPI::SanitizeUnsafeInternal(fragment, nullptr, exception_state);
+      SanitizerAPI::SanitizeUnsafeInternal(this, fragment, nullptr,
+                                           exception_state);
     }
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
@@ -205,10 +206,11 @@ void ShadowRoot::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           compliant_html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
-          Element::ForceHtml::kDontForce, customElementRegistry(),
-          exception_state)) {
+          Element::ForceHtml::kDontForce, ForceInertTemplate::kForce,
+          customElementRegistry(), exception_state)) {
     if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-      SanitizerAPI::SanitizeUnsafeInternal(fragment, options, exception_state);
+      SanitizerAPI::SanitizeUnsafeInternal(this, fragment, options,
+                                           exception_state);
     }
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }
@@ -220,10 +222,11 @@ void ShadowRoot::setHTML(const String& html,
   if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
           html, &host(), kAllowScriptingContent,
           Element::ParseDeclarativeShadowRoots::kParse,
-          Element::ForceHtml::kDontForce, customElementRegistry(),
-          exception_state)) {
+          Element::ForceHtml::kDontForce, ForceInertTemplate::kForce,
+          customElementRegistry(), exception_state)) {
     if (RuntimeEnabledFeatures::SanitizerAPIEnabled()) {
-      SanitizerAPI::SanitizeSafeInternal(fragment, options, exception_state);
+      SanitizerAPI::SanitizeSafeInternal(this, fragment, options,
+                                         exception_state);
     }
     ReplaceChildrenWithFragment(this, fragment, exception_state);
   }

@@ -796,6 +796,7 @@ void Sanitizer::SanitizeSafe(Node* root) const {
   // TODO(vogelheim): This is hideously inefficient, but very easy to implement.
   // We'll use this for now, so we can fully build out tests & other
   // infrastructure, and worry about efficiency later.
+  CHECK(!root->GetDocument().IsActive());
   Sanitizer* safe = MakeGarbageCollected<Sanitizer>();
   safe->setFrom(*this);
   safe->removeUnsafe();
@@ -803,6 +804,7 @@ void Sanitizer::SanitizeSafe(Node* root) const {
 }
 
 void Sanitizer::SanitizeUnsafe(Node* root) const {
+  CHECK(!root->GetDocument().IsActive());
   Sanitize(root, /*safe*/ false);
 }
 

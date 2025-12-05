@@ -10147,7 +10147,8 @@ Document* Document::parseHTMLUnsafe(ExecutionContext* context,
     return nullptr;
   }
   Document* doc = parseHTMLInternal(context, compliant_html, exception_state);
-  SanitizerAPI::SanitizeUnsafeInternal(doc, options, exception_state);
+  SanitizerAPI::SanitizeUnsafeInternal(
+      /*context_element*/ doc, /*root_element*/ doc, options, exception_state);
   return doc;
 }
 
@@ -10158,7 +10159,8 @@ Document* Document::parseHTML(ExecutionContext* context,
                               ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   Document* doc = parseHTMLInternal(context, html, exception_state);
-  SanitizerAPI::SanitizeSafeInternal(doc, options, exception_state);
+  SanitizerAPI::SanitizeSafeInternal(
+      /*context_element*/ doc, /*root_element*/ doc, options, exception_state);
   return doc;
 }
 

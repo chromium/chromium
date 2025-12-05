@@ -16,10 +16,12 @@ class ExceptionState;
 
 class SanitizerAPI final {
  public:
-  static void SanitizeSafeInternal(ContainerNode* element,
+  static void SanitizeSafeInternal(const ContainerNode* context_element,
+                                   ContainerNode* root_element,
                                    SetHTMLOptions* options,
                                    ExceptionState& exception_state);
-  static void SanitizeUnsafeInternal(ContainerNode* element,
+  static void SanitizeUnsafeInternal(const ContainerNode* context_element,
+                                     ContainerNode* root_element,
                                      SetHTMLUnsafeOptions* options,
                                      ExceptionState& exception_state);
 };

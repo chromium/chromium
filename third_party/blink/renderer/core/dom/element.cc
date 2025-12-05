@@ -8751,6 +8751,8 @@ void Element::SetInnerHTMLInternal(
     const String& html,
     ParseDeclarativeShadowRoots parse_declarative_shadows,
     ForceHtml force_html,
+    std::variant<std::monostate, SetHTMLOptions*, SetHTMLUnsafeOptions*>
+        options,
     ExceptionState& exception_state) {
   if (html.empty() && !HasNonInBodyInsertionMode()) {
     setTextContent(html);
@@ -8765,7 +8767,25 @@ void Element::SetInnerHTMLInternal(
     }
     if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
             html, this, kAllowScriptingContent, parse_declarative_shadows,
-            force_html, registry, exception_state)) {
+            force_html,
+            std::holds_alternative<std::monostate>(options)
+                ? ForceInertTemplate::kDontForce
+                : ForceInertTemplate::kForce,
+            registry, exception_state)) {
+      if (std::holds_alternative<SetHTMLOptions*>(options)) {
+        CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
+        SanitizerAPI::SanitizeSafeInternal(this, fragment,
+                                           std::get<SetHTMLOptions*>(options),
+                                           exception_state);
+      } else if (std::holds_alternative<SetHTMLUnsafeOptions*>(options)) {
+        CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
+        SanitizerAPI::SanitizeUnsafeInternal(
+            this, fragment, std::get<SetHTMLUnsafeOptions*>(options),
+            exception_state);
+      } else {
+        CHECK(std::holds_alternative<std::monostate>(options));
+        // No options; nothing to do.
+      }
       ContainerNode* container = this;
       bool swap_dom_parts{false};
       if (template_element) {
@@ -8790,7 +8810,8 @@ void Element::SetInnerHTMLInternal(
 void Element::SetInnerHTMLWithoutTrustedTypes(const String& html,
                                               ExceptionState& exception_state) {
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kDontParse,
-                       ForceHtml::kDontForce, exception_state);
+                       ForceHtml::kDontForce, std::monostate{},
+                       exception_state);
 }
 
 void Element::setInnerHTML(
@@ -8830,6 +8851,7 @@ void Element::SetOuterHTMLWithoutTrustedTypes(const String& html,
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       html, parent, kAllowScriptingContent,
       ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
+      ForceInertTemplate::kDontForce,
       RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
           ? customElementRegistry()
           : GetDocument().customElementRegistry(),
@@ -9093,6 +9115,7 @@ void Element::InsertAdjacentHTMLWithoutTrustedTypes(
   DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
       markup, context_element, kAllowScriptingContent,
       ParseDeclarativeShadowRoots::kDontParse, ForceHtml::kDontForce,
+      ForceInertTemplate::kDontForce,
       RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()
           ? customElementRegistry()
           : GetDocument().customElementRegistry(),
@@ -12974,7 +12997,7 @@ void Element::SetHTMLUnsafeWithoutTrustedTypes(
     ExceptionState& exception_state) {
   UseCounter::Count(GetDocument(), WebFeature::kHTMLUnsafeMethods);
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, exception_state);
+                       ForceHtml::kForce, std::monostate{}, exception_state);
 }
 
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
@@ -12986,7 +13009,7 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
     return;
   }
   SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, exception_state);
+                       ForceHtml::kForce, std::monostate{}, exception_state);
 }
 
 void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
@@ -12999,8 +13022,7 @@ void Element::setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html,
     return;
   }
   SetInnerHTMLInternal(compliant_html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, exception_state);
-  SanitizerAPI::SanitizeUnsafeInternal(this, options, exception_state);
+                       ForceHtml::kForce, options, exception_state);
 }
 
 void Element::setHTML(const String& html,
@@ -13008,8 +13030,7 @@ void Element::setHTML(const String& html,
                       ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::SanitizerAPIEnabled());
   SetInnerHTMLInternal(html, ParseDeclarativeShadowRoots::kParse,
-                       ForceHtml::kForce, exception_state);
-  SanitizerAPI::SanitizeSafeInternal(this, options, exception_state);
+                       ForceHtml::kForce, options, exception_state);
 }
 
 void Element::SetNamedTriggers(NamedAnimationTriggerMap&& named_triggers) {

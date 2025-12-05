@@ -2460,6 +2460,12 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
       const String&,
       ParseDeclarativeShadowRoots parse_declarative_shadows,
       ForceHtml force_html_over_xml,
+      // When called from SetHTML or SetHTMLUnsafe, SetInnerHTMLInternal must
+      // process their options dictionary, which you can pass into |options|.
+      // When called from a method without options, like the classic innerHTML
+      // setter, you can pass std::monostate{} to designate no options.
+      std::variant<std::monostate, SetHTMLOptions*, SetHTMLUnsafeOptions*>
+          options,
       ExceptionState&);
 
   ElementRareDataVector* GetElementRareData() const;
