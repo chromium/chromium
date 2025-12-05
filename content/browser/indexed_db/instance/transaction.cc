@@ -28,6 +28,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected_macros.h"
 #include "base/unguessable_token.h"
@@ -294,7 +295,7 @@ bool Transaction::IsTransactionBlockingOtherClients(
     return false;
   }
 
-  base::TimeTicks start = base::TimeTicks::Now();
+  base::ElapsedTimer timer;
   std::optional<int> scheduling_priority;
   if (consider_priority) {
     scheduling_priority = connection_->scheduling_priority();
@@ -325,7 +326,7 @@ bool Transaction::IsTransactionBlockingOtherClients(
                 return lock_request_data->client_token != this_token;
               },
               scheduling_priority, connection_->client_token()));
-  base::TimeDelta duration = base::TimeTicks::Now() - start;
+  base::TimeDelta duration = timer.Elapsed();
   if (duration > base::Milliseconds(2)) {
     base::UmaHistogramTimes("IndexedDB.CalculateBlockingStatusLongTimes",
                             duration);
@@ -1082,6 +1083,7 @@ Status Transaction::RunTasks() {
   TaskQueue* task_queue =
       run_preemptive_queue ? &preemptive_task_queue_ : &task_queue_;
   while (!task_queue->empty() && state_ != FINISHED) {
+    base::ElapsedTimer timer;
     CHECK(state_ == STARTED || state_ == COMMITTING) << state_;
     Task task = std::move(task_queue->front());
     task_queue->pop();
@@ -1096,6 +1098,12 @@ Status Transaction::RunTasks() {
                   base::StrCat({"IndexedDB.BackingStore.",
                                 task.operation_name_for_metrics}),
                   in_memory);
+        if (result.ok()) {
+          LogDuration(timer.Elapsed(),
+                      base::StrCat({"IndexedDB.BackendDuration.",
+                                    task.operation_name_for_metrics}),
+                      in_memory);
+        }
       }
     }
     if (weak_this && !run_preemptive_queue) {

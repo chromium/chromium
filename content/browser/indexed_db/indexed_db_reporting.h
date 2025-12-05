@@ -109,14 +109,13 @@ inline constexpr static std::string_view ToVariantSuffix(bool in_memory) {
   return in_memory ? ".InMemory" : ".OnDisk";
 }
 
-// Logs `duration` to `histogram_name` suffixed with ".Duration" and a variant
+// Logs `duration` to `histogram_name` suffixed with a variant
 // indicating whether the backing store is `in_memory` or on-disk.
 inline void LogDuration(const base::TimeDelta& duration,
                         std::string_view histogram_name,
                         bool in_memory) {
   base::UmaHistogramTimes(
-      base::StrCat({histogram_name, ".Duration", ToVariantSuffix(in_memory)}),
-      duration);
+      base::StrCat({histogram_name, ToVariantSuffix(in_memory)}), duration);
 }
 
 // Logs `status` to `histogram_name` suffixed with a variant indicating whether

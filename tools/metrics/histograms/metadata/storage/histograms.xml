@@ -298,6 +298,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="IndexedDB.BackendDuration.{Operation}.{IndexedDBBackingStoreType}"
+    units="ms" expires_after="2026-10-01">
+  <owner>leimy@chromium.org</owner>
+  <owner>evanstade@microsoft.com</owner>
+  <owner>abhishek.shanthkumar@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Logs the duration of the synchronous work performed in the backend (browser
+    process) for the operation {Operation} on an {IndexedDBBackingStoreType}
+    backing store. Logged once for each successful operation that calls into the
+    backing store (i.e., is non-trivial).
+  </summary>
+  <token key="Operation">
+    <variant name="AdvanceCursor"/>
+    <variant name="ChangeDatabaseVersion"/>
+    <variant name="ClearObjectStore"/>
+    <variant name="ContinueCursor"/>
+    <variant name="CountRecords"/>
+    <variant name="CreateIndex"/>
+    <variant name="CreateObjectStore"/>
+    <variant name="DeleteIndex"/>
+    <variant name="DeleteObjectStore"/>
+    <variant name="DeleteRecordRange"/>
+    <variant name="GetAllRecords"/>
+    <variant name="GetDatabaseInfo"/>
+    <variant name="GetKeyGeneratorCurrentNumber"/>
+    <variant name="GetRecord"/>
+    <variant name="OpenCursor"/>
+    <variant name="PrefetchCursor"/>
+    <variant name="PutRecord"/>
+    <variant name="RenameIndex"/>
+    <variant name="RenameObjectStore"/>
+    <variant name="SetIndexKeys"/>
+  </token>
+</histogram>
+
 <histogram name="IndexedDB.BackingStore.ReadBlob.{IndexedDBBackingStoreType}"
     enum="NetErrorCodes" expires_after="2026-10-01">
   <owner>leimy@chromium.org</owner>
@@ -494,21 +531,6 @@ chromium-metrics-reviews@google.com.
     PartitionedLockManager when GetUnacquirableLocks() takes over 2ms to
     complete. This is intended to facilitate tracking down performance issues.
     See crbug.com/384476946
-  </summary>
-</histogram>
-
-<histogram
-    name="IndexedDB.IDBFactory.GetDatabaseInfo.Duration.{IndexedDBBackingStoreType}"
-    units="ms" expires_after="2026-10-01">
-  <owner>leimy@chromium.org</owner>
-  <owner>evanstade@microsoft.com</owner>
-  <owner>abhishek.shanthkumar@microsoft.com</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    Logs the duration of the synchronous work performed in the backend (browser
-    process) to serve IDBFactory::GetDatabaseInfo() requests. Logged once for
-    each successful request that calls into the backing store (i.e., is
-    non-trivial).
   </summary>
 </histogram>
 

@@ -2357,7 +2357,7 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
     // The duration histogram should not be recorded since this was a trivial
     // request (the backing store was not involved).
     histogram_tester.ExpectTotalCount(
-        "IndexedDB.IDBFactory.GetDatabaseInfo.Duration.OnDisk", 0);
+        "IndexedDB.BackendDuration.GetDatabaseInfo.OnDisk", 0);
   }
 
   // Now create a database and thus the backing store.
@@ -2393,7 +2393,7 @@ TEST_P(IndexedDBTest, GetDatabaseNames_NoFactory) {
         "IndexedDB.BackingStore.GetDatabaseNamesAndVersions.OnDisk",
         0 /*Status::Type::kOk*/, 1);
     histogram_tester.ExpectTotalCount(
-        "IndexedDB.IDBFactory.GetDatabaseInfo.Duration.OnDisk", 1);
+        "IndexedDB.BackendDuration.GetDatabaseInfo.OnDisk", 1);
   }
 }
 
@@ -2507,6 +2507,10 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.ChangeDatabaseVersion.OnDisk", 1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.CreateObjectStore.OnDisk", 1);
   }
 
   // Create a transaction and commit it without issuing any request.
@@ -2574,6 +2578,8 @@ TEST_P(IndexedDBTest, TransactionHistograms) {
     histogram_tester.ExpectUniqueSample(
         "IndexedDB.BackingStore.CommitPhaseTwo.OnDisk", 0 /*Status::Type::kOk*/,
         1);
+    histogram_tester.ExpectTotalCount(
+        "IndexedDB.BackendDuration.PutRecord.OnDisk", 1);
   }
 }
 

@@ -537,7 +537,7 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
                                     "indexedDB.databases()."));
     return;
   }
-  LogDuration(timer.Elapsed(), "IndexedDB.IDBFactory.GetDatabaseInfo",
+  LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.GetDatabaseInfo",
               in_memory());
   std::move(callback).Run(
       std::move(*names_and_versions),
