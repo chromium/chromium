@@ -35,6 +35,9 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
   // Checks if the passed in WebContents are associated with the ActorOverlayUI
   // WebUIController.
   static bool IsActorOverlayWebContents(content::WebContents* web_contents);
+  // Save the callback to be run once the handler has been initialized. If it is
+  // already initialized, we run the callback immediately.
+  void SetHandlerInitializedCallback(base::OnceClosure callback);
 
  private:
   // The PendingRemote must be valid and bind to a receiver in order to start
@@ -47,6 +50,11 @@ class ActorOverlayUI : public ::ui::MojoWebUIController,
       this};
 
   std::unique_ptr<ActorOverlayHandler> handler_;
+
+  // Callbacks to run once the ActorOverlayPageHandler has been initialized. We
+  // use a vector because multiple UI updates may occur asynchronously while the
+  // Mojo connection is being established.
+  std::vector<base::OnceClosure> handler_initialized_callbacks_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

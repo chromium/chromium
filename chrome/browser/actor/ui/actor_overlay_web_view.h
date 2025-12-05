@@ -28,7 +28,7 @@ class ActorOverlayWebView : public views::WebView {
   ~ActorOverlayWebView() override;
 
   // Creates a transparent overlay view displaying chrome://actor-overlay.
-  void ShowUI(tabs::TabInterface* tab);
+  void ShowUI(tabs::TabInterface* tab, base::OnceClosure callback);
   // Detaches the web contents from this webview.
   // If the UI is closed, this webview may still exist as an empty container
   // until ShowUI is called again.
@@ -40,6 +40,9 @@ class ActorOverlayWebView : public views::WebView {
   // Forwards the border glow visibility to WebUI.
   void SetBorderGlowVisibility(bool is_visible);
 
+  // content::WebContentsObserver
+  void PrimaryPageChanged(content::Page& page) override;
+
  private:
   actor::ui::ActorOverlayUI* GetWebUi();
   // Manages the lifetime of the WebContents input event ignoring state.
@@ -47,6 +50,11 @@ class ActorOverlayWebView : public views::WebView {
       scoped_ignore_input_events_;
 
   raw_ptr<BrowserWindowInterface> browser_;
+
+  // Callbacks to pass to ActorOverlayUI once the WebUI controller is ready. We
+  // queue these to prevent dropping requests if multiple state changes occur
+  // before the navigation commits and the WebUI is created.
+  std::vector<base::OnceClosure> pending_webui_init_callbacks_;
 
   base::WeakPtrFactory<ActorOverlayWebView> weak_factory_{this};
 };

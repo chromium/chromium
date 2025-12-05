@@ -56,15 +56,22 @@ class ActorUiContentsContainerController : public content::WebContentsObserver,
   // Called whenever web contents are detached from a `web_view`.
   void OnWebContentsDetached(views::WebView* web_view);
 
-  // Updates the overlay_ state.
-  void UpdateOverlayState(bool is_visible,
-                          ActorOverlayState state,
-                          base::OnceClosure callback);
+  // Called whenever the visibility of the overlay or state has changed.
+  void OnOverlayStateChanged(bool is_visible,
+                             ActorOverlayState state,
+                             base::OnceClosure callback);
 
   // views::ViewObserver:
   void OnViewBoundsChanged(views::View* observed_view) override;
 
  private:
+  // Applies the state updates to the Actor Overlay.
+  void ApplyOverlayState(bool is_visible,
+                         ActorOverlayState state,
+                         base::OnceClosure callback);
+  // Ensures the ActorOverlayWebView is visible and initialized, so that it can
+  // be ready to receive updates.
+  void EnsureOverlayReady(bool is_visible, base::OnceClosure callback);
   // Gets the ActorUiTabController associated with the contentsContainer's
   // webcontents.
   ActorUiTabControllerInterface* GetActorUiTabController();

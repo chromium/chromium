@@ -53,6 +53,21 @@ void ActorOverlayUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   handler_ = std::make_unique<ActorOverlayHandler>(
       std::move(page), std::move(receiver), web_ui()->GetWebContents());
+  if (!handler_initialized_callbacks_.empty()) {
+    for (auto& callback : handler_initialized_callbacks_) {
+      std::move(callback).Run();
+    }
+    handler_initialized_callbacks_.clear();
+  }
+}
+
+void ActorOverlayUI::SetHandlerInitializedCallback(base::OnceClosure callback) {
+  // If handler is already initialized, run the callback immediately.
+  if (handler_) {
+    std::move(callback).Run();
+    return;
+  }
+  handler_initialized_callbacks_.push_back(std::move(callback));
 }
 
 void ActorOverlayUI::SetOverlayBackground(bool is_visible) {

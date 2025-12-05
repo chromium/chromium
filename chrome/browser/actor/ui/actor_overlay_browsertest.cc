@@ -154,14 +154,14 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, WebViewLifecycleAndVisibility) {
 
   // Make the scrim visible.
   TestFuture<void> future1;
-  contents_controller->UpdateOverlayState(
+  contents_controller->OnOverlayStateChanged(
       /*is_visible=*/true, ActorOverlayState(), future1.GetCallback());
   EXPECT_TRUE(future1.Wait());
   // Actor Overlay WebView should now be visible.
   EXPECT_TRUE(IsActorOverlayVisible(browser()));
 
   TestFuture<void> future2;
-  contents_controller->UpdateOverlayState(
+  contents_controller->OnOverlayStateChanged(
       /*is_visible=*/false, ActorOverlayState(), future2.GetCallback());
   EXPECT_TRUE(future2.Wait());
   // Confirm Actor Overlay WebView is hidden.
@@ -486,7 +486,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
-                       UpdateOverlayStateRunsCallbackWhenOverlayIsNull) {
+                       OnOverlayStateChangedRunsCallbackWhenOverlayIsNull) {
   ActorUiWindowController* window_controller =
       ActorUiWindowController::From(browser());
   // The window controller should still exist when the GlicActorUi feature is
@@ -502,7 +502,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
   // is null because the GlicActorUiOverlay feature is disabled. This verifies
   // that the callback passed in is still run when the webview is null.
   base::test::TestFuture<void> future;
-  contents_controller->UpdateOverlayState(
+  contents_controller->OnOverlayStateChanged(
       /*is_visible=*/true, ActorOverlayState(), future.GetCallback());
   EXPECT_TRUE(future.Wait());
 }

@@ -75,7 +75,7 @@ void ActorUiContentsContainerController::OnWebContentsAttached(
       if (features::kGlicActorUiOverlay.Get()) {
         actor_ui_tab_controller_callback_runners_.push_back(
             tab_controller->RegisterActorOverlayStateChange(base::BindRepeating(
-                &ActorUiContentsContainerController::UpdateOverlayState,
+                &ActorUiContentsContainerController::OnOverlayStateChanged,
                 weak_ptr_factory_.GetWeakPtr())));
         actor_ui_tab_controller_callback_runners_.push_back(
             tab_controller->RegisterActorOverlayBackgroundChange(
@@ -166,24 +166,46 @@ void ActorUiContentsContainerController::OnActorOverlayBackgroundChange(
   overlay_->SetOverlayBackground(is_visible);
 }
 
-void ActorUiContentsContainerController::UpdateOverlayState(
+void ActorUiContentsContainerController::OnOverlayStateChanged(
     bool is_visible,
     ActorOverlayState state,
     base::OnceClosure callback) {
+  base::OnceClosure on_overlay_ready =
+      base::BindOnce(&ActorUiContentsContainerController::ApplyOverlayState,
+                     weak_ptr_factory_.GetWeakPtr(), is_visible,
+                     std::move(state), std::move(callback));
+  // Only after the ActorOverlay is ready, we apply the state updates to it.
+  EnsureOverlayReady(is_visible, std::move(on_overlay_ready));
+}
+
+void ActorUiContentsContainerController::EnsureOverlayReady(
+    bool is_visible,
+    base::OnceClosure callback) {
+  // Ensure the callback runs on any early return. We Release() ownership only
+  // when passing the callback to an asynchronous operation.
+  base::ScopedClosureRunner runner(std::move(callback));
   if (!overlay_) {
-    std::move(callback).Run();
     return;
   }
-
-  if (is_visible) {
-    overlay_->ShowUI(tabs::TabInterface::GetFromContents(
-        contents_container_view_->web_contents()));
-  } else {
+  if (!is_visible) {
     overlay_->CloseUI();
+    return;
   }
+  overlay_->ShowUI(tabs::TabInterface::GetFromContents(
+                       contents_container_view_->web_contents()),
+                   runner.Release());
+}
 
+void ActorUiContentsContainerController::ApplyOverlayState(
+    bool is_visible,
+    ActorOverlayState state,
+    base::OnceClosure callback) {
+  // Ensure the callback runs on any early return.
+  base::ScopedClosureRunner runner(std::move(callback));
+  if (!overlay_ || !is_visible) {
+    return;
+  }
   overlay_->SetBorderGlowVisibility(state.border_glow_visible);
-  std::move(callback).Run();
 }
 
 }  // namespace actor::ui

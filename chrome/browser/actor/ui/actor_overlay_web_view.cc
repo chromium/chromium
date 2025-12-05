@@ -30,7 +30,8 @@ ActorOverlayWebView::~ActorOverlayWebView() {
   SetWebContents(nullptr);
 }
 
-void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab) {
+void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab,
+                                 base::OnceClosure callback) {
   CHECK(features::kGlicActorUiOverlay.Get());
   if (!web_contents()) {
     // Creates a new web contents if one doesn't exist.
@@ -52,6 +53,13 @@ void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab) {
 
   SetVisible(true);
   web_contents()->WasShown();
+  // If the WebUI is available, let it handle the callback. Otherwise, add the
+  // callback to the list until the navigation commits.
+  if (actor::ui::ActorOverlayUI* webui = GetWebUi()) {
+    webui->SetHandlerInitializedCallback(std::move(callback));
+  } else {
+    pending_webui_init_callbacks_.push_back(std::move(callback));
+  }
 }
 
 void ActorOverlayWebView::CloseUI() {
@@ -91,6 +99,25 @@ actor::ui::ActorOverlayUI* ActorOverlayWebView::GetWebUi() {
       ->GetWebUI()
       ->GetController()
       ->GetAs<actor::ui::ActorOverlayUI>();
+}
+
+void ActorOverlayWebView::PrimaryPageChanged(content::Page& page) {
+  if (pending_webui_init_callbacks_.empty()) {
+    return;
+  }
+  if (actor::ui::ActorOverlayUI* webui = GetWebUi()) {
+    for (auto& callback : pending_webui_init_callbacks_) {
+      webui->SetHandlerInitializedCallback(std::move(callback));
+    }
+  } else {
+    // TODO(crbug.com/422539773): Handle when WebUI initialization fails, this
+    // could happen if the navigation fails or renderer crashes. Running
+    // callback to not block actuation.
+    for (auto& callback : pending_webui_init_callbacks_) {
+      std::move(callback).Run();
+    }
+  }
+  pending_webui_init_callbacks_.clear();
 }
 
 BEGIN_METADATA(ActorOverlayWebView)
