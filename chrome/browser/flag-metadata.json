@@ -7066,11 +7066,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "mini-origin-bar",
-    "owners": [ "pnoland@chromium.org", "chrome-mobile-search@google.com" ],
-    "expiry_milestone": 147
-  },
-  {
     "name": "minutes-delay-to-restore-gaia-cookies-if-deleted",
     "owners": ["jlebel@chromium.org", "chrome-signin-team@google.com"],
     // Used for automated testing of Gaia cookie restoration in iOS.

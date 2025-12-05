@@ -546,35 +546,10 @@ public class ToolbarPositionControllerTest {
         assertControlsAtBottom();
     }
 
-    @Test
-    @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    @DisableFeatures(ChromeFeatureList.MINI_ORIGIN_BAR)
-    public void testUpdatePositionChangesWithFormFieldFocusState() {
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
-        assertControlsAtBottom();
-        verify(mControlContainerView).setVisibility(View.INVISIBLE);
-
-        mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
-        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
-        assertEquals(0, mBrowserControlsSizer.getTopControlOffset());
-        assertControlsAtTop();
-        verify(mControlContainerView, times(1)).setVisibility(View.INVISIBLE);
-
-        mKeyboardVisibilityDelegate.setVisibilityForTests(false);
-        assertEquals(TOOLBAR_HEIGHT, mBrowserControlsSizer.getBottomControlOffset());
-        assertControlsAtBottom();
-
-        mKeyboardVisibilityDelegate.setVisibilityForTests(true);
-        assertControlsAtTop();
-
-        mIsFormFieldFocused.onNodeAttributeUpdated(false, false);
-        assertControlsAtBottom();
-    }
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testUpdatePositionFormField_MiniOriginBar() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -668,7 +643,6 @@ public class ToolbarPositionControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     @DisableFeatures({
-        ChromeFeatureList.MINI_ORIGIN_BAR,
         ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2
     })
     public void testCalculateStateTransition() {
@@ -753,7 +727,7 @@ public class ToolbarPositionControllerTest {
                         ControlsPosition.BOTTOM));
 
         assertEquals(
-                StateTransition.SNAP_TO_TOP,
+                StateTransition.NONE,
                 ToolbarPositionController.calculateStateTransition(
                         prefStateChanged,
                         ntpShowing,
@@ -969,7 +943,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testControlContainerTranslationAdjustments() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
@@ -1036,7 +1010,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testParentLayoutInLayoutDuringPositionChange() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -1056,7 +1030,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testOnToEdgeChange() {
         int topInset = 50;
 
@@ -1071,7 +1045,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR, ChromeFeatureList.MINI_ORIGIN_BAR})
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testControlContainerHeightAdjustments() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);

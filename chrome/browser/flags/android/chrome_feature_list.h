@@ -190,7 +190,6 @@ BASE_DECLARE_FEATURE(kLockTopControlsOnLargeTabletsV2);
 BASE_DECLARE_FEATURE(kMagicStackAndroid);
 BASE_DECLARE_FEATURE(kMayLaunchUrlUsesSeparateStoragePartition);
 BASE_DECLARE_FEATURE(kMediaIndicatorsAndroid);
-BASE_DECLARE_FEATURE(kMiniOriginBar);
 BASE_DECLARE_FEATURE(kMostVisitedTilesCustomization);
 BASE_DECLARE_FEATURE(kMostVisitedTilesReselect);
 BASE_DECLARE_FEATURE(kMultiInstanceApplicationStatusCleanup);

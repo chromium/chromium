@@ -601,7 +601,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
             boolean isFormFieldFocusedWithKeyboardVisible,
             boolean doesUserPreferTopToolbar,
             @ControlsPosition int currentPosition) {
-        boolean miniOriginBarEnabled = ChromeFeatureList.sMiniOriginBar.isEnabled();
         boolean allowBottomAnchoredFocusedOmnibox =
                 ChromeFeatureList.sAndroidBottomToolbarV2.isEnabled();
         boolean forceBottomForFocusedOmnibox =
@@ -616,7 +615,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
                         || tabSwitcherShowing
                         || (isOmniboxFocused && !allowBottomAnchoredFocusedOmnibox)
                         || isFindInPageShowing
-                        || (isFormFieldFocusedWithKeyboardVisible && !miniOriginBarEnabled)
                         || doesUserPreferTopToolbar)) {
             newControlsPosition = ControlsPosition.TOP;
         } else {

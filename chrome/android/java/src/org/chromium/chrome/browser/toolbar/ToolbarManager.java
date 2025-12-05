@@ -1920,21 +1920,20 @@ public class ToolbarManager
                         assertNonNull(mWindowAndroid.getInsetObserver())
                                 .getSupplierForKeyboardInset(),
                         mWindowAndroid);
-        if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
-            mMiniOriginBarController =
-                    new MiniOriginBarController(
-                            mLocationBar,
-                            mFormFieldFocusedSupplier,
-                            mWindowAndroid.getKeyboardDelegate(),
-                            mActivity,
-                            mControlContainer,
-                            mSuppressToolbarSceneLayerSupplier,
-                            mBrowserControlsSizer,
-                            assertNonNull(mWindowAndroid.getInsetObserver()),
-                            controlContainerTranslationSupplier,
-                            keyboardAccessoryStateSupplier.getIsSheetShowingSupplier(),
-                            this::isUrlBarFocused);
-        }
+
+        mMiniOriginBarController =
+                new MiniOriginBarController(
+                        mLocationBar,
+                        mFormFieldFocusedSupplier,
+                        mWindowAndroid.getKeyboardDelegate(),
+                        mActivity,
+                        mControlContainer,
+                        mSuppressToolbarSceneLayerSupplier,
+                        mBrowserControlsSizer,
+                        assertNonNull(mWindowAndroid.getInsetObserver()),
+                        controlContainerTranslationSupplier,
+                        keyboardAccessoryStateSupplier.getIsSheetShowingSupplier(),
+                        this::isUrlBarFocused);
     }
 
     // TODO(b/315204103): add tests

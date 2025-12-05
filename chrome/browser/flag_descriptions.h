@@ -5560,11 +5560,6 @@ inline constexpr char kMigrateAccountPrefsOnMobileName[] =
 inline constexpr char kMigrateAccountPrefsOnMobileDescription[] =
     "Migrate account prefs on Mobile to the single-json implementation.";
 
-inline constexpr char kMiniOriginBarName[] = "Mini Origin Bar";
-inline constexpr char kMiniOriginBarDescription[] =
-    "Show a mini origin bar above the keyboard when focusing a form field. "
-    "Applicable to bottom toolbar on Android only.";
-
 inline constexpr char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 inline constexpr char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";
