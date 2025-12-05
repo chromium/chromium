@@ -5669,7 +5669,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
   // TODO(https://crbug.com/1341235): The choice of color type should match the
   // format of the TexImage function. The choice of alpha type should opaque for
   // opaque images. The color space should match the unpack color space.
-  CanvasResourceProvider* resource_provider =
+  CanvasSnapshotProvider* resource_provider =
       generated_image_cache_.GetCanvasResourceProvider(
           {width, height}, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB());
@@ -5678,8 +5678,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
     return nullptr;
   }
 
-  CHECK_EQ(resource_provider->GetType(),
-           CanvasResourceProvider::ResourceProviderType::kExternalBitmap);
+  CHECK(resource_provider->IsExternalBitmapProvider());
   CanvasResourceProviderExternalBitmap* resource_provider_bitmap =
       static_cast<CanvasResourceProviderExternalBitmap*>(resource_provider);
 
@@ -8780,7 +8779,7 @@ WebGLRenderingContextBase::LRUCanvasResourceProviderCache::
       resource_providers_(capacity),
       requested_formats_(capacity) {}
 
-CanvasResourceProvider* WebGLRenderingContextBase::
+CanvasSnapshotProvider* WebGLRenderingContextBase::
     LRUCanvasResourceProviderCache::GetCanvasResourceProvider(
         gfx::Size size,
         viz::SharedImageFormat format,
@@ -8788,7 +8787,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
         const gfx::ColorSpace& color_space) {
   wtf_size_t i;
   for (i = 0; i < capacity_; ++i) {
-    CanvasResourceProvider* resource_provider = resource_providers_[i].get();
+    CanvasSnapshotProvider* resource_provider = resource_providers_[i].get();
     if (!resource_provider)
       break;
     if (resource_provider->Size() != size ||
@@ -8802,7 +8801,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
     return resource_provider;
   }
 
-  std::unique_ptr<CanvasResourceProvider> temp;
+  std::unique_ptr<CanvasSnapshotProvider> temp;
   if (type_ == CacheType::kVideo) {
     viz::RasterContextProvider* raster_context_provider = nullptr;
     if (auto wrapper = SharedGpuContext::ContextProviderWrapper()) {
@@ -8822,7 +8821,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   resource_providers_[i] = std::move(temp);
   requested_formats_[i] = format;
 
-  CanvasResourceProvider* resource_provider = resource_providers_[i].get();
+  CanvasSnapshotProvider* resource_provider = resource_providers_[i].get();
   BubbleToFront(i);
   return resource_provider;
 }

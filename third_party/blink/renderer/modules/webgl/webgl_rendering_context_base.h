@@ -72,6 +72,7 @@ namespace blink {
 
 class AcceleratedStaticBitmapImage;
 class CanvasResourceProvider;
+class CanvasSnapshotProvider;
 class EXTDisjointTimerQuery;
 class EXTDisjointTimerQueryWebGL2;
 class Element;
@@ -918,7 +919,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     enum class CacheType { kImage, kVideo };
     LRUCanvasResourceProviderCache(wtf_size_t capacity, CacheType type);
     // The pointer returned is owned by the image buffer map.
-    CanvasResourceProvider* GetCanvasResourceProvider(
+    CanvasSnapshotProvider* GetCanvasResourceProvider(
         gfx::Size size,
         viz::SharedImageFormat format,
         SkAlphaType alpha_type,
@@ -928,7 +929,7 @@ class MODULES_EXPORT WebGLRenderingContextBase
     void BubbleToFront(wtf_size_t idx);
     const wtf_size_t capacity_;
     const CacheType type_;
-    Vector<std::unique_ptr<CanvasResourceProvider>> resource_providers_;
+    Vector<std::unique_ptr<CanvasSnapshotProvider>> resource_providers_;
     // The returned CanvasResourceProvider may have a different format from the
     // one requested (e.g, BGRA vs RGBA). Ensure this doesn't cause cache
     // misses by recording also the requested format.

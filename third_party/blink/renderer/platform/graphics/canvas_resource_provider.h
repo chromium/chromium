@@ -213,9 +213,11 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // those callsites.
   const SkImageInfo& GetSkImageInfo() const { return info_; }
   SkSurfaceProps GetSkSurfaceProps() const;
-  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  gfx::ColorSpace GetColorSpace() const { return color_space_; }
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
+  viz::SharedImageFormat GetSharedImageFormat() const override {
+    return format_;
+  }
+  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  SkAlphaType GetAlphaType() const override { return alpha_type_; }
   gfx::Size Size() const override { return size_; }
   virtual base::ByteCount EstimatedSizeInBytes() const {
     return base::ByteCount(format_.EstimatedSizeInBytes(size_));
@@ -465,6 +467,7 @@ class PLATFORM_EXPORT CanvasResourceProviderExternalBitmap
       ImageOrientation = ImageOrientationEnum::kDefault) override {
     NOTREACHED();
   }
+  bool IsExternalBitmapProvider() const override { return true; }
 
   void RasterRecord(cc::PaintRecord last_recording) override { NOTREACHED(); }
   bool WritePixels(const SkImageInfo& orig_info,
