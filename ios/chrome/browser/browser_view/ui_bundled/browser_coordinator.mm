@@ -4774,7 +4774,7 @@ const char kChromeAppStoreUrl[] =
 #pragma mark - NonModalSignInPromoCommands
 
 - (void)showNonModalSignInPromoWithType:(SignInPromoType)promoType {
-  if (IsNonModalSignInPromoEnabled() && !self.nonModalSignInPromoCoordinator) {
+  if (!self.nonModalSignInPromoCoordinator) {
     self.nonModalSignInPromoCoordinator =
         [[NonModalSignInPromoCoordinator alloc]
             initWithBaseViewController:self.viewController

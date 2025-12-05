@@ -251,14 +251,12 @@ enum class PresentedState {
                                                           URL:bookmarkedURL
                                                    editAction:editAction]];
 
-  // Show non-modal sign-in promo for bookmarks if the feature is enabled.
-  if (IsNonModalSignInPromoEnabled()) {
-    id<NonModalSignInPromoCommands> nonModalSignInPromoHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                           NonModalSignInPromoCommands);
-    [nonModalSignInPromoHandler
-        showNonModalSignInPromoWithType:SignInPromoType::kBookmark];
-  }
+  // Show non-modal sign-in promo for bookmarks.
+  id<NonModalSignInPromoCommands> nonModalSignInPromoHandler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(),
+                         NonModalSignInPromoCommands);
+  [nonModalSignInPromoHandler
+      showNonModalSignInPromoWithType:SignInPromoType::kBookmark];
 
   default_browser::NotifyBookmarkAddOrEdit(
       feature_engagement::TrackerFactory::GetForProfile(

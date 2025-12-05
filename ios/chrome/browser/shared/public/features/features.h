@@ -927,12 +927,6 @@ bool ShouldCancelTouchesInViewForIPH();
 // Returns true if the IPH gesture recognition improvements are enabled.
 bool IsIPHGestureRecognitionImprovementEnabled();
 
-// Feature flag for enabling the non-modal sign-in promo.
-BASE_DECLARE_FEATURE(kNonModalSignInPromo);
-
-// Returns whether the non-modal sign-in promo is enabled.
-bool IsNonModalSignInPromoEnabled();
-
 // Feature flag to remove section breaks when detecting addresses.
 BASE_DECLARE_FEATURE(kIOSOneTapMiniMapRemoveSectionsBreaks);
 

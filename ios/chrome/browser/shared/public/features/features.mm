@@ -941,12 +941,6 @@ bool IsIPHGestureRecognitionImprovementEnabled() {
       kIPHGestureRecognitionAblation, kIPHGestureRecognitionImprovement, false);
 }
 
-BASE_FEATURE(kNonModalSignInPromo, base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsNonModalSignInPromoEnabled() {
-  return base::FeatureList::IsEnabled(kNonModalSignInPromo);
-}
-
 BASE_FEATURE(kIOSOneTapMiniMapRestrictions, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const char kIOSOneTapMiniMapRestrictionCrossValidateParamName[] =
