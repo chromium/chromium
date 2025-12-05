@@ -530,10 +530,12 @@ viz::mojom::TileResourcePtr SerializeTileResource(
 viz::mojom::TilePtr SerializeTile(
     const Tile& tile,
     viz::ClientResourceProvider& resource_provider,
-    gpu::SharedImageInterface* shared_image_interface) {
+    gpu::SharedImageInterface* shared_image_interface,
+    bool update_damage) {
   auto wire = viz::mojom::Tile::New();
   wire->column_index = tile.tiling_i_index();
   wire->row_index = tile.tiling_j_index();
+  wire->update_damage = update_damage;
 
   switch (tile.draw_info().mode()) {
     case TileDrawInfo::OOM_MODE:
@@ -568,7 +570,8 @@ viz::mojom::TilingPtr SerializeTiling(
     PictureLayerImpl& layer,
     const PictureLayerTiling* tiling,
     float scale_key,
-    base::span<const std::pair<TileIndex, const Tile*>> tile_updates,
+    base::span<const std::pair<PictureLayerImpl::TileUpdateIndex, const Tile*>>
+        tile_updates,
     viz::ClientResourceProvider& resource_provider,
     gpu::SharedImageInterface* shared_image_interface) {
   // Handle the case where the tiling no longer exists (deleted).
@@ -587,7 +590,8 @@ viz::mojom::TilingPtr SerializeTiling(
     if (tile && !tile->deleted()) {
       // Serialize a live tile with content.
       if (auto wire_tile =
-              SerializeTile(*tile, resource_provider, shared_image_interface)) {
+              SerializeTile(*tile, resource_provider, shared_image_interface,
+                            index.update_damage)) {
         wire_tiles.push_back(std::move(wire_tile));
       }
     } else {
@@ -599,6 +603,10 @@ viz::mojom::TilingPtr SerializeTiling(
       auto deleted_tile = viz::mojom::Tile::New();
       deleted_tile->column_index = index.i;
       deleted_tile->row_index = index.j;
+      // |index.update_damage| could be set to true from earlier
+      // NotifyTileStateChanged() in the same frame.
+      // Do not track damage rect if the tile is to be deleted.
+      deleted_tile->update_damage = false;
       deleted_tile->contents = viz::mojom::TileContents::NewMissingReason(
           mojom::MissingTileReason::kTileDeleted);
       wire_tiles.push_back(std::move(deleted_tile));
@@ -639,7 +647,8 @@ void SerializePictureLayerTileUpdates(
 
     // Create a unified vector of tile updates, marking missing tiles with
     // nullptr.
-    std::vector<std::pair<TileIndex, const Tile*>> tile_updates;
+    std::vector<std::pair<PictureLayerImpl::TileUpdateIndex, const Tile*>>
+        tile_updates;
     tile_updates.reserve(tile_indices.size());
     for (const auto& index : tile_indices) {
       const Tile* tile = tiling ? tiling->TileAt(index) : nullptr;
@@ -1495,15 +1504,17 @@ void VizLayerContext::UpdateDisplayTile(
     return;
   }
   // Create a one-element update list for the given tile.
-  TileIndex index(tile.tiling_i_index(), tile.tiling_j_index());
+  PictureLayerImpl::TileUpdateIndex index(tile.tiling_i_index(),
+                                          tile.tiling_j_index(), update_damage);
   const Tile* tile_ptr = &tile;
-  std::pair<TileIndex, const Tile*> tile_updates[] = {{index, tile_ptr}};
+  std::pair<PictureLayerImpl::TileUpdateIndex, const Tile*> tile_updates[] = {
+      {index, tile_ptr}};
 
   // Serialize the tile and send it to the display service.
   if (auto tiling = SerializeTiling(
           layer, tile.tiling(), tile.contents_scale_key(), tile_updates,
           resource_provider, shared_image_interface)) {
-    service_->UpdateDisplayTiling(std::move(tiling), update_damage);
+    service_->UpdateDisplayTiling(std::move(tiling));
   }
 }
 

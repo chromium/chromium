@@ -179,7 +179,16 @@ class CC_EXPORT PictureLayerImpl
   // this method. This returns tile indices for each updated tile, grouped by
   // the scale key of their respective tiling. Beware that this is not pruned,
   // so tilings or tiles identified within may no longer exist.
-  using TileUpdateSet = std::map<float, std::set<TileIndex>>;
+  struct TileUpdateIndex : public TileIndex {
+    TileUpdateIndex() = default;
+    TileUpdateIndex(int i, int j, bool update_damage)
+        : TileIndex(i, j), update_damage(update_damage) {}
+
+    // Indicate whether this tile's damage rect should be tracked by
+    // DamageTracker in viz side.
+    mutable bool update_damage;
+  };
+  using TileUpdateSet = std::map<float, std::set<TileUpdateIndex>>;
   TileUpdateSet TakeUpdatedTiles();
 
   std::vector<float> TakeProposedTilingScalesForDeletion();

@@ -61,8 +61,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   base::expected<void, std::string> DoUpdateDisplayTree(
       mojom::LayerTreeUpdatePtr update);
   base::expected<void, std::string> DoUpdateDisplayTiling(
-      mojom::TilingPtr tiling,
-      bool update_damage);
+      mojom::TilingPtr tiling);
   void DoDraw(const BeginFrameArgs& begin_frame_args,
               base::TimeTicks start_update_display_tree,
               bool frame_has_damage);
@@ -150,8 +149,7 @@ class VIZ_SERVICE_EXPORT LayerContextImpl : public cc::LayerTreeHostImplClient,
   // mojom::LayerContext:
   void SetVisible(bool visible) override;
   void UpdateDisplayTree(mojom::LayerTreeUpdatePtr update) override;
-  void UpdateDisplayTiling(mojom::TilingPtr tiling,
-                           bool update_damage) override;
+  void UpdateDisplayTiling(mojom::TilingPtr tiling) override;
 
   // Return any resources pending in |resources_to_return_| to the LayerContext
   // client, via the frame sink.

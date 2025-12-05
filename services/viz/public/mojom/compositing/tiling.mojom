@@ -36,6 +36,10 @@ struct Tile {
   uint32 column_index;
   uint32 row_index;
 
+  // Indicates whether this tile's damage rect should be tracked by
+  // DamageTracker in viz side.
+  bool update_damage;
+
   // The updated contents of the tile.
   TileContents contents;
 };

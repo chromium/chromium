@@ -1056,8 +1056,7 @@ DeserializeTileContents(cc::LayerTreeHostImpl* host_impl,
 base::expected<void, std::string> DeserializeTiling(
     cc::LayerTreeHostImpl* host_impl,
     cc::TileDisplayLayerImpl& layer,
-    mojom::Tiling& wire,
-    bool update_damage) {
+    mojom::Tiling& wire) {
   if (wire.is_deleted) {
     layer.RemoveTiling(wire.scale_key);
     return base::ok();
@@ -1079,7 +1078,7 @@ base::expected<void, std::string> DeserializeTiling(
     tiling.SetTileContents(
         cc::TileIndex{base::saturated_cast<int>(wire_tile->column_index),
                       base::saturated_cast<int>(wire_tile->row_index)},
-        std::move(contents), update_damage);
+        std::move(contents), wire_tile->update_damage);
   }
   if (tiling.tiles().empty()) {
     layer.RemoveTiling(tiling.contents_scale_key());
@@ -1865,7 +1864,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
         }
         RETURN_IF_ERROR(DeserializeTiling(
             host_impl_.get(), static_cast<cc::TileDisplayLayerImpl&>(*layer),
-            *tiling, /*update_damage=*/false));
+            *tiling));
       }
     }
   }
@@ -2113,18 +2112,16 @@ void LayerContextImpl::SendTilingsCleanupNotificationToClient() {
   }
 }
 
-void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling,
-                                           bool update_damage) {
+void LayerContextImpl::UpdateDisplayTiling(mojom::TilingPtr tiling) {
   CHECK(receiver_);
-  auto result = DoUpdateDisplayTiling(std::move(tiling), update_damage);
+  auto result = DoUpdateDisplayTiling(std::move(tiling));
   if (!result.has_value()) {
     HandleBadMojoMessage("UpdateDisplayTiling", result.error());
   }
 }
 
 base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTiling(
-    mojom::TilingPtr tiling,
-    bool update_damage) {
+    mojom::TilingPtr tiling) {
   cc::LayerTreeImpl& layers = *host_impl_->active_tree();
   if (cc::LayerImpl* layer = layers.LayerById(tiling->layer_id)) {
     if (layer->GetLayerType() != cc::mojom::LayerType::kTileDisplay) {
@@ -2133,7 +2130,7 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTiling(
 
     return DeserializeTiling(host_impl_.get(),
                              static_cast<cc::TileDisplayLayerImpl&>(*layer),
-                             *tiling, update_damage);
+                             *tiling);
   }
   return base::ok();
 }
