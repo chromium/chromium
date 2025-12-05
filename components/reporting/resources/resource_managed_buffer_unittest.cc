@@ -71,12 +71,9 @@ TEST_F(ResourceManagedBufferTest, SuccessfulAllocAndFillIn) {
   ASSERT_OK(buffer.Allocate(1024LLu));
   EXPECT_THAT(buffer.size(), Eq(1024LLu));
   EXPECT_THAT(buffer, Not(IsEmpty()));
-  constexpr static std::array<char, 18> kData{"ABCDEF 0123456789"};
-  for (size_t i = 0; kData[i]; ++i) {
-    *buffer.at(512u + i) = kData[i];
-  }
-  EXPECT_THAT(std::string(buffer.at(512u), std::strlen(kData.data())),
-              StrEq(kData.data()));
+  constexpr std::string_view kData = "ABCDEF 0123456789";
+  buffer.subspan(512).copy_prefix_from(base::as_byte_span(kData));
+  EXPECT_EQ(base::as_string_view(buffer.subspan(512, kData.size())), kData);
 }
 
 TEST_F(ResourceManagedBufferTest, MultipleAllocations) {

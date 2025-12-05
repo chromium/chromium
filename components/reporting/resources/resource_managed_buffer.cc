@@ -7,8 +7,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/reporting/util/status.h"
 
@@ -31,32 +29,15 @@ Status ResourceManagedBuffer::Allocate(size_t size) {
                   "Not enough memory for the buffer");
   }
   // Commit memory allocation.
-  size_ = size;
-  buffer_ = std::make_unique<char[]>(size);
+  buffer_ = base::HeapArray<uint8_t>::WithSize(size);
   return Status::StatusOK();
 }
 
 void ResourceManagedBuffer::Clear() {
-  if (buffer_) {
-    buffer_.reset();
+  if (!empty()) {
+    memory_resource_->Discard(size());
+    buffer_ = {};
   }
-  if (size_ > 0) {
-    memory_resource_->Discard(size_);
-    size_ = 0;
-  }
-}
-
-char* ResourceManagedBuffer::at(size_t pos) {
-  CHECK_LT(pos, size_);
-  return UNSAFE_TODO(buffer_.get() + pos);
-}
-
-size_t ResourceManagedBuffer::size() const {
-  return size_;
-}
-
-bool ResourceManagedBuffer::empty() const {
-  return size_ == 0;
 }
 
 }  // namespace reporting
