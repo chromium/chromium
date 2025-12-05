@@ -13489,6 +13489,10 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillEnableNewFopDisplayAndroid)},
 #endif
 
+    {"idb-sqlite-backing-store", flag_descriptions::kIdbSqliteBackingStoreName,
+     flag_descriptions::kIdbSqliteBackingStoreDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kIdbSqliteBackingStore)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"android-caret-browsing", flag_descriptions::kAndroidCaretBrowsingName,
      flag_descriptions::kAndroidCaretBrowsingDescription, kOsAndroid,
