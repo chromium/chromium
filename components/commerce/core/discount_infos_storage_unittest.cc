@@ -300,7 +300,7 @@ TEST_F(DiscountInfosStorageTest,
       base::BindOnce(
           [](base::RunLoop* run_loop, const GURL& url,
              const std::vector<DiscountInfo> results) {
-            ASSERT_EQ(2, (int)results.size());
+            ASSERT_EQ(2u, results.size());
             ASSERT_EQ(kDiscountIdInDb1, results[0].id);
             ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
             ASSERT_EQ(kDiscountLanguageCode, results[0].language_code);
@@ -347,7 +347,7 @@ TEST_F(DiscountInfosStorageTest,
       GURL(kMerchantUrl),
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
-        ASSERT_EQ(2, (int)results.size());
+        ASSERT_EQ(2u, results.size());
 
         ASSERT_EQ(kDiscountIdInDb1, results[0].id);
         ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
@@ -379,7 +379,7 @@ TEST_F(DiscountInfosStorageTest,
       GURL(kMerchantUrl),
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
-        ASSERT_EQ(3, (int)results.size());
+        ASSERT_EQ(3u, results.size());
 
         ASSERT_EQ(kDiscountIdInDb1, results[0].id);
         ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
@@ -415,7 +415,7 @@ TEST_F(DiscountInfosStorageTest,
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
         ASSERT_EQ(kMerchantUrl, url.spec());
-        ASSERT_EQ(0, (int)results.size());
+        ASSERT_EQ(0u, results.size());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }
@@ -437,7 +437,7 @@ TEST_F(DiscountInfosStorageTest,
       GURL(kProductUrl1),
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
-        ASSERT_EQ(1, (int)results.size());
+        ASSERT_EQ(1u, results.size());
         ASSERT_EQ(kDiscountIdInDb1, results[0].id);
         ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
         ASSERT_EQ(kDiscountLanguageCode, results[0].language_code);
@@ -467,7 +467,7 @@ TEST_F(DiscountInfosStorageTest,
       GURL(kMerchantUrl),
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
-        ASSERT_EQ(1, (int)results.size());
+        ASSERT_EQ(1u, results.size());
         ASSERT_EQ(kDiscountIdInDb2, results[0].id);
         ASSERT_EQ(DiscountType::kFreeListingWithCode, results[0].type);
         ASSERT_EQ(kDiscountLanguageCode, results[0].language_code);
@@ -490,7 +490,7 @@ TEST_F(DiscountInfosStorageTest, TestLoadDiscountsWithPrefix_AllDiscountsExpired
       GURL(kProductUrl1),
       base::BindOnce([](const GURL& url,
                         const std::vector<DiscountInfo> results) {
-        ASSERT_EQ(0, (int)results.size());
+        ASSERT_EQ(0u, results.size());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 }

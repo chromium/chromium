@@ -219,7 +219,7 @@ TEST(ArtemisLocalDataSourceTest, TestBufferSizeIsCapped) {
   // Verify that returned data is capped at the limit.
   auto callback =
       base::BindLambdaForTesting([&](const std::vector<std::string>& data) {
-        EXPECT_EQ((int)data.size(), 1);
+        EXPECT_EQ(data.size(), 1u);
       });
   source.Fetch(std::move(callback));
 }

@@ -562,7 +562,7 @@ TEST_F(ScrollPredictorTest, FilteringPrediction) {
     EXPECT_FALSE(isFilteringEnabled());
     accumulated_deltas.push_back(GetLastAccumulatedDelta().y());
   }
-  EXPECT_EQ((int)accumulated_deltas.size(), 100);
+  EXPECT_EQ(accumulated_deltas.size(), 100u);
 
   // Now we enable filtering and compare the deltas
   ConfigurePredictorAndFilterFieldTrialAndInitialize(

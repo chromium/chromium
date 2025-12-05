@@ -66,7 +66,7 @@ IN_PROC_BROWSER_TEST_F(InstantServiceTest, GetNTPTileSuggestion) {
   instant_service_->OnURLsAvailable(false, suggestions_map);
 
   auto items = instant_service_->most_visited_info_->items;
-  ASSERT_EQ(1, (int)items.size());
+  ASSERT_EQ(1u, items.size());
   EXPECT_EQ("https://foo.com/", items[0].url);
   EXPECT_EQ(u"Foo", items[0].title);
   EXPECT_EQ("https://foo.com/favicon", items[0].favicon);

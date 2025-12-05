@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(CastWebContentsBrowserTest, ErrorLoadFailSubFrames) {
       "iframe.src = 'about:blank';";
   ASSERT_TRUE(ExecJs(web_contents_.get(), script));
 
-  ASSERT_EQ(2, (int)render_frames_.size());
+  ASSERT_EQ(2u, render_frames_.size());
   auto it =
       std::ranges::find(render_frames_, web_contents_->GetPrimaryMainFrame(),
                         &content::RenderFrameHost::GetParent);

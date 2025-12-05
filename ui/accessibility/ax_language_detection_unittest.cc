@@ -1648,12 +1648,12 @@ TEST(AXLanguageDetectionTest, ShortLanguageDetectorLabeledTest) {
   annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
           *item, ax::mojom::StringAttribute::kMathContent);
-  ASSERT_EQ(0, (int)annotation.size());
+  ASSERT_EQ(0u, annotation.size());
   // Returns single AXLanguageSpan.
   annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
           *item, ax::mojom::StringAttribute::kName);
-  ASSERT_EQ(1, (int)annotation.size());
+  ASSERT_EQ(1u, annotation.size());
   AXLanguageSpan* lang_span = &annotation[0];
   ASSERT_EQ("en", lang_span->language);
   std::string name =
@@ -1683,7 +1683,7 @@ TEST(AXLanguageDetectionTest, ShortLanguageDetectorCharacterTest) {
   annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
           *item, ax::mojom::StringAttribute::kName);
-  ASSERT_EQ(1, (int)annotation.size());
+  ASSERT_EQ(1u, annotation.size());
   AXLanguageSpan* lang_span = &annotation[0];
   ASSERT_EQ("el", lang_span->language);
   std::string name =
@@ -1712,7 +1712,7 @@ TEST(AXLanguageDetectionTest, ShortLanguageDetectorMultipleLanguagesTest) {
   std::vector<AXLanguageSpan> annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
           *item, ax::mojom::StringAttribute::kName);
-  ASSERT_EQ(3, (int)annotation.size());
+  ASSERT_EQ(3u, annotation.size());
   std::string name =
       item->GetStringAttribute(ax::mojom::StringAttribute::kName);
   AXLanguageSpan* lang_span = &annotation[0];
@@ -1747,7 +1747,7 @@ TEST(AXLanguageDetectionTest, DetectLanguagesForRoleTest) {
   std::vector<AXLanguageSpan> annotation =
       tree.language_detection_manager->GetLanguageAnnotationForStringAttribute(
           *item, ax::mojom::StringAttribute::kValue);
-  ASSERT_EQ(1, (int)annotation.size());
+  ASSERT_EQ(1u, annotation.size());
   std::string value =
       item->GetStringAttribute(ax::mojom::StringAttribute::kValue);
   AXLanguageSpan* lang_span = &annotation[0];

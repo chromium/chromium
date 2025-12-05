@@ -2592,7 +2592,7 @@ void SimpleAnchovySuccessTest(std::string str_type,
       &annotations);
 
   EXPECT_FALSE(annotations.empty());
-  EXPECT_EQ(1, (int)annotations.size());
+  EXPECT_EQ(1u, annotations.size());
   auto annotation = annotations[0];
   EXPECT_EQ(annotation.text, best_text);
   EXPECT_EQ(annotation.score, best_score);
@@ -2639,7 +2639,7 @@ TEST(AnnotatorTest, AnchovySuccessMultiple) {
       &annotations);
 
   EXPECT_FALSE(annotations.empty());
-  EXPECT_EQ(2, (int)annotations.size());
+  EXPECT_EQ(2u, annotations.size());
   auto annotation_caption = annotations[0];
   EXPECT_EQ(annotation_caption.text, text_caption);
   EXPECT_EQ(annotation_caption.score, score);

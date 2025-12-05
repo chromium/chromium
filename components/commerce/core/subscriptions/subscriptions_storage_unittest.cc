@@ -503,9 +503,9 @@ TEST_F(SubscriptionsStorageTest, UpdateStorageAndNotifyModifiedSubscriptions) {
              std::vector<CommerceSubscription> added_subs,
              std::vector<CommerceSubscription> removed_subs) {
             ASSERT_EQ(SubscriptionsRequestStatus::kSuccess, status);
-            ASSERT_EQ(1, (int)added_subs.size());
+            ASSERT_EQ(1u, added_subs.size());
             ASSERT_EQ(kMockId1, added_subs[0].id);
-            ASSERT_EQ(1, (int)removed_subs.size());
+            ASSERT_EQ(1u, removed_subs.size());
             ASSERT_EQ(kMockId3, removed_subs[0].id);
             run_loop->Quit();
           },

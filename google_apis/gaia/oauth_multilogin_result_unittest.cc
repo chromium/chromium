@@ -215,7 +215,7 @@ TEST(OAuthMultiloginResultTest, TryParseCookiesFromValue) {
           net::CookieSameSite::UNSPECIFIED,
           net::CookiePriority::COOKIE_PRIORITY_HIGH)};
 
-  EXPECT_EQ((int)result.cookies().size(), 4);
+  EXPECT_EQ(result.cookies().size(), 4u);
 
   EXPECT_TRUE(result.cookies()[0].IsEquivalent(cookies[0]));
   EXPECT_TRUE(result.cookies()[1].IsEquivalent(cookies[1]));
@@ -855,7 +855,7 @@ TEST(OAuthMultiloginResultTest, ParseRealResponseFromGaia_2021_10) {
 
   result.TryParseCookiesFromValue(base::test::ParseJsonDict(data));
 
-  ASSERT_EQ((int)result.cookies().size(), 31);
+  ASSERT_EQ(result.cookies().size(), 31u);
 
   EXPECT_THAT(
       result.cookies(),
