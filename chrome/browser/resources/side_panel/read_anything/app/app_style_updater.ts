@@ -11,8 +11,6 @@ const MIN_WIDTH_TYPICAL = 'auto';
 const MIN_WIDTH_OVERFLOW = 'fit-content';
 // Empty state colors.
 const EMPTY_STATE_HEADING = 'var(--color-read-anything-foreground';
-const EMPTY_STATE_BODY_DARK = 'var(--google-grey-500)';
-const EMPTY_STATE_BODY_LIGHT = 'var(--google-grey-700)';
 const EMPTY_STATE_BODY_DEFAULT =
     'var(--color-side-panel-card-secondary-foreground)';
 // Container colors.
@@ -174,10 +172,8 @@ export class AppStyleUpdater {
     switch (colorSuffix) {
       case ColorSuffix.DEFAULT:
         return EMPTY_STATE_BODY_DEFAULT;
-      case ColorSuffix.DARK:
-        return EMPTY_STATE_BODY_DARK;
       default:
-        return EMPTY_STATE_BODY_LIGHT;
+        return EMPTY_STATE_HEADING + `${colorSuffix})`;
     }
   }
 
