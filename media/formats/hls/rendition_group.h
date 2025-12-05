@@ -49,6 +49,10 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
     ~View();
     View(scoped_refptr<RenditionGroup>, Rendition, MediaTrack);
 
+    // Given a rendition track, try to find the track in this group which best
+    // matches it's characteristics. If the provided rendition is a member of
+    // this group, it will be returned. If nullopt is provided, then return any
+    // "most preferential" rendition.
     const std::optional<RenditionTrack> MostSimilar(
         const std::optional<RenditionTrack>&) const;
     const std::optional<RenditionTrack> GetRenditionById(
@@ -62,17 +66,17 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
       return sequence::Concat(sequence::Singlet(std::get<0>(track_)),
                               std::as_const(group_->tracks_));
     }
+    bool HasSharedTracks() const { return group_->HasTracks(); }
 
     const scoped_refptr<RenditionGroup>& GetGroupForTesting() const {
       return group_;
     }
 
-    // TODO(crbug.com/41393620): remove direct access to "implicit" renditions,
-    // they should be transparently included in the previous methods.
-    const RenditionTrack GetImplicitRendition() const { return track_; }
     void UpdateImplicitRenditionMediaTrackName(std::string name);
 
    private:
+    const RenditionTrack& GetImplicitRenditionTrack() const { return track_; }
+
     friend class RenditionGroup;
     scoped_refptr<RenditionGroup> group_;
     Rendition rendition_;
@@ -95,28 +99,12 @@ class MEDIA_EXPORT RenditionGroup : public base::RefCounted<RenditionGroup> {
                                          const GURL& default_rendition_uri,
                                          RenditionTrackId rendition_unique_id);
 
-  // Given a rendition track, try to find the track in this group which best
-  // matches it's characteristics. If the provided rendition is a member of
-  // this group, it will be returned. If nullopt is provided, then return any
-  // "most preferential" rendition.
-  const std::optional<RenditionTrack> MostSimilar(
-      const std::optional<RenditionTrack>& to) const;
-
-  // Look up a rendition with a matching track id.
-  const std::optional<RenditionTrack> GetRenditionById(
-      const MediaTrack::Id& id) const;
-
-  // Returns the id of this rendition group.
   const std::optional<std::string>& GetIdForTesting() const { return id_; }
 
   // Returns the set of renditions that belong to this group, in the order they
   // appeared in the manifest.
   const std::list<Rendition>& GetRenditionsForTesting() const {
     return renditions_;
-  }
-
-  sequence::Sequence<MediaTrack> auto GetTracks() const {
-    return sequence::Reference(tracks_);
   }
 
   bool HasTracks() const { return !tracks_.empty(); }

@@ -45,7 +45,11 @@ TEST(RenditionGroupUnittest, MayNotAutoSelectIfNothingTagged) {
   ASSERT_EQ(mvp->GetVariants().size(), 2u);
   const auto& g = mvp->GetVariants()[0].GetAudioRenditionGroup();
   auto lookup = g.MostSimilar(std::nullopt);
-  ASSERT_FALSE(lookup.has_value());
+  ASSERT_TRUE(lookup.has_value());
+  auto rendition = std::get<1>(*lookup);
+  ASSERT_TRUE(rendition->GetUri().has_value());
+  // This is an implicit rendition.
+  EXPECT_EQ(rendition->GetName(), "Default");
 }
 
 TEST(RenditionGroupUnittest, XStreamInfTag) {

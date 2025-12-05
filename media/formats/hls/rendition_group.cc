@@ -174,25 +174,20 @@ std::unique_ptr<RenditionGroup::View> RenditionGroup::MakeImplicitView(
 const std::optional<RenditionGroup::RenditionTrack>
 RenditionGroup::View::MostSimilar(
     const std::optional<RenditionTrack>& to) const {
-  return group_->MostSimilar(to);
-}
-
-const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
-    const std::optional<RenditionTrack>& to) const {
-#define CHECK_RENDITIONS(expr)                  \
-  do {                                          \
-    for (const auto& entry : renditions_map_) { \
-      if (expr(std::get<1>(entry.second))) {    \
-        return entry.second;                    \
-      }                                         \
-    }                                           \
+#define CHECK_RENDITIONS(expr)                          \
+  do {                                                  \
+    for (const auto& entry : group_->renditions_map_) { \
+      if (expr(std::get<1>(entry.second))) {            \
+        return entry.second;                            \
+      }                                                 \
+    }                                                   \
   } while (0)
 
   if (to.has_value()) {
     // Find an exact match for the track, and use if if it exists.
     const auto& [track, rendition] = *to;
-    auto lookup = renditions_map_.find(track.track_id());
-    if (lookup != renditions_map_.end()) {
+    auto lookup = group_->renditions_map_.find(track.track_id());
+    if (lookup != group_->renditions_map_.end()) {
       if (std::get<0>(lookup->second).stream_id() == track.stream_id()) {
         return lookup->second;
       }
@@ -210,8 +205,8 @@ const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
   }
 
   // We didn't find any URI or language matches, so fall back to default.
-  if (default_rendition_.has_value()) {
-    return *default_rendition_;
+  if (group_->default_rendition_.has_value()) {
+    return *group_->default_rendition_;
   }
 
   // Find anything with AUTOSELECT=YES
@@ -219,18 +214,17 @@ const std::optional<RenditionGroup::RenditionTrack> RenditionGroup::MostSimilar(
 
 #undef CHECK_RENDITIONS
 
-  return std::nullopt;
+  return GetImplicitRenditionTrack();
 }
 
 const std::optional<RenditionGroup::RenditionTrack>
 RenditionGroup::View::GetRenditionById(const MediaTrack::Id& id) const {
-  return group_->GetRenditionById(id);
-}
-
-const std::optional<RenditionGroup::RenditionTrack>
-RenditionGroup::GetRenditionById(const MediaTrack::Id& id) const {
-  auto lookup = renditions_map_.find(id);
-  if (lookup == renditions_map_.end()) {
+  if (!group_->default_rendition_.has_value() &&
+      id == std::get<0>(track_).track_id()) {
+    return GetImplicitRenditionTrack();
+  }
+  auto lookup = group_->renditions_map_.find(id);
+  if (lookup == group_->renditions_map_.end()) {
     return std::nullopt;
   }
   return lookup->second;
