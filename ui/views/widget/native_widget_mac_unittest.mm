@@ -2615,6 +2615,67 @@ TEST_F(NativeWidgetMacTest, OnWidgetWindowModalVisibilityChanged) {
       [&]() { return parent_nswindow.attachedSheet == nil; }));
 }
 
+// Tests that CenterWindow centers a child window over its parent.
+TEST_F(NativeWidgetMacTest, CenterWindowWithParent) {
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = gfx::Rect(100, 100, 400, 300);
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent->GetNativeView();
+  child->Init(std::move(child_params));
+
+  gfx::Size child_size(100, 80);
+  child->CenterWindow(child_size);
+
+  gfx::Rect parent_bounds = parent->GetWindowBoundsInScreen();
+  gfx::Rect child_bounds = child->GetWindowBoundsInScreen();
+  EXPECT_EQ(parent_bounds.CenterPoint(), child_bounds.CenterPoint());
+
+  parent->CloseNow();
+}
+
+// Tests that CenterWindow clamps the child window to the visible screen area
+// when the parent is partially off-screen.
+TEST_F(NativeWidgetMacTest, CenterWindowClampsToScreen) {
+  NSScreen* screen = [NSScreen mainScreen];
+  NSRect visible_frame = [screen visibleFrame];
+  gfx::Rect screen_bounds = gfx::ScreenRectFromNSRect(visible_frame);
+
+  // Position the parent at the bottom-right corner, partially off-screen.
+  gfx::Rect parent_bounds(screen_bounds.right() - 100, screen_bounds.y() - 100,
+                          400, 300);
+
+  NativeWidgetMacTestWindow* parent_window;
+  Widget::InitParams parent_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  parent_params.bounds = parent_bounds;
+  Widget* parent =
+      CreateWidgetWithTestWindow(std::move(parent_params), &parent_window);
+
+  auto child = std::make_unique<Widget>();
+  Widget::InitParams child_params(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                  Widget::InitParams::TYPE_WINDOW);
+  child_params.parent = parent->GetNativeView();
+  child->Init(std::move(child_params));
+
+  gfx::Size child_size(200, 150);
+  child->CenterWindow(child_size);
+
+  // The child window should be clamped within the visible screen area.
+  gfx::Rect child_bounds = child->GetWindowBoundsInScreen();
+  EXPECT_TRUE(screen_bounds.Contains(child_bounds))
+      << "Child bounds " << child_bounds.ToString()
+      << " should be within screen bounds " << screen_bounds.ToString();
+
+  parent->CloseNow();
+}
+
 }  // namespace views::test
 
 @implementation TestStopAnimationWaiter

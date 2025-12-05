@@ -670,10 +670,41 @@ void NativeWidgetNSWindowBridge::SetSizeAndCenter(
   new_window_bounds.set_size(GetWindowSizeForClientSize(window_, content_size));
   SetBounds(new_window_bounds, minimum_content_size, std::nullopt);
 
-  // Note that this is not the precise center of screen, but it is the standard
-  // location for windows like dialogs to appear on screen for Mac.
-  // TODO(tapted): If there is a parent window, center in that instead.
-  [window_ center];
+  if (!parent_) {
+    // Note that this is not the precise center of screen, but it is the
+    // standard location for windows like dialogs to appear on screen for Mac.
+    [window_ center];
+  } else {
+    NSWindow* parent_window = parent_->ns_view().window;
+    NSRect parent_rect = [parent_window frame];
+    NSRect window_rect = [window_ frame];
+
+    // Clamp to the visible area of the screen where the parent window resides.
+    // This ensures the window stays within viewable bounds and respects
+    // the menu bar and dock.
+    NSScreen* screen = [parent_window screen];
+    if (screen) {
+      NSRect visible_frame = [screen visibleFrame];
+      parent_rect = NSIntersectionRect(parent_rect, visible_frame);
+
+      // Calculate the centered position relative to the parent's visible area.
+      CGFloat x = NSMidX(parent_rect) - window_rect.size.width / 2;
+      CGFloat y = NSMidY(parent_rect) - window_rect.size.height / 2;
+
+      // Ensure the child window stays completely within the visible frame,
+      // even if the parent's visible area is smaller than the child window.
+      x = std::max(x, NSMinX(visible_frame));
+      x = std::min(x, NSMaxX(visible_frame) - window_rect.size.width);
+
+      y = std::max(y, NSMinY(visible_frame));
+      y = std::min(y, NSMaxY(visible_frame) - window_rect.size.height);
+
+      [window_ setFrameOrigin:NSMakePoint(x, y)];
+    } else {
+      // Fallback if no screen is available.
+      [window_ center];
+    }
+  }
 }
 
 void NativeWidgetNSWindowBridge::DestroyContentView() {
