@@ -393,7 +393,9 @@ TEST_F(BwgTabHelperTest, TestDidStartNavigation_DoesNotShowPromoIfBWGStarted) {
 TEST_F(BwgTabHelperTest, TestDidStartNavigation_ShowsPromoPrefs) {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{kPageActionMenu, kGeminiCrossTab,
-                            kGeminiNavigationPromo, kAskGeminiChip},
+                            kGeminiNavigationPromo, kAskGeminiChip,
+                            feature_engagement::
+                                kIPHiOSGeminiFullscreenPromoFeature},
       /*disabled_features=*/{});
 
   OCMExpect([mock_bwg_handler_ showBWGPromoIfPageIsEligible]);

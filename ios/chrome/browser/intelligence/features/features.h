@@ -57,6 +57,10 @@ extern const char kAskGeminiChipUseSnackbar[];
 bool IsAskGeminiChipPrepopulateFloatyEnabled();
 extern const char kAskGeminiChipPrepopulateFloaty[];
 
+// Returns true if the Ask Gemini chip should allow non-consented users.
+bool IsAskGeminiChipAllowNonconsentedUsersEnabled();
+extern const char kAskGeminiChipAllowNonconsentedUsers[];
+
 // Feature flag controlling the cross-tab floaty chat persistence.
 BASE_DECLARE_FEATURE(kGeminiCrossTab);
 

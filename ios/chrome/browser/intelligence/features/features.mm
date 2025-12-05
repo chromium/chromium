@@ -51,6 +51,9 @@ const char kAskGeminiChipIgnoreCriteria[] = "AskGeminiChipIgnoreCriteria";
 
 const char kAskGeminiChipPrepopulateFloaty[] = "AskGeminiChipPrepopulateFloaty";
 
+const char kAskGeminiChipAllowNonconsentedUsers[] =
+    "AskGeminiChipAllowNonconsentedUsers";
+
 bool IsAskGeminiChipEnabled() {
   return base::FeatureList::IsEnabled(kAskGeminiChip);
 }
@@ -68,6 +71,11 @@ bool IsAskGeminiSnackbarEnabled() {
 bool IsAskGeminiChipPrepopulateFloatyEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kAskGeminiChip, kAskGeminiChipPrepopulateFloaty, false);
+}
+
+bool IsAskGeminiChipAllowNonconsentedUsersEnabled() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kAskGeminiChip, kAskGeminiChipAllowNonconsentedUsers, false);
 }
 
 BASE_FEATURE(kGeminiCrossTab, base::FEATURE_DISABLED_BY_DEFAULT);

@@ -1326,6 +1326,10 @@ const FeatureEntry::FeatureParam kAskGeminiChipIgnoreCriteriaVariation[] = {
 const FeatureEntry::FeatureParam kAskGeminiChipPrepopulateFloatyVariation[] = {
     {kAskGeminiChipPrepopulateFloaty, "true"},
 };
+const FeatureEntry::FeatureParam
+    kAskGeminiChipAllowNonconsentedUsersVariation[] = {
+        {kAskGeminiChipAllowNonconsentedUsers, "true"},
+};
 const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
     {"Use Snackbar", kAskGeminiChipUseSnackbarVariation,
      std::size(kAskGeminiChipUseSnackbarVariation), nullptr},
@@ -1333,6 +1337,8 @@ const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
      std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
     {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation,
      std::size(kAskGeminiChipPrepopulateFloatyVariation), nullptr},
+    {"Allow non-consented users", kAskGeminiChipAllowNonconsentedUsersVariation,
+     std::size(kAskGeminiChipAllowNonconsentedUsersVariation), nullptr},
 };
 
 // LINT.IfChange(DataSharingVersioningChoices)

@@ -300,7 +300,9 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 - (BOOL)shouldShowGeminiContextualChip {
   BOOL isPageEligible =
       _geminiService->IsBwgAvailableForWebState(_activeWebState);
-  BOOL isUserConsented = _prefService->GetBoolean(prefs::kIOSBwgConsent);
+  // TODO(crbug.com/465766925): Remove when feature is enabled by default.
+  BOOL isConsentEligible = IsAskGeminiChipAllowNonconsentedUsersEnabled() ||
+                           _prefService->GetBoolean(prefs::kIOSBwgConsent);
 
   // Checks if an eligible amount of time has passed since the last chip
   // display.
@@ -315,7 +317,7 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     return YES;
   }
 
-  return isPageEligible && isUserConsented && eligibleTimeWindow &&
+  return isPageEligible && isConsentEligible && eligibleTimeWindow &&
          _tracker->ShouldTriggerHelpUI(
              feature_engagement::kIPHiOSGeminiContextualCueChip);
 }

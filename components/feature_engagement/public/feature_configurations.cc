@@ -2937,6 +2937,14 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(LESS_THAN_OR_EQUAL, 3), /*window=*/1,
                     feature_engagement::kMaxStoragePeriod);
 
+    if (base::FeatureList::IsEnabled(kIPHiOSGeminiFullscreenPromoFeature)) {
+      // Should show if fullscreen promo was triggered once.
+      config.event_configs.insert(EventConfig(
+          events::kIOSGeminiFullscreenPromoTriggered,
+          Comparator(GREATER_THAN, 0), feature_engagement::kMaxStoragePeriod,
+          feature_engagement::kMaxStoragePeriod));
+    }
+
     return config;
   }
 
