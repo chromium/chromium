@@ -274,8 +274,7 @@ void GlicInstanceImpl::Show(const ShowOptions& options) {
 
   GlicUiEmbedder* embedder_to_show = nullptr;
 
-  if (active_embedder_key_.has_value() &&
-      active_embedder_key_.value() == new_key) {
+  if (IsActiveEmbedder(new_key)) {
     if (base::FeatureList::IsEnabled(kGlicAvoidReactivatingActiveEmbedder) &&
         !options.reinitialize_if_already_active) {
       return;
@@ -332,7 +331,7 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
-  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
+  if (IsActiveEmbedder(key)) {
     if (!prevent_close) {
       Close(key);
     }
@@ -831,8 +830,13 @@ void GlicInstanceImpl::SwitchConversation(
   }
 }
 
+bool GlicInstanceImpl::IsActiveEmbedder(EmbedderKey key) const {
+  return active_embedder_key_.has_value() &&
+         active_embedder_key_.value() == key;
+}
+
 void GlicInstanceImpl::MaybeDeactivateEmbedder(EmbedderKey key) {
-  if (active_embedder_key_.has_value() && active_embedder_key_.value() == key) {
+  if (IsActiveEmbedder(key)) {
     // TODO: Figure out what else should go into host_.PanelWasClosed() and
     // maybe call it here.
     DeactivateCurrentEmbedder();

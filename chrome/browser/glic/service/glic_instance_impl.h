@@ -315,6 +315,8 @@ class GlicInstanceImpl : public GlicInstance,
       std::vector<std::string> returned_suggestions);
   void MaybeDeactivateEmbedder(EmbedderKey key);
 
+  bool IsActiveEmbedder(EmbedderKey key) const;
+
   bool ShouldPinOnBind() const;
 
   void MaybeActivateForegroundEmbedder();
