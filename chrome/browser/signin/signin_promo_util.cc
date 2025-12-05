@@ -61,7 +61,6 @@ using signin::SignInPromoType;
 using signin_util::SignedInState;
 
 constexpr int kSigninPromoShownThreshold = 5;
-constexpr int kSigninPromoShownThresholdForLimitsExperiment = 20;
 constexpr int kSigninPromoDismissedThreshold = 2;
 
 // Prefs that are part of the dictionary from
@@ -287,7 +286,7 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
 
   // For SigninPromoLimitsExperiment, don't check the dismiss count.
   if (base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)) {
-    return show_count < kSigninPromoShownThresholdForLimitsExperiment;
+    return show_count < switches::kContextualSigninPromoShownThreshold.Get();
   }
 
   int dismiss_count =

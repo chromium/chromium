@@ -870,7 +870,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
   ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 20);
+      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment,
+      switches::kContextualSigninPromoShownThreshold.Get());
 
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
@@ -881,7 +882,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
   ASSERT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
 
   profile()->GetPrefs()->SetInteger(
-      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 20);
+      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment,
+      switches::kContextualSigninPromoShownThreshold.Get());
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
