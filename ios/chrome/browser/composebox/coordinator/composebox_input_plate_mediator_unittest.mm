@@ -239,6 +239,8 @@ class ComposeboxInputPlateMediatorTest : public PlatformTest {
 };
 
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithAttachments) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
   EraseOmniboxText();
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
   UIImage* image = [[UIImage alloc] init];
@@ -285,12 +287,16 @@ TEST_F(ComposeboxInputPlateMediatorTest,
 // Tests that the send button is shown when there is text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, ShowsSendButtonWithText) {
   SetOmniboxText(u"some text");
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
   EXPECT_TRUE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 
 // Tests that the send button is hidden when there is no text in the omnibox.
 TEST_F(ComposeboxInputPlateMediatorTest, HidesSendButtonWithoutText) {
   EraseOmniboxText();
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
   EXPECT_FALSE([consumer_ showsControls:ComposeboxInputPlateControls::kSend]);
 }
 

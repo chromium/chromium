@@ -1116,6 +1116,16 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 - (BOOL)compactModeRequired {
+  BOOL dseGoogle = [self isDSEGoogle];
+  BOOL eligibleToAIM = [self isEligibleToAIM];
+  BOOL allowsMultimodalActions = dseGoogle && eligibleToAIM;
+
+  // If multimodal actions are disabled (e.g., when DSE is not Google), compact
+  // mode is used to display the simpler input method, regardless the treatment.
+  if (!allowsMultimodalActions) {
+    return !_isMultiline;
+  }
+
   if (!IsComposeboxCompactModeEnabled()) {
     return NO;
   }
