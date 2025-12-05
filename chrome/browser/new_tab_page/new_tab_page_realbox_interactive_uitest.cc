@@ -160,6 +160,17 @@ class NtpRealboxUiTest
     }
   }
 
+  // TODO(crbug.com/452000330): Pull this out into the common Web UI interaction
+  // utility helper.
+  auto WaitForAndScrollToElement(
+      const ui::ElementIdentifier& ntp_id,
+      const WebContentsInteractionTestUtil::DeepQuery& query) {
+    auto steps = Steps(WaitForElementToRender(ntp_id, query),
+                       ScrollIntoView(ntp_id, query));
+    AddDescriptionPrefix(steps, __func__);
+    return steps;
+  }
+
  protected:
   ui::MockOsSettingsProvider& os_settings_provider() {
     return os_settings_provider_;
