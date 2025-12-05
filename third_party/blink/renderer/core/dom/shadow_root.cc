@@ -318,7 +318,18 @@ ShadowRoot::GetFetchedStyleSheetsFromModuleMap(
     const AtomicString& shadowrootadoptedstylesheets_attribute_value) {
   CHECK(RuntimeEnabledFeatures::DeclarativeCSSModulesEnabled());
 
+  // Early exit if `domWindow` isn't available. This won't work in contexts such
+  // as `Document.parseHTMLUnsafe`. This is probably fine, as adopted
+  // stylesheets are cleared when moving between documents (so it wouldn't be
+  // able to render the adopted styles anyways). Also,
+  // `Document.parseHTMLUnsafe` cannot execute scripts, so this isn't a
+  // limitation compared to the imperative version.
+  // TODO(448174611): confirm this behavior is correct with the WHATWG.
   LocalDOMWindow* window = GetDocument().domWindow();
+  if (!window) {
+    return {};
+  }
+
   Modulator* modulator =
       Modulator::From(ToScriptStateForMainWorld(window->GetFrame()));
   v8::Isolate* isolate = modulator->GetScriptState()->GetIsolate();
