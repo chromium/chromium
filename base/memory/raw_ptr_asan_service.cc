@@ -157,7 +157,9 @@ int GetCurrentThreadId() {
 }  // namespace
 
 // static
-void RawPtrAsanService::ErrorReportCallback(const char* report, bool*) {
+void RawPtrAsanService::ErrorReportCallback(const char* reason,
+                                            bool* should_exit_cleanly,
+                                            bool* should_abort) {
   if (strcmp(__asan_get_report_description(), "heap-use-after-free") != 0) {
     return;
   }

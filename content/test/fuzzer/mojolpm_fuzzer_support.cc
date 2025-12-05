@@ -25,7 +25,8 @@ namespace content::mojolpm {
 
 #if defined(ADDRESS_SANITIZER)
 static void FalsePositiveErrorReportCallback(const char* reason,
-                                             bool* should_exit_cleanly) {
+                                             bool* should_exit_cleanly,
+                                             bool* should_abort) {
   if (!UNSAFE_TODO(strcmp(base::PlatformThread::GetName(), "fuzzer_thread"))) {
     base::debug::AsanService::GetInstance()->Log(
         "MojoLPM: FALSE POSITIVE\n"

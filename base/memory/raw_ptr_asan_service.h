@@ -81,8 +81,9 @@ class BASE_EXPORT RawPtrAsanService {
 
   static void MallocHook(const volatile void*, size_t);
   static void FreeHook(const volatile void*) {}
-  static void ErrorReportCallback(const char* report,
-                                  bool* should_exit_cleanly);
+  static void ErrorReportCallback(const char* reason,
+                                  bool* should_exit_cleanly,
+                                  bool* should_abort);
 
   Mode mode_ = Mode::kUninitialized;
   bool is_dereference_check_enabled_ = false;
