@@ -510,6 +510,7 @@ void GlicInstanceCoordinatorImpl::SwitchConversation(
     mojom::WebClientHandler::SwitchConversationCallback callback) {
   ShowOptions mutable_options = options;
   mutable_options.focus_on_show = source_instance.HasFocus();
+  mutable_options.reinitialize_if_already_active = true;
 
   GlicInstanceImpl* target_instance = nullptr;
   if (info) {
