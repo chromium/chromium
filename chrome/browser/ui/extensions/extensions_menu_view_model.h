@@ -30,6 +30,22 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
                                 public TabListInterfaceObserver,
                                 public content::WebContentsObserver {
  public:
+  // Holds the information for the site settings in the extension's menu. This
+  // will be used by the platform delegate as needed.
+  struct SiteSettings {
+    // The text to display for the current site (e.g. "example.com").
+    std::u16string current_site;
+    // The resource ID for the text label.
+    int label_id;
+    // Whether the toggle to block all extensions on this site is visible.
+    bool is_toggle_visible;
+    // The state of the toggle (false if extensions are blocked).
+    bool is_toggle_on;
+    // Whether to show a tooltip explaining why the setting is in its current
+    // state (e.g. if controlled by enterprise policy).
+    bool is_tooltip_visible;
+  };
+
   // Holds the information about how the extension's menu item should look like.
   // This will be used by the platform delegate as needed.
   struct MenuItemInfo {
@@ -104,6 +120,9 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
 
   // Reloads the current web contents.
   void ReloadWebContents();
+
+  // Returns the site settings for the current web contents.
+  SiteSettings GetSiteSettings();
 
   // Returns the menu item info for extension with `model`.
   MenuItemInfo GetMenuItemInfo(ToolbarActionViewModel* model);

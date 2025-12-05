@@ -242,17 +242,14 @@ void ExtensionsMenuMainPageView::RemoveMenuItem(
 }
 
 void ExtensionsMenuMainPageView::UpdateSiteSettings(
-    const std::u16string& current_site,
-    int label_id,
-    bool is_tooltip_visible,
-    bool is_toggle_visible,
-    bool is_toggle_on) {
-  site_settings_label_->SetText(
-      l10n_util::GetStringFUTF16(label_id, current_site));
-  site_settings_tooltip_->SetVisible(is_tooltip_visible);
-  site_settings_toggle_->SetVisible(is_toggle_visible);
-  site_settings_toggle_->SetIsOn(is_toggle_on);
-  site_settings_toggle_->SetTooltipText(GetSiteSettingToggleText(is_toggle_on));
+    ExtensionsMenuViewModel::SiteSettings site_settings) {
+  site_settings_label_->SetText(l10n_util::GetStringFUTF16(
+      site_settings.label_id, site_settings.current_site));
+  site_settings_tooltip_->SetVisible(site_settings.is_tooltip_visible);
+  site_settings_toggle_->SetVisible(site_settings.is_toggle_visible);
+  site_settings_toggle_->SetIsOn(site_settings.is_toggle_on);
+  site_settings_toggle_->SetTooltipText(
+      GetSiteSettingToggleText(site_settings.is_toggle_on));
 }
 
 void ExtensionsMenuMainPageView::ShowReloadSection() {

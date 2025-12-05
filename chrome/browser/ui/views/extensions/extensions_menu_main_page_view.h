@@ -61,11 +61,7 @@ class ExtensionsMenuMainPageView : public views::View {
   std::vector<ExtensionMenuItemView*> GetMenuItems() const;
 
   // Updates the site settings views with the given parameters.
-  void UpdateSiteSettings(const std::u16string& current_site,
-                          int label_id,
-                          bool is_tooltip_visible,
-                          bool is_toggle_visible,
-                          bool is_toggle_on);
+  void UpdateSiteSettings(ExtensionsMenuViewModel::SiteSettings site_settings);
 
   // Shows the reload section in the menu. Takes precedence over the requests
   // section.

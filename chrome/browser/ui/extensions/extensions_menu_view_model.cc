@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view_platform_delegate_views.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
@@ -29,6 +31,44 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+// The state of the main page in the menu, corresponding to the current site's
+// access restrictions.
+enum class MainPageState {
+  // Site is restricted to all extensions.
+  kRestrictedSite,
+  // Site is restricted all non-enterprise extensions by policy.
+  kPolicyBlockedSite,
+  // User blocked all extensions access to the site.
+  kUserBlockedSite,
+  // User can customize each extension's access to the site.
+  kUserCustomizedSite,
+};
+
+// Returns the state for the main page based on the current `web_contents` URL
+// and the profile's user settings.
+MainPageState GetMainPageState(Profile& profile,
+                               const ToolbarActionsModel& toolbar_model,
+                               content::WebContents& web_contents) {
+  const GURL& url = web_contents.GetLastCommittedURL();
+  if (toolbar_model.IsRestrictedUrl(url)) {
+    return MainPageState::kRestrictedSite;
+  }
+
+  if (toolbar_model.IsPolicyBlockedHost(url)) {
+    return MainPageState::kPolicyBlockedSite;
+  }
+
+  PermissionsManager::UserSiteSetting site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  if (site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return MainPageState::kUserBlockedSite;
+  }
+
+  return MainPageState::kUserCustomizedSite;
+}
 
 // Returns the extension corresponding to `extension_id` on `profile`.
 const extensions::Extension* GetExtension(
@@ -547,6 +587,59 @@ void ExtensionsMenuViewModel::UpdateSiteSetting(
 void ExtensionsMenuViewModel::ReloadWebContents() {
   GetActiveWebContents()->GetController().Reload(content::ReloadType::NORMAL,
                                                  false);
+}
+
+ExtensionsMenuViewModel::SiteSettings
+ExtensionsMenuViewModel::GetSiteSettings() {
+  content::WebContents* web_contents = GetActiveWebContents();
+  Profile* profile = browser_->GetProfile();
+  auto has_enterprise_extensions = [&]() {
+    return std::any_of(
+        toolbar_model_->action_ids().begin(),
+        toolbar_model_->action_ids().end(),
+        [profile](const ToolbarActionsModel::ActionId extension_id) {
+          auto* extension = GetExtension(*profile, extension_id);
+          return extensions::ExtensionSystem::Get(profile)
+              ->management_policy()
+              ->HasEnterpriseForcedAccess(*extension);
+        });
+  };
+
+  ExtensionsMenuViewModel::SiteSettings site_settings;
+  site_settings.current_site =
+      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
+
+  MainPageState state =
+      GetMainPageState(*profile, *toolbar_model_, *web_contents);
+  switch (state) {
+    case MainPageState::kRestrictedSite:
+      site_settings.label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      site_settings.is_toggle_visible = false;
+      site_settings.is_toggle_on = false;
+      site_settings.is_tooltip_visible = false;
+      break;
+    case MainPageState::kPolicyBlockedSite:
+      site_settings.label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      site_settings.is_toggle_visible = false;
+      site_settings.is_toggle_on = false;
+      site_settings.is_tooltip_visible = has_enterprise_extensions();
+      break;
+    case MainPageState::kUserBlockedSite:
+      site_settings.label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      site_settings.is_toggle_visible = true;
+      site_settings.is_toggle_on = false;
+      site_settings.is_tooltip_visible = has_enterprise_extensions();
+      break;
+    case MainPageState::kUserCustomizedSite:
+      site_settings.label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      site_settings.is_toggle_visible = true;
+      site_settings.is_toggle_on = true;
+      site_settings.is_tooltip_visible = false;
+      break;
+  }
+  return site_settings;
 }
 
 ExtensionsMenuViewModel::MenuItemInfo ExtensionsMenuViewModel::GetMenuItemInfo(

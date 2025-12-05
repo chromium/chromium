@@ -9,10 +9,12 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extensions_menu_view_platform_delegate.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/permissions/permissions_updater.h"
 #include "extensions/browser/permissions/scripting_permissions_modifier.h"
 #include "extensions/browser/permissions/site_permissions_helper.h"
@@ -431,4 +433,69 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest,
   menu_model()->ShowHostAccessRequestsInToolbar(extension->id(), true);
   EXPECT_TRUE(
       permissions_helper()->ShowAccessRequestsInToolbar(extension->id()));
+}
+
+// Tests that the extensions menu view model correctly gets the site setting for
+// the current site.
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewModelBrowserTest, GetSiteSettings) {
+  // Add an extension that requests host permissions.
+  AddExtensionWithHostPermission("Extension", "<all_urls>");
+
+  // Navigate to a site that the extension requests access to.
+  const GURL url =
+      embedded_test_server()->GetURL("example.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), url));
+
+  // Verify the site settings when the user can customize the site's access.
+  ExtensionsMenuViewModel::SiteSettings site_settings =
+      menu_model()->GetSiteSettings();
+  EXPECT_EQ(site_settings.label_id, IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL);
+  EXPECT_TRUE(site_settings.is_toggle_visible);
+  EXPECT_TRUE(site_settings.is_toggle_on);
+  EXPECT_FALSE(site_settings.is_tooltip_visible);
+
+  // Update the user site setting to block all extensions on the current site.
+  menu_model()->UpdateSiteSetting(
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions);
+
+  // Verify the site settings when the user has blocked access to the current
+  // site.
+  site_settings = menu_model()->GetSiteSettings();
+  EXPECT_EQ(site_settings.label_id, IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL);
+  EXPECT_TRUE(site_settings.is_toggle_visible);
+  EXPECT_FALSE(site_settings.is_toggle_on);
+  EXPECT_FALSE(site_settings.is_tooltip_visible);
+
+  // Navigate to restricted site.
+  const GURL restricted_url("chrome://extensions");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), restricted_url));
+
+  // Verify the site setting when the site is restricted
+  site_settings = menu_model()->GetSiteSettings();
+  EXPECT_EQ(site_settings.label_id,
+            IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL);
+  EXPECT_FALSE(site_settings.is_toggle_visible);
+  EXPECT_FALSE(site_settings.is_toggle_on);
+  EXPECT_FALSE(site_settings.is_tooltip_visible);
+
+  // Navigate to a policy blocked site.
+  URLPattern default_policy_blocked_pattern =
+      URLPattern(URLPattern::SCHEME_ALL, "*://*.policy-blocked.com/*");
+  extensions::URLPatternSet default_allowed_hosts;
+  extensions::URLPatternSet default_blocked_hosts;
+  default_blocked_hosts.AddPattern(default_policy_blocked_pattern);
+  extensions::PermissionsData::SetDefaultPolicyHostRestrictions(
+      extensions::util::GetBrowserContextId(profile()), default_blocked_hosts,
+      default_allowed_hosts);
+  const GURL policy_blocked_url =
+      embedded_test_server()->GetURL("policy-blocked.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(GetActiveWebContents(), policy_blocked_url));
+
+  // Verify the site setting when the site is policy blocked.
+  site_settings = menu_model()->GetSiteSettings();
+  EXPECT_EQ(site_settings.label_id,
+            IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL);
+  EXPECT_FALSE(site_settings.is_toggle_visible);
+  EXPECT_FALSE(site_settings.is_toggle_on);
+  EXPECT_FALSE(site_settings.is_tooltip_visible);
 }

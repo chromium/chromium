@@ -45,7 +45,8 @@ namespace {
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
 
-// Returns the state for the main page in the menu.
+// TODO(crbug.com/449814184): Remove once all usages have been moved to
+// extensions enu view model. Returns the state for the main page in the menu.
 enum class MainPageState {
   // Site is restricted to all extensions.
   kRestrictedSite,
@@ -57,6 +58,8 @@ enum class MainPageState {
   kUserCustomizedSite,
 };
 
+// TODO(crbug.com/449814184): Remove once all usages have been moved to
+// extensions enu view model.
 MainPageState GetMainPageState(Profile& profile,
                                const ToolbarActionsModel& toolbar_model,
                                content::WebContents& web_contents) {
@@ -488,66 +491,26 @@ void ExtensionsMenuViewPlatformDelegateViews::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
-  auto has_enterprise_extensions = [&]() {
-    return std::any_of(
-        toolbar_model_->action_ids().begin(),
-        toolbar_model_->action_ids().end(),
-        [this](const ToolbarActionsModel::ActionId extension_id) {
-          auto* extension = GetExtension(browser_, extension_id);
-          return extensions::ExtensionSystem::Get(browser_->profile())
-              ->management_policy()
-              ->HasEnterpriseForcedAccess(*extension);
-        });
-  };
-  auto reload_required = [web_contents]() {
-    return extensions::TabHelper::FromWebContents(web_contents)
-        ->IsReloadRequired();
-  };
 
-  std::u16string current_site =
-      extensions::ui_util::GetFormattedHostForDisplay(*web_contents);
-  int site_settings_label_id;
-  bool is_site_settings_toggle_visible = false;
-  bool is_site_settings_toggle_on = false;
-  bool is_site_settings_tooltip_visible = false;
+  ExtensionsMenuViewModel::SiteSettings site_settings =
+      menu_model_->GetSiteSettings();
+  main_page->UpdateSiteSettings(site_settings);
+
+  // TODO(crbug.com/449814184): Move reload section and requests section
+  // computation to the menu view model.
   bool is_reload_required = false;
   bool can_have_requests = false;
 
   MainPageState state =
       GetMainPageState(*browser_->profile(), *toolbar_model_, *web_contents);
-  switch (state) {
-    case MainPageState::kRestrictedSite:
-      site_settings_label_id =
-          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
-      is_site_settings_toggle_visible = false;
-      is_site_settings_toggle_on = false;
-      break;
-    case MainPageState::kPolicyBlockedSite:
-      site_settings_label_id =
-          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
-      is_site_settings_toggle_visible = false;
-      is_site_settings_toggle_on = false;
-      is_site_settings_tooltip_visible = has_enterprise_extensions();
-      break;
-    case MainPageState::kUserBlockedSite:
-      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
-      is_site_settings_toggle_visible = true;
-      is_site_settings_toggle_on = false;
-      is_site_settings_tooltip_visible = has_enterprise_extensions();
-      is_reload_required = reload_required();
-      break;
-    case MainPageState::kUserCustomizedSite:
-      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
-      is_site_settings_toggle_visible = true;
-      is_site_settings_toggle_on = true;
-      is_reload_required = reload_required();
-      can_have_requests = true;
-      break;
+  if (state == MainPageState::kUserBlockedSite ||
+      state == MainPageState::kUserCustomizedSite) {
+    is_reload_required = extensions::TabHelper::FromWebContents(web_contents)
+                             ->IsReloadRequired();
   }
-
-  main_page->UpdateSiteSettings(
-      current_site, site_settings_label_id, is_site_settings_tooltip_visible,
-      is_site_settings_toggle_visible, is_site_settings_toggle_on);
+  if (state == MainPageState::kUserCustomizedSite) {
+    can_have_requests = true;
+  }
 
   if (is_reload_required) {
     main_page->ShowReloadSection();
