@@ -8,14 +8,17 @@
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
-#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/background.h"
@@ -53,8 +56,9 @@ END_METADATA
 
 VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      icon_(AddChildView(std::make_unique<VerticalTabIcon>(
-          *collection_node_->data()->get_tab()))),
+      icon_(AddChildView(
+          std::make_unique<VerticalTabIcon>(std::get<const tabs::TabInterface*>(
+              collection_node_->GetNodeData())))),
       title_(AddChildView(std::make_unique<VerticalTabTitle>())),
       alert_indicator_(
           AddChildView(std::make_unique<AlertIndicatorButton>(this))),
@@ -192,18 +196,22 @@ void VerticalTabView::ResetCollectionNode() {
 }
 
 void VerticalTabView::OnDataChanged() {
-  tabs_api::mojom::Tab tab = *collection_node_->data()->get_tab();
+  const tabs::TabInterface* tab =
+      std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
+
+  int index =
+      tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
+  TabRendererData tab_data = TabRendererData::FromTabInModel(
+      tab->GetBrowserWindowInterface()->GetTabStripModel(), index);
+
   icon_->SetData(tab);
-  title_->SetText(base::UTF8ToUTF16(tab.title));
+  title_->SetText(tab_data.title);
   alert_indicator_->TransitionToAlertState(
-      tab.alert_states.size()
-          ? std::make_optional(
-                tabs_api::converters::FromMojo(tab.alert_states[0]))
-          : std::nullopt);
+      tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
   UpdateAlertIndicatorVisibility();
   // TODO(crbug.com/457522224): Set visibility based on active and hovered
   // states.
-  close_button_->SetVisible(tab.is_active);
+  close_button_->SetVisible(tab->IsActivated());
 
   // TODO(crbug.com/460535066): Update tab colors.
 

@@ -13,6 +13,7 @@ source_set("public") {
     "public/supports_handles.h",
     "public/tab_collection.h",
     "public/tab_collection_observer.h",
+    "public/tab_collection_types.h",
     "public/tab_group.h",
     "public/tab_group_tab_collection.h",
     "public/tab_handle_factory.h",

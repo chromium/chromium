@@ -916,13 +916,13 @@ std::unique_ptr<DetachedTab> TabStripModel::DetachTabImpl(
     id = delegate_->CreateHistoricalTab(tab->GetContents());
   }
 
-  std::unique_ptr<tabs::TabModel> old_tab_model =
+  std::unique_ptr<tabs::TabModel> detached_tab =
       RemoveTabFromIndexImpl(index_at_time_of_removal, tab_detach_reason);
 
-  old_tab_model->OnRemovedFromModel();
+  detached_tab->OnRemovedFromModel();
   return std::make_unique<DetachedTab>(
       index_before_any_removals, index_at_time_of_removal,
-      was_pinned_at_time_of_removal, std::move(old_tab_model),
+      was_pinned_at_time_of_removal, std::move(detached_tab),
       web_contents_remove_reason, tab_detach_reason, id);
 }
 
@@ -2358,9 +2358,7 @@ TabStripModel::TabIterator TabStripModel::end() const {
   return contents_data_->end();
 }
 
-const tabs::TabCollection* TabStripModel::Root(
-    std::variant<base::PassKey<tabs_api::MojoTreeBuilder>,
-                 base::PassKey<tabs_api::TabStripModelAdapterImpl>> key) const {
+const tabs::TabCollection* TabStripModel::Root() const {
   return contents_data_.get();
 }
 

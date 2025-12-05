@@ -30,14 +30,12 @@ void TabStripModelAdapterImpl::RemoveModelObserver(
 
 void TabStripModelAdapterImpl::AddCollectionObserver(
     tabs::TabCollectionObserver* collection_observer) {
-  tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>())
-      ->AddObserver(collection_observer);
+  tab_strip_model_->Root()->AddObserver(collection_observer);
 }
 
 void TabStripModelAdapterImpl::RemoveCollectionObserver(
     tabs::TabCollectionObserver* collection_observer) {
-  tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>())
-      ->RemoveObserver(collection_observer);
+  tab_strip_model_->Root()->RemoveObserver(collection_observer);
 }
 
 std::vector<tabs::TabHandle> TabStripModelAdapterImpl::GetTabs() const {
@@ -287,7 +285,7 @@ InsertionParams TabStripModelAdapterImpl::CalculateInsertionParams(
 }
 
 const tabs::TabCollection* TabStripModelAdapterImpl::GetRoot() const {
-  return tab_strip_model_->Root(base::PassKey<TabStripModelAdapterImpl>());
+  return tab_strip_model_->Root();
 }
 
 tabs::TabCollectionHandle

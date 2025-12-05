@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 
+#include <variant>
+
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_menu_model_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -11,6 +13,8 @@
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "components/browser_apis/tab_strip/tab_strip_api.mojom.h"
+#include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_interface.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -40,8 +44,12 @@ void VerticalTabStripController::ShowContextMenuForNode(
     views::View* source,
     const gfx::Point& point,
     ui::mojom::MenuSourceType source_type) {
-  tabs_api::mojom::Tab tab = *collection_node->data()->get_tab();
-  std::optional<int> tab_index = GetIndexFromMojomTab(tab);
+  tabs::ConstChildPtr node_data = collection_node->GetNodeData();
+  CHECK(std::holds_alternative<const tabs::TabInterface*>(node_data));
+  const tabs::TabInterface* tab =
+      std::get<const tabs::TabInterface*>(node_data);
+  std::optional<int> tab_index =
+      tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
 
   if (!tab_index.has_value()) {
     return;

@@ -977,11 +977,9 @@ BrowserView::BrowserView(Browser* browser)
   tab_strip_region_insertion_index_ = GetIndexOf(tab_strip_region_view_.get());
 
   if (tabs::IsVerticalTabsFeatureEnabled()) {
+    // TODO(466091787): just use BWI.
     auto vertical_tab_strip_container =
         std::make_unique<VerticalTabStripRegionView>(
-            browser_->GetFeatures()
-                .tab_strip_service_feature()
-                ->GetTabStripService(),
             browser_->GetFeatures().vertical_tab_strip_state_controller(),
             browser_->GetActions()->root_action_item(), browser_);
 

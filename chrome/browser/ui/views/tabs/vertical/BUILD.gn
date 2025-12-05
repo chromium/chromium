@@ -19,10 +19,9 @@ source_set("vertical") {
   deps = [
     "//base",
     "//chrome/browser/ui:layout_constants",
-    "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api/observation",
-    "//chrome/browser/ui/tabs/tab_strip_api/utilities",
-    "//components/browser_apis/tab_strip:mojom",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_strip",
+    "//components/tabs",
     "//ui/base/metadata",
     "//ui/gfx/geometry",
     "//ui/views",
@@ -49,14 +48,19 @@ source_set("impl") {
     ":vertical",
     "//chrome/browser:primitives",
     "//chrome/browser/ui:browser_element_identifiers",
+    "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/browser_window",
-    "//chrome/browser/ui/tabs/tab_strip_api",
-    "//chrome/browser/ui/tabs/tab_strip_api/converters",
-    "//chrome/browser/ui/tabs/tab_strip_api/utilities",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:tab_group",
+    "//chrome/browser/ui/tabs:tab_strip",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/tabs/alert:tab_alert",
+  ]
 }
 
 source_set("browser_tests") {

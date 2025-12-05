@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -146,10 +145,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -157,8 +153,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should be empty.
   ASSERT_EQ(pinned_node->children().size(), 0u);
@@ -166,10 +162,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // The unpinned Node should contain two tabs (the initial one and the new
   // one).
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -178,10 +172,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -189,18 +180,16 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should have one tab.
   ASSERT_EQ(pinned_node->children().size(), 1u);
-  EXPECT_EQ(pinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(pinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   // The unpinned Node should have one tab (the initial one).
   ASSERT_EQ(unpinned_node->children().size(), 1u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -209,10 +198,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -220,23 +206,21 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should be empty.
   ASSERT_EQ(pinned_node->children().size(), 0u);
 
   // Unpinned Node -> Tab, Group
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
   const auto& group_node = unpinned_node->children()[1];
-  EXPECT_EQ(group_node->GetType(), TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(group_node->type(), TabCollectionNode::Type::GROUP);
 
   // Group -> Tab
   ASSERT_EQ(group_node->children().size(), 1u);
-  EXPECT_EQ(group_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(group_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -245,10 +229,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -256,25 +237,22 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should be empty.
   ASSERT_EQ(pinned_node->children().size(), 0u);
 
   // Unpinned Node -> Tab, Group
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
   const auto& group_node = unpinned_node->children()[1];
-  EXPECT_EQ(group_node->GetType(), TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(group_node->type(), TabCollectionNode::Type::GROUP);
 
   // Group -> Tab, Tab
   ASSERT_EQ(group_node->children().size(), 2u);
-  EXPECT_EQ(group_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(group_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(group_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(group_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
 class TabCollectionNodeWithSplitTabBrowserTest
@@ -294,10 +272,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -305,25 +280,22 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should be empty.
   ASSERT_EQ(pinned_node->children().size(), 0u);
 
   // Unpinned Node -> Tab, Split
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
   const auto& split_node = unpinned_node->children()[1];
-  EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
+  EXPECT_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
 
   // Split -> Tab, Tab
   ASSERT_EQ(split_node->children().size(), 2u);
-  EXPECT_EQ(split_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(split_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(split_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(split_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
@@ -332,10 +304,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -343,25 +312,22 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Pinned Node -> Split
   ASSERT_EQ(pinned_node->children().size(), 1u);
   const auto& split_node = pinned_node->children()[0];
-  EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
+  EXPECT_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
 
   // Split -> Tab, Tab
   ASSERT_EQ(split_node->children().size(), 2u);
-  EXPECT_EQ(split_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(split_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(split_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(split_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 
   // Unpinned Node -> Tab
   ASSERT_EQ(unpinned_node->children().size(), 1u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
@@ -372,10 +338,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -386,53 +349,46 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeWithSplitTabBrowserTest,
   // (VerticalPinnedTabContainerView), one for unpinned
   // (VerticalUnpinnedTabContainerView).
   ASSERT_EQ(root_node.children().size(), 2u);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabStripView>(
-      root_node.get_view_for_testing()));
+  EXPECT_TRUE(views::IsViewClass<VerticalTabStripView>(root_node.view()));
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_TRUE(views::IsViewClass<VerticalPinnedTabContainerView>(
-      pinned_node->get_view_for_testing()));
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalPinnedTabContainerView>(pinned_node->view()));
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
   EXPECT_TRUE(views::IsViewClass<VerticalUnpinnedTabContainerView>(
-      unpinned_node->get_view_for_testing()));
+      unpinned_node->view()));
 
   // The pinned Node should be have one tab.
   ASSERT_EQ(pinned_node->children().size(), 1u);
-  EXPECT_EQ(pinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      pinned_node->children()[0]->get_view_for_testing()));
+  EXPECT_EQ(pinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalTabView>(pinned_node->children()[0]->view()));
 
   // The unpinned Node should contain a tab, a tab group, and a split tab.
   ASSERT_EQ(unpinned_node->children().size(), 3u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
   EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      unpinned_node->children()[0]->get_view_for_testing()));
+      unpinned_node->children()[0]->view()));
 
   const auto& group_node = unpinned_node->children()[1];
-  EXPECT_EQ(group_node->GetType(), TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(group_node->type(), TabCollectionNode::Type::GROUP);
   // TODO(crbug.com/442567916): Verify tab group view is created.
   ASSERT_EQ(group_node->children().size(), 1u);
-  EXPECT_EQ(group_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      group_node->children()[0]->get_view_for_testing()));
+  EXPECT_EQ(group_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalTabView>(group_node->children()[0]->view()));
 
   const auto& split_node = unpinned_node->children()[2];
-  EXPECT_EQ(split_node->GetType(), TabCollectionNode::Type::kSplitTab);
-  EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(
-      split_node->get_view_for_testing()));
+  EXPECT_EQ(split_node->type(), TabCollectionNode::Type::SPLIT);
+  EXPECT_TRUE(views::IsViewClass<VerticalSplitTabView>(split_node->view()));
   ASSERT_EQ(split_node->children().size(), 2u);
-  EXPECT_EQ(split_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      split_node->children()[0]->get_view_for_testing()));
-  EXPECT_EQ(split_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      split_node->children()[1]->get_view_for_testing()));
+  EXPECT_EQ(split_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalTabView>(split_node->children()[0]->view()));
+  EXPECT_EQ(split_node->children()[1]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalTabView>(split_node->children()[1]->view()));
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -441,10 +397,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -509,10 +462,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
       base::BindRepeating(&CreateViewWithMiddleView, &middle_view));
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -558,10 +508,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GetDirectChildren) {
   TabCollectionNode::SetViewFactoryForTesting(base::BindRepeating(&CreateView));
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -593,10 +540,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
       parent_view->AddChildView(std::make_unique<views::View>());
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -636,10 +580,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -654,27 +595,24 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // Verify the pinned node contains a single child.
   ASSERT_EQ(pinned_node->children().size(), 1u);
   // Verify that child is a VerticalTabView.
-  EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      pinned_node->children()[0]->get_view_for_testing()));
+  EXPECT_TRUE(
+      views::IsViewClass<VerticalTabView>(pinned_node->children()[0]->view()));
 
   // Verify the unpinned node contains two children: the initial empty tab and
   // the newly appended tab.
   ASSERT_EQ(unpinned_node->children().size(), 2u);
   // Verify both children are VerticalTabView instances.
   EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      unpinned_node->children()[0]->get_view_for_testing()));
+      unpinned_node->children()[0]->view()));
   EXPECT_TRUE(views::IsViewClass<VerticalTabView>(
-      unpinned_node->children()[1]->get_view_for_testing()));
+      unpinned_node->children()[1]->view()));
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
   auto parent_view = std::make_unique<views::View>();
 
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -682,33 +620,29 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
   ASSERT_EQ(root_node.children().size(), 2u);
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
-  EXPECT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  EXPECT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  EXPECT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  EXPECT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // The pinned Node should be empty.
   ASSERT_EQ(pinned_node->children().size(), 0u);
 
   // The unpinned Node should have one tab (the initial one).
   ASSERT_EQ(unpinned_node->children().size(), 1u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   AppendPinnedTab();
 
   // The pinned Node should have one tab.
   ASSERT_EQ(pinned_node->children().size(), 1u);
-  EXPECT_EQ(pinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(pinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   AppendTab();
 
   // The unpinned Node should contain two tabs (the initial one and the new
   // one).
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 
   TabCollectionNode* initial_unpinned_tab_node =
       unpinned_node->children()[0].get();
@@ -721,50 +655,13 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, TabsCreatedEvent) {
   // The unpinned Node should contain three tabs (the initial one, then the new
   // one added by InsertTab, then the previous one that was added by AppendTab).
   ASSERT_EQ(unpinned_node->children().size(), 3u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
   EXPECT_EQ(unpinned_node->children()[0].get(), initial_unpinned_tab_node);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[2]->type(), TabCollectionNode::Type::TAB);
   EXPECT_EQ(unpinned_node->children()[2].get(), appended_unpinned_tab_node);
 }
 
-IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DataChangedEvent) {
-  auto parent_view = std::make_unique<views::View>();
-
-  RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
-      base::BindRepeating<TabCollectionNode::CustomAddChildView>(
-          &views::View::AddChildView, base::Unretained(parent_view.get())));
-
-  // The root node should contain two nodes: one for pinned, one for unpinned.
-  ASSERT_EQ(root_node.children().size(), 2u);
-  const auto& unpinned_node = root_node.children()[1];
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
-
-  // The unpinned Node should have one tab (the initial one).
-  ASSERT_EQ(unpinned_node->children().size(), 1u);
-  const auto& tab = unpinned_node->children()[0];
-  ASSERT_EQ(tab->GetType(), TabCollectionNode::Type::kTab);
-
-  // Send out an update to change the title of the tab.
-  const std::string new_title = "New Title";
-  ASSERT_NE(new_title, tab->data()->get_tab()->title);
-
-  auto event = tabs_api::mojom::OnDataChangedEvent::New();
-  auto tab_data = tab->data()->get_tab()->Clone();
-  tab_data->title = new_title;
-  event->data = tabs_api::mojom::Data::NewTab(std::move(tab_data));
-  root_node.OnDataChanged(event);
-
-  // Title should be changed.
-  EXPECT_EQ(new_title, tab->data()->get_tab()->title);
-}
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   // 1. Setup: Have three tabs unpinned.
   AppendTab();
@@ -775,10 +672,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
   // 2. Initialize the RootTabCollectionNode, which observes the
   // TabStripService.
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -788,12 +682,11 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, CloseTabInteraction) {
 
   // Get the Unpinned Container Node.
   const auto& unpinned_node = root_node.children()[1];
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  ASSERT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Initial structure: three tabs
   ASSERT_EQ(unpinned_node->children().size(), 3u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   // Close a tab.
   browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
@@ -811,10 +704,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
   // 2. Initialize the RootTabCollectionNode, which observes the
   // TabStripService.
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -824,14 +714,13 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
 
   // Get the Unpinned Container Node.
   const auto& unpinned_node = root_node.children()[1];
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  ASSERT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Initial structure: [Tab, GroupA] -> children size 2
   ASSERT_EQ(unpinned_node->children().size(), 2u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[1]->type(),
+            TabCollectionNode::Type::GROUP);
 
   // Detached GroupA node to simulate moving to another window/position.
   std::unique_ptr<DetachedTabCollection> detached_group =
@@ -852,19 +741,17 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, DetachAndReattachGroup) {
 
   // The first child should now be the Tab Group.
   const auto& reinserted_group_node = unpinned_node->children()[0];
-  EXPECT_EQ(reinserted_group_node->GetType(),
-            TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(reinserted_group_node->type(), TabCollectionNode::Type::GROUP);
 
   // The second child should be the original Tab.
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 
   // Verify the group itself contains the correct number of children (2 tabs).
   ASSERT_EQ(reinserted_group_node->children().size(), 2u);
-  EXPECT_EQ(reinserted_group_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(reinserted_group_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(reinserted_group_node->children()[0]->type(),
+            TabCollectionNode::Type::TAB);
+  EXPECT_EQ(reinserted_group_node->children()[1]->type(),
+            TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
@@ -877,10 +764,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
   // 2. Initialize the RootTabCollectionNode, which observes the
   // TabStripService.
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -890,17 +774,14 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
 
   // Get the Unpinned Container Node.
   const auto& unpinned_node = root_node.children()[1];
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  ASSERT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Initial structure verification: All 3 tabs are direct children of the
   // Unpinned Container. [Tab, Tab, Tab] -> children size 3
   ASSERT_EQ(unpinned_node->children().size(), 3u);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
+  EXPECT_EQ(unpinned_node->children()[2]->type(), TabCollectionNode::Type::TAB);
 
   browser()->tab_strip_model()->AddToNewGroup({0, 1});
 
@@ -909,16 +790,16 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest, GroupContiguousTabs) {
   ASSERT_EQ(unpinned_node->children().size(), 2u);
 
   // The first child is the group.
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTabGroup);
+  EXPECT_EQ(unpinned_node->children()[0]->type(),
+            TabCollectionNode::Type::GROUP);
   const auto& new_group_node = unpinned_node->children()[0];
 
   // Verify the group itself contains the correct number of children (2 tabs).
   ASSERT_EQ(new_group_node->children().size(), 2u);
-  EXPECT_EQ(new_group_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
-  EXPECT_EQ(new_group_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(new_group_node->children()[0]->type(),
+            TabCollectionNode::Type::TAB);
+  EXPECT_EQ(new_group_node->children()[1]->type(),
+            TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -932,10 +813,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // 2. Initialize the RootTabCollectionNode, which observes the
   // TabStripService.
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -945,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
 
   // Get the Unpinned Container Node.
   const auto& unpinned_node = root_node.children()[1];
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  ASSERT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Initial structure verification and saving pointers to nodes.
   ASSERT_EQ(unpinned_node->children().size(), 3u);
@@ -975,18 +853,15 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // Expected Final Order: [B, C, A]
   // Node at index 0 is Tab B (originally index 1).
   EXPECT_EQ(unpinned_node->children()[0].get(), tab_b_node);
-  EXPECT_EQ(unpinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   // Node at index 1 is Tab C (originally index 2).
   EXPECT_EQ(unpinned_node->children()[1].get(), tab_c_node);
-  EXPECT_EQ(unpinned_node->children()[1]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[1]->type(), TabCollectionNode::Type::TAB);
 
   // Node at index 2 is Tab A (originally index 0).
   EXPECT_EQ(unpinned_node->children()[2].get(), tab_a_node);
-  EXPECT_EQ(unpinned_node->children()[2]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(unpinned_node->children()[2]->type(), TabCollectionNode::Type::TAB);
 }
 
 IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
@@ -1003,10 +878,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   // 2. Initialize the RootTabCollectionNode, which observes the
   // TabStripService.
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 
@@ -1018,8 +890,8 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   const auto& pinned_node = root_node.children()[0];
   const auto& unpinned_node = root_node.children()[1];
 
-  ASSERT_EQ(pinned_node->GetType(), TabCollectionNode::Type::kPinnedTabs);
-  ASSERT_EQ(unpinned_node->GetType(), TabCollectionNode::Type::kUnpinnedTabs);
+  ASSERT_EQ(pinned_node->type(), TabCollectionNode::Type::PINNED);
+  ASSERT_EQ(unpinned_node->type(), TabCollectionNode::Type::UNPINNED);
 
   // Initial State Validation:
   // Pinned: 0 children.
@@ -1047,8 +919,7 @@ IN_PROC_BROWSER_TEST_F(TabCollectionNodeBrowserTest,
   ASSERT_EQ(pinned_node->children().size(), 1u);
   // The first child of the Pinned node must be the tab we moved.
   EXPECT_EQ(pinned_node->children()[0].get(), tab_to_pin_node);
-  EXPECT_EQ(pinned_node->children()[0]->GetType(),
-            TabCollectionNode::Type::kTab);
+  EXPECT_EQ(pinned_node->children()[0]->type(), TabCollectionNode::Type::TAB);
 
   // Unpinned Node verification:
   // Unpinned: 2 children remaining.

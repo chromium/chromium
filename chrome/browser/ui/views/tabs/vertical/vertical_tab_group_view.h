@@ -31,10 +31,10 @@ class VerticalTabGroupView : public views::View, public views::LayoutDelegate {
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
+  void OnDataChanged();
+
  private:
   void ResetCollectionNode();
-
-  void OnDataChanged();
 
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 

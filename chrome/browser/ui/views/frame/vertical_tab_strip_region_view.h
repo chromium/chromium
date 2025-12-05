@@ -24,10 +24,6 @@ namespace tabs {
 class VerticalTabStripStateController;
 }  // namespace tabs
 
-namespace tabs_api {
-class TabStripService;
-}  // namespace tabs_api
-
 namespace views {
 class ResizeArea;
 class Separator;
@@ -44,7 +40,6 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
   static constexpr int kResizeAreaWidth = 6;
 
   explicit VerticalTabStripRegionView(
-      tabs_api::TabStripService* service_register,
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
       BrowserWindowInterface* browser);

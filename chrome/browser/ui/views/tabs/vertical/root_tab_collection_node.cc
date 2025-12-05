@@ -4,85 +4,156 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/utilities/tab_strip_api_utilities.h"
-#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
+#include "base/types/pass_key.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "components/tabs/public/tab_collection.h"
+#include "components/tabs/public/tab_collection_types.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_interface.h"
 
 RootTabCollectionNode::RootTabCollectionNode(
-    tabs_api::TabStripService* tab_strip_service,
+    TabStripModel* tab_strip_model,
     CustomAddChildViewCallback add_node_view_to_parent)
-    : RootTabCollectionNode(tab_strip_service,
-                            tab_strip_service->GetTabs().value(),
-                            add_node_view_to_parent) {}
-
-RootTabCollectionNode::RootTabCollectionNode(
-    tabs_api::TabStripService* tab_strip_service,
-    tabs_api::mojom::ContainerPtr container,
-    CustomAddChildViewCallback add_node_view_to_parent)
-    : TabCollectionNode(std::move(container->data)) {
-  add_node_view_to_parent.Run(Initialize(std::move(container->children)));
-  service_observer_.Observe(tab_strip_service);
+    : TabCollectionNode(tab_strip_model->Root()),
+      tab_strip_model_(tab_strip_model) {
+  tab_strip_model_->Root()->AddObserver(this);
+  tab_strip_model_->AddObserver(this);
+  add_node_view_to_parent.Run(Initialize());
 }
 
-RootTabCollectionNode::~RootTabCollectionNode() = default;
-
-void RootTabCollectionNode::OnTabsCreated(
-    const tabs_api::mojom::OnTabsCreatedEventPtr& tabs_created_event) {
-  for (const auto& tab_created : tabs_created_event->tabs) {
-    TabCollectionNode* parent =
-        GetNodeForId(tab_created->position.parent_id().value());
-
-    tabs_api::mojom::ContainerPtr container = tabs_api::mojom::Container::New();
-    container->data =
-        tabs_api::mojom::Data::NewTab(std::move(tab_created->tab));
-
-    parent->AddNewChild(GetPassKey(), std::move(container),
-                        tab_created->position.index());
+RootTabCollectionNode::~RootTabCollectionNode() {
+  if (tab_strip_model_) {
+    tab_strip_model_->Root()->RemoveObserver(this);
+    tab_strip_model_->RemoveObserver(this);
   }
 }
 
-void RootTabCollectionNode::OnTabsClosed(
-    const tabs_api::mojom::OnTabsClosedEventPtr& tabs_closed_event) {
-  for (auto& node_id : tabs_closed_event->tabs) {
-    TabCollectionNode* parent_node = GetParentNodeForId(node_id);
-    auto removed_view_and_node =
-        parent_node->RemoveChild(GetPassKey(), node_id);
+void RootTabCollectionNode::OnChildrenAdded(
+    const tabs::TabCollection::Position& position,
+    const tabs::TabCollectionNodes& handles,
+    bool insert_from_detached) {
+  for (auto handle : handles) {
+    tabs::ConstChildPtr child;
+    if (std::holds_alternative<tabs::TabCollection::Handle>(handle)) {
+      const tabs::TabCollection* collection =
+          std::get<tabs::TabCollection::Handle>(handle).Get();
+      child = collection;
+    } else {
+      CHECK(std::holds_alternative<tabs::TabInterface::Handle>(handle));
+      const tabs::TabInterface* tab =
+          std::get<tabs::TabInterface::Handle>(handle).Get();
+      child = tab;
+    }
+
+    GetNodeForHandle(position.parent_handle)
+        ->AddNewChild(GetPassKey(), child, position.index,
+                      insert_from_detached);
   }
 }
 
-void RootTabCollectionNode::OnNodeMoved(
-    const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) {
-  auto node_id = node_moved_event->id;
-  auto from_position = node_moved_event->from;
-  auto to_position = node_moved_event->to;
+void RootTabCollectionNode::OnChildrenRemoved(
+    const tabs::TabCollection::Position& position,
+    const tabs::TabCollectionNodes& handles) {
+  TabCollectionNode* parent_node = GetNodeForHandle(position.parent_handle);
+  if (!parent_node) {
+    return;
+  }
 
+  for (auto& handle : handles) {
+    parent_node->RemoveChild(GetPassKey(), handle);
+  }
+}
+
+void RootTabCollectionNode::OnChildMoved(
+    const tabs::TabCollection::Position& to_position,
+    const tabs::TabCollectionObserver::NodeData& node_data) {
+  const tabs::TabCollection::Position& from_position = node_data.position;
+  const tabs::TabCollection::NodeHandle& moved_node_handle = node_data.handle;
   TabCollectionNode* src_parent_node =
-      GetNodeForId(from_position.parent_id().value());
+      GetNodeForHandle(from_position.parent_handle);
   TabCollectionNode* dst_parent_node =
-      GetNodeForId(to_position.parent_id().value());
+      GetNodeForHandle(to_position.parent_handle);
 
-  auto [view, node] = src_parent_node->RemoveChild(GetPassKey(), node_id);
+  auto [view, node] =
+      src_parent_node->RemoveChild(GetPassKey(), moved_node_handle);
   dst_parent_node->AddChild(std::move(view), std::move(node),
-                            to_position.index());
+                            to_position.index);
 }
 
-void RootTabCollectionNode::OnDataChanged(
-    const tabs_api::mojom::OnDataChangedEventPtr& data_changed_event) {
-  TabCollectionNode* node =
-      GetNodeForId(tabs_api::utils::GetNodeId(*data_changed_event->data));
-  if (node) {
-    node->SetData(GetPassKey(), std::move(data_changed_event->data));
+void RootTabCollectionNode::OnTabStripModelChanged(
+    TabStripModel* tab_strip_model,
+    const TabStripModelChange& change,
+    const TabStripSelectionChange& selection) {
+  if (tab_strip_model->closing_all()) {
+    return;
+  }
+  if (selection.active_tab_changed()) {
+    if (selection.old_tab) {
+      TabCollectionNode* old_tab_node =
+          GetNodeForHandle(selection.old_tab->GetHandle());
+      if (old_tab_node) {
+        old_tab_node->NotifyDataChanged();
+      }
+    }
+    if (selection.new_tab) {
+      TabCollectionNode* new_tab_node =
+          GetNodeForHandle(selection.new_tab->GetHandle());
+      if (new_tab_node) {
+        new_tab_node->NotifyDataChanged();
+      }
+    }
   }
 }
 
-void RootTabCollectionNode::OnCollectionCreated(
-    const tabs_api::mojom::OnCollectionCreatedEventPtr&
-        collection_created_event) {
-  tabs_api::mojom::ContainerPtr container =
-      std::move(collection_created_event->collection);
-  TabCollectionNode* parent =
-      GetNodeForId(collection_created_event->position.parent_id().value());
+void RootTabCollectionNode::OnTabGroupChanged(const TabGroupChange& change) {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
 
-  parent->AddNewChild(GetPassKey(), std::move(container),
-                      collection_created_event->position.index());
+  if (change.type != TabGroupChange::kVisualsChanged) {
+    return;
+  }
+
+  TabCollectionNode* group_node =
+      GetNodeForHandle(change.model->group_model()
+                           ->GetTabGroup(change.group)
+                           ->GetCollectionHandle());
+  if (group_node) {
+    group_node->NotifyDataChanged();
+  }
+}
+
+void RootTabCollectionNode::TabChangedAt(content::WebContents* contents,
+                                         int model_index,
+                                         TabChangeType change_type) {
+  if (tab_strip_model_->closing_all()) {
+    return;
+  }
+
+  UpdateTabData(contents, model_index);
+}
+
+void RootTabCollectionNode::TabPinnedStateChanged(
+    TabStripModel* tab_strip_model,
+    content::WebContents* contents,
+    int model_index) {
+  CHECK_EQ(tab_strip_model, tab_strip_model_);
+  UpdateTabData(contents, model_index);
+}
+
+void RootTabCollectionNode::TabBlockedStateChanged(
+    content::WebContents* contents,
+    int model_index) {
+  UpdateTabData(contents, model_index);
+}
+
+void RootTabCollectionNode::UpdateTabData(content::WebContents* contents,
+                                          int model_index) {
+  tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(contents);
+  TabCollectionNode* tab_node = GetNodeForHandle(tab->GetHandle());
+  if (tab_node) {
+    tab_node->NotifyDataChanged();
+  }
 }

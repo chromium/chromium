@@ -4,23 +4,30 @@
 
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
 
-#include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
-#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/view_class_properties.h"
 
-VerticalTabIcon::VerticalTabIcon(const tabs_api::mojom::Tab& tab) {
+VerticalTabIcon::VerticalTabIcon(const tabs::TabInterface* tab) {
   SetData(tab);
 }
 
 VerticalTabIcon::~VerticalTabIcon() = default;
 
-void VerticalTabIcon::SetData(const tabs_api::mojom::Tab& tab) {
+void VerticalTabIcon::SetData(const tabs::TabInterface* tab) {
   const bool was_showing_load = GetShowingLoadingAnimation();
 
-  themed_favicon_ = tab.favicon;
-  SetNetworkState(tabs_api::converters::FromMojo(tab.network_state));
+  int index =
+      tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
+  TabRendererData tab_renderer_data = TabRendererData::FromTabInModel(
+      tab->GetBrowserWindowInterface()->GetTabStripModel(), index);
+
+  themed_favicon_ = tab_renderer_data.favicon.Rasterize(GetColorProvider());
+  SetNetworkState(tab_renderer_data.network_state);
   has_tab_renderer_data_ = true;
 
   const bool showing_load = GetShowingLoadingAnimation();

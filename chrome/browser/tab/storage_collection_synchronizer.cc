@@ -13,7 +13,7 @@
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
 #include "components/tabs/public/direct_child_walker.h"
-#include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_collection_types.h"
 #include "components/tabs/public/tab_strip_collection.h"
 
 namespace tabs {

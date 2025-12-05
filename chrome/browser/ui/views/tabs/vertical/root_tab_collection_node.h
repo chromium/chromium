@@ -5,51 +5,55 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_ROOT_TAB_COLLECTION_NODE_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_ROOT_TAB_COLLECTION_NODE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/types/expected.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/observation/tab_strip_api_observer.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "components/tabs/public/tab_collection_observer.h"
 #include "ui/views/view.h"
 
-namespace tabs_api {
-class TabStripService;
-}
+class TabStripModel;
 
-// The RootTabCollectionNode is the entry point for the TabStripAPI. It is
-// responsible for fetching the initial tab state and listening for updates.
-class RootTabCollectionNode
-    : public TabCollectionNode,
-      public tabs_api::observation::TabStripApiObserver {
+// The viewmodel for the VerticalTabStrip.
+class RootTabCollectionNode : public TabCollectionNode,
+                              public tabs::TabCollectionObserver,
+                              public TabStripModelObserver {
  public:
   explicit RootTabCollectionNode(
-      tabs_api::TabStripService* service_register,
+      TabStripModel* tab_strip_model,
       CustomAddChildViewCallback add_node_view_to_parent);
   ~RootTabCollectionNode() override;
 
-  // tabs_api::observation::TabStripApiObserver
-  void OnTabsCreated(const tabs_api::mojom::OnTabsCreatedEventPtr&
-                         tabs_created_event) override;
-  void OnTabsClosed(
-      const tabs_api::mojom::OnTabsClosedEventPtr& tabs_closed_event) override;
-  void OnNodeMoved(
-      const tabs_api::mojom::OnNodeMovedEventPtr& node_moved_event) override;
-  void OnDataChanged(const tabs_api::mojom::OnDataChangedEventPtr&
-                         data_changed_event) override;
-  void OnCollectionCreated(const tabs_api::mojom::OnCollectionCreatedEventPtr&
-                               collection_created_event) override;
+  // tabs::TabCollectionObserver
+  void OnChildrenAdded(const tabs::TabCollection::Position& position,
+                       const tabs::TabCollectionNodes& handles,
+                       bool insert_from_detached) override;
+  void OnChildrenRemoved(const tabs::TabCollection::Position& position,
+                         const tabs::TabCollectionNodes& handles) override;
+  void OnChildMoved(const tabs::TabCollection::Position& to_position,
+                    const NodeData& node_data) override;
+
+  // TabStripModelObserver:
+  void OnTabStripModelChanged(
+      TabStripModel* tab_strip_model,
+      const TabStripModelChange& change,
+      const TabStripSelectionChange& selection) override;
+  void OnTabGroupChanged(const TabGroupChange& change) override;
+  void TabChangedAt(content::WebContents* contents,
+                    int model_index,
+                    TabChangeType change_type) override;
+  void TabPinnedStateChanged(TabStripModel* tab_strip_model,
+                             content::WebContents* contents,
+                             int model_index) override;
+  void TabBlockedStateChanged(content::WebContents* contents,
+                              int model_index) override;
 
  private:
-  // TabCollectionNode needs to be initialized with data, however we need the
-  // container's children later in the constructor of RootTabCollectionNode.
-  // Use this helper so that we only have to call GetTabs once.
-  explicit RootTabCollectionNode(
-      tabs_api::TabStripService* tab_strip_service,
-      tabs_api::mojom::ContainerPtr container,
-      CustomAddChildViewCallback add_node_view_to_parent);
+  void UpdateTabData(content::WebContents* contents, int model_index);
 
-  base::ScopedObservation<tabs_api::TabStripService,
-                          tabs_api::observation::TabStripApiObserver>
-      service_observer_{this};
+  raw_ptr<TabStripModel> tab_strip_model_;
   base::WeakPtrFactory<RootTabCollectionNode> weak_ptr_factory_{this};
 };
 

@@ -116,6 +116,16 @@ TabAlertController* TabAlertController::From(TabInterface* tab) {
   return Get(tab->GetUnownedUserDataHost());
 }
 
+// static
+std::optional<tabs::TabAlert> TabAlertController::GetAlertStateToShow(
+    const std::vector<tabs::TabAlert>& alert_states) {
+  if (alert_states.empty()) {
+    return std::nullopt;
+  }
+
+  return alert_states[0];
+}
+
 // static:
 std::u16string TabAlertController::GetTabAlertStateText(
     const tabs::TabAlert alert_state) {

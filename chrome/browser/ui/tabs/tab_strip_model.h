@@ -70,7 +70,6 @@ class TabGroupTabCollection;
 }
 
 namespace tabs_api {
-class MojoTreeBuilder;
 class TabStripModelAdapterImpl;
 }
 
@@ -724,10 +723,7 @@ class TabStripModel {
   TabIterator end() const;
 
   // Gets the root of the tab strip model. Used to traverse the tab topology.
-  const tabs::TabCollection* Root(
-      std::variant<base::PassKey<tabs_api::MojoTreeBuilder>,
-                   base::PassKey<tabs_api::TabStripModelAdapterImpl>> key)
-      const;
+  const tabs::TabCollection* Root() const;
 
   const tabs::TabCollection* GetRootForTesting() const;
 

@@ -191,10 +191,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewWithSplitTabTest,
   auto parent_view = std::make_unique<views::View>();
   parent_view->SetBounds(0, 0, 200, 600);
   RootTabCollectionNode root_node(
-      browser()
-          ->GetFeatures()
-          .tab_strip_service_feature()
-          ->GetTabStripService(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
 

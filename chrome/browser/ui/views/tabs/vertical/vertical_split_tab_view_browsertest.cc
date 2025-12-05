@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
-#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
@@ -63,11 +62,11 @@ class VerticalSplitTabViewTest
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   CreateSplitTab();
-  // // Create view hierarchy from an arbitrary parent view since we don't
-  // // currently support updates from the API.
+  // Create view hierarchy from an arbitrary parent view since we don't
+  // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      tab_strip_service(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];
@@ -96,11 +95,11 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
   CreateSplitTab();
-  // // Create view hierarchy from an arbitrary parent view since we don't
-  // // currently support updates from the API.
+  // Create view hierarchy from an arbitrary parent view since we don't
+  // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      tab_strip_service(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];
@@ -134,11 +133,11 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   CreateSplitTab();
-  // // Create view hierarchy from an arbitrary parent view since we don't
-  // // currently support updates from the API.
+  // Create view hierarchy from an arbitrary parent view since we don't
+  // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
-      tab_strip_service(),
+      browser()->tab_strip_model(),
       base::BindRepeating<TabCollectionNode::CustomAddChildView>(
           &views::View::AddChildView, base::Unretained(parent_view.get())));
   auto split = root_node.children()[1]->get_view_for_testing()->children()[1];

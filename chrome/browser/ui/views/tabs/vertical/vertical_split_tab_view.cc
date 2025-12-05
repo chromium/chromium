@@ -32,7 +32,10 @@ views::ProposedLayout VerticalSplitTabView::CalculateProposedLayout(
   int height = 0;
 
   const auto children = collection_node_->GetDirectChildren();
-  CHECK(children.size() == 2);
+  if (children.size() != 2) {
+    layouts.host_size = gfx::Size(0, 0);
+    return layouts;
+  }
 
   // Layout children in order. Children will have their preferred height and
   // fill available width. If unbounded or both children fit on one row they

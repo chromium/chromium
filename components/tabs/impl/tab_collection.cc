@@ -12,6 +12,7 @@
 #include "base/notreached.h"
 #include "components/tabs/public/supports_handles.h"
 #include "components/tabs/public/tab_collection_observer.h"
+#include "components/tabs/public/tab_collection_storage.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace tabs {
@@ -360,13 +361,13 @@ void TabCollection::NotifyOnChildrenRemoved(
                       handles);
   } else if (!observers_.empty()) {
     pending_notifications_.push_back(base::BindOnce(
-        [](const Position& position,
+        [](const Position position,
            base::ObserverList<TabCollectionObserver>& observers,
            const TabCollectionNodes& handles) {
           observers.Notify(&TabCollectionObserver::OnChildrenRemoved, position,
                            handles);
         },
-        std::ref(position), std::ref(observers_), handles));
+        position, std::ref(observers_), handles));
   }
 
   if (parent_) {
@@ -390,7 +391,7 @@ void TabCollection::NotifyOnChildMoved(base::PassKey<TabCollection> pass_key,
   if (notify_immediately_) {
     observers_.Notify(&TabCollectionObserver::OnChildMoved, dst_position,
                       src_data);
-  } else if (!observers_.empty()) {
+  } else {
     pending_notifications_.push_back(base::BindOnce(
         [](base::ObserverList<TabCollectionObserver>& observers,
            const Position& dst_position,

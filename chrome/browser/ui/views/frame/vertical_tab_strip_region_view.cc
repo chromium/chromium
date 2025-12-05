@@ -44,7 +44,6 @@ constexpr int kRegionVerticalPadding = 5;
 }  // namespace
 
 VerticalTabStripRegionView::VerticalTabStripRegionView(
-    tabs_api::TabStripService* service_register,
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
     BrowserWindowInterface* browser)
@@ -88,7 +87,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
   SetProperty(views::kElementIdentifierKey, kVerticalTabStripRegionElementId);
 
   root_node_ = std::make_unique<RootTabCollectionNode>(
-      service_register,
+      browser->GetTabStripModel(),
       base::BindRepeating(&VerticalTabStripRegionView::SetTabStripView,
                           base::Unretained(this)));
 }

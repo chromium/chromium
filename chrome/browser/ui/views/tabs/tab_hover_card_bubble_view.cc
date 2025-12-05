@@ -22,6 +22,8 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
+#include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
@@ -541,7 +543,8 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   } else {
     domain_url = tab_data.last_committed_url;
     title = tab_data.title;
-    alert_state_ = Tab::GetAlertStateToShow(tab_data.alert_state);
+    alert_state_ =
+        tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state);
   }
 
   std::u16string domain;

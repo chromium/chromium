@@ -10,8 +10,10 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
-#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_collection_storage.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/color_utils.h"
@@ -125,12 +127,14 @@ void VerticalTabGroupView::ResetCollectionNode() {
 }
 
 void VerticalTabGroupView::OnDataChanged() {
-  tabs_api::mojom::TabGroup tab_group =
-      *collection_node_->data()->get_tab_group();
-  group_header_->SetText(tab_group.data.title());
+  const TabGroup* tab_group =
+      static_cast<const tabs::TabGroupTabCollection*>(
+          std::get<const tabs::TabCollection*>(collection_node_->GetNodeData()))
+          ->GetTabGroup();
+  group_header_->SetText(tab_group->visual_data()->title());
   if (GetColorProvider()) {
     SkColor color = GetColorProvider()->GetColor(GetTabGroupTabStripColorId(
-        tab_group.data.color(), GetWidget()->ShouldPaintAsActive()));
+        tab_group->visual_data()->color(), GetWidget()->ShouldPaintAsActive()));
     group_header_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color));
     group_header_->SetBackground(
         views::CreateRoundedRectBackground(color, kGroupHeaderCornerRadius));
