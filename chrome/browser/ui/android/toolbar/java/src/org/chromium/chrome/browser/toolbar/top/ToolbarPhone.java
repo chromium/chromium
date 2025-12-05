@@ -1679,7 +1679,8 @@ public class ToolbarPhone extends ToolbarLayout
 
     /** Called whenever the location bar background view's bounds or its NTP offset changes. */
     private void onLocationBarBackgroundViewBoundsChanged() {
-        if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+        if (!ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()
+                || mUrlFocusChangeInProgress) {
             return;
         }
         updateLocationBarBackgroundViewBounds();
@@ -2300,7 +2301,9 @@ public class ToolbarPhone extends ToolbarLayout
             mBrandColorTransitionAnimation.cancel();
         }
 
-        mUrlFocusChangeInProgress = true;
+        // If the refactored animations are enabled, this will instead be set when the transition
+        // actually starts (in the next update cycle).
+        mUrlFocusChangeInProgress = !ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled();
         // Hide the optional button immediately when animating in the suggestions list (since other
         // toolbar buttons are also hidden immediately) or restore it when omnibox focus is lost.
         if (animatingSuggestionsListOnNtp()) {
@@ -2611,6 +2614,11 @@ public class ToolbarPhone extends ToolbarLayout
         updateLocationBarFocusChangeFraction();
         updateToolbarAndLocationBarColorForFocusChange();
         updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, mVisualState);
+
+        // Intentionally set last, as this is used to suppress updates in some helpers that are
+        // called above. Not set in #onFocusTransitionStart as that is called on the next update
+        // cycle, which may be too late.
+        mUrlFocusChangeInProgress = true;
     }
 
     private void updateLocationBarNtpOffset(boolean expanded) {
@@ -3065,7 +3073,11 @@ public class ToolbarPhone extends ToolbarLayout
         startLoadingPhaseFromNtpToWebpage(newVisualState);
 
         mVisualState = newVisualState;
-        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()) {
+        if (ChromeFeatureList.sToolbarPhoneAnimationRefactor.isEnabled()
+                && !mUrlFocusChangeInProgress) {
+            // The bounds may change if navigating to/from a NTP, so update here accordingly. If a
+            // focus change animation is in progress, however, allow the bounds change to be
+            // handled by the transition instead.
             updateLocationBarBackgroundBounds(mLocationBarBackgroundBounds, newVisualState);
         }
 
