@@ -47,7 +47,7 @@ class CC_EXPORT ScrollJankV4DecisionQueue {
    public:
     virtual ~ResultConsumer();
     virtual void OnFrameResult(
-        ScrollJankV4FrameStage::ScrollUpdates& updates,
+        const ScrollJankV4FrameStage::ScrollUpdates& updates,
         const ScrollJankV4Frame::ScrollDamage& damage,
         const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
         const ScrollJankV4Result& result) = 0;
@@ -91,7 +91,7 @@ class CC_EXPORT ScrollJankV4DecisionQueue {
   // for (`updates1`, `damage1`, `args1`) before invoking it with the jank
   // results for (`updates2`, `damage2`, `args2`).
   bool ProcessFrameWithScrollUpdates(
-      ScrollJankV4FrameStage::ScrollUpdates& updates,
+      const ScrollJankV4FrameStage::ScrollUpdates& updates,
       const ScrollJankV4Frame::ScrollDamage& damage,
       const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 

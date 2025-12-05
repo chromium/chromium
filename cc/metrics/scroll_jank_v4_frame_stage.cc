@@ -11,7 +11,6 @@
 #include <variant>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -32,7 +31,6 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
   ScrollJankV4FrameStage::List stages;
 
   // Any scroll updates (real or synthetic).
-  ScrollUpdateEventMetrics* earliest_event = nullptr;
   // This handles cases when we have multiple scroll events. Events for dropped
   // frames are reported by the reporter for next presented frame which could
   // lead to having multiple scroll events.
@@ -160,10 +158,8 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
 
     // Earliest is always applied, even when the scroll update failed to
     // successfully produce a scroll.
-    if (generation_ts < first_input_generation_ts) {
-      first_input_generation_ts = generation_ts;
-      earliest_event = scroll_update;
-    }
+    first_input_generation_ts =
+        std::min(first_input_generation_ts, generation_ts);
     bool is_synthetic = scroll_update->is_synthetic();
     if (is_synthetic) {
       base::TimeTicks begin_frame_ts =
@@ -279,8 +275,8 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
                     })
               : std::nullopt;
 
-  stages.emplace_back(ScrollJankV4FrameStage::ScrollUpdates(
-      earliest_event, real_updates, synthetic_updates));
+  stages.emplace_back(
+      ScrollJankV4FrameStage::ScrollUpdates(real_updates, synthetic_updates));
 
   // If the generation timestamp of the scroll END is greater than the
   // generation timestamp of at least one scroll UPDATE, then we assume that the
@@ -308,12 +304,9 @@ ScrollJankV4FrameStage::List CalculateStagesImpl(
 }  // namespace
 
 ScrollJankV4FrameStage::ScrollUpdates::ScrollUpdates(
-    ScrollUpdateEventMetrics* earliest_event,
     std::optional<Real> real,
     std::optional<Synthetic> synthetic)
-    : earliest_event_(earliest_event),
-      real_(std::move(real)),
-      synthetic_(std::move(synthetic)) {
+    : real_(std::move(real)), synthetic_(std::move(synthetic)) {
   CHECK(real_.has_value() || synthetic_.has_value());
 }
 

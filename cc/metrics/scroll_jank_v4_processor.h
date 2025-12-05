@@ -25,12 +25,13 @@ class CC_EXPORT ScrollJankV4Processor {
  public:
   ScrollJankV4Processor();
 
-  void ProcessEventsMetricsForPresentedFrame(EventMetrics::List& events_metrics,
-                                             base::TimeTicks presentation_ts,
-                                             const viz::BeginFrameArgs& args);
+  void ProcessEventsMetricsForPresentedFrame(
+      const EventMetrics::List& events_metrics,
+      base::TimeTicks presentation_ts,
+      const viz::BeginFrameArgs& args);
 
  private:
-  void HandleFrame(ScrollJankV4FrameStage::List& stages,
+  void HandleFrame(const ScrollJankV4FrameStage::List& stages,
                    const ScrollJankV4Frame::ScrollDamage& damage,
                    const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args);
 
