@@ -652,15 +652,15 @@ public class FuseboxMediator {
     // Parse GET_CONTENT response, extracting single- or multiple image selections.
     private static List<Uri> extractUrisFromResult(Intent data) {
         List<Uri> out = new ArrayList<>();
-        Uri single = data.getData();
-        if (single != null) out.add(single);
-
         ClipData clip = data.getClipData();
-        if (clip == null) return out;
-
-        for (int i = 0; i < clip.getItemCount(); i++) {
-            Uri u = clip.getItemAt(i).getUri();
-            if (u != null) out.add(u);
+        if (clip != null) {
+            for (int i = 0; i < clip.getItemCount(); i++) {
+                Uri u = clip.getItemAt(i).getUri();
+                if (u != null) out.add(u);
+            }
+        } else {
+            Uri single = data.getData();
+            if (single != null) out.add(single);
         }
         return out;
     }
