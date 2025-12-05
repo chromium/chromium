@@ -35,6 +35,11 @@ struct IqStanzaStruct {
   IqStanzaStruct(const IqStanzaStruct&);
   IqStanzaStruct& operator=(const IqStanzaStruct&);
   ~IqStanzaStruct();
+
+  // Provides proof that the host is authorized to respond to client messages.
+  std::string messaging_authz_token;
+  // The IqStanza XML in serialized form.
+  std::string xml;
 };
 
 struct PingPongStruct {
