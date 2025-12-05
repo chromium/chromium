@@ -69,7 +69,7 @@ void CheckboxInputType::HandleKeyupEvent(KeyboardEvent& event) {
   }
 }
 
-ClickHandlingState* CheckboxInputType::WillDispatchClick() {
+ClickHandlingState* CheckboxInputType::LegacyPreActivationBehavior() {
   // An event handler can use preventDefault or "return false" to reverse the
   // checking we do here.  The ClickHandlingState object contains what we need
   // to undo what we did here in didDispatchClick.
@@ -79,17 +79,30 @@ ClickHandlingState* CheckboxInputType::WillDispatchClick() {
   state->checked = GetElement().Checked();
   state->indeterminate = GetElement().indeterminate();
 
-  if (state->indeterminate)
-    GetElement().setIndeterminate(false);
-
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior:
+  //
+  // The legacy-pre-activation behavior for input elements are these steps:
+  //
+  //   1. If this element's type attribute is in the Checkbox state, then set
+  //      this element's checkedness to its opposite value (i.e. true if it is
+  //      false, false if it is true) and set this element's indeterminate IDL
+  //      attribute to false.
+  //
+  // Note it is not clear if the ordering of these two operations is important,
+  // since we technically do them in the opposite order than the spec. This
+  // should only be observable if `SetChecked()` fires an event whose handlers
+  // can read the indeterminate state.
+  GetElement().setIndeterminate(false);
   GetElement().SetChecked(!state->checked,
                           TextFieldEventBehavior::kDispatchChangeEvent);
+
   is_in_click_handler_ = true;
   return state;
 }
 
-void CheckboxInputType::DidDispatchClick(Event& event,
-                                         const ClickHandlingState& state) {
+void CheckboxInputType::RunInputActivationBehavior(
+    Event& event,
+    const ClickHandlingState& state) {
   if (event.defaultPrevented() || event.DefaultHandled()) {
     GetElement().setIndeterminate(state.indeterminate);
     GetElement().SetChecked(state.checked);
@@ -98,6 +111,16 @@ void CheckboxInputType::DidDispatchClick(Event& event,
       // This is needed in order to match :user-valid/:user-invalid
       GetElement().SetUserHasEditedTheField();
     }
+    // https://html.spec.whatwg.org/C#checkbox-state-(type=checkbox):input-activation-behavior.
+    //
+    // The input activation behavior is to run the following steps:
+    //
+    //   1. If the element is not connected, then return (this check is done in
+    //      `DispatchInputAndChangeEventIfNeeded()` below).
+    //   2. Fire an event named input at the element with the bubbles and
+    //      composed attributes initialized to true.
+    //   3. Fire an event named change at the element with the bubbles attribute
+    //      initialized to true.
     GetElement().DispatchInputAndChangeEventIfNeeded();
   }
   is_in_click_handler_ = false;

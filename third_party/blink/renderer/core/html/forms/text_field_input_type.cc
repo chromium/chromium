@@ -65,16 +65,6 @@ class DataListIndicatorElement final : public HTMLDivElement {
     return To<HTMLInputElement>(OwnerShadowHost());
   }
 
-  EventDispatchHandlingState* PreDispatchEventHandler(Event& event) override {
-    // Chromium opens autofill popup in a mousedown event listener
-    // associated to the document. We don't want to open it in this case
-    // because we opens a datalist chooser later.
-    // FIXME: We should dispatch mousedown events even in such case.
-    if (event.type() == event_type_names::kMousedown)
-      event.stopPropagation();
-    return nullptr;
-  }
-
   void DefaultEventHandler(Event& event) override {
     DCHECK(GetDocument().IsActive());
     if (event.type() != event_type_names::kClick)

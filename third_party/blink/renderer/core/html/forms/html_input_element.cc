@@ -1459,7 +1459,7 @@ void HTMLInputElement::SetValueFromRenderer(const String& value) {
   SetAutofillState(WebAutofillState::kNotFilled);
 }
 
-EventDispatchHandlingState* HTMLInputElement::PreDispatchEventHandler(
+EventDispatchHandlingState* HTMLInputElement::LegacyPreActivationBehavior(
     Event& event) {
   if (event.type() == event_type_names::kTextInput &&
       input_type_view_->ShouldSubmitImplicitly(event)) {
@@ -1474,16 +1474,26 @@ EventDispatchHandlingState* HTMLInputElement::PreDispatchEventHandler(
       mouse_event->button() !=
           static_cast<int16_t>(WebPointerProperties::Button::kLeft))
     return nullptr;
-  return input_type_view_->WillDispatchClick();
+  return input_type_view_->LegacyPreActivationBehavior();
 }
 
-void HTMLInputElement::PostDispatchEventHandler(
+void HTMLInputElement::RunActivationBehavior(
     Event& event,
     EventDispatchHandlingState* state) {
-  if (!state)
+  if (!state) {
     return;
-  input_type_view_->DidDispatchClick(event,
-                                     *static_cast<ClickHandlingState*>(state));
+  }
+
+  // https://html.spec.whatwg.org/C#the-input-element:activation-behaviour.
+  //
+  // The activation behavior for input elements element, given event, are these
+  // steps:
+  //
+  //   [...]
+  //   2. Run element's input activation behavior, if any, and do nothing
+  //      otherwise.
+  input_type_view_->RunInputActivationBehavior(
+      event, *static_cast<ClickHandlingState*>(state));
 }
 
 void HTMLInputElement::DefaultEventHandler(Event& evt) {

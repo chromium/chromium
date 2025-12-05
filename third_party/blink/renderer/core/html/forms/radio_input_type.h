@@ -59,8 +59,10 @@ class RadioInputType final : public BaseCheckableInputType {
       Element::UpdateBehavior update_behavior =
           Element::UpdateBehavior::kStyleAndLayout) const override;
   bool ShouldSendChangeEventAfterCheckedChanged() override;
-  ClickHandlingState* WillDispatchClick() override;
-  void DidDispatchClick(Event&, const ClickHandlingState&) override;
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior.
+  ClickHandlingState* LegacyPreActivationBehavior() override;
+  // https://html.spec.whatwg.org/C#radio-button-state-(type=radio):input-activation-behavior.
+  void RunInputActivationBehavior(Event&, const ClickHandlingState&) override;
   bool ShouldAppearIndeterminate() const override;
 
   HTMLInputElement* FindNextFocusableRadioButtonInGroup(HTMLInputElement*,

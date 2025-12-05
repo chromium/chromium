@@ -89,8 +89,10 @@ class CORE_EXPORT InputTypeView : public GarbageCollectedMixin {
 
   virtual void HandleClickEvent(MouseEvent&);
   virtual void HandleMouseDownEvent(MouseEvent&);
-  virtual ClickHandlingState* WillDispatchClick();
-  virtual void DidDispatchClick(Event&, const ClickHandlingState&);
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior.
+  virtual ClickHandlingState* LegacyPreActivationBehavior();
+  // https://html.spec.whatwg.org/C#input-activation-behavior.
+  virtual void RunInputActivationBehavior(Event&, const ClickHandlingState&);
   virtual void HandleKeydownEvent(KeyboardEvent&);
   virtual void HandleKeypressEvent(KeyboardEvent&);
   virtual void HandleKeyupEvent(KeyboardEvent&);

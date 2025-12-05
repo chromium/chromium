@@ -940,13 +940,72 @@ class CORE_EXPORT Node : public EventTarget {
   void RemoveAllEventListeners() override;
   void RemoveAllEventListenersRecursively();
 
-  // Handlers to do/undo actions on the target node before an event is
-  // dispatched to it and after the event has been dispatched.  The data pointer
-  // is handed back by the preDispatch and passed to postDispatch.
-  virtual EventDispatchHandlingState* PreDispatchEventHandler(Event&) {
+  // This is the Blink equivalent to the DOM Standard's legacy-pre-activation
+  // behavior [1]. It is mostly the same, except it is called under a broader
+  // set of conditions. Specifically, the spec only calls this hook for
+  // "activation events", which are "click" MouseEvents, and only radio button
+  // & checkbox `<input>` elements provide legacy-pre-activation behavior (see
+  // [2]). Blink limits this method to "click" and "textinput" events for
+  // internal non-standard reasons, but still only radio button & checkbox
+  // `<input>` provide this pre-activation behavior.
+  //
+  // NOTE: This method is considered a legacy hold-over. Do not add new
+  // overrides of it.
+  //
+  // This method's return value is passed to `RunActivationBehavior()`.
+  //
+  // [1]:
+  // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
+  // [2]:
+  // https://html.spec.whatwg.org/#the-input-element:legacy-pre-activation-behavior
+  virtual EventDispatchHandlingState* LegacyPreActivationBehavior(Event&) {
     return nullptr;
   }
-  virtual void PostDispatchEventHandler(Event&, EventDispatchHandlingState*) {}
+  // This is the Blink equivalent of a small subset of the many per-element
+  // implementations of the "activation behavior" hook [1]. Concrete
+  // implementations of this method only represent a subset of the spec's
+  // activation behavior hooks, due to the quirky, all-too disjointed way that
+  // Blink implements activation behavior.
+  //
+  // Specifically, the HTML Standard reduces many kinds of user interactions to
+  // a synthetic click event [2] that gets dispatched on the activated element.
+  // This is because "click" MouseEvents (also called "activation events") are
+  // the only kind of event that, when dispatched, also run an element's
+  // activation behavior hook.
+  //
+  // Blink, on the other hand, kind of inverts this model. Blink responds to
+  // user interactions and their associated (non-click) events *directly*,
+  // without first firing a synthetic click at the activation target. During
+  // this, for all trusted events (not limited to "click" events), Blink runs
+  // the event target's `DefaultEventHandler()` implementation, and leaves it to
+  // subclasses to filter which events / interaction types it is interested in;
+  // these are the same events/interactions that the HTML Standard reduces to
+  // synthetic click events to trigger activation behavior. This means, much of
+  // what the spec refers to as "activation behavior", actually lives in the
+  // `DefaultEventHandler()` implementation.
+  //
+  // After Node subclasses handle these events, they ultimately delegate to
+  // the base class implementation of `Node::DefaultEventHandler()`. That
+  // implementation converts (only) click events into synthetic DOMActivate
+  // events, and fires *those* at the target. This is where more of what the
+  // spec calls "activation behavior" lives in Blink—inside subclass
+  // implementations of `DefaultEventHandler()` that specifically respond to
+  // DOMActivate events.
+  //
+  // The remaining portion of what the spec calls "activation behavior" lives
+  // exactly where it should, in this method below, which is only called for
+  // "activation events", which are "click" MouseEvents (and "textinput" events,
+  // for internal non-standard reasons).
+  //
+  // This method's consumes the `EventDispatchHandlingState` that the
+  // `LegacyPreActivationBehavior()` steps return.
+  //
+  // [1]:
+  // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
+  // [2]: https://html.spec.whatwg.org/C#activation:fire-a-click-event
+  // [3]:
+  // https://html.spec.whatwg.org/C#the-input-element:legacy-pre-activation-behavior
+  virtual void RunActivationBehavior(Event&, EventDispatchHandlingState*) {}
 
   void DispatchScopedEvent(Event&);
 

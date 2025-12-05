@@ -446,8 +446,8 @@ class CORE_EXPORT HTMLInputElement
 
   void ResetImpl() final;
 
-  EventDispatchHandlingState* PreDispatchEventHandler(Event&) final;
-  void PostDispatchEventHandler(Event&, EventDispatchHandlingState*) final;
+  EventDispatchHandlingState* LegacyPreActivationBehavior(Event&) final;
+  void RunActivationBehavior(Event&, EventDispatchHandlingState*) final;
 
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;

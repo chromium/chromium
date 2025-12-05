@@ -68,7 +68,14 @@ class EventDispatcher {
  private:
   EventDispatcher(Node&, Event&);
 
-  EventDispatchContinuation DispatchEventPreProcess(
+  // This is the Blink equivalent to the DOM Standard's
+  // legacy-pre-activation behavior [1]. It is mostly the same, except it is
+  // called under a broader set of conditions. See the documentation above
+  // `Node::LegacyPreActivationBehavior()`.
+  //
+  // [1]:
+  // https://dom.spec.whatwg.org/#eventtarget-legacy-pre-activation-behavior.
+  EventDispatchContinuation DispatchEventLegacyPreActivationBehavior(
       Node* activation_target,
       EventDispatchHandlingState*&);
   EventDispatchContinuation DispatchEventAtCapturing();
