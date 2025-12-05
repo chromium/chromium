@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
+import android.view.ContextThemeWrapper;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -79,6 +81,7 @@ import java.io.File;
 @Config(manifest = Config.NONE, sdk = Build.VERSION_CODES.R)
 public class NtpCustomizationUtilsUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Tab mTab;
     @Mock private Drawable mDrawable;
 
@@ -86,8 +89,10 @@ public class NtpCustomizationUtilsUnitTest {
 
     @Before
     public void setUp() {
-        mContext = ApplicationProvider.getApplicationContext();
-        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
+        mContext =
+                new ContextThemeWrapper(
+                        ApplicationProvider.getApplicationContext(),
+                        R.style.Theme_BrowserUI_DayNight);
     }
 
     @After
@@ -272,7 +277,9 @@ public class NtpCustomizationUtilsUnitTest {
     @Test
     @DisableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
     public void testGetPrimaryColorFromCustomizedThemeColor_flagDisabled() {
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+        assertNull(
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                        mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test
@@ -281,7 +288,9 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
                 NtpBackgroundImageType.DEFAULT);
         NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(Color.RED);
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+        assertNull(
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                        mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test
@@ -292,7 +301,9 @@ public class NtpCustomizationUtilsUnitTest {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
 
-        assertNull(NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+        assertNull(
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                        mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test
@@ -306,7 +317,44 @@ public class NtpCustomizationUtilsUnitTest {
 
         assertEquals(
                 primaryColor,
-                (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2)
+    public void testGetPrimaryColorFromCustomizedThemeColor_chromeColor_colorSet_dailyRefresh() {
+        @NtpThemeColorId int colorId = NtpThemeColorId.NTP_COLORS_BLUE;
+        @NtpThemeColorId int newColorId = NtpThemeColorId.NTP_COLORS_BLUE + 1;
+
+        NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(
+                NtpBackgroundImageType.CHROME_COLOR);
+        // Saves the old color id to the SharedPreference.
+        NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorId);
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+
+        // Primary color of the new color id.
+        @ColorInt
+        int primaryColor =
+                mContext.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(newColorId));
+        // Creates a new instance for the singleton NtpThemeDailyRefreshManager.
+        NtpThemeDailyRefreshManager.createInstanceForTesting();
+
+        // Verifies a refreshed color is returned when applying the daily refresh.
+        assertEquals(
+                primaryColor,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ true));
+
+        // Verifies the new refreshed primary color is returned when not applying daily refresh
+        // again.
+        assertEquals(
+                primaryColor,
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test
@@ -317,7 +365,9 @@ public class NtpCustomizationUtilsUnitTest {
 
         assertEquals(
                 Color.BLUE,
-                (int) NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext));
+                (int)
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false));
     }
 
     @Test

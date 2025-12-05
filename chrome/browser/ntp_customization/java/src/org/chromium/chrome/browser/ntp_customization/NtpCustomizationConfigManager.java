@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -161,7 +162,9 @@ public class NtpCustomizationConfigManager {
         mIsInitialized = true;
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
             @NtpThemeColorId
-            int colorId = NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference();
+            int colorId =
+                    NtpThemeDailyRefreshManager.getInstance()
+                            .getNtpThemeColorIdForChromeColorTheme();
             mNtpThemeColorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(context, colorId);
             notifyBackgroundColorChanged(
                     context,
@@ -437,6 +440,10 @@ public class NtpCustomizationConfigManager {
         return mCustomBackgroundInfo;
     }
 
+    public @Nullable NtpThemeColorInfo getNtpThemeColorInfo() {
+        return mNtpThemeColorInfo;
+    }
+
     /**
      * Sets a NtpCustomizationConfigManager instance for testing.
      *
@@ -449,10 +456,6 @@ public class NtpCustomizationConfigManager {
 
     public void setNtpThemeColorInfoForTesting(@Nullable NtpThemeColorInfo colorInfo) {
         mNtpThemeColorInfo = colorInfo;
-    }
-
-    public @Nullable NtpThemeColorInfo getNtpThemeColorInfoForTesting() {
-        return mNtpThemeColorInfo;
     }
 
     public @Nullable BackgroundImageInfo getBackgroundImageInfoForTesting() {

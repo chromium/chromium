@@ -15,6 +15,9 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.SINGLE_THEME_COLLECTION;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
 
 import android.app.Activity;
 import android.content.Context;
@@ -46,6 +49,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
@@ -56,6 +60,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
 import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
+import org.chromium.chrome.browser.ntp_customization.theme.daily_refresh.NtpThemeDailyRefreshManager;
 import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.CustomBackgroundInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
@@ -113,6 +118,10 @@ public class NtpCustomizationUtils {
         @ColorInt
         Integer getPrimaryColor();
     }
+
+    /** The time duration limit to refresh NTP's background. */
+    @VisibleForTesting
+    static final long DEFAULT_DAILY_REFRESH_HOURS_MS = TimeUtils.MILLISECONDS_PER_DAY;
 
     @VisibleForTesting static final String NTP_BACKGROUND_IMAGE_FILE = "ntp_background_image";
     private static final String TAG = "NtpCustomization";
@@ -228,9 +237,14 @@ public class NtpCustomizationUtils {
         }
     }
 
-    /** Returns the customized primary color if set, null otherwise. */
+    /**
+     * Returns the customized primary color if set, null otherwise.
+     *
+     * @param context The application context to get themed colors.
+     * @param checkDailyRefresh Whether to check daily update when getting the primiary color.
+     */
     public @Nullable static @ColorInt Integer getPrimaryColorFromCustomizedThemeColor(
-            Context context) {
+            Context context, boolean checkDailyRefresh) {
         if (!ChromeFeatureList.sNewTabPageCustomizationV2.isEnabled()) return null;
 
         @NtpBackgroundImageType int imageType = getNtpBackgroundImageTypeFromSharedPreference();
@@ -239,11 +253,16 @@ public class NtpCustomizationUtils {
         }
 
         if (imageType == NtpBackgroundImageType.CHROME_COLOR) {
-            @NtpThemeColorId int colorId = getNtpThemeColorIdFromSharedPreference();
+            NtpThemeDailyRefreshManager ntpThemeDailyRefreshManager =
+                    NtpThemeDailyRefreshManager.getInstance();
+            @NtpThemeColorId
+            int colorId = ntpThemeDailyRefreshManager.getNtpThemeColorIdForChromeColorTheme();
             if (colorId <= NtpThemeColorId.DEFAULT || colorId >= NtpThemeColorId.NUM_ENTRIES) {
                 return null;
             }
-
+            if (checkDailyRefresh) {
+                colorId = ntpThemeDailyRefreshManager.mayApplyDailyRefreshForChromeColor(colorId);
+            }
             return context.getColor(NtpThemeColorUtils.getNtpThemePrimaryColorResId(colorId));
         }
 
@@ -615,15 +634,34 @@ public class NtpCustomizationUtils {
      */
     public static void setIsChromeColorDailyRefreshEnabledToSharedPreference(boolean enabled) {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.writeBoolean(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, enabled);
+        prefsManager.writeBoolean(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, enabled);
     }
 
     /** Gets whether daily refresh for Chrome Color is enabled from the SharedPreference. */
     public static boolean getIsChromeColorDailyRefreshEnabledFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readBoolean(
-                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false);
+                NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false);
+    }
+
+    /**
+     * Sets the timestamp of the last time when a daily refreshed theme color or background image
+     * was set.
+     */
+    @VisibleForTesting
+    public static void setDailyRefreshTimestampToSharedPreference(long timestamp) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.writeLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, timestamp);
+    }
+
+    /**
+     * Gets the timestamp of the last time when a daily refreshed theme color or background image
+     * was set.
+     */
+    @VisibleForTesting
+    public static long getDailyRefreshTimestampToSharedPreference() {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        return prefsManager.readLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, 0);
     }
 
     /**
@@ -734,7 +772,9 @@ public class NtpCustomizationUtils {
                 context,
                 defaultGoogleLogoDrawable,
                 backgroundType,
-                () -> NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(context));
+                () ->
+                        NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                context, /* checkDailyRefresh= */ false));
     }
 
     /**
@@ -996,6 +1036,9 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_MATRIX);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
+        prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);
     }
 
     public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {

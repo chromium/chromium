@@ -227,6 +227,12 @@ public final class ChromePreferenceKeys {
     public static final String NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED =
             "Chrome.NtpCustomization.ChromeColorDailyRefreshEnabled";
 
+    /**
+     * The timestamp of the last time when a daily refreshed theme color or background image is set.
+     */
+    public static final String NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP =
+            "Chrome.NtpCustomization.LastDailyRefreshTimestamp";
+
     public static final String CRASH_UPLOAD_FAILURE_BROWSER = "browser_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_GPU = "gpu_crash_failure_upload";
     public static final String CRASH_UPLOAD_FAILURE_OTHER = "other_crash_failure_upload";
@@ -1146,6 +1152,7 @@ public final class ChromePreferenceKeys {
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_MATRIX,
                 NTP_CUSTOMIZATION_BACKGROUND_INFO,
                 NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED,
+                NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP,
                 CUSTOM_TABS_LAST_CLIENT_PACKAGE,
                 CUSTOM_TABS_LAST_CLOSE_TAB_INTERACTION,
                 CUSTOM_TABS_LAST_CLOSE_TIMESTAMP,

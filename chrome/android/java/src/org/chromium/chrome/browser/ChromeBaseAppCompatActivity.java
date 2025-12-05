@@ -763,7 +763,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     /** Applies dynamic colors or a selected color theme generated using DynamicColors API. */
     private void applyDynamicColors() {
         @ColorInt
-        Integer primaryColor = NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(this);
+        Integer primaryColor =
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                        this, /* checkDailyRefresh= */ true);
         if (primaryColor != null) {
             NtpCustomizationUtils.applyDynamicColorToActivity(this, primaryColor);
         } else {

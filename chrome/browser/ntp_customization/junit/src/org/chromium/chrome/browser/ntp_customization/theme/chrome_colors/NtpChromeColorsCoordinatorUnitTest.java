@@ -377,7 +377,9 @@ public class NtpChromeColorsCoordinatorUnitTest {
                 backgroundColor, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(-1));
         assertEquals(
                 primaryColor,
-                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(mContext).intValue());
+                NtpCustomizationUtils.getPrimaryColorFromCustomizedThemeColor(
+                                mContext, /* checkDailyRefresh= */ false)
+                        .intValue());
     }
 
     @Test

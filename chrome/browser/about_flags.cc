@@ -2989,9 +2989,16 @@ const FeatureEntry::FeatureVariation kAndroidAppIntegrationModuleVariations[] =
 const FeatureEntry::FeatureParam kNewTabPageCustomizationV2_ShowColorPicker[] =
     {{"show_color_picker", "true"}};
 
+const FeatureEntry::FeatureParam
+    kNewTabPageCustomizationV2_ForceDailyRefresh[] = {
+        {"force_daily_refresh", "true"}};
+
 const FeatureEntry::FeatureVariation kNewTabPageCustomizationV2Variations[] = {
     {"Show color picker", kNewTabPageCustomizationV2_ShowColorPicker,
-     std::size(kNewTabPageCustomizationV2_ShowColorPicker), nullptr}};
+     std::size(kNewTabPageCustomizationV2_ShowColorPicker), nullptr},
+    {"Skip daily refresh timestamp check",
+     kNewTabPageCustomizationV2_ForceDailyRefresh,
+     std::size(kNewTabPageCustomizationV2_ForceDailyRefresh), nullptr}};
 
 const FeatureEntry::FeatureParam kAndroidComposeplate_V2Enabled[] = {
     {"v2_enabled", "true"}};
