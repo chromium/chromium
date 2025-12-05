@@ -722,6 +722,13 @@ public class BookmarkBarCoordinator
             return;
         }
 
+        // The Android widgets should not be visible if the Android controls aren't visible. This
+        // allows us to match hiding behavior of the other controls, for example with the scrim.
+        if (mBrowserControlsStateProvider.getAndroidControlsVisibility() != VISIBLE) {
+            mMediator.setVisibility(false);
+            return;
+        }
+
         // Otherwise, we will show the Android widgets anytime we are not mid-scroll. We know we are
         // not scrolling when the top controls offset is 0.
         mMediator.setVisibility(mBrowserControlsStateProvider.getTopControlOffset() == 0);
