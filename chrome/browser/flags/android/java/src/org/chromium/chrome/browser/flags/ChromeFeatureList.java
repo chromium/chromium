@@ -11,6 +11,7 @@ import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.MutableIntParamWithSafeDefault;
 import org.chromium.base.MutableParamWithSafeDefault;
 import org.chromium.base.SysUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.cached_flags.BooleanCachedFeatureParam;
@@ -1564,9 +1565,12 @@ public abstract class ChromeFeatureList {
     public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ShowColorPicker =
             newBooleanCachedFeatureParam(NEW_TAB_PAGE_CUSTOMIZATION_V2, "show_color_picker", false);
 
-    public static final BooleanCachedFeatureParam sNewTabPageCustomizationV2ForceDailyRefresh =
-            newBooleanCachedFeatureParam(
-                    NEW_TAB_PAGE_CUSTOMIZATION_V2, "force_daily_refresh", false);
+    /** The time duration limit to refresh NTP's background. */
+    public static final IntCachedFeatureParam sNewTabPageCustomizationV2DailyRefreshThresholdMs =
+            newIntCachedFeatureParam(
+                    NEW_TAB_PAGE_CUSTOMIZATION_V2,
+                    "daily_refresh_threshold_ms",
+                    (int) TimeUtils.MILLISECONDS_PER_DAY); // 1 day in milliseconds.
 
     /**
      * Param for the OEMs that need an exception for min versions. Its value should be a comma
@@ -1770,7 +1774,7 @@ public abstract class ChromeFeatureList {
                     sMostVisitedTilesReselectLaxSchemeHost,
                     sNavBarColorAnimationDisableBottomChinColorAnimation,
                     sNavBarColorAnimationDisableEdgeToEdgeLayoutColorAnimation,
-                    sNewTabPageCustomizationV2ForceDailyRefresh,
+                    sNewTabPageCustomizationV2DailyRefreshThresholdMs,
                     sNewTabPageCustomizationV2ShowColorPicker,
                     sNotificationTrampolineImmediateJobDurationMs,
                     sNotificationTrampolineLongJobDurationMs,

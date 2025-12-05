@@ -19,6 +19,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -406,6 +408,34 @@ public class NtpCustomizationConfigManagerUnitTest {
                         eq(false),
                         eq(NtpBackgroundImageType.DEFAULT),
                         eq(NtpBackgroundImageType.COLOR_FROM_HEX));
+    }
+
+    @Test
+    public void testOnBackgroundColorChanged_dailyRefresh() {
+        int colorInfoId = NtpThemeColorInfo.NtpThemeColorId.NTP_COLORS_BLUE;
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        mNtpCustomizationConfigManager.setBackgroundImageTypeForTesting(
+                NtpBackgroundImageType.DEFAULT);
+
+        // Test case for daily refresh isn't enabled.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorInfo, NtpBackgroundImageType.CHROME_COLOR);
+        assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+
+        // Test case for daily refresh enabled.
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        mNtpCustomizationConfigManager.onBackgroundColorChanged(
+                mContext, colorInfo, NtpBackgroundImageType.CHROME_COLOR);
+        assertEquals(colorInfoId, NtpCustomizationUtils.getNtpThemeColorIdFromSharedPreference());
+        assertTrue(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+        assertNotEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
     }
 
     @Test

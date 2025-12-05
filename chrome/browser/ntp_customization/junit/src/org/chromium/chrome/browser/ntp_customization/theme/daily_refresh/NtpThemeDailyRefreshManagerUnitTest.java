@@ -78,18 +78,20 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
         NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
                 TimeUtils.currentTimeMillis());
+        mFakeTime.advanceMillis(1);
 
         assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
     }
 
     @Test
     @Features.EnableFeatures({
-        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":force_daily_refresh/true"
+        ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":daily_refresh_threshold_ms/0"
     })
     public void testIsDailyRefreshEnabled_Within24Hours_ForceUpdate() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
         NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
                 TimeUtils.currentTimeMillis());
+        mFakeTime.advanceMillis(1);
 
         assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
     }
@@ -145,6 +147,5 @@ public class NtpThemeDailyRefreshManagerUnitTest {
         assertNull(mManager.getLastDailyUpdateTimestampForTesting());
         assertNull(mManager.getNtpThemeColorIdForTesting());
         assertFalse(mManager.getIsDailyUpdateAppliedForTesting());
-        assertTrue(mManager.getSkipWarmStartupForTesting());
     }
 }

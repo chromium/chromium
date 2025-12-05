@@ -628,6 +628,20 @@ public class NtpCustomizationUtils {
     }
 
     /**
+     * Updates the daily refresh timestamp if enabled.
+     *
+     * @param timestamp The new timestamp.
+     */
+    public static void maybeUpdateDailyRefreshTimestamp(long timestamp) {
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        if (!prefsManager.readBoolean(
+                NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, false)) {
+            return;
+        }
+        prefsManager.writeLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, timestamp);
+    }
+
+    /**
      * Sets whether daily refresh for Chrome Color is enabled to the SharedPreference.
      *
      * @param enabled Whether daily refresh should be enabled.

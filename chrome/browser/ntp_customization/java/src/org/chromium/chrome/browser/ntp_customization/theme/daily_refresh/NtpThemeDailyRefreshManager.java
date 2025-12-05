@@ -18,9 +18,6 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 @NullMarked
 /** Handles the daily refresh of a customized NTP's background color or image. */
 public class NtpThemeDailyRefreshManager {
-    /** The time duration limit to refresh NTP's background. */
-    private static final long DEFAULT_DAILY_REFRESH_HOURS_MS = TimeUtils.MILLISECONDS_PER_DAY;
-
     private static @Nullable NtpThemeDailyRefreshManager sInstanceForTesting;
 
     /** Static class that implements the initialization-on-demand holder idiom. */
@@ -31,9 +28,6 @@ public class NtpThemeDailyRefreshManager {
     private boolean mIsDailyUpdateApplied;
     private @Nullable Long mLastDailyUpdateTimestamp;
     private @Nullable @NtpThemeColorId Integer mNtpThemeColorId;
-
-    // A flag to skip daily refresh during Chrome's recreated if force-daily-refresh is enabled.
-    private boolean mSkipWarmStartup;
 
     /** Returns the singleton instance of NtpThemeDailyUpdateManager. */
     public static NtpThemeDailyRefreshManager getInstance() {
@@ -84,18 +78,15 @@ public class NtpThemeDailyRefreshManager {
             return false;
         }
 
-        if (ChromeFeatureList.sNewTabPageCustomizationV2ForceDailyRefresh.getValue()
-                && !mSkipWarmStartup) {
-            return true;
-        }
+        long dailyRefreshHoursMs =
+                ChromeFeatureList.sNewTabPageCustomizationV2DailyRefreshThresholdMs.getValue();
 
         if (mLastDailyUpdateTimestamp == null) {
             mLastDailyUpdateTimestamp =
                     NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference();
         }
 
-        return TimeUtils.currentTimeMillis() - mLastDailyUpdateTimestamp
-                > DEFAULT_DAILY_REFRESH_HOURS_MS;
+        return TimeUtils.currentTimeMillis() - mLastDailyUpdateTimestamp > dailyRefreshHoursMs;
     }
 
     @NtpThemeColorId
@@ -139,7 +130,6 @@ public class NtpThemeDailyRefreshManager {
         }
 
         mIsDailyUpdateApplied = false;
-        mSkipWarmStartup = true;
     }
 
     public static NtpThemeDailyRefreshManager createInstanceForTesting() {
@@ -155,10 +145,6 @@ public class NtpThemeDailyRefreshManager {
 
     public boolean getIsDailyUpdateAppliedForTesting() {
         return mIsDailyUpdateApplied;
-    }
-
-    public boolean getSkipWarmStartupForTesting() {
-        return mSkipWarmStartup;
     }
 
     public @Nullable Long getLastDailyUpdateTimestampForTesting() {

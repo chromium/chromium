@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtil
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.getBackground;
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -801,5 +802,24 @@ public class NtpCustomizationUtilsUnitTest {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(false);
         assertFalse(
                 NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+    }
+
+    @Test
+    public void testMaybeUpdateDailyRefreshTimestamp() {
+        // Disable daily refresh.
+        NtpCustomizationUtils.resetSharedPreferenceForTesting();
+        assertFalse(
+                NtpCustomizationUtils.getIsChromeColorDailyRefreshEnabledFromSharedPreference());
+
+        long timestamp = 100;
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(timestamp);
+        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        assertFalse(prefsManager.contains(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
+        assertEquals(0, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
+
+        // Enable daily refresh.
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(timestamp);
+        assertEquals(timestamp, NtpCustomizationUtils.getDailyRefreshTimestampToSharedPreference());
     }
 }

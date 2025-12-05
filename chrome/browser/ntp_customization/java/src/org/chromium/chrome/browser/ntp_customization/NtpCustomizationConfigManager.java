@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.ntp_customization;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 
@@ -12,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
@@ -311,25 +314,22 @@ public class NtpCustomizationConfigManager {
         NtpCustomizationUtils.setNtpBackgroundImageTypeToSharedPreference(mBackgroundImageType);
         mNtpThemeColorInfo = colorInfo;
 
+        if (colorInfo == null && backgroundImageType != NtpBackgroundImageType.DEFAULT) {
+            return;
+        }
+        notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
+
         if (mBackgroundImageType == NtpBackgroundImageType.CHROME_COLOR) {
-            if (colorInfo == null) return;
-
-            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
-            NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(colorInfo.id);
-
+            NtpCustomizationUtils.setNtpThemeColorIdToSharedPreference(assumeNonNull(colorInfo).id);
+            // Updates the daily refresh timestamp if enabled.
+            NtpCustomizationUtils.maybeUpdateDailyRefreshTimestamp(TimeUtils.currentTimeMillis());
         } else if (mBackgroundImageType == NtpBackgroundImageType.COLOR_FROM_HEX) {
-            if (colorInfo == null) return;
-
-            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
-
             NtpThemeColorFromHexInfo colorFromHexInfo = (NtpThemeColorFromHexInfo) colorInfo;
             NtpCustomizationUtils.setBackgroundColorToSharedPreference(
-                    colorFromHexInfo.backgroundColor);
+                    assumeNonNull(colorFromHexInfo).backgroundColor);
             NtpCustomizationUtils.setCustomizedPrimaryColorToSharedPreference(
-                    colorFromHexInfo.primaryColor);
-
+                    assumeNonNull(colorFromHexInfo).primaryColor);
         } else if (mBackgroundImageType == NtpBackgroundImageType.DEFAULT) {
-            notifyBackgroundColorChanged(context, /* fromInitialization= */ false, oldType);
             NtpCustomizationUtils.resetCustomizedColors();
         }
     }
