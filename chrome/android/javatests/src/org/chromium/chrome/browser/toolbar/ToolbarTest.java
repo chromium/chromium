@@ -26,10 +26,10 @@ import android.content.res.Configuration;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -53,7 +53,6 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.ui.KeyboardUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -82,8 +81,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
-import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
-import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
@@ -642,35 +639,6 @@ public class ToolbarTest {
         }
     }
 
-    @Test
-    @LargeTest
-    // Disable opening windows side-by-side because home button might not show up on small windows.
-    @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    @ImportantFormFactors(DeviceFormFactor.TABLET_OR_DESKTOP)
-    public void testHomeButton_loadsNtpOnSameTab() {
-        WebPageStation webPage = mPage;
-        webPage.homeButtonElement.checkPresent();
-
-        RegularNewTabPageStation ntp =
-                webPage.homeButtonElement
-                        .clickTo()
-                        .arriveAt(RegularNewTabPageStation.newBuilder().initFrom(webPage).build());
-        ntp.homeButtonElement.checkPresent();
-
-        WebPageStation incognitoWebPage = ntp.openNewIncognitoTabOrWindowFast().loadAboutBlank();
-        incognitoWebPage.homeButtonElement.checkPresent();
-
-        IncognitoNewTabPageStation incognitoNtp =
-                incognitoWebPage
-                        .homeButtonElement
-                        .clickTo()
-                        .arriveAt(
-                                IncognitoNewTabPageStation.newBuilder()
-                                        .initFrom(incognitoWebPage)
-                                        .build());
-        incognitoNtp.homeButtonElement.checkPresent();
-    }
-
     private void setAccessibilityEnabled(boolean enabled) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> ChromeAccessibilityUtil.get().setAccessibilityEnabledForTesting(enabled));
@@ -714,7 +682,8 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyTopControlsAccessibilityOrder(ToolbarPhone toolbar, View ntpView) {
+    private void verifyTopControlsAccessibilityOrder(
+            @NonNull ToolbarPhone toolbar, @NonNull View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -728,7 +697,8 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyBottomControlsAccessibilityOrder(ToolbarPhone toolbar, View ntpView) {
+    private void verifyBottomControlsAccessibilityOrder(
+            @NonNull ToolbarPhone toolbar, @NonNull View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
@@ -742,7 +712,8 @@ public class ToolbarTest {
                 });
     }
 
-    private void verifyAccessibilityOrderIsReset(ToolbarPhone toolbar, View ntpView) {
+    private void verifyAccessibilityOrderIsReset(
+            @NonNull ToolbarPhone toolbar, @Nullable View ntpView) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(

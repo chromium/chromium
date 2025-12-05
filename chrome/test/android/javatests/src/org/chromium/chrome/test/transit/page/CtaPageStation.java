@@ -13,7 +13,6 @@ import android.os.SystemClock;
 import android.view.View;
 import android.widget.ImageButton;
 
-import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.TripBuilder;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.base.test.transit.ViewSpec;
@@ -46,10 +45,9 @@ import java.util.function.Supplier;
  */
 public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public static final ViewSpec<UrlBar> URL_BAR = viewSpec(UrlBar.class, withId(R.id.url_bar));
-    public final OptionalViewElement<View> homeButtonElement;
-    public final ViewElement<ToolbarControlContainer> toolbarElement;
-    public final ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
-    public final ViewElement<ImageButton> menuButtonElement;
+    public ViewElement<ToolbarControlContainer> toolbarElement;
+    public ViewElement<ToggleTabStackButton> tabSwitcherButtonElement;
+    public ViewElement<ImageButton> menuButtonElement;
 
     /** Prefer the CtaPageStation's subclass |newBuilder()|. */
     public static Builder<CtaPageStation> newGenericBuilder() {
@@ -72,6 +70,8 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
                         ToolbarControlContainer.class,
                         withId(R.id.control_container),
                         ViewElement.unscopedOption());
+        // TODO(crbug.com/416324280): Declare the HomeButton with R.id.home_button as an optional
+        //  ViewElement.
         tabSwitcherButtonElement =
                 declareView(
                         ToggleTabStackButton.class,
@@ -80,10 +80,6 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         menuButtonElement =
                 declareView(
                         ImageButton.class, withId(R.id.menu_button), ViewElement.unscopedOption());
-
-        // The home button may not appear in tablets if the available screen size is too small.
-        homeButtonElement =
-                declareOptionalView(withId(R.id.home_button), ViewElement.unscopedOption());
     }
 
     /** Long presses the tab switcher button to open the action menu. */

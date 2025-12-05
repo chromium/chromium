@@ -56,8 +56,7 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     private ViewCarryOn<ViewT> createViewCarryOn() {
-        ViewCarryOn<ViewT> carryOn =
-                new ViewCarryOn<>(mOwner.determineActivityElement(), mViewSpec, mOptions);
+        ViewCarryOn<ViewT> carryOn = new ViewCarryOn<>(mViewSpec, mOptions);
         mCarryOns.add(carryOn);
         return carryOn;
     }
@@ -76,23 +75,23 @@ public class OptionalViewElement<ViewT extends View> extends Element<ViewT> {
     }
 
     public TripBuilder performViewActionTo(ViewAction action) {
-        return waitForView().viewElement.performViewActionTo(action).withContext(mOwner);
+        return waitForView().viewElement.performViewActionTo(action);
     }
 
     public TripBuilder clickTo() {
-        return waitForView().viewElement.clickTo().withContext(mOwner);
+        return waitForView().viewElement.clickTo();
     }
 
     public TripBuilder longPressTo() {
-        return waitForView().viewElement.longPressTo().withContext(mOwner);
+        return waitForView().viewElement.longPressTo();
     }
 
     public TripBuilder clickEvenIfPartiallyOccludedTo() {
-        return waitForView().viewElement.clickEvenIfPartiallyOccludedTo().withContext(mOwner);
+        return waitForView().viewElement.clickEvenIfPartiallyOccludedTo();
     }
 
     public TripBuilder typeTextTo(String text) {
-        return waitForView().viewElement.typeTextTo(text).withContext(mOwner);
+        return waitForView().viewElement.typeTextTo(text);
     }
 
     /** Create a Condition fulfilled when this OptionalViewElement is present. */
