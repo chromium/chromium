@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.MonotonicNonNull;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 
@@ -76,6 +77,42 @@ class MultiInstancePersistentStore {
         getManager().removeKey(tabCountForRelaunchKey(instanceId));
     }
 
+    static @Nullable String readActiveTabUrl(int instanceId) {
+        return getManager().readString(urlKey(instanceId), null);
+    }
+
+    static void writeActiveTabUrl(int instanceId, String url) {
+        getManager().writeString(urlKey(instanceId), url);
+    }
+
+    static void removeActiveTabUrl(int instanceId) {
+        getManager().removeKey(urlKey(instanceId));
+    }
+
+    static @Nullable String readActiveTabTitle(int instanceId) {
+        return getManager().readString(activeTabTitleKey(instanceId), null);
+    }
+
+    static void writeActiveTabTitle(int instanceId, String title) {
+        getManager().writeString(activeTabTitleKey(instanceId), title);
+    }
+
+    static void removeActiveTabTitle(int instanceId) {
+        getManager().removeKey(activeTabTitleKey(instanceId));
+    }
+
+    static @Nullable String readCustomTitle(int instanceId) {
+        return getManager().readString(customTitleKey(instanceId), null);
+    }
+
+    static void writeCustomTitle(int instanceId, String title) {
+        getManager().writeString(customTitleKey(instanceId), title);
+    }
+
+    static void removeCustomTitle(int instanceId) {
+        getManager().removeKey(customTitleKey(instanceId));
+    }
+
     private static String taskIdKey(int instanceId) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(instanceId));
     }
@@ -91,6 +128,19 @@ class MultiInstancePersistentStore {
 
     private static String tabCountForRelaunchKey(int instanceId) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
+                String.valueOf(instanceId));
+    }
+
+    private static String urlKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(instanceId));
+    }
+
+    private static String activeTabTitleKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(String.valueOf(instanceId));
+    }
+
+    private static String customTitleKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_CUSTOM_TITLE.createKey(
                 String.valueOf(instanceId));
     }
 }

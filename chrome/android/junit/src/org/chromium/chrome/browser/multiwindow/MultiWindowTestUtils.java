@@ -14,13 +14,14 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 public class MultiWindowTestUtils {
     /**
      * Create a new instance information.
+     *
      * @param instanceId Instance (aka window) ID.
      * @param url URL for the active tab.
      * @param tabCount The number of tabs in the instance.
      * @param taskId ID of the task the activity instance runs in.
      */
     public static void createInstance(int instanceId, String url, int tabCount, int taskId) {
-        MultiInstanceManagerApi31.writeUrl(instanceId, url);
+        MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
         MultiInstancePersistentStore.writeTabCount(
                 instanceId, tabCount, /* incognitoTabCount= */ 0);

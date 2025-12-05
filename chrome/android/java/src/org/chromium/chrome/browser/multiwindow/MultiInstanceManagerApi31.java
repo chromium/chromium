@@ -124,12 +124,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             new EmptyTabObserver() {
                 @Override
                 public void onTitleUpdated(Tab tab) {
-                    if (!tab.isIncognito()) writeTitle(mInstanceId, tab);
+                    if (!tab.isIncognito()) {
+                        MultiInstancePersistentStore.writeActiveTabTitle(
+                                mInstanceId, tab.getTitle());
+                    }
                 }
 
                 @Override
                 public void onUrlUpdated(Tab tab) {
-                    if (!tab.isIncognito()) writeUrl(mInstanceId, tab);
+                    if (!tab.isIncognito()) {
+                        MultiInstancePersistentStore.writeActiveTabUrl(
+                                mInstanceId, tab.getOriginalUrl().getSpec());
+                    }
                 }
             };
 
@@ -158,9 +164,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         mDesktopWindowStateManagerSupplier = desktopWindowStateManagerSupplier;
         mOnMultiInstanceStateChanged = this::onMultiInstanceStateChanged;
         mRenameCallback =
-                (pair) -> {
-                    writeCustomTitle(pair.first, pair.second);
-                };
+                (pair) -> MultiInstancePersistentStore.writeCustomTitle(pair.first, pair.second);
 
         // Check if instance limit has changed and update SharedPrefs.
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
@@ -679,9 +683,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             i,
                             persistedTaskId,
                             type,
-                            assumeNonNull(readUrl(i)),
-                            assumeNonNull(readTitle(i)),
-                            readCustomTitle(i),
+                            assumeNonNull(MultiInstancePersistentStore.readActiveTabUrl(i)),
+                            assumeNonNull(MultiInstancePersistentStore.readActiveTabTitle(i)),
+                            MultiInstancePersistentStore.readCustomTitle(i),
                             MultiInstancePersistentStore.readNormalTabCount(i),
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
                             readIncognitoSelected(i),
@@ -1001,11 +1005,15 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                                             ? TabModelUtils.getCurrentTab(selector.getModel(false))
                                             : mActiveTab;
                             if (urlTab != null) {
-                                writeUrl(mInstanceId, urlTab);
-                                writeTitle(mInstanceId, urlTab);
+                                MultiInstancePersistentStore.writeActiveTabUrl(
+                                        mInstanceId, urlTab.getOriginalUrl().getSpec());
+                                MultiInstancePersistentStore.writeActiveTabTitle(
+                                        mInstanceId, urlTab.getTitle());
                             } else {
-                                writeUrl(mInstanceId, EMPTY_DATA);
-                                writeTitle(mInstanceId, EMPTY_DATA);
+                                MultiInstancePersistentStore.writeActiveTabUrl(
+                                        mInstanceId, EMPTY_DATA);
+                                MultiInstancePersistentStore.writeActiveTabTitle(
+                                        mInstanceId, EMPTY_DATA);
                             }
                         }
                     }
@@ -1242,60 +1250,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 .readBoolean(incognitoSelectedKey(index), false);
     }
 
-    @VisibleForTesting
-    static String urlKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static @Nullable String readUrl(int index) {
-        return ChromeSharedPreferences.getInstance().readString(urlKey(index), null);
-    }
-
-    static void writeUrl(int index, String url) {
-        ChromeSharedPreferences.getInstance().writeString(urlKey(index), url);
-    }
-
-    private static void writeUrl(int index, Tab tab) {
-        assert !tab.isIncognito();
-        writeUrl(index, tab.getOriginalUrl().getSpec());
-    }
-
-    @VisibleForTesting
-    static String titleKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TITLE.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static String customTitleKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_CUSTOM_TITLE.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static @Nullable String readTitle(int index) {
-        return ChromeSharedPreferences.getInstance().readString(titleKey(index), null);
-    }
-
-    @VisibleForTesting
-    static @Nullable String readCustomTitle(int index) {
-        return ChromeSharedPreferences.getInstance().readString(customTitleKey(index), null);
-    }
-
-    private static void writeTitle(int index, Tab tab) {
-        assert !tab.isIncognito();
-        writeTitle(index, tab.getTitle());
-    }
-
-    @VisibleForTesting
-    static void writeTitle(int index, String title) {
-        ChromeSharedPreferences.getInstance().writeString(titleKey(index), title);
-    }
-
-    @VisibleForTesting
-    static void writeCustomTitle(int index, String customTitle) {
-        ChromeSharedPreferences.getInstance().writeString(customTitleKey(index), customTitle);
-    }
-
     private static void writeTabCount(int index, TabModelSelector selector) {
         if (!selector.isTabStateInitialized()) return;
         int tabCount = selector.getModel(false).getCount();
@@ -1304,8 +1258,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // active and inactive instances given that we support headless tab models now.
         MultiInstancePersistentStore.writeTabCount(index, tabCount, incognitoTabCount);
         if (tabCount == 0) {
-            writeUrl(index, EMPTY_DATA);
-            writeTitle(index, EMPTY_DATA);
+            MultiInstancePersistentStore.writeActiveTabUrl(index, EMPTY_DATA);
+            MultiInstancePersistentStore.writeActiveTabTitle(index, EMPTY_DATA);
         }
     }
 
@@ -1634,14 +1588,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @VisibleForTesting
     static void removeInstanceInfo(int index, @CloseWindowAppSource int source) {
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.removeKey(urlKey(index));
-        prefs.removeKey(titleKey(index));
+        MultiInstancePersistentStore.removeActiveTabUrl(index);
+        MultiInstancePersistentStore.removeActiveTabTitle(index);
+        MultiInstancePersistentStore.removeCustomTitle(index);
         MultiInstancePersistentStore.removeTabCount(index);
         MultiInstancePersistentStore.removeTabCountForRelaunch(index);
         prefs.removeKey(incognitoSelectedKey(index));
         prefs.removeKey(lastAccessedTimeKey(index));
         prefs.removeKey(profileTypeKey(index));
-        prefs.removeKey(customTitleKey(index));
         prefs.removeKey(closedByUserKey(index));
 
         RecordHistogram.recordEnumeratedHistogram(
@@ -1934,13 +1888,14 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void showNameWindowDialog(@NameWindowDialogSource int source) {
-        String customTitle = readCustomTitle(mInstanceId);
-        String currentTitle = TextUtils.isEmpty(customTitle) ? readTitle(mInstanceId) : customTitle;
+        String customTitle = MultiInstancePersistentStore.readCustomTitle(mInstanceId);
+        String defaultTitle = MultiInstancePersistentStore.readActiveTabTitle(mInstanceId);
+        String currentTitle = TextUtils.isEmpty(customTitle) ? defaultTitle : customTitle;
 
         UiUtils.showNameWindowDialog(
                 mActivity,
                 assumeNonNull(currentTitle),
-                newTitle -> writeCustomTitle(mInstanceId, newTitle),
+                newTitle -> mRenameCallback.onResult(new Pair<>(mInstanceId, newTitle)),
                 source);
     }
 }

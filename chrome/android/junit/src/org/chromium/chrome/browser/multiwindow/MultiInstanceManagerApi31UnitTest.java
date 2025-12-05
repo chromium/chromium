@@ -273,7 +273,8 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         private void createInstance(int instanceId, Activity activity) {
-            MultiInstanceManagerApi31.writeUrl(instanceId, "https://id-" + instanceId + ".com");
+            MultiInstancePersistentStore.writeActiveTabUrl(
+                    instanceId, "https://id-" + instanceId + ".com");
             ApplicationStatus.onStateChangeForTesting(activity, ActivityState.CREATED);
             updateTasksWithoutDestroyingActivity(instanceId, activity);
             addInstanceInfo(instanceId, activity.getTaskId());
@@ -301,7 +302,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 instanceId,
                                 taskId,
                                 type,
-                                MultiInstanceManagerApi31.readUrl(instanceId),
+                                MultiInstancePersistentStore.readActiveTabUrl(instanceId),
                                 /* title= */ "",
                                 /* customTitle= */ null,
                                 /* tabCount= */ 0,
@@ -994,8 +995,7 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
         final String customTitle = "My Custom Title";
-        ChromeSharedPreferences.getInstance()
-                .writeString(MultiInstanceManagerApi31.customTitleKey(INSTANCE_ID_1), customTitle);
+        MultiInstancePersistentStore.writeCustomTitle(INSTANCE_ID_1, customTitle);
 
         triggerSelectTab(tabModelObserver, mTab1);
         assertFalse(
@@ -1004,11 +1004,11 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE1,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "URL should be from the active normal tab",
                 URL1.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
 
         // Update url/title as a new normal tab is selected.
         triggerSelectTab(tabModelObserver, mTab2);
@@ -1018,11 +1018,11 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE2,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "URL should be from the active normal tab",
                 URL2.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
 
         // Incognito tab doesn't affect url/title when selected.
         triggerSelectTab(tabModelObserver, mTab3);
@@ -1032,11 +1032,11 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE2,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "URL should be from the active normal tab",
                 URL2.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
 
         // Nulled-tab doesn't affect url/title either.
         triggerSelectTab(tabModelObserver, null);
@@ -1046,15 +1046,15 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Null tab should not affect the title",
                 TITLE2,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "Null tab should not affect the URL",
                 URL2.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
         assertEquals(
                 "Custom title should not change when tab changes.",
                 customTitle,
-                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readCustomTitle(INSTANCE_ID_1));
     }
 
     @Test
@@ -1069,7 +1069,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Custom title should be updated in SharedPreferences.",
                 newTitle,
-                MultiInstanceManagerApi31.readCustomTitle(instanceId));
+                MultiInstancePersistentStore.readCustomTitle(instanceId));
     }
 
     @Test
@@ -1209,22 +1209,22 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE1,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "URL should be from the active normal tab",
                 URL1.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
 
         triggerAddTab(tabModelObserver, mTab2);
         triggerSelectTab(tabModelObserver, mTab2);
         assertEquals(
                 "Title should be from the active normal tab",
                 TITLE2,
-                MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1));
         assertEquals(
                 "URL should be from the active normal tab",
                 URL2.getSpec(),
-                MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1));
 
         triggerOnFinishingTabClosure(tabModelObserver, mTab1);
         triggerTabRemoved(tabModelObserver, mTab2);
@@ -1234,10 +1234,10 @@ public class MultiInstanceManagerApi31UnitTest {
                 MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertTrue(
                 "Title was not cleared",
-                TextUtils.isEmpty(MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1)));
+                TextUtils.isEmpty(MultiInstancePersistentStore.readActiveTabTitle(INSTANCE_ID_1)));
         assertTrue(
                 "URL was not cleared",
-                TextUtils.isEmpty(MultiInstanceManagerApi31.readUrl(INSTANCE_ID_1)));
+                TextUtils.isEmpty(MultiInstancePersistentStore.readActiveTabUrl(INSTANCE_ID_1)));
     }
 
     @Test
@@ -1284,12 +1284,9 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     public void testRemoveInstanceInfo() {
         int index = 1;
-        String urlKey = MultiInstanceManagerApi31.urlKey(index);
-        ChromeSharedPreferences.getInstance().writeString(urlKey, "");
-        String titleKey = MultiInstanceManagerApi31.titleKey(index);
-        ChromeSharedPreferences.getInstance().writeString(titleKey, "");
-        String customTitleKey = MultiInstanceManagerApi31.customTitleKey(index);
-        ChromeSharedPreferences.getInstance().writeString(customTitleKey, "");
+        MultiInstancePersistentStore.writeActiveTabUrl(index, /* url= */ "url");
+        MultiInstancePersistentStore.writeActiveTabTitle(index, /* title= */ "title");
+        MultiInstancePersistentStore.writeCustomTitle(index, /* title= */ "title");
         MultiInstancePersistentStore.writeTabCount(
                 index, /* normalTabCount= */ 1, /* incognitoTabCount= */ 1);
         MultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
@@ -1309,15 +1306,15 @@ public class MultiInstanceManagerApi31UnitTest {
 
         MultiInstanceManagerApi31.removeInstanceInfo(index, CloseWindowAppSource.OTHER);
         histogramWatcher.assertExpected();
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(urlKey));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(titleKey));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(customTitleKey));
+        assertNull(
+                "Persistent store should be updated.",
+                MultiInstancePersistentStore.readActiveTabUrl(index));
+        assertNull(
+                "Persistent store should be updated.",
+                MultiInstancePersistentStore.readActiveTabTitle(index));
+        assertNull(
+                "Persistent store should be updated.",
+                MultiInstancePersistentStore.readCustomTitle(index));
         assertEquals(
                 "Persistent store should be updated.",
                 0,
@@ -1404,7 +1401,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstancePersistentStore.writeTaskId(instanceId, activity.getTaskId());
 
         // Store minimal data to get the instance recognized.
-        MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
+        MultiInstancePersistentStore.writeActiveTabUrl(instanceId, "url" + instanceId);
         MultiInstancePersistentStore.writeTabCount(
                 instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
         return instanceId;
@@ -2495,8 +2492,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         final String customTitle = "Custom Title";
         final String defaultTitle = "Default Title";
-        MultiInstanceManagerApi31.writeCustomTitle(INSTANCE_ID_1, customTitle);
-        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+        MultiInstancePersistentStore.writeCustomTitle(INSTANCE_ID_1, customTitle);
+        MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
 
         manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
 
@@ -2517,9 +2514,8 @@ public class MultiInstanceManagerApi31UnitTest {
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
 
         final String defaultTitle = "Default Title";
-        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
-        ChromeSharedPreferences.getInstance()
-                .removeKey(MultiInstanceManagerApi31.customTitleKey(INSTANCE_ID_1));
+        MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
+        MultiInstancePersistentStore.removeCustomTitle(INSTANCE_ID_1);
 
         manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
 
@@ -2539,7 +2535,7 @@ public class MultiInstanceManagerApi31UnitTest {
         var manager = createMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";
-        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+        MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
 
         manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
 
@@ -2556,7 +2552,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "New custom title should be saved.",
                 newTitle,
-                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readCustomTitle(INSTANCE_ID_1));
     }
 
     @Test
@@ -2565,7 +2561,7 @@ public class MultiInstanceManagerApi31UnitTest {
         var manager = createMultiInstanceManager(realActivity);
         manager.initialize(INSTANCE_ID_1, TASK_ID_56, SupportedProfileType.MIXED);
         final String defaultTitle = "Default Title";
-        MultiInstanceManagerApi31.writeTitle(INSTANCE_ID_1, defaultTitle);
+        MultiInstancePersistentStore.writeActiveTabTitle(INSTANCE_ID_1, defaultTitle);
 
         manager.showNameWindowDialog(NameWindowDialogSource.TAB_STRIP);
 
@@ -2580,6 +2576,6 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse("Dialog should be dismissed.", dialog.isShowing());
         assertNull(
                 "Custom title should not be saved if identical to default title.",
-                MultiInstanceManagerApi31.readCustomTitle(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readCustomTitle(INSTANCE_ID_1));
     }
 }
