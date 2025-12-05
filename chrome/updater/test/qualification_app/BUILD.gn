@@ -12,7 +12,7 @@ executable("qualification_app") {
 
     deps = [
       ":version",
-      "//build/win:default_exe_manifest",
+      "//chrome/updater:updater_exe_manifest",
     ]
   }
 }
