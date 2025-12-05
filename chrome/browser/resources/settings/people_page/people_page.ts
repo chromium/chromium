@@ -32,7 +32,7 @@ import {convertImageSequenceToPng} from 'chrome://resources/ash/common/cr_pictur
 // </if>
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
@@ -42,11 +42,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import type {Route} from '../router.js';
-import {Router} from '../router.js';
+import {RouteObserverMixin, Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
-// <if expr="not is_chromeos">
-import {RouteObserverMixin} from '../router.js';
 // </if>
 
 // <if expr="is_chromeos">
@@ -529,6 +527,8 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         triggerId = 'google-services';
         break;
         // </if>
+      default:
+        assertNotReached();
     }
 
     assert(triggerId);

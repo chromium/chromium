@@ -21,7 +21,7 @@ import {ComposeboxMode} from 'chrome://resources/cr_components/composebox/contex
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {Command} from 'chrome://resources/js/browser_command.mojom-webui.js';
 import {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
@@ -928,8 +928,9 @@ export class AppElement extends AppElementBase {
         return !this.showBackgroundImage_;
       case NtpWallpaperSearchButtonHideCondition.THEME_SET:
         return this.colorSourceIsBaseline && !this.showBackgroundImage_;
+      default:
+        return false;
     }
-    return false;
   }
 
   protected onWallpaperSearchClick_() {
@@ -1228,6 +1229,8 @@ export class AppElement extends AppElementBase {
       case CustomizeDialogPage.WALLPAPER_SEARCH:
         section = CustomizeChromeSection.kWallpaperSearch;
         break;
+      default:
+        break;
     }
     this.customizeButtonsHandler_.setCustomizeChromeSidePanelVisible(
         visible, section, SidePanelOpenTrigger.kNewTabPage);
@@ -1302,6 +1305,8 @@ export class AppElement extends AppElementBase {
         case $$(this, '#modules'):
           recordClick(NtpElement.MODULE);
           return;
+        default:
+          break;
       }
     }
 
@@ -1316,6 +1321,8 @@ export class AppElement extends AppElementBase {
           case $$(customizeButtonsElement, '#wallpaperSearchButton'):
             recordClick(NtpElement.WALLPAPER_SEARCH_BUTTON);
             return;
+          default:
+            break;
         }
       }
     }
@@ -1339,6 +1346,8 @@ export class AppElement extends AppElementBase {
       case 'composebox-input-focus-changed':
         this.composeboxInputFocused_ = e.detail.value;
         break;
+      default:
+        assertNotReached();
     }
   }
 

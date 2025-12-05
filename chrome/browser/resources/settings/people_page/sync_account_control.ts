@@ -20,7 +20,7 @@ import '../settings_shared.css.js';
 
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {ChromeSigninAccessPoint, StoredAccount, SyncBrowserProxy, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
@@ -475,9 +475,13 @@ export class SettingsSyncAccountControlElement extends
       case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN_PAUSED:
         return true;
+      case undefined:
+        assertNotReached('Invalid SignedInState');
+      default:
+        assertNotReachedCase(
+            this.syncStatus.signedInState, 'Invalid SignedInState');
     }
 
-    assertNotReached('Invalid SignedInState');
   }
 
   /**
@@ -574,9 +578,13 @@ export class SettingsSyncAccountControlElement extends
       case SignedInState.SYNCING:
       case SignedInState.SIGNED_IN:
         return false;
+      case undefined:
+        assertNotReached('Invalid SignedInState');
+      default:
+        assertNotReachedCase(
+            this.syncStatus.signedInState, 'Invalid SignedInState');
     }
 
-    assertNotReached('Invalid SignedInState');
   }
 
   private handleStoredAccounts_(accounts: StoredAccount[]) {

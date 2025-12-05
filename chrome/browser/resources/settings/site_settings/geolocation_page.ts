@@ -19,6 +19,7 @@ import '../settings_page/settings_subpage.js';
 import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
@@ -108,6 +109,8 @@ export class GeolocationPageElement extends GeolocationPageElementBase {
         this.setPrefValue('generated.geolocation', SettingsState.CPSS);
         this.isLocationAllowed_ = true;
         break;
+      default:
+        assertNotReached();
     }
   }
 

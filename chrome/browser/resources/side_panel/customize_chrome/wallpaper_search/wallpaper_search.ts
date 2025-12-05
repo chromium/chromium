@@ -22,7 +22,7 @@ import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_
 import type {CrFeedbackButtonsElement} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from 'chrome://resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {hexColorToSkColor} from 'chrome://resources/js/color_utils.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -68,6 +68,8 @@ function descriptorDNameToHex(name: DescriptorDName): string {
   switch (name) {
     case DescriptorDName.kYellow:
       return '#f9cc18';
+    default:
+      assertNotReachedCase(name);
   }
 }
 
@@ -324,6 +326,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
           description: this.i18n('signedOutDescription'),
           callToAction: this.i18n('ok'),
         };
+      default:
+        assertNotReachedCase(this.status_);
     }
   }
 
@@ -624,6 +628,8 @@ export class WallpaperSearchElement extends WallpaperSearchElementBase {
             CustomizeChromeAction.WALLPAPER_SEARCH_THUMBS_DOWN_SELECTED);
         this.wallpaperSearchHandler_.setUserFeedback(UserFeedback.kThumbsDown);
         return;
+      default:
+        assertNotReachedCase(e.detail.value);
     }
   }
 

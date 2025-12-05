@@ -21,7 +21,7 @@ import './wallpaper_search/wallpaper_search.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -277,6 +277,10 @@ export class AppElement extends AppElementBase {
         await this.updateComplete;
         this.$.categoriesPage.focusOnBackButton();
         break;
+      case CustomizeChromePage.OVERVIEW:
+        assertNotReached();
+      default:
+        assertNotReachedCase(this.page_);
     }
   }
 

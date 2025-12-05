@@ -5,7 +5,7 @@
 /** @fileoverview Lit element for indicating policies by type. */
 import './cr_tooltip_icon.js';
 
-import {assertNotReached} from '//resources/js/assert.js';
+import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {getCss} from './cr_policy_indicator.css.js';
@@ -75,7 +75,7 @@ export class CrPolicyIndicatorElement extends CrLitElement {
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return 'cr20:kite';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.indicatorType);
     }
   }
 
@@ -115,8 +115,13 @@ export class CrPolicyIndicatorElement extends CrLitElement {
         return CrPolicyStrings.controlledSettingParent!;
       case CrPolicyIndicatorType.CHILD_RESTRICTION:
         return CrPolicyStrings.controlledSettingChildRestriction!;
+      case CrPolicyIndicatorType.NONE:
+      case CrPolicyIndicatorType.OWNER:
+      case CrPolicyIndicatorType.PRIMARY_USER:
+        return '';
+      default:
+        assertNotReachedCase(this.indicatorType);
     }
-    return '';
   }
 }
 

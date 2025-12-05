@@ -4,7 +4,7 @@
 
 import '../cr_shared_vars.css.js';
 
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
 import {FocusRow} from '//resources/js/focus_row.js';
 import {focusWithoutInk} from '//resources/js/focus_without_ink.js';
@@ -83,6 +83,8 @@ function getStartPointWithAnchor(
     case AnchorAlignment.AFTER_END:
       startPoint = end;
       break;
+    default:
+      assertNotReachedCase(anchorAlignment);
   }
 
   if (startPoint + menuLength > max) {

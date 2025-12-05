@@ -8,6 +8,7 @@ import './lens_form.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -346,6 +347,8 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
       case LensSubmitType.URL:
         recordLensUploadDialogAction(LensUploadDialogAction.URL_SUBMITTED);
         break;
+      default:
+        assertNotReachedCase(event.detail);
     }
   }
 

@@ -228,6 +228,8 @@ export class SettingsCategoryDefaultRadioGroupElement extends
         case DefaultSettingSource.EXTENSION:
           controlledBy = chrome.settingsPrivate.ControlledBy.EXTENSION;
           break;
+        default:
+          break;
       }
       this.set('pref_.controlledBy', controlledBy);
     } else {

@@ -104,6 +104,8 @@ export class CrMenuSelector extends CrMenuSelectorBase {
       case 'End':
         newFocusedIndex = items.length - 1;
         break;
+      default:
+        break;
     }
 
     if (newFocusedIndex === currentFocusedIndex) {

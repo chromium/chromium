@@ -28,6 +28,7 @@ import '../settings_shared.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
+import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -202,6 +203,8 @@ export class NotificationsPageElement extends NotificationsPageElementBase {
         this.setPrefValue('generated.notification', SettingsState.CPSS);
         this.isNotificationAllowed_ = true;
         break;
+      default:
+        assertNotReached();
     }
   }
 
