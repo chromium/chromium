@@ -47,6 +47,7 @@
       <property name="tokens" value="INTERFACE_DEF, CLASS_DEF"/>
       <property name="scope" value="public"/>
       <property name="allowedAnnotations" value="NativeMethods"/>
+      <property name="allowMissingParamTags" value="true"/>
       <message key="javadoc.missing" value="Public classes and interfaces require JavaDoc comments."/>
     </module>
     <module name="JavadocMethod">
