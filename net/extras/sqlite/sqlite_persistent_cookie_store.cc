@@ -400,10 +400,10 @@ class SQLitePersistentCookieStore::Backend
 
   class PendingOperation {
    public:
-    enum OperationType {
-      COOKIE_ADD,
-      COOKIE_UPDATEACCESS,
-      COOKIE_DELETE,
+    enum class OperationType {
+      kAdd,
+      kUpdateLastAccessTime,
+      kDelete,
     };
 
     PendingOperation(OperationType op, const CanonicalCookie& cc)
@@ -499,20 +499,20 @@ class SQLitePersistentCookieStore::Backend
 namespace {
 
 // Possible values for the 'priority' column.
-enum DBCookiePriority {
-  kCookiePriorityLow = 0,
-  kCookiePriorityMedium = 1,
-  kCookiePriorityHigh = 2,
+enum class DBCookiePriority {
+  kLow = 0,
+  kMedium = 1,
+  kHigh = 2,
 };
 
 DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
   switch (value) {
-    case COOKIE_PRIORITY_LOW:
-      return kCookiePriorityLow;
-    case COOKIE_PRIORITY_MEDIUM:
-      return kCookiePriorityMedium;
-    case COOKIE_PRIORITY_HIGH:
-      return kCookiePriorityHigh;
+    case CookiePriority::COOKIE_PRIORITY_LOW:
+      return DBCookiePriority::kLow;
+    case CookiePriority::COOKIE_PRIORITY_MEDIUM:
+      return DBCookiePriority::kMedium;
+    case CookiePriority::COOKIE_PRIORITY_HIGH:
+      return DBCookiePriority::kHigh;
   }
 
   NOTREACHED();
@@ -520,12 +520,12 @@ DBCookiePriority CookiePriorityToDBCookiePriority(CookiePriority value) {
 
 CookiePriority DBCookiePriorityToCookiePriority(DBCookiePriority value) {
   switch (value) {
-    case kCookiePriorityLow:
-      return COOKIE_PRIORITY_LOW;
-    case kCookiePriorityMedium:
-      return COOKIE_PRIORITY_MEDIUM;
-    case kCookiePriorityHigh:
-      return COOKIE_PRIORITY_HIGH;
+    case DBCookiePriority::kLow:
+      return CookiePriority::COOKIE_PRIORITY_LOW;
+    case DBCookiePriority::kMedium:
+      return CookiePriority::COOKIE_PRIORITY_MEDIUM;
+    case DBCookiePriority::kHigh:
+      return CookiePriority::COOKIE_PRIORITY_HIGH;
   }
 
   NOTREACHED();
@@ -1253,17 +1253,17 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
 
 void SQLitePersistentCookieStore::Backend::AddCookie(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_ADD, cc);
+  BatchOperation(PendingOperation::OperationType::kAdd, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::UpdateCookieAccessTime(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_UPDATEACCESS, cc);
+  BatchOperation(PendingOperation::OperationType::kUpdateLastAccessTime, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::DeleteCookie(
     const CanonicalCookie& cc) {
-  BatchOperation(PendingOperation::COOKIE_DELETE, cc);
+  BatchOperation(PendingOperation::OperationType::kDelete, cc);
 }
 
 void SQLitePersistentCookieStore::Backend::BatchOperation(
@@ -1288,12 +1288,14 @@ void SQLitePersistentCookieStore::Backend::BatchOperation(
     PendingOperationsForKey& ops_for_key = iter_and_result.first->second;
     if (!iter_and_result.second) {
       // Insert failed -> already have ops.
-      if (po->op() == PendingOperation::COOKIE_DELETE) {
+      if (po->op() == PendingOperation::OperationType::kDelete) {
         // A delete op makes all the previous ones irrelevant.
         ops_for_key.clear();
-      } else if (po->op() == PendingOperation::COOKIE_UPDATEACCESS) {
+      } else if (po->op() ==
+                 PendingOperation::OperationType::kUpdateLastAccessTime) {
         if (!ops_for_key.empty() &&
-            ops_for_key.back()->op() == PendingOperation::COOKIE_UPDATEACCESS) {
+            ops_for_key.back()->op() ==
+                PendingOperation::OperationType::kUpdateLastAccessTime) {
           // If access timestamp is updated twice in a row, can dump the earlier
           // one.
           ops_for_key.pop_back();
@@ -1385,7 +1387,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
       }
 
       switch (po->op()) {
-        case PendingOperation::COOKIE_ADD:
+        case PendingOperation::OperationType::kAdd:
           add_statement.Reset(true);
           add_statement.BindTime(0, po->cc().CreationDate());
           add_statement.BindString(1, po->cc().Domain());
@@ -1416,7 +1418,8 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           add_statement.BindBool(11, po->cc().IsPersistent());
           add_statement.BindBool(12, po->cc().IsPersistent());
           add_statement.BindInt(
-              13, CookiePriorityToDBCookiePriority(po->cc().Priority()));
+              13, static_cast<int>(
+                      CookiePriorityToDBCookiePriority(po->cc().Priority())));
           add_statement.BindInt(
               14, CookieSameSiteToDBCookieSameSite(po->cc().SameSite()));
           add_statement.BindInt(15, static_cast<int>(po->cc().SourceScheme()));
@@ -1433,7 +1436,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           }
           break;
 
-        case PendingOperation::COOKIE_UPDATEACCESS:
+        case PendingOperation::OperationType::kUpdateLastAccessTime:
           update_access_statement.Reset(true);
           update_access_statement.BindTime(0, po->cc().LastAccessDate());
           update_access_statement.BindString(1, po->cc().Name());
@@ -1453,7 +1456,7 @@ void SQLitePersistentCookieStore::Backend::DoCommit() {
           }
           break;
 
-        case PendingOperation::COOKIE_DELETE:
+        case PendingOperation::OperationType::kDelete:
           delete_statement.Reset(true);
           delete_statement.BindString(0, po->cc().Name());
           delete_statement.BindString(1, po->cc().Domain());
