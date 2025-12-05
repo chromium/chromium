@@ -48,8 +48,6 @@ class ProxySettingsApiTest : public ExtensionApiTest {
     ASSERT_TRUE(pref != nullptr);
     EXPECT_TRUE(pref->IsExtensionControlled());
 
-    // TODO(https://crbug.com/1348219) This should call
-    // `PrefService::GetDict`.
     ProxyConfigDictionary dict(
         pref_service->GetDict(proxy_config::prefs::kProxy).Clone());
 
