@@ -48,6 +48,14 @@ namespace {
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kTaskQueryParam[] = "task";
 
+// Search parameters for the AI page.
+// TODO(crbug.com/466149941): These should be more robust to be able to handle
+// changes in the URL format.
+constexpr char kUdmParam[] = "udm";
+constexpr char kUdmAiValue[] = "50";
+constexpr char kNemParam[] = "nem";
+constexpr char kNemAiValue[] = "143";
+
 bool IsContextualTasksHost(const GURL& url) {
   return url.scheme() == content::kChromeUIScheme &&
          url.host() == chrome::kChromeUIContextualTasksHost;
@@ -518,13 +526,21 @@ bool ContextualTasksUiService::IsAiUrl(const GURL& url) {
     return false;
   }
 
-  // AI pages are identified by the "udm" URL param having a value of 50.
+  // AI pages are identified by the "udm" URL param having a value of "50" or
+  // "nem" having a value of "143".
   std::string udm_value;
-  if (!net::GetValueForKeyInQuery(url, "udm", &udm_value)) {
-    return false;
+  if (net::GetValueForKeyInQuery(url, kUdmParam, &udm_value) &&
+      udm_value == kUdmAiValue) {
+    return true;
   }
 
-  return udm_value == "50";
+  std::string nem_value;
+  if (net::GetValueForKeyInQuery(url, kNemParam, &nem_value) &&
+      nem_value == kNemAiValue) {
+    return true;
+  }
+
+  return false;
 }
 
 bool ContextualTasksUiService::IsSearchResultsPage(const GURL& url) {
