@@ -24,7 +24,7 @@ bool IsUSCountryCode() {
 
 }  // namespace
 
-BASE_FEATURE(kEnableReaderMode, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableReaderMode, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModeInUS, base::FEATURE_DISABLED_BY_DEFAULT);
 
@@ -36,7 +36,7 @@ BASE_FEATURE(kEnableReaderModeTranslation, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableReaderModeTranslationWithInfobar,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kEnableReadabilityHeuristic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableReaderModePageEligibilityForToolsMenu,
              base::FEATURE_DISABLED_BY_DEFAULT);

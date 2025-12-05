@@ -143,20 +143,6 @@ void ReaderModeTest::SetReaderModeState(web::FakeWebState* web_state,
       std::make_unique<base::Value>(std::move(distiller_result_value)));
   web_frame->AddResultForExecutedJs(distiller_result_values_.back().get(),
                                     script);
-  auto* tab_helper = ReaderModeTabHelper::FromWebState(web_state);
-  if (!tab_helper) {
-    return;
-  }
-  // `url` is captured by copy to ensure it is still valid when the block is
-  // executed.
-  web_frame->set_call_java_script_function_callback(base::BindRepeating(
-      ^(GURL url_copy) {
-        // Overrides the result from DOM distiller heuristic with a custom
-        // entry.
-        tab_helper->HandleReaderModeHeuristicResult(result);
-        web_frame->set_call_java_script_function_callback(base::DoNothing());
-      },
-      url));
 }
 
 void ReaderModeTest::WaitForPageLoadDelayAndRunUntilIdle() {

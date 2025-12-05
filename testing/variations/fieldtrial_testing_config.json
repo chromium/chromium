@@ -13848,29 +13848,6 @@
             ]
         }
     ],
-    "IOSReaderMode": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableReaderMode",
-                        "EnableReaderModeOmniboxEntryPoint",
-                        "ReaderModeUseReadability"
-                    ],
-                    "disable_features": [
-                        "EnableReadabilityHeuristic",
-                        "EnableReaderModeDefaultBrowserPromo",
-                        "EnableReaderModeInUS",
-                        "EnableReaderModePageEligibilityForToolsMenu"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReaderModeWithTranslate": [
         {
             "platforms": [
