@@ -49,26 +49,13 @@ WebContentsViewChildFrame::WebContentsViewChildFrame(
 
 WebContentsViewChildFrame::~WebContentsViewChildFrame() = default;
 
-WebContentsImpl* WebContentsViewChildFrame::GetHostingWebContents() {
+WebContentsView* WebContentsViewChildFrame::GetOuterView() {
   if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
-    return outer_web_contents;
+    return outer_web_contents->GetView();
   }
   if (auto* secure_embed_connector = web_contents_->GetSecureEmbedConnector()) {
-    return static_cast<WebContentsImpl*>(
-        static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
-            ->GetEmbedderWebContents());
-  }
-  return nullptr;
-}
-
-const WebContentsImpl* WebContentsViewChildFrame::GetHostingWebContents()
-    const {
-  return const_cast<WebContentsViewChildFrame*>(this)->GetHostingWebContents();
-}
-
-WebContentsView* WebContentsViewChildFrame::GetOuterView() {
-  if (auto* hosting_web_contents = GetHostingWebContents()) {
-    return hosting_web_contents->GetView();
+    return static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+        ->GetEmbedderWebContentsView();
   }
 
   return nullptr;
@@ -79,10 +66,17 @@ const WebContentsView* WebContentsViewChildFrame::GetOuterView() const {
 }
 
 RenderViewHostDelegateView* WebContentsViewChildFrame::GetOuterDelegateView() {
-  RenderViewHostImpl* outer_rvh = static_cast<RenderViewHostImpl*>(
-      GetHostingWebContents()->GetRenderViewHost());
-  CHECK(outer_rvh);
-  return outer_rvh->GetDelegate()->GetDelegateView();
+  if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
+    RenderViewHostImpl* outer_rvh = static_cast<RenderViewHostImpl*>(
+        outer_web_contents->GetRenderViewHost());
+    CHECK(outer_rvh);
+    return outer_rvh->GetDelegate()->GetDelegateView();
+  }
+  if (auto* secure_embed_connector = web_contents_->GetSecureEmbedConnector()) {
+    return static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+        ->GetEmbedderRenderViewHostDelegateView();
+  }
+  return nullptr;
 }
 
 gfx::NativeView WebContentsViewChildFrame::GetNativeView() const {
@@ -284,7 +278,13 @@ void WebContentsViewChildFrame::StartDragging(
     view->StartDragging(drop_data, source_origin, ops, image, cursor_offset,
                         drag_obj_rect, event_info, source_rwh);
   } else {
-    GetHostingWebContents()->SystemDragEnded(source_rwh);
+    if (auto* outer_web_contents = web_contents_->GetOuterWebContents()) {
+      outer_web_contents->SystemDragEnded(source_rwh);
+    } else if (auto* secure_embed_connector =
+                   web_contents_->GetSecureEmbedConnector()) {
+      static_cast<SecureEmbedConnectorImpl*>(secure_embed_connector)
+          ->EmbedderSystemDragEnded(source_rwh);
+    }
   }
 }
 

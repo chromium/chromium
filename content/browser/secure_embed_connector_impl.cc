@@ -86,19 +86,35 @@ SecureEmbedConnectorImpl::~SecureEmbedConnectorImpl() {
   SetView(nullptr, /*allow_paint_holding=*/false);
 }
 
-WebContents* SecureEmbedConnectorImpl::GetEmbedderWebContents() {
-  return embedder_web_contents_.get();
+WebContentsView* SecureEmbedConnectorImpl::GetEmbedderWebContentsView() {
+  if (embedder_web_contents()) {
+    return embedder_web_contents()->GetView();
+  }
+  return nullptr;
+}
+
+RenderViewHostDelegateView*
+SecureEmbedConnectorImpl::GetEmbedderRenderViewHostDelegateView() {
+  if (embedder_web_contents()) {
+    return embedder_web_contents()->GetDelegateView();
+  }
+  return nullptr;
+}
+
+void SecureEmbedConnectorImpl::EmbedderSystemDragEnded(
+    RenderWidgetHost* source_rwh) {
+  if (embedder_web_contents()) {
+    embedder_web_contents()->SystemDragEnded(source_rwh);
+  }
 }
 
 input::RenderWidgetHostInputEventRouter*
 SecureEmbedConnectorImpl::GetInputEventRouter() {
-  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
-      ->GetInputEventRouter();
+  return embedder_web_contents()->GetInputEventRouter();
 }
 
 TextInputManager* SecureEmbedConnectorImpl::GetTextInputManager() {
-  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
-      ->GetTextInputManager();
+  return embedder_web_contents()->GetTextInputManager();
 }
 
 void SecureEmbedConnectorImpl::FocusInEmbedder(FocusOperation focus_op) {
@@ -112,8 +128,7 @@ FrameTree* SecureEmbedConnectorImpl::GetFocusedFrameTree() {
     return &guest_web_contents_->GetPrimaryFrameTree();
   }
 
-  return static_cast<WebContentsImpl*>(embedder_web_contents_.get())
-      ->GetFocusedFrameTree();
+  return embedder_web_contents()->GetFocusedFrameTree();
 }
 
 void SecureEmbedConnectorImpl::SetFocusedFrameTree(
@@ -122,18 +137,16 @@ void SecureEmbedConnectorImpl::SetFocusedFrameTree(
     return;
   }
 
-  auto* embedder_web_contents =
-      static_cast<WebContentsImpl*>(embedder_web_contents_.get());
-
   // Update focused frame tree stored in the embedder.
-  embedder_web_contents->SetFocusedFrameTree(frame_tree_to_focus);
+  embedder_web_contents()->SetFocusedFrameTree(frame_tree_to_focus);
 
   // Ensure that outer frame trees are focused.
-  embedder_web_contents->GetPrimaryFrameTree().FocusOuterFrameTrees();
+  embedder_web_contents()->GetPrimaryFrameTree().FocusOuterFrameTrees();
 
   // Ensure that the embedder's page has focus so that it can display active UI
   // and therefore the embedded plugin is also active.
-  embedder_web_contents->GetPrimaryMainFrame()
+  embedder_web_contents()
+      ->GetPrimaryMainFrame()
       ->GetRenderWidgetHost()
       ->SetPageFocus(true);
 }
@@ -147,8 +160,8 @@ void SecureEmbedConnectorImpl::ClearFocusOnInnerWebContents() {
 
   // Using the same logic as the one for inner WebContents in WebContentsImpl
   // destructor.
-  static_cast<WebContentsImpl*>(
-      embedder_web_contents_->GetOutermostWebContents())
+  embedder_web_contents()
+      ->GetOutermostWebContents()
       ->SetAsFocusedWebContentsIfNecessary();
 }
 
@@ -270,7 +283,7 @@ SecureEmbedConnectorImpl::GetParentRenderWidgetHostView() {
     return nullptr;
   }
   return static_cast<RenderWidgetHostViewBase*>(
-      embedder_web_contents_->GetRenderWidgetHostView());
+      embedder_web_contents()->GetRenderWidgetHostView());
 }
 
 RenderWidgetHostViewBase*
@@ -615,7 +628,7 @@ bool SecureEmbedConnectorImpl::IsVisible() {
 }
 
 Visibility SecureEmbedConnectorImpl::EmbedderVisibility() {
-  if (!embedder_web_contents_) {
+  if (!embedder_web_contents()) {
     return Visibility::HIDDEN;
   }
 
@@ -624,7 +637,7 @@ Visibility SecureEmbedConnectorImpl::EmbedderVisibility() {
   // SecureEmbedDelegate for this or ensure that visibility state is pushed to
   // the GuestFrame when it changes.
   NOTIMPLEMENTED();
-  return embedder_web_contents_->GetVisibility();
+  return embedder_web_contents()->GetVisibility();
 }
 
 void SecureEmbedConnectorImpl::OnSynchronizeVisualProperties(
@@ -643,7 +656,7 @@ void SecureEmbedConnectorImpl::OnSynchronizeVisualProperties(
        last_received_css_zoom_factor_ != visual_properties.css_zoom_factor) &&
       local_surface_id_ == visual_properties.local_surface_id) {
     bad_message::ReceivedBadMessage(
-        embedder_web_contents_->GetPrimaryMainFrame()->GetProcess(),
+        embedder_web_contents()->GetPrimaryMainFrame()->GetProcess(),
         bad_message::CPFC_RESIZE_PARAMS_CHANGED_LOCAL_SURFACE_ID_UNCHANGED);
     return;
   }
@@ -689,6 +702,10 @@ void SecureEmbedConnectorImpl::UpdateViewForCurrentRenderFrameHost() {
   if (view_ != child_view) {
     SetView(child_view, /*allow_paint_holding=*/false);
   }
+}
+
+WebContentsImpl* SecureEmbedConnectorImpl::embedder_web_contents() {
+  return static_cast<WebContentsImpl*>(embedder_web_contents_.get());
 }
 
 void SecureEmbedConnectorImpl::ResetRectInParentView() {
