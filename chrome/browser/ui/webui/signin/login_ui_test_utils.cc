@@ -27,6 +27,8 @@
 #include "chrome/browser/ui/signin/signin_view_controller.h"
 #include "chrome/browser/ui/signin/signin_view_controller_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service.h"
+#include "chrome/browser/ui/webui/signin/history_sync_optin_service_factory.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
@@ -579,18 +581,62 @@ class SiginInModalDialogObserver : public SigninViewController::Observer {
       signin_view_controller_observation_{this};
 };
 
+#if !BUILDFLAG(IS_CHROMEOS)
+class HistorySyncServiceObserverImpl
+    : public HistorySyncOptinService::Observer {
+ public:
+  explicit HistorySyncServiceObserverImpl(Profile* profile) {
+    auto* service = HistorySyncOptinServiceFactory::GetForProfile(profile);
+    CHECK(service);
+    history_sync_observation_.Observe(service);
+  }
+  ~HistorySyncServiceObserverImpl() override = default;
+
+  void WaitForReset() {
+    run_loop_.Run();
+  }
+
+ private:
+  void OnHistorySyncOptinServiceReset() override {
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  base::ScopedObservation<HistorySyncOptinService,
+                          HistorySyncOptinService::Observer>
+      history_sync_observation_{this};
+};
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 bool DismissHistorySyncOptinDialog(Browser* browser,
                                    base::TimeDelta timeout,
-                                   HistorySyncOptinDialogAction action) {
+                                   HistorySyncOptinDialogAction action,
+                                   bool wait_for_dismiss = true) {
   SiginInModalDialogObserver modal_dialog_observer(browser);
+#if !BUILDFLAG(IS_CHROMEOS)
+  HistorySyncServiceObserverImpl history_sync_service_observation_(
+      browser->profile());
+#endif  //! BUILDFLAG(IS_CHROMEOS)
 
   const base::Time expire_time = base::Time::Now() + timeout;
   while (base::Time::Now() <= expire_time) {
     if (SigninViewControllerTestUtil::TryDismissHistorySyncOptinDialog(
             browser, action)) {
-      modal_dialog_observer.WaitForModalDialogClosed();
-      EXPECT_FALSE(SigninViewControllerTestUtil::ShowsModalDialog(browser));
-      return true;
+      if (wait_for_dismiss) {
+        modal_dialog_observer.WaitForModalDialogClosed();
+        EXPECT_FALSE(SigninViewControllerTestUtil::ShowsModalDialog(browser));
+        return true;
+      } else {
+#if !BUILDFLAG(IS_CHROMEOS)
+        history_sync_service_observation_.WaitForReset();
+        EXPECT_FALSE(
+            HistorySyncOptinServiceFactory::GetForProfile(browser->profile())
+                ->GetHistorySyncOptinHelperForTesting());
+        return true;
+#else
+        NOTREACHED();
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+      }
     }
     RunLoopFor(base::Milliseconds(1000));
   }
@@ -602,9 +648,20 @@ bool ConfirmSyncConfirmationDialog(Browser* browser, base::TimeDelta timeout) {
                                        SyncConfirmationDialogAction::kConfirm);
 }
 
-bool ConfirmHistorySyncOptinDialog(Browser* browser, base::TimeDelta timeout) {
+bool ConfirmHistorySyncOptinDialog(Browser* browser,
+                                   base::TimeDelta timeout,
+                                   bool wait_for_dismiss) {
   return DismissHistorySyncOptinDialog(browser, timeout,
-                                       HistorySyncOptinDialogAction::kConfirm);
+                                       HistorySyncOptinDialogAction::kConfirm,
+                                       wait_for_dismiss);
+}
+
+bool RejectHistorySyncOptinDialog(Browser* browser,
+                                  base::TimeDelta timeout,
+                                  bool wait_for_dismiss) {
+  return DismissHistorySyncOptinDialog(browser, timeout,
+                                       HistorySyncOptinDialogAction::kReject,
+                                       wait_for_dismiss);
 }
 
 bool GoToSettingsSyncConfirmationDialog(Browser* browser,
