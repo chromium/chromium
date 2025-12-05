@@ -39,7 +39,7 @@ if (is_win) {
       "//third_party/perfetto:libperfetto",
     ]
 
-    libs = [ "secur32.lib" ]
-    ldflags = [ "/delayload:secur32.dll" ]
+    libs = [ "winmm.lib" ]
+    ldflags = [ "/delayload:winmm.dll" ]
   }
 }
