@@ -35,7 +35,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextBarTrailingButtonWithLabel;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::StarButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
@@ -67,12 +66,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
-  std::string expectedURLContent = bookmarkedURL.GetContent();
   NSString* bookmarkTitle = @"my bookmark";
 
   [ChromeEarlGrey loadURL:bookmarkedURL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
 
   // Add the bookmark from the UI.
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
@@ -909,12 +906,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Tests that chrome://bookmarks is disabled.
 - (void)testBookmarksURLDisabled {
-  const std::string kChromeBookmarksURL = "chrome://bookmarks";
+  const std::string kChromeBookmarksURL = "chrome://bookmarks/";
   [ChromeEarlGrey loadURL:GURL(kChromeBookmarksURL)];
 
-  // Verify chrome://bookmarks appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(kChromeBookmarksURL)]
-      assertWithMatcher:grey_notNil()];
+  // Verify chrome://bookmarks is the loaded URL.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GURL(kChromeBookmarksURL)];
 
   // Verify that the resulting page is an error page.
   std::string errorMessage = net::ErrorToShortString(net::ERR_INVALID_URL);
@@ -1206,12 +1202,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
   const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
-  std::string expectedURLContent = bookmarkedURL.GetContent();
   NSString* bookmarkTitle = @"my bookmark";
 
   [ChromeEarlGrey loadURL:bookmarkedURL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
 
   // Add the bookmark from the UI.
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
@@ -1294,10 +1288,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
       performAction:grey_tap()];
 
-  // Verify "First URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxText(
-                                          GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "First URL" is the current tab URL.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFirstUrl()];
 
   [SigninEarlGreyUI signOut];
   [SigninEarlGrey verifySignedOut];

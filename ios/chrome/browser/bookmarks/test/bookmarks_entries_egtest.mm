@@ -35,7 +35,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextMenuCopyButton;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::OpenLinkInIncognitoButton;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
@@ -541,9 +540,8 @@ id<GREYMatcher> AddBookmarkButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
       performAction:grey_tap()];
 
-  // Verify "First URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "First URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFirstUrl()];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -558,9 +556,8 @@ id<GREYMatcher> AddBookmarkButton() {
   GREYAssertTrue([ChromeEarlGrey incognitoTabCount] == 0,
                  @"Incognito tab count should be 0");
 
-  // Verify "Second URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetSecondUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "Second URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetSecondUrl()];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -580,9 +577,8 @@ id<GREYMatcher> AddBookmarkButton() {
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to switch to incognito mode");
 
-  // Verify "French URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFrenchUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "French URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFrenchUrl()];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -590,9 +586,8 @@ id<GREYMatcher> AddBookmarkButton() {
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"First URL")]
       performAction:grey_tap()];
 
-  // Verify "First URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "First URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFirstUrl()];
 
   // Verify the current tab is an incognito tab.
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
@@ -622,9 +617,8 @@ id<GREYMatcher> AddBookmarkButton() {
   GREYAssertTrue([ChromeEarlGrey isIncognitoMode],
                  @"Failed to staying at incognito mode");
 
-  // Verify "Second URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetSecondUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "Second URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetSecondUrl()];
 
   [BookmarkEarlGreyUI openBookmarks];
 
@@ -644,9 +638,8 @@ id<GREYMatcher> AddBookmarkButton() {
   GREYAssertFalse([ChromeEarlGrey isIncognitoMode],
                   @"Failed to switch to normal mode");
 
-  // Verify "French URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFrenchUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "French URL" is the URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFrenchUrl()];
 }
 
 - (void)testContextMenuForMixedSelection {
@@ -1228,21 +1221,18 @@ id<GREYMatcher> AddBookmarkButton() {
 // Verifies the Mobile Bookmarks's urls are open in the same order as they are
 // in folder.
 + (void)verifyOrderOfTabsWithCurrentTabIndex:(NSUInteger)tabIndex {
-  // Verify "French URL" appears in the omnibox.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFrenchUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  // Verify "French URL" is URL of the current tab.
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFrenchUrl()];
 
-  // Switch to the next Tab and verify "Second URL" appears.
+  // Switch to the next Tab and verify "Second URL" is its URL.
   // TODO(crbug.com/40508042): see we if can add switchToNextTab to
   // chrome_test_util so that we don't need to pass tabIndex here.
   [ChromeEarlGrey selectTabAtIndex:tabIndex + 1];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetSecondUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetSecondUrl()];
 
-  // Switch to the next Tab and verify "First URL" appears.
+  // Switch to the next Tab and verify "First URL" is its URL.
   [ChromeEarlGrey selectTabAtIndex:tabIndex + 2];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(GetFirstUrl().GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:GetFirstUrl()];
 }
 
 @end

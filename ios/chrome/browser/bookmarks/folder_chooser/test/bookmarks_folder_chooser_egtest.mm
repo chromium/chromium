@@ -38,7 +38,6 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::KindOfTest;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::ScrollToTop;
 using chrome_test_util::SearchBar;
 using chrome_test_util::TabGridEditButton;
@@ -1203,10 +1202,8 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
                  expectedCount:0
                      inStorage:kindOfTestToStorageType(kindOfTest)];
   // Open the page.
-  std::string expectedURLContent = bookmarkedURL.GetContent();
   [ChromeEarlGrey loadURL:bookmarkedURL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
 
   // Verify that the folder has only one element.
   NSString* folderTitle = @"Sticky Folder";
@@ -1403,12 +1400,10 @@ BookmarkStorageType kindOfTestToStorageType(KindOfTest kind) {
 - (void)util_testAddBookmarkInNewFolder:(KindOfTest)kindOfTest {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   const GURL bookmarkedURL = self.testServer->GetURL("/pony.html");
-  const std::string expectedURLContent = bookmarkedURL.GetContent();
   NSString* expectedTitle = @"ponies";  // See pony.html.
 
   [ChromeEarlGrey loadURL:bookmarkedURL];
-  [[EarlGrey selectElementWithMatcher:OmniboxText(expectedURLContent)]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:bookmarkedURL];
 
   [BookmarkEarlGreyUI starCurrentTab];
 
