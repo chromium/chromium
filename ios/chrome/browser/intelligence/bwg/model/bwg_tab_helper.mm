@@ -393,7 +393,7 @@ void BwgTabHelper::DidStartNavigation(
             current_url, optimization_guide::proto::GLIC_ZERO_STATE_SUGGESTIONS,
             base::BindOnce(
                 &BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision,
-                weak_ptr_factory_.GetWeakPtr()));
+                weak_ptr_factory_.GetWeakPtr(), current_url));
       }
     }
   }
@@ -626,11 +626,11 @@ void BwgTabHelper::OnCanApplyContextualCueingDecision(
 }
 
 void BwgTabHelper::OnCanApplyZeroStateSuggestionsDecision(
+    const GURL& url,
     optimization_guide::OptimizationGuideDecision decision,
     const optimization_guide::OptimizationMetadata& metadata) {
   // The URL has changed so the metadata is obsolete.
-  if (web_state_->GetVisibleURL().GetWithoutRef() !=
-      zero_state_suggestions_->url) {
+  if (url != zero_state_suggestions_->url) {
     return;
   }
 
