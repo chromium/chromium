@@ -6,7 +6,7 @@
 // To regenerate, see instructions at build/modules/modularize/README.md
 
 
-module sys_stage1 [system] [extern_c] {
+module sys_stage1 [system] {
   module alloca_h {
     header "$sysroot/alloca.h"
     export *
@@ -250,7 +250,7 @@ module sys_stage1 [system] [extern_c] {
   }
 }
 
-module sys_stage2 [system] [extern_c] {
+module sys_stage2 [system] {
   module asm_generic_fcntl_h {
     header "$sysroot/asm-generic/fcntl.h"
     export *

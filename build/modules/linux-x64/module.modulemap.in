@@ -6,7 +6,7 @@
 // To regenerate, see instructions at build/modules/modularize/README.md
 
 
-module sys_stage1 [system] [extern_c] {
+module sys_stage1 [system] {
   module alloca_h {
     header "$sysroot/alloca.h"
     export *
@@ -133,7 +133,7 @@ module sys_stage1 [system] [extern_c] {
   }
 }
 
-module sys_stage2 [system] [extern_c] {
+module sys_stage2 [system] {
   module stdlib_h {
     header "$sysroot/stdlib.h"
     export *

@@ -6,7 +6,7 @@
 // To regenerate, see instructions at build/modules/modularize/README.md
 
 
-module sys_stage1 [system] [extern_c] {
+module sys_stage1 [system] {
   module __msvc_cxx_stdatomic_hpp {
     header "$msvc/__msvc_cxx_stdatomic.hpp"
     export *
@@ -197,7 +197,7 @@ module sys_stage1 [system] [extern_c] {
   }
 }
 
-module sys_stage2 [system] [extern_c] {
+module sys_stage2 [system] {
   module corecrt_memcpy_s_h {
     header "$windows_kits/ucrt/corecrt_memcpy_s.h"
     export *
@@ -216,7 +216,7 @@ module sys_stage2 [system] [extern_c] {
   }
 }
 
-module sys_stage3 [system] [extern_c] {
+module sys_stage3 [system] {
   module wchar_h {
     header "$windows_kits/ucrt/wchar.h"
     export *

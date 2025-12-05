@@ -81,7 +81,7 @@ def render_modulemap(out_dir: pathlib.Path, replacements: dict[pathlib.Path,
   for target in targets:
     if target.include_dir != IncludeDir.Sysroot:
       continue
-    f.write(f'\nmodule {target.name} [system] [extern_c] {{\n')
+    f.write(f'\nmodule {target.name} [system] {{\n')
     for header in target.headers:
       assert header.include_dir == IncludeDir.Sysroot
       f.write(f'  module {header.submodule_name} {{\n')

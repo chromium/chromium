@@ -6,7 +6,7 @@
 // To regenerate, see instructions at build/modules/modularize/README.md
 
 
-module sys_stage1 [system] [extern_c] {
+module sys_stage1 [system] {
   module __llvm_libc_common_h {
     header "$sysroot/__llvm-libc-common.h"
     export *

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-module first [system] [extern_c] {
+module first [system] {
   header "first.h"
   module submod {
     textual header "first_textual.h"
@@ -11,10 +11,9 @@ module first [system] [extern_c] {
   umbrella "first"
 }
 
-explicit module second.submodule [system] [extern_c] {
+explicit module second.submodule [system] {
   header "second.h"
   module submod {
     textual header "second_textual.h"
   }
 }
-
