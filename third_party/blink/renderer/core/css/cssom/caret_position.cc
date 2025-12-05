@@ -26,10 +26,8 @@ Node* CaretPosition::offsetNode() const {
   return node_;
 }
 unsigned CaretPosition::offset() const {
-  if (RuntimeEnabledFeatures::CaretPositionFromPointTextareaFixEnabled()) {
-    if (const auto* text_control = EnclosingTextControl(node_)) {
-      return text_control->IndexForPosition(Position(node_, offset_));
-    }
+  if (const auto* text_control = EnclosingTextControl(node_)) {
+    return text_control->IndexForPosition(Position(node_, offset_));
   }
   return offset_;
 }
