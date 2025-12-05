@@ -1808,32 +1808,29 @@ bool LayoutBox::MapVisualRectToContainer(
   }
 
   // Otherwise, do the following:
-  // 1. Expand for pixel snapping.
-  // 2. Generate transformation matrix combining, in this order
+  // 1. Generate transformation matrix combining, in this order
   //    a) transform,
   //    b) container offset,
   //    c) container scroll offset,
   //    d) perspective applied by container.
-  // 3. Apply transform Transform+flattening.
-  // 4. Apply container clip.
+  // 2. Apply transform + flattening.
+  // 3. Apply container clip.
 
-  // 1. Expand for pixel snapping.
-  // Use EnclosingBoundingBox because we cannot properly compute pixel
-  // snapping for painted elements within the transform since we don't know
-  // the desired subpixel accumulation at this point, and the transform may
-  // include a scale. This only makes sense for non-preserve3D.
-  //
-  // TODO(dbaron): Does the flattening here need to be done for the
-  // early return case above as well?
-  // (Why is this flattening needed in addition to the flattening done by
-  // using TransformState::kAccumulateTransform?)
-  if (!StyleRef().Preserves3D()) {
-    transform_state.Flatten();
-    transform_state.SetQuad(gfx::QuadF(gfx::RectF(
-        gfx::ToEnclosingRect(transform_state.LastPlanarQuad().BoundingBox()))));
+  // This step is now deprecated by default because it inflated rotated and
+  // skewed elements with each step up the ancestor chain.
+  if (!RuntimeEnabledFeatures::VisualRectMappingFixForExpansionEnabled()) {
+    // Use EnclosingBoundingBox because we cannot properly compute pixel
+    // snapping for painted elements within the transform since we don't know
+    // the desired subpixel accumulation at this point, and the transform may
+    // include a scale. This only makes sense for non-preserve3D.
+    if (!StyleRef().Preserves3D()) {
+      transform_state.Flatten();
+      transform_state.SetQuad(gfx::QuadF(gfx::RectF(gfx::ToEnclosingRect(
+          transform_state.LastPlanarQuad().BoundingBox()))));
+    }
   }
 
-  // 2. Generate transformation matrix.
+  // 1. Generate transformation matrix.
   // a) Transform.
   gfx::Transform transform;
   if (Layer() && Layer()->Transform())
@@ -1878,12 +1875,12 @@ bool LayoutBox::MapVisualRectToContainer(
     transform = perspective_matrix * transform;
   }
 
-  // 3. Apply transform and flatten.
+  // 2. Apply transform and flatten.
   transform_state.ApplyTransform(transform, accumulation);
   if (!container_preserve_3d)
     transform_state.Flatten();
 
-  // 4. Apply container clip.
+  // 3. Apply container clip.
   if (container_object->IsBox() && container_object != ancestor &&
       container_object->HasClipRelatedProperty()) {
     return To<LayoutBox>(container_object)
