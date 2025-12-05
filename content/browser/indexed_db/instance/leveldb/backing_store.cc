@@ -187,8 +187,7 @@ leveldb_env::Options GetLevelDBOptions() {
 
   // Thread-safe: static local construction, and `ChromiumEnv` implements
   // internal synchronization.
-  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env{
-      /*log_lock_errors=*/true};
+  static base::NoDestructor<leveldb_env::ChromiumEnv> g_leveldb_env;
   options.env = g_leveldb_env.get();
 
   return options;

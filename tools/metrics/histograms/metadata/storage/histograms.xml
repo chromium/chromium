@@ -895,29 +895,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LevelDBEnv.LockFileInUseByThisProcess" enum="Boolean"
-    expires_after="2025-12-14">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    When there is a failure to acquire a lock on a LevelDB LOCK file due to
-    FILE_IN_USE, this histogram logs true if the lock was already held by the
-    same Chromium process, false otherwise. This is only logged for IndexedDB
-    LevelDB instances.
-  </summary>
-</histogram>
-
-<histogram name="LevelDBEnv.LockFileSuccessAttempts" units="count"
-    expires_after="2025-03-30">
-  <owner>estade@chromium.org</owner>
-  <owner>chrome-owp-storage@google.com</owner>
-  <summary>
-    When a LevelDB LOCK file is successfully locked, this is the count of
-    attempts that were required. This is intended to inform how long LevelDB
-    should keep retrying. This is only logged for IndexedDB LevelDB instances.
-  </summary>
-</histogram>
-
 <histogram name="LevelDBEnv.SyncResult" enum="PlatformFileError"
     expires_after="2024-08-06">
   <owner>estade@chromium.org</owner>

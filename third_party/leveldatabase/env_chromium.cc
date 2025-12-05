@@ -714,10 +714,6 @@ ChromiumEnv::ChromiumEnv()
           storage::FilesystemProxy::UNRESTRICTED,
           base::FilePath())) {}
 
-ChromiumEnv::ChromiumEnv(bool log_lock_errors) : ChromiumEnv() {
-  log_lock_errors_ = log_lock_errors;
-}
-
 ChromiumEnv::ChromiumEnv(std::unique_ptr<storage::FilesystemProxy> filesystem)
     : filesystem_(std::move(filesystem)) {
   DCHECK(filesystem_);
@@ -900,28 +896,15 @@ Status ChromiumEnv::LockFile(const std::string& fname, FileLock** lock) {
   const base::FilePath path = base::FilePath::FromUTF8Unsafe(fname);
   Retrier retrier;
   FileErrorOr<std::unique_ptr<storage::FilesystemProxy::FileLock>> lock_result;
-  bool same_process_held_lock = false;
   size_t tries = 0;
   do {
     tries++;
-    same_process_held_lock = false;
-    lock_result = filesystem_->LockFile(path, &same_process_held_lock);
+    lock_result = filesystem_->LockFile(path);
   } while (!lock_result.has_value() && retrier.ShouldKeepTrying());
 
   if (!lock_result.has_value()) {
-    if (log_lock_errors_ &&
-        lock_result.error() == base::File::FILE_ERROR_IN_USE) {
-      base::UmaHistogramBoolean("LevelDBEnv.LockFileInUseByThisProcess",
-                                same_process_held_lock);
-    }
-
     return MakeIOError(fname, FileErrorString(lock_result.error()), kLockFile,
                        lock_result.error());
-  }
-
-  if (log_lock_errors_) {
-    // 100 because the retrier tries every ~10ms for ~1000ms.
-    base::UmaHistogramCounts100("LevelDBEnv.LockFileSuccessAttempts", tries);
   }
 
   *lock = new ChromiumFileLock(std::move(lock_result.value()), fname);
