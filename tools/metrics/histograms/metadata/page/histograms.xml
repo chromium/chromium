@@ -3154,7 +3154,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.Clients{ObservedNavigation}.Leakage2.NetError{BackgroundSuffix}{HiddenSuffix}{IncognitoSuffix}{ResponseFromCache}{AbandonedTimeBucket}"
-    enum="NetErrorCodes" expires_after="2025-12-14">
+    enum="NetErrorCodes" expires_after="2026-06-14">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
