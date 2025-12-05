@@ -23,6 +23,7 @@ import android.util.Pair;
 import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ActivityState;
@@ -238,7 +239,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public void moveTabsToOtherWindow(List<Tab> tabs, @NewWindowAppSource int source) {
-        // TODO(crbug.com/465141949): Add unit tests.
         // Check the number of instances that the tab/s is able to move into.
         int instanceCount =
                 MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE);
@@ -264,16 +264,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             return;
         }
 
-        TargetSelectorCoordinator.showDialog(
-                mActivity,
-                mModalDialogManagerSupplier.get(),
-                new LargeIconBridge(getProfile()),
+        showTargetSelectorDialog(
                 (instanceInfo) -> {
                     moveTabsToWindow(instanceInfo, tabs, TabList.INVALID_TAB_INDEX, source);
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
-                getInstanceInfo(instanceType),
+                instanceType,
                 UiUtils.isInstanceSwitcherV2Enabled()
                         ? R.string.menu_move_tab_to_other_window
                         : R.string.menu_move_to_other_window);
@@ -338,10 +335,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             return;
         }
 
-        TargetSelectorCoordinator.showDialog(
-                mActivity,
-                mModalDialogManagerSupplier.get(),
-                new LargeIconBridge(getProfile()),
+        showTargetSelectorDialog(
                 (instanceInfo) -> {
                     ChromeTabbedActivity selectedActivity =
                             (ChromeTabbedActivity) getActivityById(instanceInfo.instanceId);
@@ -357,7 +351,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             NewWindowAppSource.OTHER,
                             preferNew);
                 },
-                getInstanceInfo(instanceType),
+                instanceType,
                 R.string.contextmenu_open_in_other_window);
     }
 
@@ -386,10 +380,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             return;
         }
 
-        TargetSelectorCoordinator.showDialog(
-                mActivity,
-                mModalDialogManagerSupplier.get(),
-                new LargeIconBridge(getProfile()),
+        showTargetSelectorDialog(
                 (instanceInfo) -> {
                     moveTabGroupToWindow(
                             instanceInfo, tabGroupMetadata, TabList.INVALID_TAB_INDEX, source);
@@ -397,7 +388,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
                 },
-                getInstanceInfo(instanceType),
+                instanceType,
                 UiUtils.isInstanceSwitcherV2Enabled()
                         ? R.string.menu_move_group_to_other_window
                         : R.string.menu_move_to_other_window);
@@ -555,6 +546,20 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     // normal sync behavior.
                     resumeSyncService(tabGroupMetadata);
                 });
+    }
+
+    @VisibleForTesting
+    void showTargetSelectorDialog(
+            Callback<InstanceInfo> moveCallback,
+            @PersistedInstanceType int instanceType,
+            @StringRes int titleId) {
+        TargetSelectorCoordinator.showDialog(
+                mActivity,
+                mModalDialogManagerSupplier.get(),
+                new LargeIconBridge(getProfile()),
+                moveCallback,
+                getInstanceInfo(instanceType),
+                titleId);
     }
 
     private Intent createIntentForGeneralReparenting(

@@ -143,7 +143,10 @@ import java.util.stream.Collectors;
 /** Unit tests for {@link MultiInstanceManagerApi31}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT)
+@EnableFeatures({
+    ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT,
+    ChromeFeatureList.INSTANCE_SWITCHER_V2
+})
 @DisableFeatures(ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
 public class MultiInstanceManagerApi31UnitTest {
     private static final int INSTANCE_ID_1 = 1;
@@ -515,6 +518,7 @@ public class MultiInstanceManagerApi31UnitTest {
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mNormalTabModel);
         when(mNormalTabModel.getProfile()).thenReturn(mProfile);
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        doNothing().when(mMultiInstanceManager).showTargetSelectorDialog(any(), anyInt(), anyInt());
     }
 
     @After
@@ -2577,5 +2581,93 @@ public class MultiInstanceManagerApi31UnitTest {
         assertNull(
                 "Custom title should not be saved if identical to default title.",
                 MultiInstancePersistentStore.readCustomTitle(INSTANCE_ID_1));
+    }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW})
+    public void testMoveTabsToOtherWindow_dialogShown() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        List<Tab> tabs = List.of(mTab1, mTab2);
+
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+
+        verify(mMultiInstanceManager, times(1))
+                .showTargetSelectorDialog(
+                        any(),
+                        eq(PersistedInstanceType.ANY),
+                        eq(R.string.menu_move_tab_to_other_window));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    })
+    public void testMoveTabsToOtherWindow_incognitoTabs_dialogShown() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        MultiWindowUtils.setIncognitoInstanceCountForTesting(2);
+        List<Tab> tabs = List.of(mTab1);
+        when(mTab1.isIncognitoBranded()).thenReturn(true);
+
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+
+        verify(mMultiInstanceManager, times(1))
+                .showTargetSelectorDialog(
+                        any(),
+                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD),
+                        eq(R.string.menu_move_tab_to_other_window));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    })
+    public void testMoveTabsToOtherWindow_incognitoTabs_dialogHidden() {
+        MultiWindowUtils.setIncognitoInstanceCountForTesting(1);
+        List<Tab> tabs = List.of(mTab1);
+        when(mTab1.isIncognitoBranded()).thenReturn(true);
+        doNothing().when(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+
+        verify(mMultiInstanceManager, Mockito.never())
+                .showTargetSelectorDialog(
+                        any(), anyInt(), eq(R.string.menu_move_tab_to_other_window));
+        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    })
+    public void testMoveTabsToOtherWindow_regularTabs_dialogShown() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTab1.isIncognitoBranded()).thenReturn(false);
+
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+
+        verify(mMultiInstanceManager, times(1))
+                .showTargetSelectorDialog(
+                        any(),
+                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR),
+                        eq(R.string.menu_move_tab_to_other_window));
+    }
+
+    @Test
+    @EnableFeatures({
+        ChromeFeatureList.ANDROID_OPEN_INCOGNITO_AS_WINDOW,
+    })
+    public void testMoveTabsToOtherWindow_regularTabs_dialogHidden() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTab1.isIncognitoBranded()).thenReturn(false);
+        doNothing().when(mMultiInstanceManager).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+
+        mMultiInstanceManager.moveTabsToOtherWindow(tabs, NewWindowAppSource.OTHER);
+
+        verify(mMultiInstanceManager, Mockito.never())
+                .showTargetSelectorDialog(
+                        any(), anyInt(), eq(R.string.menu_move_tab_to_other_window));
+        verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
     }
 }

@@ -107,6 +107,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     protected static @Nullable Supplier<Activity> sActivitySupplierForTesting;
 
     private static @Nullable Integer sMaxInstancesForTesting;
+    private static @Nullable Integer sIncognitoInstanceCountForTesting;
     private static @Nullable Integer sInstanceCountForTesting;
     private static @Nullable Boolean sMultiInstanceApi31EnabledForTesting;
     private final boolean mMultiInstanceApi31Enabled;
@@ -521,6 +522,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     // TODO (crbug.com/461553972): Remove this method after Robust Window Management is launched.
     public static int getIncognitoInstanceCount(boolean activeOnly) {
+        if (sIncognitoInstanceCountForTesting != null) {
+            return sIncognitoInstanceCountForTesting;
+        }
         int instanceType = PersistedInstanceType.OFF_THE_RECORD;
         if (activeOnly) {
             instanceType |= PersistedInstanceType.ACTIVE;
@@ -1248,6 +1252,11 @@ public class MultiWindowUtils implements ActivityStateListener {
         var oldValue = sInstance;
         sInstance = instance;
         ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
+    public static void setIncognitoInstanceCountForTesting(int instanceCount) {
+        sIncognitoInstanceCountForTesting = instanceCount;
+        ResettersForTesting.register(() -> sIncognitoInstanceCountForTesting = null);
     }
 
     public static void setInstanceCountForTesting(int instanceCount) {
