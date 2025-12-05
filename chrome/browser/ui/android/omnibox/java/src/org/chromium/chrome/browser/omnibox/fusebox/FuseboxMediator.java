@@ -73,7 +73,6 @@ public class FuseboxMediator {
     public static final String EXTRA_IS_INCOGNITO_BRANDED = "EXTRA_IS_INCOGNITO_BRANDED";
     public static final String EXTRA_ATTACHMENT_TAB_IDS = "TAB_IDS";
     public static final String EXTRA_ALLOWED_SELECTION_COUNT = "ALLOWED_SELECTION_COUNT";
-    private static final int SELECTION_MAX = 10;
 
     private final Context mContext;
     private final Profile mProfile;
@@ -369,11 +368,11 @@ public class FuseboxMediator {
             return;
         }
         Intent intent;
-        ArrayList<Integer> preselectedIds = new ArrayList<>(mModelList.getAttachedTabIds());
+        ArrayList<Integer> preselectedTabIds = new ArrayList<>(mModelList.getAttachedTabIds());
         try {
             intent =
                     new Intent(mContext, Class.forName(CHROME_ITEM_PICKER_ACTIVITY_CLASS))
-                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedIds);
+                            .putIntegerArrayListExtra(EXTRA_PRESELECTED_TAB_IDS, preselectedTabIds);
             ProfileIntentUtils.addProfileToIntent(mProfile, intent);
 
             TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
@@ -387,8 +386,8 @@ public class FuseboxMediator {
             return;
         }
 
-        int nonTabSelectionCount = mModelList.size() - preselectedIds.size();
-        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, SELECTION_MAX - nonTabSelectionCount);
+        int maxAllowedTabs = preselectedTabIds.size() + mModelList.getRemainingAttachments();
+        intent.putExtra(EXTRA_ALLOWED_SELECTION_COUNT, maxAllowedTabs);
 
         mWindowAndroid.showCancelableIntent(
                 intent, this::onTabPickerResult, R.string.low_memory_error);
