@@ -4,6 +4,7 @@
 
 #include <fcntl.h>
 #include <limits.h>
+#include <linux/input-event-codes.h>
 #include <linux/input.h>
 #include <poll.h>
 #include <stdlib.h>
@@ -22,6 +23,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/strings/string_number_conversions.h"
 
 // Records and replays touch events on Android device.
 //
@@ -75,7 +77,9 @@ class InputDevice {
 
   void SendEvents(std::vector<TouchInputEventRecord>& events,
                   int index_first,
-                  int index_last);
+                  int index_last,
+                  int offset_x,
+                  int offset_y);
 
  private:
   base::ScopedFD fd_;
@@ -139,12 +143,21 @@ bool InputDevice::HasTouch() {
 
 void InputDevice::SendEvents(std::vector<TouchInputEventRecord>& events,
                              int index_first,
-                             int index_last) {
+                             int index_last,
+                             int offset_x,
+                             int offset_y) {
   for (int i = index_first; i < index_last; i++) {
     TouchInputEventRecord& rec = events[i];
+    int offset = 0;
+    if (rec.code == ABS_MT_POSITION_X) {
+      offset = offset_x;
+    } else if (rec.code == ABS_MT_POSITION_Y) {
+      offset = offset_y;
+    }
+
     input_event event{.type = base::checked_cast<uint16_t>(rec.type),
                       .code = base::checked_cast<uint16_t>(rec.code),
-                      .value = rec.value};
+                      .value = rec.value + offset};
     char* data = reinterpret_cast<char*>(&event);
     constexpr int kSize = static_cast<int>(sizeof(event));
     int bytes_written = 0;
@@ -162,9 +175,18 @@ void InputDevice::SendEvents(std::vector<TouchInputEventRecord>& events,
 }
 
 void PrintUsage(char* prog) {
-  std::cout << "Usage: " << prog << " record|replay FILE" << std::endl
+  std::cout << "Usage: " << prog
+            << " record|replay FILE [--offset-x X] [--offset-y Y]" << std::endl
             << std::endl
             << "Record input events to FILE or replay them from FILE."
+            << std::endl
+            << std::endl
+            << "Options:" << std::endl
+            << "--offset-x X\t"
+            << "the offset along the x-axis to be applied to replay events"
+            << std::endl
+            << "--offset-y Y\t"
+            << "the offset along the y-axis to be applied to replay events"
             << std::endl;
 }
 
@@ -177,6 +199,25 @@ Command ParseCommand(char* arg) {
     return Command::kReplay;
   }
   return Command::kNone;
+}
+
+bool ParseOffset(const char* offset_type,
+                 const char* offset_value,
+                 std::optional<int>& offset_x,
+                 std::optional<int>& offset_y) {
+  int offset = 0;
+  base::StringToInt(std::string(offset_value), &offset);
+  if (!std::string("--offset-x").compare(offset_type) &&
+      !offset_x.has_value()) {
+    offset_x.emplace(offset);
+  } else if (!std::string("--offset-y").compare(offset_type) &&
+             !offset_y.has_value()) {
+    offset_y.emplace(offset);
+  } else {
+    return false;
+  }
+
+  return true;
 }
 
 void PrintProgressMarkers(int i) {
@@ -333,7 +374,7 @@ void ValidateRecords(const std::vector<TouchInputEventRecord>& records) {
   }
 }
 
-bool Replay(const base::FilePath& file_path) {
+bool Replay(const base::FilePath& file_path, int offset_x, int offset_y) {
   // Open the dump file for reading.
   base::File dump_file(file_path,
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
@@ -406,7 +447,7 @@ bool Replay(const base::FilePath& file_path) {
     }
 
     // Send all events from the chunk to the device without delays in between.
-    device->SendEvents(records, chunk_first, chunk_last);
+    device->SendEvents(records, chunk_first, chunk_last, offset_x, offset_y);
 
     // Print progress after sending the chunk of events to reduce
     // delays between the events within each chunk.
@@ -421,7 +462,7 @@ bool Replay(const base::FilePath& file_path) {
 }  // namespace
 
 int main(int argc, char** argv) {
-  if (argc != 3) {
+  if (!(argc == 3 || argc == 5 || argc == 7)) {
     PrintUsage(argv[0]);
     return 1;
   }
@@ -440,7 +481,17 @@ int main(int argc, char** argv) {
       return 1;
     }
   } else if (command == Command::kReplay) {
-    if (!Replay(file_path)) {
+    std::optional<int> offset_x;
+    std::optional<int> offset_y;
+    for (int i = 3; i < argc; i += 2) {
+      // Expect the next arguments to be of the form: --offset-[x|y] OFFSET
+      if (!ParseOffset(argv[i], argv[i + 1], offset_x, offset_y)) {
+        PrintUsage(argv[0]);
+        return 1;
+      }
+    }
+
+    if (!Replay(file_path, offset_x.value_or(0), offset_y.value_or(0))) {
       return 1;
     }
   }
