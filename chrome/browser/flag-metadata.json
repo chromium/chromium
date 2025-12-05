@@ -2850,6 +2850,11 @@
     "expiry_milestone": 142
   },
   {
+    "name": "enable-accessibility-extended-selection",
+    "owners": ["rhalavati@chromium.org", "//ui/accessibility/OWNERS"],
+    "expiry_milestone": 170
+  },
+  {
     "name": "enable-accessibility-flash-screen-feature",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 149

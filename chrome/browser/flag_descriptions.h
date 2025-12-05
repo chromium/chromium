@@ -4839,6 +4839,12 @@ inline constexpr char kAccessibilityDeprecateTypeAnnounceDescription[] =
     "When enabled, TYPE_ANNOUNCE events will no longer be sent for live "
     "regions in the web contents.";
 
+inline constexpr char kAccessibilityExtendedSelectionName[] =
+    "Accessibility Extended Selection";
+inline constexpr char kAccessibilityExtendedSelectionDescription[] =
+    "When enabled, extended selections are sent to Android through "
+    "setSelection API.";
+
 inline constexpr char kAccessibilityImproveLiveRegionAnnounceName[] =
     "Accessibility Improve Live Region Announcement";
 inline constexpr char kAccessibilityImproveLiveRegionAnnounceDescription[] =

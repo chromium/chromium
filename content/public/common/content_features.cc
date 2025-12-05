@@ -1230,6 +1230,11 @@ const base::FeatureParam<bool> kAccessibilityDeprecateJavaNodeCacheDisableCache{
 BASE_FEATURE(kAccessibilityDeprecateTypeAnnounce,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, extended selections are sent to Android through setSelection
+// API.
+BASE_FEATURE(kAccessibilityExtendedSelection,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, WINDOW_CONTENT_CHANGED events will be sent for each
 // LIVE_REGION_NODE_CHANGED rather than TYPE_ANNOUNCEMENT.
 // kAccessibilityDeprecateTypeAnnounce also encompasses ariaNotify, whereas this

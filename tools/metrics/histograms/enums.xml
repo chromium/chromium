@@ -13720,6 +13720,7 @@ from previous Chrome versions.
   <int value="-178364053" label="TerminalSystemAppLegacySettings:enabled"/>
   <int value="-178359490" label="DrawImmediatelyWhenInteractive:enabled"/>
   <int value="-177974995" label="CrostiniShowMicSetting:disabled"/>
+  <int value="-177100525" label="AccessibilityExtendedSelection:enabled"/>
   <int value="-177085741"
       label="EnableEphemeralGuestProfilesOnDesktop:disabled"/>
   <int value="-176659514" label="CompressionDictionaryTransport:disabled"/>
@@ -19141,6 +19142,7 @@ from previous Chrome versions.
       label="IncognitoClearBrowsingDataDialogForDesktop:enabled"/>
   <int value="1703206814" label="CloseAllTabsModalDialog:disabled"/>
   <int value="1703927420" label="PiexWasm:enabled"/>
+  <int value="1704683975" label="AccessibilityExtendedSelection:disabled"/>
   <int value="1705542171" label="NtpModulesFirstRunExperience:enabled"/>
   <int value="1705724232" label="use-android-midi-api"/>
   <int value="1705822740"
