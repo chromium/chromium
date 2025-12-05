@@ -540,6 +540,27 @@ interface PinCandidatesObserver {
   OnPinCandidatesChanged(array<PinCandidate> candidates);
 };
 
+// @generate glic_api
+// Describes what triggered the pin.
+[Stable, Extensible]
+enum PinTrigger {
+  // The pin occurred for unknown reasons. Specifies 'web client' to align with
+  // `GlicPinTrigger` enum (which disambiguates from unknown triggers
+  // originating elsewhere).
+  [Default] kWebClientUnknown = 0,
+  // The pin was triggered by the toggle UI for pin candidates.
+  kCandidatesToggle = 1,
+  // The pin was triggered by the inline '@' mention feature.
+  kAtMention = 2,
+  // The pin was triggered as part of actor/actuation behavior.
+  kActuation = 3,
+};
+
+// Options for pinning tabs.
+struct PinTabsOptions {
+  PinTrigger pin_trigger;
+};
+
 // Access to the browser from the web client by proxy through the WebUI.
 // A single WebClientHandler will provide access to the browser for only
 // a single web client. If the webview navigates or refreshes, a new
@@ -633,7 +654,7 @@ interface WebClientHandler {
   // pinned tabs exceeds the allowed limit or if the tabs are already pinned.
   // Returns true if all the given tabs were pinned.
   [RuntimeFeature=glic.mojom.features.kGlicMultiTab]
-  PinTabs(array<int32> tab_ids) => (bool pinned_all);
+  PinTabs(array<int32> tab_ids, PinTabsOptions? options) => (bool pinned_all);
 
   // Unpins the given tabs. Can fail if the tabs cannot be found, or if some of
   // the given tabs aren't pinned.

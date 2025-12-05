@@ -1027,13 +1027,30 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void PinTabs(const std::vector<int32_t>& tab_ids,
+               mojom::PinTabsOptionsPtr options,
                PinTabsCallback callback) override {
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
     }
-    std::move(callback).Run(sharing_manager().PinTabs(
-        tab_handles, GlicPinTrigger::kWebClientUnknown));
+    GlicPinTrigger trigger = GlicPinTrigger::kWebClientUnknown;
+    if (options) {
+      switch (options->pin_trigger) {
+        case mojom::PinTrigger::kWebClientUnknown:
+          trigger = GlicPinTrigger::kWebClientUnknown;
+          break;
+        case mojom::PinTrigger::kCandidatesToggle:
+          trigger = GlicPinTrigger::kCandidatesToggle;
+          break;
+        case mojom::PinTrigger::kAtMention:
+          trigger = GlicPinTrigger::kAtMention;
+          break;
+        case mojom::PinTrigger::kActuation:
+          trigger = GlicPinTrigger::kActuation;
+          break;
+      }
+    }
+    std::move(callback).Run(sharing_manager().PinTabs(tab_handles, trigger));
   }
 
   void UnpinTabs(const std::vector<int32_t>& tab_ids,

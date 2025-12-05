@@ -717,8 +717,10 @@ export declare interface GlicBrowserHost {
    * is already pinned. Return value is true if all tabs were pinned, but if
    * a false value does not mean that no tabs were pinned. The updated set of
    * pinned tabs will asynchronously be available via getPinnedTabs.
+   *
+   * @param options Options for pinning tabs.
    */
-  pinTabs?(tabIds: string[]): Promise<boolean>;
+  pinTabs?(tabIds: string[], options?: PinTabsOptions): Promise<boolean>;
 
   /**
    * Attempts to unpin the given tabs. Can fail if the any of the tabs cannot be
@@ -1358,6 +1360,13 @@ export declare interface GetPinCandidatesOptions {
   maxCandidates: number;
   /** A query string. */
   query?: string;
+}
+
+/**
+ * Options for pinning tabs.
+ */
+export declare interface PinTabsOptions {
+  pinTrigger?: PinTrigger;
 }
 
 /** Information about a web page being rendered in a tab. */
@@ -2318,6 +2327,22 @@ export enum ScrollToErrorReason {
   // The web client requested to drop the highlight via
   // `dropScrollToHighlight()`.
   DROPPED_BY_WEB_CLIENT = 8,
+}
+
+///////////////////////////////////////////////
+// WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
+// Describes what triggered the pin.
+export enum PinTrigger {
+  // The pin occurred for unknown reasons. Specifies 'web client' to align with
+  // `GlicPinTrigger` enum (which disambiguates from unknown triggers
+  // originating elsewhere).
+  WEB_CLIENT_UNKNOWN = 0,
+  // The pin was triggered by the toggle UI for pin candidates.
+  CANDIDATES_TOGGLE = 1,
+  // The pin was triggered by the inline '@' mention feature.
+  AT_MENTION = 2,
+  // The pin was triggered as part of actor/actuation behavior.
+  ACTUATION = 3,
 }
 
 ///////////////////////////////////////////////
