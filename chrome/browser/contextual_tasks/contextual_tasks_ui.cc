@@ -58,8 +58,10 @@
 
 namespace {
 
-void AddToolEligibilityBooleans(content::WebUIDataSource* source,
-                                Profile* profile) {
+// A method to add eligibility booleans for context menu items that are shown
+// based on AIM eligibility.
+void AddContextMenuItemEligibilityLoadTimeData(content::WebUIDataSource* source,
+                                               Profile* profile) {
   AimEligibilityService* aim_eligibility_service =
       AimEligibilityServiceFactory::GetForProfile(profile);
   source->AddBoolean("composeboxShowDeepSearchButton",
@@ -68,6 +70,9 @@ void AddToolEligibilityBooleans(content::WebUIDataSource* source,
   source->AddBoolean("composeboxShowCreateImageButton",
                      aim_eligibility_service &&
                          aim_eligibility_service->IsCreateImagesEligible());
+  source->AddBoolean("composeboxShowPdfUpload",
+                     aim_eligibility_service &&
+                         aim_eligibility_service->IsPdfUploadEligible());
 }
 
 BrowserWindowInterface* FromWebContents(content::WebContents* web_contents) {
@@ -182,9 +187,8 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddString("composeDeepSearchPlaceholder",
                     "[i18n] Search within results...");
   source->AddString("composeCreateImagePlaceholder", "[i18n] Create image...");
-  source->AddBoolean("composeboxShowPdfUpload", false);
   source->AddBoolean("composeboxSmartComposeEnabled", false);
-  AddToolEligibilityBooleans(source, Profile::FromWebUI(web_ui));
+  AddContextMenuItemEligibilityLoadTimeData(source, Profile::FromWebUI(web_ui));
   source->AddBoolean("composeboxShowRecentTabChip", false);
   source->AddBoolean("composeboxShowSubmit", true);
   source->AddBoolean("composeboxContextDragAndDropEnabled", false);
