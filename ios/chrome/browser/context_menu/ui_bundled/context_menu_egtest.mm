@@ -49,7 +49,6 @@
 using chrome_test_util::ContextMenuCopyButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
-using chrome_test_util::OmniboxText;
 using chrome_test_util::OpenLinkInNewTabButton;
 using chrome_test_util::SystemSelectionCalloutCopyButton;
 using chrome_test_util::WebViewMatcher;
@@ -695,8 +694,7 @@ void RelaunchApp() {
 
   // Verify url.
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests that selecting "Open Image in New Tab" from the context menu properly
@@ -717,8 +715,7 @@ void RelaunchApp() {
 
   // Verify url.
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests "Open in New Tab" on context menu.
@@ -744,8 +741,7 @@ void RelaunchApp() {
 
   // Verify url.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests that the context menu is displayed for an image url.
@@ -776,8 +772,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForPageToFinishLoading];
 
   // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 }
 
 // Tests context menu title truncation cases.
@@ -1129,8 +1124,7 @@ void RelaunchApp() {
 
   // Verify url.
   const GURL destinationURL = self.testServer->GetURL(kDestinationPageUrl);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 
   // Open link in an existing tab group.
   [ChromeEarlGrey loadURL:initialURL];
@@ -1151,8 +1145,7 @@ void RelaunchApp() {
   [ChromeEarlGrey waitForWebStateContainingText:kDestinationPageText];
 
   // Verify url.
-  [[EarlGrey selectElementWithMatcher:OmniboxText(destinationURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:destinationURL];
 }
 
 // Tests "Share URL" action in the web context menu when long
@@ -1380,8 +1373,7 @@ void RelaunchApp() {
 
   // Verify url.
   const GURL imageURL = self.testServer->GetURL(kLogoPageImageSourcePath);
-  [[EarlGrey selectElementWithMatcher:OmniboxText(imageURL.GetContent())]
-      assertWithMatcher:grey_notNil()];
+  [ChromeEarlGrey waitForWebStateVisibleURL:imageURL];
 
   // Ensure that UMA was logged correctly.
   NSError* error = [MetricsAppInterface
