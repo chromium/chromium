@@ -65,7 +65,7 @@ class SidePanelAnimationCoordinatorBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(SidePanelAnimationCoordinatorBrowserTest,
-                       AnimationProgressedWithMismatchedAnimationIds) {
+                       AnimationEndsWithMismatchedAnimationTypes) {
   SidePanelAnimationCoordinator* animation_coordinator =
       GetAnimationCoordinator();
 
