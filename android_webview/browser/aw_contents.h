@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "android_webview/browser/aw_browser_permission_request_delegate.h"
+#include "android_webview/browser/aw_navigation_client.h"
 #include "android_webview/browser/aw_render_process_gone_delegate.h"
 #include "android_webview/browser/find_helper.h"
 #include "android_webview/browser/gfx/browser_view_renderer.h"
@@ -103,7 +104,8 @@ class AwContents : public FindHelper::Listener,
       const base::android::JavaRef<jobject>& web_contents_delegate,
       const base::android::JavaRef<jobject>& contents_client_bridge,
       const base::android::JavaRef<jobject>& io_thread_client,
-      const base::android::JavaRef<jobject>& intercept_navigation_delegate);
+      const base::android::JavaRef<jobject>& intercept_navigation_delegate,
+      const base::android::JavaRef<jobject>& navigation_client);
   void InitializeAndroidAutofill(JNIEnv* env);
   void InitSensitiveContentClient(JNIEnv* env);
   base::android::ScopedJavaLocalRef<jobject> GetWebContents(JNIEnv* env);
@@ -343,11 +345,7 @@ class AwContents : public FindHelper::Listener,
   // AwSafeBrowsingAllowlistSetObserver overrides
   void OnSafeBrowsingAllowListSet() override;
 
-  // AwWebPerformanceMetricsObserver related methods
-  void OnLargestContentfulPaint(const base::TimeDelta& duration);
-
-  void OnPerformanceMark(std::string mark_name,
-                         const base::TimeDelta& mark_time);
+  AwNavigationClient* GetNavigationClient() { return navigation_client_.get(); }
 
  private:
   // Geolocation API support
@@ -361,6 +359,7 @@ class AwContents : public FindHelper::Listener,
   std::unique_ptr<content::WebContents> web_contents_;
   std::unique_ptr<AwWebContentsDelegate> web_contents_delegate_;
   std::unique_ptr<AwContentsClientBridge> contents_client_bridge_;
+  std::unique_ptr<AwNavigationClient> navigation_client_;
   std::unique_ptr<AwRenderViewHostExt> render_view_host_ext_;
   std::unique_ptr<FindHelper> find_helper_;
   std::unique_ptr<IconHelper> icon_helper_;

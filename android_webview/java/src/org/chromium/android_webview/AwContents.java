@@ -119,7 +119,6 @@ import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
-import org.chromium.content_public.browser.Page;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
@@ -1618,7 +1617,8 @@ public class AwContents implements SmartClipProvider {
                         mWebContentsDelegate,
                         mContentsClientBridge,
                         mIoThreadClient,
-                        mInterceptNavigationDelegate);
+                        mInterceptNavigationDelegate,
+                        mNavigationClient);
         GestureListenerManager.fromWebContents(mWebContents)
                 .addListener(new AwGestureStateListener());
 
@@ -4116,17 +4116,6 @@ public class AwContents implements SmartClipProvider {
         return AwContentsJni.get().fromWebContents(webContents);
     }
 
-    // TODO: crbug.com/464257269 - remove the need for this and the onPerformanceMark methods
-    @CalledByNative
-    private void onLargestContentfulPaint(Page page, long durationMs) {
-        mNavigationClient.onLargestContentfulPaint(page, durationMs);
-    }
-
-    @CalledByNative
-    private void onPerformanceMark(Page page, String markName, long markTimeMs) {
-        mNavigationClient.onPerformanceMark(page, markName, markTimeMs);
-    }
-
     // -------------------------------------------------------------------------------------------
     // Helper methods
     // -------------------------------------------------------------------------------------------
@@ -4870,7 +4859,8 @@ public class AwContents implements SmartClipProvider {
                 AwWebContentsDelegate webViewWebContentsDelegate,
                 AwContentsClientBridge contentsClientBridge,
                 AwContentsIoThreadClient ioThreadClient,
-                InterceptNavigationDelegate navigationInterceptionDelegate);
+                InterceptNavigationDelegate navigationInterceptionDelegate,
+                AwNavigationClient navigationClient);
 
         void initializeAndroidAutofill(long nativeAwContents);
 

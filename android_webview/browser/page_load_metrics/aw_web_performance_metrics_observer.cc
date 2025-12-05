@@ -5,6 +5,8 @@
 #include "android_webview/browser/page_load_metrics/aw_web_performance_metrics_observer.h"
 
 #include "android_webview/browser/aw_contents.h"
+#include "content/public/browser/page.h"
+#include "content/public/browser/web_contents.h"
 
 namespace android_webview {
 
@@ -67,10 +69,11 @@ void AwWebPerformanceMetricsObserver::OnTimingUpdate(
       lcp_largest_reported_size_ = lcp_text_size;
     }
 
-    AwContents* aw_contents =
-        AwContents::FromWebContents(GetDelegate().GetWebContents());
+    content::WebContents* web_contents = GetDelegate().GetWebContents();
+    AwContents* aw_contents = AwContents::FromWebContents(web_contents);
     if (aw_contents) {
-      aw_contents->OnLargestContentfulPaint(new_lcp.value());
+      aw_contents->GetNavigationClient()->OnLargestContentfulPaint(
+          web_contents->GetPrimaryPage(), new_lcp.value());
     }
   }
 }
@@ -82,9 +85,8 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyLoaded(
   if (!timing.user_timing_mark_fully_loaded) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkFullyLoaded,
-                          timing.user_timing_mark_fully_loaded.value());
+  SendPerformanceMark(kMarkFullyLoaded,
+                      timing.user_timing_mark_fully_loaded.value());
 }
 
 void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyVisible(
@@ -94,9 +96,8 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkFullyVisible(
   if (!timing.user_timing_mark_fully_visible) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkFullyVisible,
-                          timing.user_timing_mark_fully_visible.value());
+  SendPerformanceMark(kMarkFullyVisible,
+                      timing.user_timing_mark_fully_visible.value());
 }
 
 void AwWebPerformanceMetricsObserver::OnUserTimingMarkInteractive(
@@ -106,19 +107,32 @@ void AwWebPerformanceMetricsObserver::OnUserTimingMarkInteractive(
   if (!timing.user_timing_mark_interactive) {
     return;
   }
-  AwContents::FromWebContents(GetDelegate().GetWebContents())
-      ->OnPerformanceMark(kMarkInteractive,
-                          timing.user_timing_mark_interactive.value());
+  SendPerformanceMark(kMarkInteractive,
+                      timing.user_timing_mark_interactive.value());
+}
+
+void AwWebPerformanceMetricsObserver::SendPerformanceMark(
+    std::string mark_name,
+    const base::TimeDelta& mark_time) {
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (aw_contents) {
+    aw_contents->GetNavigationClient()->OnPerformanceMark(
+        web_contents->GetPrimaryPage(), mark_name, mark_time);
+  }
 }
 
 void AwWebPerformanceMetricsObserver::OnCustomUserTimingMarkObserved(
     const std::vector<page_load_metrics::mojom::CustomUserTimingMarkPtr>&
         timings) {
-  AwContents* aw_contents =
-      AwContents::FromWebContents(GetDelegate().GetWebContents());
-  for (const auto& mark : timings) {
-    aw_contents->OnPerformanceMark(mark->mark_name, mark->start_time);
+  content::WebContents* web_contents = GetDelegate().GetWebContents();
+  AwContents* aw_contents = AwContents::FromWebContents(web_contents);
+  if (aw_contents) {
+    content::Page& page = web_contents->GetPrimaryPage();
+    for (const auto& mark : timings) {
+      aw_contents->GetNavigationClient()->OnPerformanceMark(
+          page, mark->mark_name, mark->start_time);
+    }
   }
 }
-
 }  // namespace android_webview

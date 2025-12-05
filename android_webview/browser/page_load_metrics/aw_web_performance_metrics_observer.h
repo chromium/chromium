@@ -53,6 +53,9 @@ class AwWebPerformanceMetricsObserver
           timings) override;
 
  private:
+  void SendPerformanceMark(std::string mark_name,
+                           const base::TimeDelta& mark_time);
+
   uint64_t lcp_largest_reported_size_;
 };
 

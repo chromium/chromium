@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview;
 
+import org.jni_zero.CalledByNative;
+
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -138,6 +140,7 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    @CalledByNative
     public void onLargestContentfulPaint(Page page, long durationMs) {
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
@@ -145,6 +148,7 @@ public class AwNavigationClient implements Page.PageDeletionListener {
         }
     }
 
+    @CalledByNative
     public void onPerformanceMark(Page page, String markName, long markTimeMs) {
         AwPage awPage = getAwPageFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {

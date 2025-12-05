@@ -319,7 +319,8 @@ void AwContents::SetJavaPeers(
     const JavaRef<jobject>& web_contents_delegate,
     const JavaRef<jobject>& contents_client_bridge,
     const JavaRef<jobject>& io_thread_client,
-    const JavaRef<jobject>& intercept_navigation_delegate) {
+    const JavaRef<jobject>& intercept_navigation_delegate,
+    const JavaRef<jobject>& navigation_client) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   // The |aw_content| param is technically spurious as it duplicates |obj| but
   // is passed over anyway to make the binding more explicit.
@@ -339,6 +340,9 @@ void AwContents::SetJavaPeers(
   InterceptNavigationDelegate::Associate(
       web_contents_.get(), std::make_unique<InterceptNavigationDelegate>(
                                env, intercept_navigation_delegate));
+
+  navigation_client_ =
+      std::make_unique<AwNavigationClient>(env, navigation_client);
 }
 
 void AwContents::InitializeAndroidAutofill(JNIEnv* env) {
@@ -1781,22 +1785,6 @@ void AwContents::OnSafeBrowsingAllowListSet() {
   web_contents()->GetController().GetBackForwardCache().Flush(
       NotRestoredReason::kWebViewSafeBrowsingAllowlistChanged);
 }
-
-void AwContents::OnLargestContentfulPaint(const base::TimeDelta& duration) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_AwContents_onLargestContentfulPaint(
-      env, java_ref_.get(env), web_contents_->GetPrimaryPage().GetJavaPage(),
-      duration.InMilliseconds());
-}
-
-void AwContents::OnPerformanceMark(std::string mark_name,
-                                   const base::TimeDelta& mark_time) {
-  JNIEnv* env = AttachCurrentThread();
-  Java_AwContents_onPerformanceMark(
-      env, java_ref_.get(env), web_contents_->GetPrimaryPage().GetJavaPage(),
-      ConvertUTF8ToJavaString(env, mark_name), mark_time.InMilliseconds());
-}
-
 }  // namespace android_webview
 
 DEFINE_JNI(AwContents)

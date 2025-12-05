@@ -85,6 +85,8 @@ source_set("browser") {
     "aw_javascript_dialog_manager.h",
     "aw_metrics_service_client_delegate.cc",
     "aw_metrics_service_client_delegate.h",
+    "aw_navigation_client.cc",
+    "aw_navigation_client.h",
     "aw_net_logs_connection.cc",
     "aw_net_logs_connection.h",
     "aw_origin_matched_header.cc",
