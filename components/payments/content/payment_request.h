@@ -117,6 +117,12 @@ class PaymentRequest : public content::DocumentService<mojom::PaymentRequest>,
   void OnShippingAddressSelected(mojom::PaymentAddressPtr address) override;
   void OnPayerInfoSelected(mojom::PayerDetailPtr payer_info) override;
 
+  // Called when the user wants to authenticate in a different way. This is
+  // different from cancel as this signals that the user still wants to continue
+  // with the payment transaction. Will destroy this object and close any
+  // related connections. Only used for SecurePaymentConfirmation currently.
+  void OnUserAuthAnotherWay();
+
   // Called when the user explicitly cancelled the flow. Will destroy this
   // object and close any related connections.
   void OnUserCancelled();
