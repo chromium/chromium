@@ -31,6 +31,7 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/types/display_constants.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -447,7 +448,7 @@ TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x400");
+  UpdateDisplay("800x600,1000x800");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
 
   for (auto rotation :
@@ -460,18 +461,19 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
     std::unique_ptr<RootWindowTransformer> transformer(
         CreateCurrentRootWindowTransformerForMirroring());
 
-    const bool need_transpose = rotation == display::Display::ROTATE_90 ||
-                                rotation == display::Display::ROTATE_270;
+    const bool need_rotation = rotation == display::Display::ROTATE_90 ||
+                               rotation == display::Display::ROTATE_270;
 
-    // Y margin is (400 - 500/400 * 200) / 2 = 75 for no rotation. Transposed
-    // on 90/270 degree.
+    // Y margin is (800 - 1000/800 * 600) / 2 = 25 for without rotation.
+    // Transposed on 90/270 degree.
     gfx::Insets expected_insets =
-        need_transpose ? gfx::Insets::VH(0, 75) : gfx::Insets::VH(75, 0);
+        need_rotation ? gfx::Insets::VH(0, 25) : gfx::Insets::VH(25, 0);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
-    // Expected rect in mirror of the source root.
-    gfx::RectF expected_rect = need_transpose ? gfx::RectF(75, 0, 250, 500)
-                                              : gfx::RectF(0, 75, 500, 250);
+    // Expected rect in mirror of the source root, x margin applied for with
+    // rotation and y margin applied for without rotation.
+    gfx::RectF expected_rect = need_rotation ? gfx::RectF(25, 0, 750, 1000)
+                                             : gfx::RectF(0, 25, 1000, 750);
 
     gfx::RectF rect = transformer->GetTransform().MapRect(
         gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));
@@ -481,7 +483,7 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotation) {
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotationTabletMode) {
   MirrorWindowTestApi test_api;
-  UpdateDisplay("400x200,500x400");
+  UpdateDisplay("800x600,1000x800");
   display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
   ash::TabletModeControllerTestApi().EnterTabletMode();
 
@@ -495,19 +497,77 @@ TEST_F(RootWindowTransformersTest, MirrorWithRotationTabletMode) {
     std::unique_ptr<RootWindowTransformer> transformer(
         CreateCurrentRootWindowTransformerForMirroring());
 
-    const bool need_transpose = rotation == display::Display::ROTATE_90 ||
-                                rotation == display::Display::ROTATE_270;
+    const bool need_rotation = rotation == display::Display::ROTATE_90 ||
+                               rotation == display::Display::ROTATE_270;
 
-    // X margin is (500 - 200) / 2 = 150 for with rotation.
-    // Y margin is (400 - 500/400 * 200) / 2 = 75 for without rotation.
+    // X margin is (1000 - 600) / 2 = 200 for with rotation.
+    // Y margin is (800 - 1000/800 * 600) / 2 = 25 for without rotation.
     gfx::Insets expected_insets =
-        need_transpose ? gfx::Insets::VH(0, 150) : gfx::Insets::VH(75, 0);
+        need_rotation ? gfx::Insets::VH(0, 200) : gfx::Insets::VH(25, 0);
     EXPECT_EQ(expected_insets, transformer->GetHostInsets());
 
     // Expected rect in mirror of the source root, x margin applied for with
     // rotation and y margin applied for without rotation.
-    gfx::RectF expected_rect = need_transpose ? gfx::RectF(150, 0, 200, 400)
-                                              : gfx::RectF(0, 75, 500, 250);
+    gfx::RectF expected_rect = need_rotation ? gfx::RectF(200, 0, 600, 800)
+                                             : gfx::RectF(0, 25, 1000, 750);
+
+    gfx::RectF rect = transformer->GetTransform().MapRect(
+        gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));
+    EXPECT_EQ(expected_rect, rect);
+  }
+}
+
+// Similar test as `MirrorWithRotationTabletMode` but with panel orientation
+// applied.
+TEST_F(RootWindowTransformersTest,
+       MirrorWithRotationTabletModeWithPanelOrientation) {
+  MirrorWindowTestApi test_api;
+
+  UpdateDisplay("800x600");
+  const int64_t internal_display_id =
+      display::test::DisplayManagerTestApi(display_manager())
+          .SetFirstDisplayAsInternalDisplay();
+  const auto internal_info =
+      display_manager()->GetDisplayInfo(internal_display_id);
+  constexpr int64_t external_id = 210000010;
+
+  // Apply a 90 degree panel orientation.
+  auto external_info = display::ManagedDisplayInfo::CreateFromSpecWithID(
+      "800x1000", external_id);
+  external_info.set_panel_orientation(display::PanelOrientation::kLeftUp);
+
+  std::vector<display::ManagedDisplayInfo> display_info_list;
+  display_info_list.push_back(internal_info);
+  display_info_list.push_back(external_info);
+  display_manager()->OnNativeDisplaysChanged(display_info_list);
+  EXPECT_EQ(2U, display_manager()->GetNumDisplays());
+
+  display_manager()->SetMirrorMode(display::MirrorMode::kNormal, std::nullopt);
+  ash::TabletModeControllerTestApi().EnterTabletMode();
+
+  for (auto rotation :
+       {display::Display::ROTATE_0, display::Display::ROTATE_90,
+        display::Display::ROTATE_180, display::Display::ROTATE_270}) {
+    SCOPED_TRACE(::testing::Message() << "Rotation: " << rotation);
+    display_manager()->SetDisplayRotation(
+        display::Screen::Get()->GetPrimaryDisplay().id(), rotation,
+        display::Display::RotationSource::ACCELEROMETER);
+    std::unique_ptr<RootWindowTransformer> transformer(
+        CreateCurrentRootWindowTransformerForMirroring());
+
+    const bool need_rotation = rotation == display::Display::ROTATE_90 ||
+                               rotation == display::Display::ROTATE_270;
+
+    // X margin is (1000 - 600) / 2 = 200 for with rotation.
+    // Y margin is (800 - 1000/800 * 600) / 2 = 25 for without rotation.
+    gfx::Insets expected_insets =
+        need_rotation ? gfx::Insets::VH(0, 200) : gfx::Insets::VH(25, 0);
+    EXPECT_EQ(expected_insets, transformer->GetHostInsets());
+
+    // Expected rect in mirror of the source root, x margin applied for with
+    // rotation and y margin applied for without rotation.
+    gfx::RectF expected_rect = need_rotation ? gfx::RectF(200, 0, 600, 800)
+                                             : gfx::RectF(0, 25, 1000, 750);
 
     gfx::RectF rect = transformer->GetTransform().MapRect(
         gfx::RectF(transformer->GetRootWindowBounds(gfx::Size())));
