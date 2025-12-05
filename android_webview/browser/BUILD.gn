@@ -321,7 +321,6 @@ source_set("browser") {
     "//components/tracing:background_tracing_utils",
     "//components/tracing:tracing_config",
     "//components/tracing:tracing_metrics",
-    "//components/translate/core/common",
     "//components/url_formatter",
     "//components/url_matcher",
     "//components/user_prefs",

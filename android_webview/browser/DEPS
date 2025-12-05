@@ -55,7 +55,6 @@ include_rules = [
   "+components/spellcheck/common",
   "+components/strings",
   "+components/tracing/common",
-  "+components/translate/core/common",
   "+components/url_formatter",
   "+components/url_matcher",
   "+components/user_prefs",

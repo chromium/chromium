@@ -10,8 +10,8 @@
 
 namespace translate {
 
-// Controls whether the TFLite-based language detection is enabled.
-BASE_DECLARE_FEATURE(kTFLiteLanguageDetectionEnabled);
+// The minimum score for the TFLite model prediction to be considered reliable.
+inline constexpr double kTFLiteReliabilityThreshold = 0.7;
 
 // Isolated world sets following security-origin by default.
 extern const char kSecurityOrigin[];

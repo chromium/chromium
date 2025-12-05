@@ -7,7 +7,6 @@
 #import "base/metrics/metrics_hashes.h"
 #import "base/path_service.h"
 #import "base/test/metrics/histogram_tester.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/values.h"
 #import "components/language_detection/ios/browser/language_detection_model_loader_service_ios.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
@@ -36,8 +35,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
  public:
   void SetUp() override {
     PlatformTest::SetUp();
-    scoped_feature_list_.InitWithFeatures(
-        {translate::kTFLiteLanguageDetectionEnabled}, {});
     OptimizationGuideServiceFactory::InitializePredictionModelStore();
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
@@ -63,7 +60,6 @@ class ChromeIOSTranslateClientTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
