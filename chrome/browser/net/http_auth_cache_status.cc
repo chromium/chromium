@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/common/content_client.h"
+#include "net/base/isolation_info.h"
 #include "net/base/network_anonymization_key.h"
 #include "net/base/schemeful_site.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"

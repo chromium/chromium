@@ -23,6 +23,7 @@
 #include "components/subresource_filter/core/common/common_features.h"
 #include "components/subresource_filter/core/common/time_measurements.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/base/isolation_info.h"
 #include "net/cookies/static_cookie_policy.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 #include "url/gurl.h"
