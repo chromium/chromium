@@ -100,8 +100,4 @@ bool ContentMainDelegate::ShouldInitializePerfetto(InvokedIn invoked_in) {
 }
 #endif
 
-bool ContentMainDelegate::IsInitFeatureListEarly() {
-  return false;
-}
-
 }  // namespace content

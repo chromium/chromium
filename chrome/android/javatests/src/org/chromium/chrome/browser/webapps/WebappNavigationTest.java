@@ -290,10 +290,6 @@ public class WebappNavigationTest {
     @Test
     @SmallTest
     @Feature({"Webapps"})
-    @DisabledTest(
-            message =
-                    "Does not support passing command line flags to Finch via setUp() - see"
-                            + " crbug.com/463649037")
     public void testOpenInChromeFromContextMenuTabbedChrome() throws Exception {
         // Needed to get full context menu.
         FirstRunStatus.setFirstRunFlowComplete(true);

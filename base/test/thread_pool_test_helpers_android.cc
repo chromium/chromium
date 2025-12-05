@@ -5,7 +5,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "base/base_java_test_support_uncommon_jni/ThreadPoolTestHelpers_jni.h"
+#include "base/test/test_support_jni_headers/ThreadPoolTestHelpers_jni.h"
 
 namespace base {
 

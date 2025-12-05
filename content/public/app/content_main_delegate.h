@@ -181,10 +181,6 @@ class CONTENT_EXPORT ContentMainDelegate {
   virtual bool ShouldInitializePerfetto(InvokedIn invoked_in);
 #endif
 
-  // Do we want to initialize feature list early?
-  // This is an experimental feature and its tracking bug is crbug.com/423925400
-  virtual bool IsInitFeatureListEarly();
-
  protected:
   friend class ContentClientCreator;
   friend class ContentClientInitializer;

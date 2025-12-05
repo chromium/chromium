@@ -98,9 +98,9 @@ class StartupData {
   TakeExtensionsBrowserClient();
 #endif
 
-  // TODO(martinkong): Remove this function and replace its usage with
-  // ChromeFeatureListCreator::GetInstance()
-  ChromeFeatureListCreator* chrome_feature_list_creator();
+  ChromeFeatureListCreator* chrome_feature_list_creator() {
+    return chrome_feature_list_creator_.get();
+  }
 
  private:
 #if BUILDFLAG(IS_ANDROID)
@@ -124,6 +124,8 @@ class StartupData {
   std::unique_ptr<extensions::ExtensionsBrowserClient>
       extensions_browser_client_;
 #endif
+
+  std::unique_ptr<ChromeFeatureListCreator> chrome_feature_list_creator_;
 };
 
 #endif  // CHROME_BROWSER_STARTUP_DATA_H_

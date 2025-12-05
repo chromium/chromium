@@ -339,11 +339,6 @@ inline constexpr base::FeatureParam<bool> kFallbackToModerateParam(
     "fallback_to_moderate",
     /*default_value=*/false);
 
-inline constexpr base::FeatureParam<bool> kInitFeatureListEarly(
-    &kLoadNativeEarly,
-    "init_feature_list_early",
-    /*default_value=*/true);
-
 inline constexpr base::FeatureParam<int>
     kReadAloudAudioOverviewsSpeedAdditionPercentage(
         &kReadAloudAudioOverviews,

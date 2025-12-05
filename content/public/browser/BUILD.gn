@@ -443,8 +443,6 @@ source_set("browser_sources") {
     "ssl_host_state_delegate.h",
     "ssl_status.cc",
     "ssl_status.h",
-    "startup_helper.cc",
-    "startup_helper.h",
     "storage_notification_service.h",
     "storage_partition.h",
     "storage_partition_config.cc",

@@ -805,15 +805,12 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   ash::InitializeDBus();
 #endif
 
+  // The DBus initialization above is needed for FeatureList creation here; and
+  // features are needed for Mojo initialization.
   ChromeFeatureListCreator* chrome_feature_list_creator =
       chrome_content_browser_client_->startup_data()
           ->chrome_feature_list_creator();
-
-  if (!IsInitFeatureListEarly()) {
-    // The DBus initialization above is needed for FeatureList creation here;
-    // and features are needed for Mojo initialization.
-    chrome_feature_list_creator->CreateFeatureList();
-  }
+  chrome_feature_list_creator->CreateFeatureList();
 
 #if BUILDFLAG(IS_OZONE)
   // Initialize Ozone platform and add required feature flags as per platform's
@@ -901,12 +898,10 @@ bool ChromeMainDelegate::ShouldInitializeMojo(InvokedIn invoked_in) {
 }
 
 void ChromeMainDelegate::CreateThreadPool(std::string_view name) {
-  if (!IsInitFeatureListEarly()) {
-    // The ThreadGroupProfiler client must be set before thread pool is created.
-    base::ThreadGroupProfiler::SetClient(
-        std::make_unique<ChromeThreadGroupProfilerClient>());
-    base::ThreadPoolInstance::Create(name);
-  }
+  // The ThreadGroupProfiler client must be set before thread pool is created.
+  base::ThreadGroupProfiler::SetClient(
+      std::make_unique<ChromeThreadGroupProfilerClient>());
+  base::ThreadPoolInstance::Create(name);
 
   // The ThreadProfiler client must be set before main thread profiling is
   // started (below).
@@ -1138,10 +1133,7 @@ std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
 
 #endif  // BUILDFLAG(IS_WIN)
 
-  if (!IsInitFeatureListEarly()) {
-    chrome::RegisterPathProvider();
-  }
-
+  chrome::RegisterPathProvider();
 #if BUILDFLAG(IS_CHROMEOS)
   ash::RegisterPathProvider();
   chromeos::dbus_paths::RegisterPathProvider();
@@ -1697,17 +1689,4 @@ void ChromeMainDelegate::InitializeMemorySystem() {
                                    PoissonAllocationSamplerInclusion::kEnforce,
                                allocation_recorder_inclusion, process_type)
       .Initialize(memory_system_);
-}
-
-bool ChromeMainDelegate::IsInitFeatureListEarly() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::CommandLine::ForCurrentProcess()
-             ->GetSwitchValueASCII(switches::kProcessType)
-             .empty() &&
-         chrome::android::IsJavaDrivenFeatureEnabled(
-             chrome::android::kLoadNativeEarly) &&
-         chrome::android::IsInitFeatureListEarlyFeatureParamEnabled();
-#else
-  return false;
-#endif
 }

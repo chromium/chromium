@@ -59,7 +59,6 @@ class ChromeTestChromeMainDelegate
   bool ShouldHandleConsoleControlEvents() override;
 #endif
   void CreateThreadPool(std::string_view name) override;
-  bool IsInitFeatureListEarly() override;
 };
 
 // Delegate used for setting up and running chrome browser tests.
