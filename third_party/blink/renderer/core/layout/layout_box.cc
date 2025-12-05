@@ -2490,6 +2490,11 @@ PhysicalRect LayoutBox::OverflowClipRect(
   return clip_rect;
 }
 
+PhysicalRect LayoutBox::OverflowClipRectForScrollNode(
+    const PhysicalOffset& location) const {
+  return OverflowClipRect(location);
+}
+
 bool LayoutBox::HasControlClip() const {
   NOT_DESTROYED();
   if (IsTextField() || IsMenuList() || IsInputButton()) [[unlikely]] {

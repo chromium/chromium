@@ -3079,7 +3079,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
   PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
   ScrollPaintPropertyNode::State state;
 
-  PhysicalRect clip_rect = box.OverflowClipRect(context_.current.paint_offset);
+  PhysicalRect clip_rect =
+      box.OverflowClipRectForScrollNode(context_.current.paint_offset);
   state.container_rect = ToPixelSnappedRect(clip_rect);
   state.contents_size =
       scrollable_area->PixelSnappedContentsSize(clip_rect.offset);

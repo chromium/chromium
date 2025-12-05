@@ -868,6 +868,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   virtual PhysicalRect OverflowClipRect(
       const PhysicalOffset& location,
       OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
+  virtual PhysicalRect OverflowClipRectForScrollNode(
+      const PhysicalOffset& location) const;
   PhysicalRect ClipRect(const PhysicalOffset& location) const;
 
   // Returns the combination of overflow clip, contain: paint clip and CSS clip

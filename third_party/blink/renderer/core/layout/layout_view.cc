@@ -557,6 +557,22 @@ PhysicalRect LayoutView::OverflowClipRect(
     const PhysicalOffset& location,
     OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
+  return OverflowClipRectInternal(location, overlay_scrollbar_clip_behavior,
+                                  false /* for_scroll_node */);
+}
+
+PhysicalRect LayoutView::OverflowClipRectForScrollNode(
+    const PhysicalOffset& location) const {
+  NOT_DESTROYED();
+  return OverflowClipRectInternal(location, kIgnoreOverlayScrollbarSize,
+                                  true /* for_scroll_node */);
+}
+
+PhysicalRect LayoutView::OverflowClipRectInternal(
+    const PhysicalOffset& location,
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
+    bool for_scroll_node) const {
+  NOT_DESTROYED();
   PhysicalRect rect = ViewRect();
   if (rect.IsEmpty()) {
     return LayoutBox::OverflowClipRect(location,
@@ -568,10 +584,14 @@ PhysicalRect LayoutView::OverflowClipRect(
   // When capturing the root snapshot for a transition, we paint the
   // background color where the scrollbar would be so keep the clip rect
   // the full ViewRect size.
+  // NOTE: When calculating the rect for scroll node, we don't want this
+  // behavior because scroll node dimensions (e.g. thumb length) shouldn't
+  // be affected by the view transition.
   auto* transition = ViewTransitionUtils::GetTransition(GetDocument());
   bool is_in_transition = transition && transition->IsRootTransitioning();
-  if (IsScrollContainer() && !is_in_transition)
+  if (IsScrollContainer() && (for_scroll_node || !is_in_transition)) {
     ExcludeScrollbars(rect, overlay_scrollbar_clip_behavior);
+  }
 
   return rect;
 }
