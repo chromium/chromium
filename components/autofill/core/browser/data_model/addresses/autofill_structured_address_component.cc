@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/zip.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_normalization_utils.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_format_provider.h"
@@ -501,7 +502,8 @@ void AddressComponent::ParseValueAndAssignSubcomponents() {
   // As a final fallback, parse using the fallback method.
   // In some countries (e.g. India), the parsing cannot be reliably implemented
   // and the fallback method does more harm than good.
-  if (!countries_not_supporting_fallback_parsing.contains(GetCountryCode())) {
+  if (!countries_not_supporting_fallback_parsing.contains(GetCountryCode()) ||
+      !base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel)) {
     ParseValueAndAssignSubcomponentsByFallbackMethod();
   }
 }
