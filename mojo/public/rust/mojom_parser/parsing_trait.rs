@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 //! FOR_RELASE: Docs
-
 use crate::ast::*;
 use crate::pack::pack_mojom_type;
+use std::collections::HashMap;
 
 /// This trait allows a type to be serialized/deserialized into a Mojom message.
 pub trait MojomParse:
@@ -203,5 +203,65 @@ impl<T: MojomParse, const N: usize> TryFrom<MojomValue> for [T; N] {
 impl<T: MojomParse, const N: usize> MojomParse for [T; N] {
     fn mojom_type() -> MojomType {
         MojomType::Array { element_type: Box::new(T::mojom_type()), num_elements: Some(N) }
+    }
+}
+
+// Implement MojomParse for Maps
+// Currently this is only implemented for HashMap, since that's
+// probably what most users will want, but we can extend it to
+// other map types if we need to.
+
+impl<K, V> From<HashMap<K, V>> for MojomValue
+where
+    K: MojomParse + Eq + std::hash::Hash,
+    V: MojomParse,
+{
+    fn from(value: HashMap<K, V>) -> MojomValue {
+        let hashmap = value.into_iter().map(|(k, v)| (k.into(), v.into())).collect();
+        MojomValue::Map(hashmap)
+    }
+}
+
+impl<K, V> TryFrom<MojomValue> for HashMap<K, V>
+where
+    K: MojomParse + Eq + std::hash::Hash,
+    V: MojomParse,
+{
+    type Error = anyhow::Error;
+
+    fn try_from(value: MojomValue) -> anyhow::Result<Self> {
+        if let MojomValue::Map(hashmap) = value {
+            let converted_map: Self = hashmap
+                .into_iter()
+                // Map to Result<(K, V)>
+                .map(|(k, v)| {
+                    let ret: anyhow::Result<(K, V)> = Ok((k.try_into()?, v.try_into()?));
+                    ret
+                })
+                // Fail if any of the conversions failed
+                // FOR_RELEASE: It would be nice to use Itertools::process_results
+                // instead of collecting here
+                .collect::<Result<_, _>>()?;
+            return Ok(converted_map);
+        } else {
+            anyhow::bail!(
+                "Cannot construct a value of type {} from this MojomValue: {:?}",
+                std::any::type_name::<Self>(),
+                value
+            );
+        }
+    }
+}
+
+impl<K, V> MojomParse for HashMap<K, V>
+where
+    K: MojomParse + Eq + std::hash::Hash,
+    V: MojomParse,
+{
+    fn mojom_type() -> MojomType {
+        MojomType::Map {
+            key_type: Box::new(K::mojom_type()),
+            value_type: Box::new(V::mojom_type()),
+        }
     }
 }

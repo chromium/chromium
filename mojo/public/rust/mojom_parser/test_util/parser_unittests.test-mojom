@@ -162,3 +162,13 @@ struct Arrays {
   array<array<uint8>> nested;
   array<array<uint8, 2>, 3> nested_sized;
 };
+
+struct Maps {
+  map<uint8, uint8> eights;
+  map<bool, uint16> bools;
+  map<TestEnum, int32> enums;
+  map<int8, FourInts> to_struct;
+  map<int8, NestedUnion> to_union;
+  map<int8, map<int16, uint32>> to_map;
+  // Strings are also allowed as keys, add that when we implement them
+};

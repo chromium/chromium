@@ -5,7 +5,8 @@
 use crate::ast::*;
 
 use anyhow::{bail, Context, Result};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result<&MojomValue> {
     let field_value = field_values.get(ordinal).with_context(|| {
@@ -53,6 +54,7 @@ where
             // FOR_RELEASE: Should we care about which type of array this was originally?
             | (PackedStructuredType::Array { .. }, MojomValue::Array { .. })
             | (PackedStructuredType::Array { .. }, MojomValue::String { .. })
+            | (PackedStructuredType::Map { .. }, MojomValue::Map { .. })
             | (PackedStructuredType::Union { .. }, MojomValue::Union { .. }) => true,
             _ => false,
         }
@@ -108,13 +110,18 @@ enum NestedData<'a> {
     },
     Array {
         elements: &'a Vec<MojomValue>,
-        element_type: &'a Box<MojomWireType>,
+        element_type: &'a Arc<MojomWireType>,
         array_type: &'a PackedArrayType,
     },
     Union {
         tag: u32,
         value: &'a Box<MojomValue>,
-        variants: &'a HashMap<u32, MojomWireType>,
+        variants: &'a BTreeMap<u32, MojomWireType>,
+    },
+    Map {
+        values_map: &'a BTreeMap<MojomValue, MojomValue>,
+        key_type: &'a Arc<MojomWireType>,
+        value_type: &'a Arc<MojomWireType>,
     },
 }
 /// Information about a nested struct/array, which we will emit later
@@ -153,7 +160,7 @@ pub fn deparse_struct(
 fn deparse_array(
     data: &mut Vec<u8>,
     element_values: &Vec<MojomValue>,
-    element_type: &Box<MojomWireType>,
+    element_type: &Arc<MojomWireType>,
     array_type: &PackedArrayType,
 ) -> Result<()> {
     let num_elements = element_values.len();
@@ -186,7 +193,7 @@ fn deparse_union<'a>(
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     tag: u32,
     value: &'a Box<MojomValue>,
-    variants: &'a HashMap<u32, MojomWireType>,
+    variants: &'a BTreeMap<u32, MojomWireType>,
 ) -> Result<()> {
     // Write the union's header
     let expected_wire_type = variants
@@ -206,6 +213,47 @@ fn deparse_union<'a>(
         std::slice::from_ref(&*value),
         std::iter::once(struct_ref_element),
     )
+}
+
+fn deparse_map(
+    data: &mut Vec<u8>,
+    values_map: &BTreeMap<MojomValue, MojomValue>,
+    key_type: &Arc<MojomWireType>,
+    value_type: &Arc<MojomWireType>,
+) -> Result<()> {
+    // FOR_RELEASE: These clones are way too expensive for production. We could
+    // avoid them by:
+    // 1. Using an Arc<[MojomValue]> or similar
+    // 2. Packing maps differently in the first place (having pack.rs create the
+    //    struct body for us)
+    // 3. Having the deparser take things by value
+    // I'm delaying the fix because we might want to do (3) anyway, which solves the
+    // problem easily. If not, we'll have to choose (1) and (2)
+    let (keys, values) = values_map.iter().map(|(k, v)| (k.clone(), v.clone())).unzip();
+    let field_values = vec![MojomValue::Array(keys), MojomValue::Array(values)];
+    let packed_fields = [
+        StructuredBodyElement::SingleValue(
+            0,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: key_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+            },
+        ),
+        StructuredBodyElement::SingleValue(
+            1,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: value_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+            },
+        ),
+    ];
+    deparse_struct(data, &field_values, &packed_fields)
 }
 
 /// Deparse the fields of a struct (or union) after having parsed its header
@@ -293,6 +341,10 @@ where
                                 MojomValue::Union(tag, value),
                                 PackedStructuredType::Union { variants, .. },
                             ) => NestedData::Union { tag: *tag, value, variants },
+                            (
+                                MojomValue::Map(values_map),
+                                PackedStructuredType::Map { key_type, value_type },
+                            ) => NestedData::Map { values_map, key_type, value_type },
                             _ => bail!(
                                 "Unexpected type for nested data: Expected {:?}, got {:?}",
                                 nested_data_type,
@@ -363,6 +415,9 @@ where
             NestedData::Union { tag, value, variants } => {
                 deparse_union(data, None, tag, value, variants)?
             }
+            NestedData::Map { values_map, key_type, value_type } => {
+                deparse_map(data, values_map, key_type, value_type)?
+            }
         }
     }
 
@@ -402,6 +457,13 @@ pub fn deparse_single_value_for_testing(
             },
             MojomValue::Union(tag, value),
         ) => deparse_union(&mut data, None, *tag, value, variants)?,
+        (
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Map { key_type, value_type },
+                ..
+            },
+            MojomValue::Map(values_map),
+        ) => deparse_map(&mut data, values_map, key_type, value_type)?,
         _ => {
             // This will fail, just calling for the error message
             let wire_elt: StructuredBodyElementMixed =

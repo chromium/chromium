@@ -19,7 +19,8 @@
 // bitfields.)
 
 use crate::ast::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 /// Return the number of bytes we need to skip to reach the given alignment.
 fn bytes_to_align(current_offset: usize, required_alignment: usize) -> usize {
@@ -150,7 +151,7 @@ fn pack_struct(fields: &[MojomType], field_names: &[String]) -> PackedStructured
     };
 }
 
-fn pack_union_variants(variants: &HashMap<u32, MojomType>) -> HashMap<u32, MojomWireType> {
+fn pack_union_variants(variants: &BTreeMap<u32, MojomType>) -> BTreeMap<u32, MojomWireType> {
     variants
         .iter()
         .map(|(tag, ty)| {
@@ -181,7 +182,7 @@ pub fn pack_mojom_type(ty: &MojomType) -> MojomWireType {
 
             MojomWireType::Pointer {
                 nested_data_type: PackedStructuredType::Array {
-                    element_type: Box::new(pack_mojom_type(element_type)),
+                    element_type: Arc::new(pack_mojom_type(element_type)),
                     array_type,
                 },
             }
@@ -189,8 +190,14 @@ pub fn pack_mojom_type(ty: &MojomType) -> MojomWireType {
         // Strings are packed as byte arrays
         MojomType::String => MojomWireType::Pointer {
             nested_data_type: PackedStructuredType::Array {
-                element_type: Box::new(pack_mojom_type(&MojomType::UInt8)),
+                element_type: Arc::new(pack_mojom_type(&MojomType::UInt8)),
                 array_type: PackedArrayType::String,
+            },
+        },
+        MojomType::Map { key_type, value_type } => MojomWireType::Pointer {
+            nested_data_type: PackedStructuredType::Map {
+                key_type: Arc::new(pack_mojom_type(key_type)),
+                value_type: Arc::new(pack_mojom_type(value_type)),
             },
         },
         MojomType::Bool => MojomWireType::Leaf { leaf_type: PackedLeafType::Bool },

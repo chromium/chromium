@@ -19,7 +19,8 @@
 use crate::ast::*;
 use crate::errors::*;
 use crate::parse_primitives::*;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 /// Parse a type without nested data, i.e. anything but a struct or array
 fn parse_leaf_element(data: &mut ParserData, ty: &PackedLeafType) -> ParsingResult<MojomValue> {
@@ -58,6 +59,28 @@ fn skip_to_alignment(data: &mut ParserData, alignment: usize) -> ParsingResult<(
         Ok(())
     } else {
         parse_padding(data, alignment - mismatch)
+    }
+}
+
+/// Check if the parsed keys for a map have duplicates, and error out if so
+fn check_for_duplicate_keys(offset: usize, keys: &[MojomValue]) -> ParsingResult<()> {
+    // Check by inserting the keys into a hashset.
+    // insert returns false if the value was already present.
+    // Note that inserting references still compares the underlying values.
+    let mut unique_keys = std::collections::HashSet::new();
+    let mut dup = MojomValue::Bool(false);
+    let dup_exists = keys.iter().any(|item| {
+        if !unique_keys.insert(item) {
+            dup = item.clone();
+            true
+        } else {
+            false
+        }
+    });
+    if dup_exists {
+        Err(ParsingError::duplicate_map_key(offset, dup))
+    } else {
+        Ok(())
     }
 }
 
@@ -133,7 +156,7 @@ pub fn parse_struct(
 
 fn parse_array(
     data: &mut ParserData,
-    element_type: &Box<MojomWireType>,
+    element_type: &Arc<MojomWireType>,
     array_type: &PackedArrayType,
 ) -> ParsingResult<MojomValue> {
     // Parse the array header
@@ -195,7 +218,7 @@ fn parse_array(
 fn parse_union<'a>(
     data: &mut ParserData,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
-    variants: &'a HashMap<u32, MojomWireType>,
+    variants: &'a BTreeMap<u32, MojomWireType>,
 ) -> ParsingResult<(u32, Option<MojomValue>)> {
     // Parse the union header
     let size_in_bytes = parse_size(data, false)?;
@@ -237,6 +260,69 @@ fn parse_union<'a>(
     };
 
     Ok((tag, ret))
+}
+
+fn parse_map(
+    data: &mut ParserData,
+    key_type: &Arc<MojomWireType>,
+    value_type: &Arc<MojomWireType>,
+) -> ParsingResult<MojomValue> {
+    let initial_bytes_parsed = data.bytes_parsed();
+    // Maps are encoded as a struct containing a pair of arrays, one for
+    // the keys and one for the corresponding values.
+    let field_names = ["map_keys".to_string(), "map_values".to_string()];
+    // FOR_RELEASE: This code is duplicated in deparse_values, maybe abstract
+    // it out.
+    let fields = [
+        StructuredBodyElement::SingleValue(
+            0,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: key_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+            },
+        ),
+        StructuredBodyElement::SingleValue(
+            1,
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array {
+                    // This clone is cheap because it's in an Arc
+                    element_type: value_type.clone(),
+                    array_type: PackedArrayType::UnsizedArray,
+                },
+            },
+        ),
+    ];
+    let parsed_arrays = parse_struct(data, &field_names, &fields, 2)?;
+    let parsed_fields = match parsed_arrays {
+        MojomValue::Struct(_, fields) => fields,
+        _ => panic!(
+            "Tried to parse a map like a struct, but got a non-struct MojomValue: {:?}",
+            parsed_arrays
+        ),
+    };
+    let [keys, values] = parsed_fields.try_into().unwrap();
+    match (keys, values) {
+        (MojomValue::Array(keys), MojomValue::Array(values)) => {
+            if keys.len() != values.len() {
+                return Err(ParsingError::mismatched_map(
+                    initial_bytes_parsed,
+                    keys.len(),
+                    values.len(),
+                ));
+            }
+            // Map bodies are 24 bytes, and the key array immediately follows them.
+            let key_offset = initial_bytes_parsed + 24;
+            check_for_duplicate_keys(key_offset, &keys)?;
+            let map_val = keys.into_iter().zip(values).collect();
+            Ok(MojomValue::Map(map_val))
+        }
+        elts => {
+            panic!("Tried to parse a map like a struct, but got non-array elements: {:?} ", elts)
+        }
+    }
 }
 
 /// Parse the body of a struct, array, or union, having already consumed its
@@ -397,6 +483,9 @@ where
             PackedStructuredType::Union { variants } => parse_union(data, None, variants)?
                 .1
                 .expect("Parsing nested union should always return a value"),
+            PackedStructuredType::Map { key_type, value_type } => {
+                parse_map(data, key_type, value_type)?
+            }
         };
         if let Some(tag) = nested_data.union_discriminant {
             parsed_data = MojomValue::Union(tag, Box::new(parsed_data))
@@ -434,6 +523,9 @@ pub fn parse_single_value_for_testing(
             }
             PackedStructuredType::Union { .. } => {
                 panic!("Standalone unions are never behind pointers")
+            }
+            PackedStructuredType::Map { key_type, value_type } => {
+                parse_map(&mut data, key_type, value_type)
             }
         },
         MojomWireType::Union { variants } => Ok(parse_union(&mut data, None, variants)?

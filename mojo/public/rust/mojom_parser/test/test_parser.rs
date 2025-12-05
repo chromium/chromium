@@ -621,3 +621,166 @@ fn test_array_parsing() -> anyhow::Result<()> {
 
     Ok(())
 }
+
+// Note that tests involving maps are especially tricky, because semantically
+// the order of (key, value) pairs doesn't matter, but since we do exact
+// comparisons it matters when we specify the wire data here.
+// Our implementation uses a BTreeMap to guarantee that we always serialize in
+// a sorted order.
+#[gtest(MojomParser, TestMapParsing)]
+fn test_map_parsing() -> anyhow::Result<()> {
+    use std::collections::HashMap;
+
+    validate_parsing::<HashMap<i8, i8>>(
+        [(1, 10), (3, 40), (8, 99)].into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr ",
+            "[u4]11 [u4]3 ", // Keys header: size, num_elements
+            "[s1]1 [s1]3 [s1]8 [u1]0 [u4]0 ",
+            // values array
+            "[anchr]values_ptr ",
+            "[u4]11 [u4]3 ", // Values header: size, num_elements
+            "[s1]10 [s1]40 [s1]99 [u1]0 [u4]0 ",
+        ),
+    )?;
+
+    // Empty maps are fine
+    validate_parsing::<HashMap<i8, i8>>(
+        [].into(),
+        concat!(
+            // Map struct
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr [u4]8 [u4]0 ",
+            // values array
+            "[anchr]values_ptr [u4]8 [u4]0 ",
+        ),
+    )?;
+
+    // Mismatched sizes are not fine
+    validate_parsing_failure::<HashMap<i8, i8>>(concat!(
+        // Map struct
+        "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+        // keys array
+        "[anchr]keys_ptr [u4]9 [u4]1 ",
+        "[s1]1 [s1]0 [s2]0 [s4]0 ",
+        // values array
+        "[anchr]values_ptr [u4]8 [u4]0 ",
+    ))?;
+    validate_parsing_failure::<HashMap<i8, i8>>(concat!(
+        // Map struct
+        "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+        // keys array
+        "[anchr]keys_ptr [u4]9 [u4]1 ",
+        "[s1]1 [s1]0 [s2]0 [s4]0 ",
+        // values array
+        "[anchr]values_ptr [u4]10 [u4]2 ",
+        "[s1]2 [s1]3 [s2]0 [s4]0 ",
+    ))?;
+
+    // Nor are duplicate keys
+    validate_parsing_failure::<HashMap<i8, i8>>(concat!(
+        // Map struct
+        "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+        // keys array
+        "[anchr]keys_ptr [u4]10 [u4]2 ",
+        "[s1]1 [s1]1 [s2]0 [s4]0 ",
+        // values array
+        "[anchr]values_ptr [u4]10 [u4]2 ",
+        "[s1]2 [s1]3 [s2]0 [s4]0 ",
+    ))?;
+
+    validate_parsing::<HashMap<bool, u16>>(
+        [(false, 1020), (true, 3040)].into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr ",
+            "[u4]9 [u4]2 [b]00000010 [u1]0 [u2]0 [u4]0 ",
+            // values array
+            "[anchr]values_ptr ",
+            "[u4]12 [u4]2 [u2]1020 [u2]3040 [u4]0",
+        ),
+    )?;
+
+    validate_parsing::<HashMap<TestEnum, i32>>(
+        [(TestEnum::Seven, -2), (TestEnum::Four, -3), (TestEnum::Zero, -1), (TestEnum::Three, -3)]
+            .into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr ",
+            // Note that keys are sorted in ascending order
+            "[u4]24 [u4]4 [u4]0 [u4]3 [u4]4 [u4]7 ",
+            // values array
+            "[anchr]values_ptr ",
+            // And the values are sorted to match
+            "[u4]24 [u4]4 [s4]-1 [s4]-3 [s4]-3 [s4]-2 ",
+        ),
+    )?;
+
+    validate_parsing::<HashMap<i8, FourInts>>(
+        [(1, FourInts { a: 1, b: 2, c: 3, d: 4 }), (5, FourInts { a: 5, b: 6, c: 7, d: 8 })].into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr [u4]10 [u4]2 [s1]1 [s1]5 [u2]0 [u4]0 ",
+            // values array
+            "[anchr]values_ptr ",
+            "[u4]24 [u4]2 [dist8]v0 [dist8]v1 ",
+            "[anchr]v0 [u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4 ",
+            "[anchr]v1 [u4]24 [u4]0 [s1]5 [u1]0 [s2]6 [s4]7 [s8]8 ",
+        ),
+    )?;
+
+    validate_parsing::<HashMap<i8, NestedUnion>>(
+        [
+            (-1, NestedUnion::n(10)),
+            (-2, NestedUnion::u(BaseUnion::e1(TestEnum::Seven))),
+            (-3, NestedUnion::n(23)),
+        ]
+        .into(),
+        concat!(
+            // Map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // keys array
+            "[anchr]keys_ptr [u4]11 [u4]3 [s1]-3 [s1]-2 [s1]-1 [s1]0 [u4]0 ",
+            // values array
+            "[anchr]values_ptr ",
+            "[u4]56 [u4]3 ",
+            "[u4]16 [u4]0 [u8]23 ",
+            "[u4]16 [u4]1 [dist8]v1 ",
+            "[u4]16 [u4]0 [u8]10 ",
+            "[anchr]v1 [u4]16 [u4]2 [u8]7",
+        ),
+    )?;
+
+    validate_parsing::<HashMap<i8, HashMap<i16, u32>>>(
+        [(1, [(10, 100), (20, 200)].into()), (2, [(30, 300), (40, 400), (50, 500)].into())].into(),
+        concat!(
+            // Toplevel map header
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            // Toplevel keys array
+            "[anchr]keys_ptr [u4]10 [u4]2 [s1]1 [s1]2 [u2]0 [u4]0 ",
+            // Toplevel values array
+            "[anchr]values_ptr ",
+            "[u4]24 [u4]2 [dist8]v0 [dist8]v1 ",
+            // First nested map
+            "[anchr]v0 [u4]24 [u4]0 [dist8]v0_keys [dist8]v0_values ",
+            "[anchr]v0_keys [u4]12 [u4]2 [s2]10 [s2]20 [u4]0 ",
+            "[anchr]v0_values [u4]16 [u4]2 [u4]100 [u4]200 ",
+            // Second nested map
+            "[anchr]v1 [u4]24 [u4]0 [dist8]v1_keys [dist8]v1_values ",
+            "[anchr]v1_keys [u4]14 [u4]3 [s2]30 [s2]40 [s2]50 [u2]0 ",
+            "[anchr]v1_values [u4]20 [u4]3 [u4]300 [u4]400 [u4]500 [u4]0 ",
+        ),
+    )?;
+
+    Ok(())
+}

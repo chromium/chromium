@@ -24,6 +24,7 @@ use rust_gtest_interop::prelude::*;
 
 use mojom_parser_core::*;
 use parser_unittests_rust::parser_unittests::*;
+use std::collections::HashMap;
 use std::sync::LazyLock;
 
 /// Represents a type defined in a Mojom file.
@@ -1004,7 +1005,7 @@ macro_rules! packed_array {
     ($element_type:expr, $num_elements:expr) => {
         MojomWireType::Pointer {
             nested_data_type: PackedStructuredType::Array {
-                element_type: Box::new($element_type),
+                element_type: std::sync::Arc::new($element_type),
                 array_type: if let Some(n) = $num_elements {
                     PackedArrayType::SizedArray(n)
                 } else {
@@ -1331,6 +1332,222 @@ fn test_arrays() {
             vec![FourInts { a: 12, b: 22, c: 32, d: 42 }, FourInts { a: 52, b: 62, c: 72, d: 82 }],
             vec![vec![11, 22], vec![33, 44, 55]],
             [[16, 17], [18, 19], [20, 21]],
+        ),
+    );
+}
+
+macro_rules! map {
+    ($key_type:expr, $value_type:expr) => {
+        MojomType::Map { key_type: Box::new($key_type), value_type: Box::new($value_type) }
+    };
+}
+
+macro_rules! packed_map {
+    ($key_type:expr, $value_type:expr) => {
+        MojomWireType::Pointer {
+            nested_data_type: PackedStructuredType::Map {
+                key_type: std::sync::Arc::new($key_type),
+                value_type: std::sync::Arc::new($value_type),
+            },
+        }
+    };
+}
+
+// Mojom Definition:
+// map<uint8, uint8>
+static MAP_U8_U8_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<uint8, uint8>",
+    base_type: map!(MojomType::UInt8, MojomType::UInt8),
+    packed_type: packed_map!(bare_leaf!(PackedLeafType::UInt8), bare_leaf!(PackedLeafType::UInt8)),
+});
+
+fn map_u8_u8_mojom(elts: HashMap<u8, u8>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::UInt8(k), MojomValue::UInt8(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// map<bool, uint16>
+static MAP_BOOL_U16_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<bool, uint16>",
+    base_type: map!(MojomType::Bool, MojomType::UInt16),
+    packed_type: packed_map!(bare_leaf!(PackedLeafType::Bool), bare_leaf!(PackedLeafType::UInt16)),
+});
+
+fn map_bool_u16_mojom(elts: HashMap<bool, u16>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::Bool(k), MojomValue::UInt16(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// map<TestEnum, int32>
+static MAP_ENUM_I32_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<TestEnum, int32>",
+    base_type: map!(MojomType::Enum { is_valid: TEST_ENUM_PRED }, MojomType::Int32),
+    packed_type: packed_map!(
+        bare_leaf!(PackedLeafType::Enum { is_valid: TEST_ENUM_PRED }),
+        bare_leaf!(PackedLeafType::Int32)
+    ),
+});
+
+fn map_enum_i32_mojom(elts: HashMap<TestEnum, i32>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::Enum(k.into()), MojomValue::Int32(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// map<int8, FourInts>
+static MAP_I8_FOURINTS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<int8, FourInts>",
+    base_type: map!(MojomType::Int8, FOUR_INTS_TY.base_type.clone()),
+    packed_type: packed_map!(bare_leaf!(PackedLeafType::Int8), FOUR_INTS_TY.packed_type.clone()),
+});
+
+fn map_i8_fourints_mojom(elts: HashMap<i8, FourInts>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// map<int8, NestedUnion>
+static MAP_I8_NESTEDUNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<int8, NestedUnion>",
+    base_type: map!(MojomType::Int8, NESTED_UNION_TY.base_type.clone()),
+    packed_type: packed_map!(bare_leaf!(PackedLeafType::Int8), NESTED_UNION_TY.packed_type.clone()),
+});
+
+fn map_i8_nestedunion_mojom(elts: HashMap<i8, NestedUnion>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// map<int8, map<int16, uint32>>
+static MAP_I8_MAP_I16_U32_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<int8, map<int16, uint32>>",
+    base_type: map!(MojomType::Int8, map!(MojomType::Int16, MojomType::UInt32)),
+    packed_type: packed_map!(
+        bare_leaf!(PackedLeafType::Int8),
+        packed_map!(bare_leaf!(PackedLeafType::Int16), bare_leaf!(PackedLeafType::UInt32))
+    ),
+});
+
+fn map_i8_map_i16_u32_mojom(elts: HashMap<i8, HashMap<i16, u32>>) -> MojomValue {
+    MojomValue::Map(
+        elts.into_iter().map(|(k, v)| (MojomValue::Int8(k), MojomValue::from(v))).collect(),
+    )
+}
+
+// Mojom Definition:
+// struct Maps {
+//   map<uint8, uint8> eights;
+//   map<bool, uint16> bools;
+//   map<TestEnum, int32> enums;
+//   map<int8, FourInts> to_struct;
+//   map<int8, NestedUnion> to_union;
+//   map<int8, map<int16, uint32>> to_map;
+// }
+static MAPS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "Maps",
+    base_type: wrap_struct_fields_type(vec![
+        ("eights".to_string(), MAP_U8_U8_TY.base_type.clone()),
+        ("bools".to_string(), MAP_BOOL_U16_TY.base_type.clone()),
+        ("enums".to_string(), MAP_ENUM_I32_TY.base_type.clone()),
+        ("to_struct".to_string(), MAP_I8_FOURINTS_TY.base_type.clone()),
+        ("to_union".to_string(), MAP_I8_NESTEDUNION_TY.base_type.clone()),
+        ("to_map".to_string(), MAP_I8_MAP_I16_U32_TY.base_type.clone()),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("eights".to_string(), MAP_U8_U8_TY.as_struct_field(0)),
+            ("bools".to_string(), MAP_BOOL_U16_TY.as_struct_field(1)),
+            ("enums".to_string(), MAP_ENUM_I32_TY.as_struct_field(2)),
+            ("to_struct".to_string(), MAP_I8_FOURINTS_TY.as_struct_field(3)),
+            ("to_union".to_string(), MAP_I8_NESTEDUNION_TY.as_struct_field(4)),
+            ("to_map".to_string(), MAP_I8_MAP_I16_U32_TY.as_struct_field(5)),
+        ],
+        6,
+    ),
+});
+
+fn maps_mojom(
+    eights: HashMap<u8, u8>,
+    bools: HashMap<bool, u16>,
+    enums: HashMap<TestEnum, i32>,
+    to_struct: HashMap<i8, FourInts>,
+    to_union: HashMap<i8, NestedUnion>,
+    to_map: HashMap<i8, HashMap<i16, u32>>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("eights".to_string(), map_u8_u8_mojom(eights)),
+        ("bools".to_string(), map_bool_u16_mojom(bools)),
+        ("enums".to_string(), map_enum_i32_mojom(enums)),
+        ("to_struct".to_string(), map_i8_fourints_mojom(to_struct)),
+        ("to_union".to_string(), map_i8_nestedunion_mojom(to_union)),
+        ("to_map".to_string(), map_i8_map_i16_u32_mojom(to_map)),
+    ])
+}
+
+#[gtest(MojomParser, TestMaps)]
+fn test_maps() {
+    let eights_data = [(1, 2), (3, 4)];
+    MAP_U8_U8_TY.validate_mojomparse::<HashMap<u8, u8>>(
+        eights_data.clone().into(),
+        map_u8_u8_mojom(eights_data.clone().into()),
+    );
+
+    let bools_data = [(true, 10), (false, 20)];
+    MAP_BOOL_U16_TY.validate_mojomparse::<HashMap<bool, u16>>(
+        bools_data.clone().into(),
+        map_bool_u16_mojom(bools_data.clone().into()),
+    );
+
+    let enums_data = [(TestEnum::Zero, -1), (TestEnum::Seven, -2)];
+    MAP_ENUM_I32_TY.validate_mojomparse::<HashMap<TestEnum, i32>>(
+        enums_data.clone().into(),
+        map_enum_i32_mojom(enums_data.clone().into()),
+    );
+
+    let to_struct_data = [(5, FourInts { a: 1, b: 2, c: 3, d: 4 })];
+    MAP_I8_FOURINTS_TY.validate_mojomparse::<HashMap<i8, FourInts>>(
+        to_struct_data.clone().into(),
+        map_i8_fourints_mojom(to_struct_data.clone().into()),
+    );
+
+    let to_union_data = [(-8, NestedUnion::n(50)), (-9, NestedUnion::u(BaseUnion::n1(10)))];
+    MAP_I8_NESTEDUNION_TY.validate_mojomparse::<HashMap<i8, NestedUnion>>(
+        to_union_data.clone().into(),
+        map_i8_nestedunion_mojom(to_union_data.clone().into()),
+    );
+
+    let to_map_data =
+        [(1, [(10, 100), (20, 200)].into()), (2, [(30, 300), (40, 400), (50, 500)].into())];
+    MAP_I8_MAP_I16_U32_TY.validate_mojomparse::<HashMap<i8, HashMap<i16, u32>>>(
+        to_map_data.clone().into(),
+        map_i8_map_i16_u32_mojom(to_map_data.clone().into()),
+    );
+
+    MAPS_TY.validate_mojomparse(
+        Maps {
+            eights: eights_data.clone().into(),
+            bools: bools_data.clone().into(),
+            enums: enums_data.clone().into(),
+            to_struct: to_struct_data.clone().into(),
+            to_union: to_union_data.clone().into(),
+            to_map: to_map_data.clone().into(),
+        },
+        maps_mojom(
+            eights_data.into(),
+            bools_data.into(),
+            enums_data.into(),
+            to_struct_data.into(),
+            to_union_data.into(),
+            to_map_data.into(),
         ),
     );
 }

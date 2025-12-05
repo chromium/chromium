@@ -7,7 +7,8 @@
 //! This module provides the ability to represent Mojom types and values as
 //! rust enums.
 
-use std::collections::HashMap;
+use std::collections::BTreeMap;
+use std::sync::Arc;
 
 // FOR_RELEASE: The current AST is dead simple: standard recursive data
 // structures. We'll probably need an intermediate one as well to represent data
@@ -35,13 +36,14 @@ pub enum MojomType {
     UInt64,
     String,
     Enum { is_valid: Predicate<u32> },
-    Union { variants: HashMap<u32, MojomType> },
+    Union { variants: BTreeMap<u32, MojomType> },
     // `field_names` is only for debugging; it should have the same
     // length as `fields`
     Struct { field_names: Vec<String>, fields: Vec<MojomType> },
     // Mojom has separate sized/unsized array types; we could have two variants here, but
     // rust's type system can't enforce that the length is correct so there's little point.
     Array { element_type: Box<MojomType>, num_elements: Option<usize> },
+    Map { key_type: Box<MojomType>, value_type: Box<MojomType> },
 }
 
 /// Representation of a value of a MojomType. These are what get encoded/decoded
@@ -49,7 +51,7 @@ pub enum MojomType {
 // FOR_RELEASE: For the first iteration of the parser where we don't worry
 // about trying to be zero-copy, we just have this type own all its data.
 // We should migrate to a view type when we figure out how.
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
 pub enum MojomValue {
     Bool(bool),
     Int8(i8),
@@ -66,6 +68,8 @@ pub enum MojomValue {
     Struct(Vec<String>, Vec<MojomValue>),
     // Invariant: all MojomValues in the array are the same type.
     Array(Vec<MojomValue>),
+    // We use a BTreeMap so that we get a consistent ordering when serializing.
+    Map(BTreeMap<MojomValue, MojomValue>),
 }
 
 /**************************************************************** */
@@ -107,7 +111,7 @@ pub enum MojomWireType {
     Pointer { nested_data_type: PackedStructuredType },
     /// A 128-bit value (not a pointer!) which contains a tag and a 64-bit value
     /// (which may be a pointer).
-    Union { variants: HashMap<u32, MojomWireType> },
+    Union { variants: BTreeMap<u32, MojomWireType> },
 }
 
 /// This type represents an element in the body of a struct, array, or union.
@@ -170,11 +174,16 @@ pub enum PackedStructuredType {
         num_elements_in_value: usize,
     },
     Array {
-        element_type: Box<MojomWireType>,
+        // This uses Arc instead of Box so we can cheaply clone it during (de)parsing
+        element_type: Arc<MojomWireType>,
         array_type: PackedArrayType,
     },
     Union {
-        variants: HashMap<u32, MojomWireType>,
+        variants: BTreeMap<u32, MojomWireType>,
+    },
+    Map {
+        key_type: Arc<MojomWireType>,
+        value_type: Arc<MojomWireType>,
     },
 }
 
@@ -248,8 +257,8 @@ impl StructuredBodyElementOwned {
 }
 
 /**************************************************************** */
-// Helper types that don't logically appear as part of the AST,
-// but which are needed to satisfy the compiler
+// Helper types and impls that don't logically appear as part of
+//  the AST, but which are needed to satisfy the compiler.
 /*************************************************************** */
 
 /// A function which returns boolean. This is its own type so that

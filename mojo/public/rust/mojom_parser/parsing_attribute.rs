@@ -179,11 +179,11 @@ fn derive_mojomparse_union(
             }
 
             use mojom_parser_core::*;
-            use std::collections::HashMap;
+            use std::collections::BTreeMap;
 
             impl MojomParse for #name {
                 fn mojom_type() -> MojomType {
-                    let variants : HashMap<u32, MojomType> = [
+                    let variants : BTreeMap<u32, MojomType> = [
                         #(#mojom_type_fields),*
                     ].into();
                     MojomType::Union { variants }

@@ -40,6 +40,11 @@ def _MojomTypeToRustType(ty: mojom.Kind) -> str:
     else:
       return f"Vec<{elt_ty}>"
 
+  if mojom.IsMapKind(ty):
+    key_ty = _MojomTypeToRustType(ty.key_kind)
+    value_ty = _MojomTypeToRustType(ty.value_kind)
+    return f"HashMap<{key_ty}, {value_ty}>"
+
   if ty not in _mojom_primitive_type_to_rust_type:
     # Raising from a jinja2 call won't display the error message
     print(f"Mojom type {ty} is either undefined, "
