@@ -10,6 +10,7 @@ source_set("actor") {
   deps = [
     "//base",
     "//chrome/browser/actor",
+    "//chrome/browser/actor/ui",
     "//chrome/browser/glic",
     "//chrome/browser/glic:mojo_bindings",
     "//chrome/common:actor_webui_mojom",

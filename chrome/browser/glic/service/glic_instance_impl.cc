@@ -959,7 +959,14 @@ void GlicInstanceImpl::MaybeActivateForegroundEmbedder() {
     }
   }
 
+  OnAllEmbeddersInactive();
+}
+
+void GlicInstanceImpl::OnAllEmbeddersInactive() {
   NotifyInstanceActivationChanged(false);
+  // Attempt to show toast on UI deactivated (and not replaced by anything
+  // else).
+  actor_task_manager_->MaybeShowDeactivationToastUi();
   // This call might delete `this`.
   remove_blank_instance_timer_.Start(
       FROM_HERE, kRemoveBlankInstanceDelay.Get(), this,
