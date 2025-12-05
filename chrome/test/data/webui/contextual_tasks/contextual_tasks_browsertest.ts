@@ -13,6 +13,18 @@ import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_p
 const fixtureUrl = 'chrome://webui-test/contextual_tasks/test.html';
 
 suite('ContextualTasksAppTest', function() {
+  let initialUrl: string;
+
+  suiteSetup(() => {
+    initialUrl = window.location.href;
+  });
+
+  setup(() => {
+    if (initialUrl) {
+      window.history.replaceState({}, '', initialUrl);
+    }
+  });
+
   test('gets thread url', async () => {
     const proxy = new TestContextualTasksBrowserProxy(fixtureUrl);
     BrowserProxyImpl.setInstance(proxy);
