@@ -43,6 +43,8 @@ plugin.addEventListener('message', e => {
           message as unknown as {caretBrowsingEnabled: boolean};
       caretBrowsingEnabled = caretBrowsingEnabledData.caretBrowsingEnabled;
       break;
+    default:
+      break;
   }
 
   channel.port1.postMessage(message);
@@ -104,6 +106,9 @@ channel.port1.onmessage = e => {
             break;
         }
       }
+      break;
+
+    default:
       break;
   }
 
@@ -264,6 +269,8 @@ document.addEventListener('keypress', e => {
       if (!isFormFieldFocused) {
         e.preventDefault();
       }
+      break;
+    default:
       break;
   }
 });

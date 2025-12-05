@@ -25,7 +25,7 @@ import './elements/viewer_toolbar.js';
 
 import {PdfHelpBubbleProxyImpl} from 'chrome://resources/cr_components/help_bubble/pdf_help_bubble_proxy.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {LoadTimeDataRaw} from 'chrome://resources/js/load_time_data.js';
 import {listenOnce} from 'chrome://resources/js/util.js';
@@ -570,7 +570,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
             this.isInTextAnnotationMode_()) {
           this.maybeCreateTextAnnotation_();
         }
-        // </if>
+        return;
+      // </if>
+      default:
+        break;
     }
 
     // Handle toolbar related key events.
@@ -629,6 +632,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         return;
       // </if>  not is_macosx
       // </if>  enable_pdf_ink2
+      default:
+        break;
     }
   }
 
@@ -1015,9 +1020,10 @@ export class PdfViewerElement extends PdfViewerBaseElement {
           case 'Paste':
             record(UserAction.PASTE);
             return;
+          default:
+            assertNotReached(
+                'Unknown executedEditCommand data received: ' + editCommand);
         }
-        assertNotReached(
-            'Unknown executedEditCommand data received: ' + editCommand);
       // <if expr="enable_pdf_ink2">
       case 'finishInkStroke':
         const modifiedData = data as unknown as {modified: boolean};
@@ -1113,8 +1119,9 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         }
         return;
         // </if>
+      default:
+        assertNotReached('Unknown message type received: ' + data.type);
     }
-    assertNotReached('Unknown message type received: ' + data.type);
   }
 
   forceFit(view: FittingType): void {
@@ -1858,6 +1865,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         // test.
         record(UserAction.SAVE_SEARCHIFIED);
         break;
+      default:
+        assertNotReachedCase(requestType);
     }
   }
 

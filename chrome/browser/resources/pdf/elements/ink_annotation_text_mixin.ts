@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import type {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Color, TextAttributes} from '../constants.js';
@@ -78,6 +79,8 @@ export const InkAnnotationTextMixin =
               return 'ink2TextFontSerif';
             case TextTypeface.MONOSPACE:
               return 'ink2TextFontMonospace';
+            default:
+              assertNotReachedCase(typeface);
           }
         }
 

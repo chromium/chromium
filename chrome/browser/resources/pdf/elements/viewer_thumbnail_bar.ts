@@ -237,6 +237,8 @@ export class ViewerThumbnailBarElement extends CrLitElement {
         e.preventDefault();
         this.clickThumbnailForPage(this.activePage - 1);
         break;
+      default:
+        break;
     }
   }
 

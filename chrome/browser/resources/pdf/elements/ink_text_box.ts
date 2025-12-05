@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -37,6 +37,8 @@ function getStyleForTypeface(typeface: TextTypeface): string {
       return 'Times, serif';
     case TextTypeface.MONOSPACE:
       return '"Courier New", monospace';
+    default:
+      assertNotReachedCase(typeface);
   }
 }
 
@@ -470,6 +472,8 @@ export class InkTextBoxElement extends InkTextBoxElementBase {
         break;
       case 'ArrowRight':
         moveX = this.keyDownCount_;
+        break;
+      default:
         break;
     }
     this.onMove_(target, moveX, moveY);
