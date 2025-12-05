@@ -329,6 +329,29 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, ToggleSidePanel) {
       browser()->GetBrowserView().contents_height_side_panel()->GetVisible());
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, VerifyFocusOrder) {
+  Init();
+  coordinator()->DisableAnimationsForTesting();
+  coordinator()->Show(SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks));
+  SidePanel* side_panel =
+      browser()->GetBrowserView().contents_height_side_panel();
+  auto children_in_focus_order = side_panel->GetChildrenFocusList();
+  auto resize_it =
+      std::find(children_in_focus_order.begin(), children_in_focus_order.end(),
+                side_panel->resize_area_for_testing());
+  EXPECT_NE(resize_it, children_in_focus_order.end());
+  auto header_it = std::find(children_in_focus_order.begin(),
+                             children_in_focus_order.end(), GetHeader());
+  EXPECT_NE(header_it, children_in_focus_order.end());
+  auto content_it =
+      std::find(children_in_focus_order.begin(), children_in_focus_order.end(),
+                side_panel->GetContentParentView());
+  EXPECT_NE(content_it, children_in_focus_order.end());
+  // Verify the order is resize area -> header -> content.
+  EXPECT_LT(resize_it, header_it);
+  EXPECT_LT(header_it, content_it);
+}
+
 IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest, OpenWhileClosing) {
   Init();
 
