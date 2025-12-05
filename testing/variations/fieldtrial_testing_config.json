@@ -12653,6 +12653,24 @@
             ]
         }
     ],
+    "HeliosZeroStateSuggestions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ZeroStateSuggestionsPlacementAskGemini": "true"
+                    },
+                    "enable_features": [
+                        "ZeroStateSuggestions"
+                    ]
+                }
+            ]
+        }
+    ],
     "HelpAppLauncherSearch": [
         {
             "platforms": [
