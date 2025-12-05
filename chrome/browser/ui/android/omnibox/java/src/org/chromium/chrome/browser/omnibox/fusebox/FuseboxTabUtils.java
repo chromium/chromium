@@ -37,11 +37,14 @@ public class FuseboxTabUtils {
      * @param tab The tab to be checked.
      */
     public static boolean isTabActive(@Nullable Tab tab) {
+        // Note: this intentionally accepts tabs that haven't finished loading.
+        // Fully loaded state should not be required and doesn't imply the content isn't available.
+        // Certain pages may not fully complete loading if part of the content takes longer than
+        // usual.
         return tab != null
                 && tab.isInitialized()
                 && !tab.isFrozen()
                 && tab.getWebContents() != null
-                && !tab.getWebContents().isLoading()
                 && tab.getWebContents().getRenderWidgetHostView() != null;
     }
 }
