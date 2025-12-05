@@ -14,7 +14,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -35,8 +34,6 @@ import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThem
 public class NtpThemeDailyRefreshManagerUnitTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     @Rule public FakeTimeTestRule mFakeTime = new FakeTimeTestRule();
-
-    @Mock private NtpCustomizationUtils mNtpCustomizationUtils;
 
     private NtpThemeDailyRefreshManager mManager;
 
@@ -66,34 +63,44 @@ public class NtpThemeDailyRefreshManagerUnitTest {
 
     @Test
     public void testIsDailyRefreshEnabled_Disabled() {
-        mNtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(false);
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(false);
         assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
     }
 
     @Test
     public void testIsDailyRefreshEnabled_NotChromeColor() {
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
         assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.IMAGE_FROM_DISK));
     }
 
     @Test
     public void testIsDailyRefreshEnabled_Within24Hours() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
-    }
+        NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
+                TimeUtils.currentTimeMillis());
 
-    @Test
-    public void testIsDailyRefreshEnabled_After24Hours() {
-        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
-        mFakeTime.advanceMillis(TimeUtils.MILLISECONDS_PER_DAY + 10);
-        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+        assertFalse(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
     }
 
     @Test
     @Features.EnableFeatures({
         ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2 + ":force_daily_refresh/true"
     })
-    public void testIsDailyRefreshEnabled_ForceUpdate() {
+    public void testIsDailyRefreshEnabled_Within24Hours_ForceUpdate() {
         NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
+                TimeUtils.currentTimeMillis());
+
+        assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
+    }
+
+    @Test
+    public void testIsDailyRefreshEnabled_After24Hours() {
+        NtpCustomizationUtils.setIsChromeColorDailyRefreshEnabledToSharedPreference(true);
+        NtpCustomizationUtils.setDailyRefreshTimestampToSharedPreference(
+                TimeUtils.currentTimeMillis());
+        mFakeTime.advanceMillis(TimeUtils.MILLISECONDS_PER_DAY + 10);
+
         assertTrue(mManager.isDailyRefreshEnabled(NtpBackgroundImageType.CHROME_COLOR));
     }
 
