@@ -10,7 +10,7 @@ import 'chrome://resources/cr_elements/icons.html.js';
 import './code_section.js';
 import './shared_style.css.js';
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -56,7 +56,8 @@ function getErrorSeverityText(
     item: ManifestError|RuntimeError, log: string, warn: string,
     error: string): string {
   if (item.type === chrome.developerPrivate.ErrorType.RUNTIME) {
-    switch ((item as RuntimeError).severity) {
+    const severity = (item as RuntimeError).severity;
+    switch (severity) {
       case chrome.developerPrivate.ErrorLevel.LOG:
         return log;
       case chrome.developerPrivate.ErrorLevel.WARN:
@@ -64,7 +65,7 @@ function getErrorSeverityText(
       case chrome.developerPrivate.ErrorLevel.ERROR:
         return error;
       default:
-        assertNotReached();
+        assertNotReachedCase(severity);
     }
   }
   assert(item.type === chrome.developerPrivate.ErrorType.MANIFEST);
@@ -243,6 +244,8 @@ export class ExtensionsErrorPageElement extends ExtensionsErrorPageElementBase {
             runtimeError.stackTrace[0] :
             null;
         break;
+      default:
+        assertNotReachedCase(error.type);
     }
     assert(this.delegate);
     this.delegate.requestFileSource(args).then(code => this.code_ = code);

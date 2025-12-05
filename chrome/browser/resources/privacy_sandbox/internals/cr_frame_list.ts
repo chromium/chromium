@@ -186,6 +186,8 @@ export class CrFrameListElement extends CustomElement {
       case 'ArrowDown':
         delta = 1;
         break;
+      default:
+        break;
     }
 
     if (!delta) {

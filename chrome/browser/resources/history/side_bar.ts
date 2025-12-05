@@ -183,6 +183,8 @@ export class HistorySideBarElement extends CrLitElement {
             loadTimeData.getString('sidebarFooterGAALink'), '_blank',
             e as MouseEvent);
         break;
+      default:
+        break;
     }
   }
 

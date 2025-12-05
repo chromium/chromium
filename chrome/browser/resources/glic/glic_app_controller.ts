@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {getRequiredElement} from 'chrome://resources/js/util.js';
 
 import type {BrowserProxyImpl} from './browser_proxy.js';
@@ -245,6 +246,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         this.showPanel('guestPanel');
         break;
       case 'guestError':
+      case 'guestCaaError':
         this.setState(WebUiState.kGuestError);
         break;
       case 'regular':
@@ -257,6 +259,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       case 'loadError':
         this.setState(WebUiState.kError);
         break;
+      default:
+        assertNotReachedCase(type);
     }
   }
 
@@ -442,6 +446,7 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
     this.trackLoadingStageEnd();
 
     const readyState = this.profileReadyState;
+    assert(readyState !== undefined);
     switch (readyState) {
       case ProfileReadyState.kIneligible:
       case ProfileReadyState.kUnknownError:
@@ -457,6 +462,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         return;
       case ProfileReadyState.kReady:
         break;
+      default:
+        assertNotReachedCase(readyState);
     }
 
     // Blocking on cookie syncing here introduces latency, we should consider
@@ -477,6 +484,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
       case PrepareForClientResult.kRequiresSignIn:
         this.setState(WebUiState.kSignIn);
         return;
+      default:
+        assertNotReachedCase(result);
     }
 
     // Load the web client only after cookie sync is complete.
@@ -652,8 +661,9 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
           case WebUiState.kShowLoading:
           case WebUiState.kHoldLoading:
             return;
+          default:
+            this.setState(WebUiState.kReady);
         }
-        this.setState(WebUiState.kReady);
         break;
       case WebClientState.UNRESPONSIVE:
         this.trackUnresponsiveState(
@@ -666,6 +676,10 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
         this.guestResizeEnabled = false;
         this.setState(WebUiState.kError);
         break;
+      case WebClientState.UNINITIALIZED:
+        break;
+      default:
+        assertNotReachedCase(state);
     }
   }
 
@@ -765,6 +779,8 @@ export class GlicAppController implements WebviewDelegate, ApiHostEmbedder {
             this.setState(WebUiState.kBeginLoad);
           }
           break;
+        default:
+          assertNotReachedCase(this.profileReadyState);
       }
     }
   }

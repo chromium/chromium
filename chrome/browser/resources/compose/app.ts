@@ -24,7 +24,7 @@ import type {CrChipElement} from '//resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {isMac} from '//resources/js/platform.js';
@@ -345,7 +345,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   declare private redoEnabled_: boolean;
   declare private feedbackEnabled_: boolean;
   private userHasModifiedState_: boolean = false;
-  private lastTriggerElement_: TriggerElement;
+  private lastTriggerElement_: TriggerElement|null = null;
   declare private outputComplete_: boolean;
   declare private hasOutput_: boolean;
   declare private displayedText_: string;
@@ -524,18 +524,17 @@ export class ComposeAppElement extends ComposeAppElementBase {
 
   private onClose_(e: Event) {
     switch ((e.target as HTMLElement).id) {
-      case 'firstRunCloseButton': {
+      case 'firstRunCloseButton':
         this.apiProxy_.closeUi(CloseReason.kFirstRunCloseButton);
         break;
-      }
-      case 'closeButtonMSBB': {
+      case 'closeButtonMSBB':
         this.apiProxy_.closeUi(CloseReason.kMSBBCloseButton);
         break;
-      }
-      case 'closeButton': {
+      case 'closeButton':
         this.apiProxy_.closeUi(CloseReason.kCloseButton);
         break;
-      }
+      default:
+        break;
     }
   }
 
@@ -799,6 +798,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       case TriggerElement.REDO:
         this.$.redoButton.focus();
         break;
+      case null:
+        break;
+      default:
+        assertNotReachedCase(this.lastTriggerElement_);
     }
 
     this.screenReaderAnnounce_(
@@ -1063,6 +1066,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       case CrFeedbackOption.THUMBS_DOWN:
         this.apiProxy_.setUserFeedback(UserFeedback.kUserFeedbackNegative);
         return;
+      default:
+        assertNotReachedCase(e.detail.value);
     }
   }
 }
@@ -1076,6 +1081,8 @@ function userFeedbackToFeedbackOption(userFeedback: UserFeedback):
       return CrFeedbackOption.THUMBS_UP;
     case UserFeedback.kUserFeedbackNegative:
       return CrFeedbackOption.THUMBS_DOWN;
+    default:
+      assertNotReachedCase(userFeedback);
   }
 }
 

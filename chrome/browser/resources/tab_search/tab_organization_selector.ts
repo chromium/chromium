@@ -7,6 +7,7 @@ import './declutter/declutter_page.js';
 import '/strings.m.js';
 import './tab_organization_selector_button.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -125,6 +126,10 @@ export class TabOrganizationSelectorElement extends CrLitElement {
             this.$.declutterButton.focus();
           }
           break;
+        case TabOrganizationFeature.kNone:
+          break;
+        default:
+          assertNotReachedCase(this.selectedState_);
       }
     } else if (
         changedPrivateProperties.has('disableDeclutter_') &&

@@ -714,8 +714,9 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
       case 'geolocation':
         return this.handler.openOsPermissionSettingsMenu(
             ContentSettingsType.GEOLOCATION);
+      default:
+        return Promise.resolve();
     }
-    return Promise.resolve();
   }
 
   glicBrowserGetOsMicrophonePermissionStatus(): Promise<{enabled: boolean}> {

@@ -12,12 +12,20 @@ import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import type {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 import type {CrTreeItemElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 
 import {DescriptorPanel, renderClassCodeWithDescription} from './descriptor_panel.js';
 import type {UsbAlternateInterfaceInfo, UsbConfigurationInfo, UsbDeviceInfo, UsbEndpointInfo, UsbInterfaceInfo} from './usb_device.mojom-webui.js';
 import {UsbDeviceRemote, UsbTransferDirection, UsbTransferType} from './usb_device.mojom-webui.js';
 import type {UsbDeviceManagerRemote} from './usb_manager.mojom-webui.js';
+
+enum InspectorPanelType {
+  BOS_DESCRIPTOR = 'bos-descriptor',
+  CONFIGURATION_DESCRIPTOR = 'configuration-descriptor',
+  DEVICE_DESCRIPTOR = 'device-descriptor',
+  STRING_DESCRIPTOR = 'string-descriptor',
+  TESTING_TOOL = 'testing-tool',
+}
 
 /**
  * Page that contains a tab header and a tab panel displaying devices table.
@@ -176,21 +184,23 @@ class DevicePage {
         guid, /*blocked_interface_classes=*/[],
         usbDevice.$.bindNewPipeAndPassReceiver(), /*device_client=*/ null);
 
-    const deviceDescriptorPanel =
-        initialInspectorPanel(tabPanel, 'device-descriptor', usbDevice, guid);
+    const deviceDescriptorPanel = initialInspectorPanel(
+        tabPanel, InspectorPanelType.DEVICE_DESCRIPTOR, usbDevice, guid);
 
     const configurationDescriptorPanel = initialInspectorPanel(
-        tabPanel, 'configuration-descriptor', usbDevice, guid);
+        tabPanel, InspectorPanelType.CONFIGURATION_DESCRIPTOR, usbDevice, guid);
 
-    const stringDescriptorPanel =
-        initialInspectorPanel(tabPanel, 'string-descriptor', usbDevice, guid);
+    const stringDescriptorPanel = initialInspectorPanel(
+        tabPanel, InspectorPanelType.STRING_DESCRIPTOR, usbDevice, guid);
     deviceDescriptorPanel.setStringDescriptorPanel(stringDescriptorPanel);
     configurationDescriptorPanel.setStringDescriptorPanel(
         stringDescriptorPanel);
 
-    initialInspectorPanel(tabPanel, 'bos-descriptor', usbDevice, guid);
+    initialInspectorPanel(
+        tabPanel, InspectorPanelType.BOS_DESCRIPTOR, usbDevice, guid);
 
-    initialInspectorPanel(tabPanel, 'testing-tool', usbDevice, guid);
+    initialInspectorPanel(
+        tabPanel, InspectorPanelType.TESTING_TOOL, usbDevice, guid);
 
     document.body.dispatchEvent(new CustomEvent(
         'device-tab-initialized-for-test', {bubbles: true, composed: true}));
@@ -333,6 +343,8 @@ function renderEndpointsTreeItem(
       case UsbTransferDirection.OUTBOUND:
         itemLabel += ' (OUTBOUND)';
         break;
+      default:
+        assertNotReachedCase(endpoint.direction);
     }
 
     const endpointItem = customTreeItem(itemLabel);
@@ -351,6 +363,8 @@ function renderEndpointsTreeItem(
       case UsbTransferType.INTERRUPT:
         usbTransferType = 'INTERRUPT';
         break;
+      default:
+        assertNotReachedCase(endpoint.type);
     }
 
     endpointItem.add(customTreeItem(`USB Transfer Type: ${usbTransferType}`));
@@ -365,8 +379,8 @@ function renderEndpointsTreeItem(
  * Initialize a descriptor panel.
  */
 function initialInspectorPanel(
-    tabPanel: HTMLElement, panelType: string, usbDevice: UsbDeviceRemote,
-    guid: string): DescriptorPanel {
+    tabPanel: HTMLElement, panelType: InspectorPanelType,
+    usbDevice: UsbDeviceRemote, guid: string): DescriptorPanel {
   const button = tabPanel.querySelector<HTMLElement>(`.${panelType}-button`);
   assert(button);
   const displayElement =
@@ -374,11 +388,13 @@ function initialInspectorPanel(
   assert(displayElement);
   const descriptorPanel = new DescriptorPanel(usbDevice, displayElement);
   switch (panelType) {
-    case 'string-descriptor':
+    case InspectorPanelType.STRING_DESCRIPTOR:
       descriptorPanel.initialStringDescriptorPanel(guid);
       break;
-    case 'testing-tool':
+    case InspectorPanelType.TESTING_TOOL:
       descriptorPanel.initialTestingToolPanel();
+      break;
+    default:
       break;
   }
 
@@ -389,17 +405,19 @@ function initialInspectorPanel(
 
     if (!displayElement.hidden) {
       switch (panelType) {
-        case 'device-descriptor':
+        case InspectorPanelType.DEVICE_DESCRIPTOR:
           await descriptorPanel.getDeviceDescriptor();
           break;
-        case 'configuration-descriptor':
+        case InspectorPanelType.CONFIGURATION_DESCRIPTOR:
           await descriptorPanel.getConfigurationDescriptor();
           break;
-        case 'string-descriptor':
+        case InspectorPanelType.STRING_DESCRIPTOR:
           await descriptorPanel.getAllLanguageCodes();
           break;
-        case 'bos-descriptor':
+        case InspectorPanelType.BOS_DESCRIPTOR:
           await descriptorPanel.getBosDescriptor();
+          break;
+        default:
           break;
       }
     }

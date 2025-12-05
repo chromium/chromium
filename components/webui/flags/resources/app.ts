@@ -283,6 +283,8 @@ export class FlagsAppElement extends CrLitElement {
         case 'Escape':
           this.$.search.blur();
           break;
+        default:
+          break;
       }
     });
   }

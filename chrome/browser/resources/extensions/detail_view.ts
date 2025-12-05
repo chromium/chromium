@@ -24,7 +24,7 @@ import type {CrLinkRowElement} from 'chrome://resources/cr_elements/cr_link_row/
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import type {CrTooltipIconElement} from 'chrome://resources/cr_elements/policy/cr_tooltip_icon.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -366,6 +366,8 @@ export class ExtensionsDetailViewElement extends
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Unsupported.RemoveExtension.DetailPage');
         break;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
 
     this.delegate.deleteItem(this.data.id);
@@ -551,7 +553,7 @@ export class ExtensionsDetailViewElement extends
         return this.data.isAffectedByMV2Deprecation &&
           this.data.disableReasons.unsupportedManifestVersion;
       default:
-        assertNotReached();
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -576,6 +578,8 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
       case Mv2ExperimentStage.UNSUPPORTED:
         return !this.data.mustRemainInstalled;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -595,6 +599,8 @@ export class ExtensionsDetailViewElement extends
         // show the menu if the action should be visible. For UNSUPPORTED, this
         // is when the recommendationsUrl is non-empty.
         return !!this.data.recommendationsUrl;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -610,6 +616,8 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
       case Mv2ExperimentStage.UNSUPPORTED:
         return !!this.data.recommendationsUrl;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -679,6 +687,8 @@ export class ExtensionsDetailViewElement extends
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Unsupported.FindAlternativeForExtension.DetailPage');
         break;
+      default:
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
 
     this.$.actionMenu.close();
@@ -714,7 +724,7 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.UNSUPPORTED:
         return this.i18n('mv2DeprecationMessageDisabledHeader');
       default:
-        assertNotReached();
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -746,7 +756,7 @@ export class ExtensionsDetailViewElement extends
           attrs: ['aria-description'],
         });
       default:
-        assertNotReached();
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 
@@ -762,7 +772,7 @@ export class ExtensionsDetailViewElement extends
       case Mv2ExperimentStage.UNSUPPORTED:
         return 'extensions-icons:extension_off';
       default:
-        assertNotReached();
+        assertNotReachedCase(this.mv2ExperimentStage_);
     }
   }
 

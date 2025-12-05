@@ -563,8 +563,9 @@ export function webClientModeToMojo(mode: WebClientMode|undefined):
       return WebClientModeMojo.kAudio;
     case WebClientMode.TEXT:
       return WebClientModeMojo.kText;
+    default:
+      return WebClientModeMojo.kUnknown;
   }
-  return WebClientModeMojo.kUnknown;
 }
 
 export function captureRegionResultToClient(

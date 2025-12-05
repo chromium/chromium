@@ -6,7 +6,7 @@
  * Javascript for ValueControl, served from chrome://bluetooth-internals/.
  */
 
-import {assert} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 
 import {GattResult, Property} from './device.mojom-webui.js';
@@ -63,14 +63,14 @@ export class Value {
       case ValueDataType.HEXADECIMAL:
         this.setValueFromHex_(newValue);
         break;
-
       case ValueDataType.UTF8:
         this.setValueFromUtf8_(newValue);
         break;
-
       case ValueDataType.DECIMAL:
         this.setValueFromDecimal_(newValue);
         break;
+      default:
+        assertNotReachedCase(valueDataType);
     }
   }
 
@@ -81,12 +81,12 @@ export class Value {
     switch (valueDataType) {
       case ValueDataType.HEXADECIMAL:
         return this.toHex_();
-
       case ValueDataType.UTF8:
         return this.toUtf8_();
-
       case ValueDataType.DECIMAL:
         return this.toDecimal_();
+      default:
+        assertNotReachedCase(valueDataType);
     }
   }
 

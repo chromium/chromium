@@ -8,6 +8,8 @@
  */
 import './device_table.js';
 
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
+
 import type {DeviceInfo} from './device.mojom-webui.js';
 import type {DeviceCollection} from './device_collection.js';
 import type {DeviceTableElement} from './device_table.js';
@@ -81,6 +83,8 @@ export class DevicesPage extends Page {
         this.scanBtn_.disabled = true;
         this.scanBtn_.textContent = 'Stopping...';
         break;
+      default:
+        assertNotReachedCase(status);
     }
   }
 }

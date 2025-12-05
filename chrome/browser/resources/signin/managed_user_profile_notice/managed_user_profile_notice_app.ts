@@ -13,6 +13,7 @@ import './managed_user_profile_notice_data_handling.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
+import {assertNotReachedCase} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -293,6 +294,8 @@ export class ManagedUserProfileNoticeAppElement extends
         return this.i18n('closeLabel');
       case State.TIMEOUT:
         return this.i18n('retryLabel');
+      default:
+        assertNotReachedCase(this.currentState_);
     }
   }
 

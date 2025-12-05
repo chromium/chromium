@@ -6,7 +6,7 @@
  * @fileoverview Page navigation utility code.
  */
 
-import {assert, assertNotReached} from '//resources/js/assert.js';
+import {assert, assertNotReached, assertNotReachedCase} from '//resources/js/assert.js';
 import type {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -50,6 +50,8 @@ export class Route {
       case Page.CLIENT_CERTS:
       case Page.CRS_CERTS:
         return false;
+      default:
+        assertNotReachedCase(this.page);
     }
   }
 }
@@ -145,7 +147,7 @@ export class Router {
 
   // LINT.IfChange(PageHistogramEnum)
 
-  private pageToMetricInt(page: Page) {
+  private pageToMetricInt(page: Page): number {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     switch (page) {
@@ -165,6 +167,8 @@ export class Router {
       // </if>
       case Page.USER_CERTS:
         return 6;
+      default:
+        assertNotReachedCase(page);
     }
   }
 

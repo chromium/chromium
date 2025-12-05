@@ -20,7 +20,7 @@ import {DragAndDropHandler} from '//resources/cr_components/search/drag_drop_han
 import type {DragAndDropHost} from '//resources/cr_components/search/drag_drop_host.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from '//resources/cr_elements/web_ui_listener_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
+import {assert, assertNotReachedCase} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {hasKeyModifiers} from '//resources/js/util.js';
@@ -137,6 +137,8 @@ export class PlaceholderTextCycler {
           nextAnimationState: AnimationState.FADE_IN,
         };
         break;
+      default:
+        assertNotReachedCase(state);
     }
 
     this.animation_ = this.input_.animate(

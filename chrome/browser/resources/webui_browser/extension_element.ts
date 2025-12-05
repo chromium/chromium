@@ -65,6 +65,9 @@ export class ExtensionElement extends CrLitElement {
         break;
       case 'touch':
         sourceType = MenuSourceType.kTouch;
+        break;
+      default:
+        break;
     }
     this.bar.onContextMenu(sourceType, this.extensionId);
   }

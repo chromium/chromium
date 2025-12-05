@@ -272,6 +272,8 @@ export class ContextualEntrypointAndCarouselElement extends I18nMixinLit
       case ComposeboxMode.CREATE_IMAGE:
         this.onCreateImageClick_();
         break;
+      default:
+        break;
     }
   }
 
