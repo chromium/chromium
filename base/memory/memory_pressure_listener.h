@@ -72,7 +72,8 @@ enum class MemoryPressureListenerTag {
   kUrgentPageDiscardingPolicy = 41,
   kTabLoader = 42,
   kBackgroundTabLoadingPolicy = 43,
-  kThumbnailCache = 44,
+  // Deprecated.
+  // kThumbnailCache = 44,
   kUserspaceSwapPolicy = 45,
   kWorkingSetTrimmerPolicyChromeOS = 46,
   kLruRendererCache = 47,
