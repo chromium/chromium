@@ -70,19 +70,6 @@ namespace search_engines {
 namespace {
 
 const CountryId kBelgiumCountryId = CountryId("BE");
-const CountryId kUsaCountryId = CountryId("US");
-
-TemplateURL::OwnedTemplateURLVector
-OwnedTemplateURLVectorFromPrepopulatedEngines(
-    const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
-        engines) {
-  TemplateURL::OwnedTemplateURLVector result;
-  for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine : engines) {
-    result.push_back(std::make_unique<TemplateURL>(
-        *TemplateURLDataFromPrepopulatedEngine(*engine)));
-  }
-  return result;
-}
 
 }  // namespace
 
@@ -457,6 +444,10 @@ TEST_F(SearchEngineChoiceServiceTest, RecordChoiceMade_RemovedPrepopulated) {
             version_info::GetVersionNumber());
 }
 
+#if BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
+// TODO(https://crbug.com/465088221): The code covered in these tests is
+// irrelevant on Android. Investigate some better way to not include it in the
+// build, maybe by splitting the service across platforms?
 class SearchEngineChoiceServiceDisplayStateRecordTest
     : public SearchEngineChoiceServiceTest {
  public:
@@ -470,6 +461,21 @@ class SearchEngineChoiceServiceDisplayStateRecordTest
   // max ever exceeds this, consider some dynamic way to set it based on the
   // actual data.
   static constexpr size_t kMaxRegionalListSize = 8u;
+
+  static constexpr CountryId kUsaCountryId = CountryId("US");
+
+  static TemplateURL::OwnedTemplateURLVector
+  OwnedTemplateURLVectorFromPrepopulatedEngines(
+      const std::vector<const TemplateURLPrepopulateData::PrepopulatedEngine*>&
+          engines) {
+    TemplateURL::OwnedTemplateURLVector result;
+    for (const TemplateURLPrepopulateData::PrepopulatedEngine* engine :
+         engines) {
+      result.push_back(std::make_unique<TemplateURL>(
+          *TemplateURLDataFromPrepopulatedEngine(*engine)));
+    }
+    return result;
+  }
 
   struct DisplayStateRecordExpectations {
     HistogramExpectation country_mismatch;
@@ -593,40 +599,6 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest, Record_Taiyaki) {
 #endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
-       Record_ProfileCountryMismatch) {
-  // The actual profile of the country does not matter, we are checking the
-  // `ChoiceScreenData` country against the variations country.
-  InitService({.variation_country_id = kBelgiumCountryId,
-               .client_country_id = kUsaCountryId,
-               .force_reset = true});
-  ChoiceScreenData choice_screen_data(
-      OwnedTemplateURLVectorFromPrepopulatedEngines(
-          {&TemplateURLPrepopulateData::google,
-           &TemplateURLPrepopulateData::bing,
-           &TemplateURLPrepopulateData::yahoo}),
-      /*current_default_to_highlight=*/nullptr, kBelgiumCountryId,
-      SearchTermsData());
-  ChoiceScreenDisplayState display_state = choice_screen_data.display_state();
-  display_state.selected_engine_index = 2;
-
-  base::HistogramTester histogram_tester;
-  search_engine_choice_service().MaybeRecordChoiceScreenDisplayState(
-      display_state);
-
-  CheckExpectations(
-      histogram_tester,
-      {.country_mismatch = ExpectHistogramBucket(false),
-       .selected_index = ExpectHistogramBucket(2),
-       .display_state_status = ExpectHistogramNever(),
-       .impression_at_index = {ExpectHistogramBucket(SEARCH_ENGINE_GOOGLE),
-                               ExpectHistogramBucket(SEARCH_ENGINE_BING),
-                               ExpectHistogramBucket(SEARCH_ENGINE_YAHOO)}});
-
-  EXPECT_FALSE(pref_service()->HasPrefPath(
-      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
-}
-
-TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
        RecordNoop_UnsupportedCountry) {
   auto engines = {&TemplateURLPrepopulateData::google,
                   &TemplateURLPrepopulateData::bing,
@@ -710,7 +682,7 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
                      .impression_at_index = {}});
 
   // The choice screen state should be cached for a next chance later.
-  EXPECT_TRUE(pref_service()->HasPrefPath(
+  ASSERT_TRUE(pref_service()->HasPrefPath(
       prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
 
   auto stored_display_state =
@@ -755,7 +727,7 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest, RecordFromCache) {
 }
 
 TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
-       RecordFromCache_ProfileCountryMismatch) {
+       RecordFromCacheSkipped_ProfileCountryMismatch) {
   ChoiceScreenDisplayState display_state(
       /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
                           SEARCH_ENGINE_YAHOO},
@@ -771,6 +743,37 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
   base::HistogramTester histogram_tester;
   InitService({.variation_country_id = kBelgiumCountryId,
                .client_country_id = kUsaCountryId,
+               .force_reset = true});
+
+  CheckExpectations(
+      histogram_tester,
+      {.country_mismatch = ExpectHistogramNever(),
+       .selected_index = ExpectHistogramNever(),
+       .display_state_status = ExpectHistogramBucket(3 /* kStayPending */),
+       .impression_at_index = {}});
+
+  // The choice screen state should still be pending.
+  EXPECT_TRUE(pref_service()->HasPrefPath(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState));
+}
+
+TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
+       RecordFromCache_ProfileRegionMatch) {
+  ChoiceScreenDisplayState display_state(
+      /*search_engines=*/{SEARCH_ENGINE_GOOGLE, SEARCH_ENGINE_BING,
+                          SEARCH_ENGINE_YAHOO},
+      /*country_id=*/kBelgiumCountryId,
+      /*is_current_default_search_presented=*/false,
+      /*includes_non_regional_set_engine=*/false,
+      /*selected_engine_index=*/0);
+  pref_service()->SetDict(
+      prefs::kDefaultSearchProviderPendingChoiceScreenDisplayState,
+      display_state.ToDict());
+  search_engines::MarkSearchEngineChoiceCompletedForTesting(*pref_service());
+
+  base::HistogramTester histogram_tester;
+  InitService({.variation_country_id = kBelgiumCountryId,
+               .client_country_id = CountryId("FR"),
                .force_reset = true});
 
   CheckExpectations(
@@ -941,6 +944,7 @@ TEST_F(SearchEngineChoiceServiceDisplayStateRecordTest,
                      .display_state_status = ExpectHistogramNever(),
                      .impression_at_index = {}});
 }
+#endif  // BUILDFLAG(CHOICE_SCREEN_IN_CHROME)
 
 // Tests if choice screen completion date is not recorded if last choice date is
 // unknown.
