@@ -315,9 +315,7 @@ TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOff) {
                           future.GetCallback());
 
   ASSERT_FALSE(future.Get().has_value());
-  // When the ActorLogin features is disabled, the delegate returns
-  // `ActorLoginError::kUnknown`.
-  EXPECT_EQ(future.Get().error(), ActorLoginError::kUnknown);
+  EXPECT_EQ(future.Get().error(), ActorLoginError::kFeatureDisabled);
 }
 
 TEST_F(ActorLoginDelegateImplTest, AttemptLogin_FeatureOn) {

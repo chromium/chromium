@@ -40,14 +40,13 @@ mojom::ActionResultCode LoginErrorToActorError(
     actor_login::ActorLoginError login_error) {
   switch (login_error) {
     case actor_login::ActorLoginError::kServiceBusy:
-      return mojom::ActionResultCode::kError;
+      return mojom::ActionResultCode::kLoginTooManyRequests;
     case actor_login::ActorLoginError::kInvalidTabInterface:
       return mojom::ActionResultCode::kTabWentAway;
     case actor_login::ActorLoginError::kFillingNotAllowed:
       return mojom::ActionResultCode::kLoginFillingNotAllowed;
-    case actor_login::ActorLoginError::kUnknown:
-    default:
-      return mojom::ActionResultCode::kError;
+    case actor_login::ActorLoginError::kFeatureDisabled:
+      return mojom::ActionResultCode::kLoginFeatureDisabled;
   }
 }
 

@@ -28,7 +28,7 @@ chromium-metrics-reviews@google.com.
 
 <enum name="ActionResultCode">
   <int value="0" label="Ok"/>
-  <int value="10" label="Error"/>
+  <int value="10" label="(Obsolete) Error. Removed in Dec 2025."/>
   <int value="11" label="UrlBlocked"/>
   <int value="12" label="NewTabCreationFailed"/>
   <int value="13" label="TabWentAway"/>
@@ -58,8 +58,10 @@ chromium-metrics-reviews@google.com.
   <int value="37" label="ExecutionEngineExistingAction"/>
   <int value="38" label="ExternalProtocolNavigationBlocked"/>
   <int value="39" label="RendererCrashed"/>
+  <int value="40" label="NotImplemented"/>
   <int value="100" label="NavigateInvalidUrl"/>
   <int value="101" label="NavigateFailedToStart"/>
+  <int value="102" label="NavigateCommittedErrorPage"/>
   <int value="200" label="ClickSuppressed"/>
   <int value="300" label="DragAndReleaseFromOffscreen"/>
   <int value="301" label="DragAndReleaseToOffscreen"/>
@@ -96,12 +98,18 @@ chromium-metrics-reviews@google.com.
   <int value="905" label="LoginPageChangedDuringSelection"/>
   <int value="906" label="LoginDeviceReauthRequired"/>
   <int value="907" label="LoginDeviceReauthFailed"/>
+  <int value="908" label="LoginFeatureDisabled"/>
+  <int value="909" label="LoginTooManyRequests"/>
   <int value="1000" label="MediaControlNoMedia"/>
   <int value="1100" label="FormFillingAutofillUnavailable"/>
   <int value="1101" label="FormFillingNoSuggestionsAvailable"/>
   <int value="1102" label="FormFillingDialogError"/>
   <int value="1103" label="FormFillingFieldNotFound"/>
   <int value="1104" label="FormFillingUnknownAutofillError"/>
+  <int value="1105" label="FormFillingNoLastTabObservation"/>
+  <int value="1106" label="FormFillingInvalidSuggestionId"/>
+  <int value="1200" label="ScriptToolNoResponse"/>
+  <int value="1300" label="ActorUiError"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->

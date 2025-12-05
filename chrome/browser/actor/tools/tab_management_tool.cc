@@ -82,7 +82,7 @@ void TabManagementTool::Invoke(ToolCallback callback) {
       CHECK(target_tab_.has_value());
       NOTIMPLEMENTED() << "ActivateTab and CloseTab not yet implemented";
       PostResponseTask(std::move(callback_),
-                       MakeResult(mojom::ActionResultCode::kError));
+                       MakeResult(mojom::ActionResultCode::kNotImplemented));
       return;
   }
 }

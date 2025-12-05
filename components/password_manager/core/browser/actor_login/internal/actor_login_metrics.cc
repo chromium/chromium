@@ -39,7 +39,7 @@ void RecordGetCredentialsResult(const CredentialsOrError& result_or_error) {
     case ActorLoginError::kFillingNotAllowed:
       RecordGetCredentialsResult(GetCredentialsResult::kErrorFillingNotAllowed);
       break;
-    case ActorLoginError::kUnknown:
+    case ActorLoginError::kFeatureDisabled:
       RecordGetCredentialsResult(GetCredentialsResult::kErrorUnknown);
       break;
   }
@@ -88,7 +88,7 @@ void RecordAttemptLoginResult(const LoginStatusResultOrError& result_or_error) {
     case ActorLoginError::kFillingNotAllowed:
       RecordAttemptLoginResult(AttemptLoginResult::kErrorFillingNotAllowed);
       break;
-    case ActorLoginError::kUnknown:
+    case ActorLoginError::kFeatureDisabled:
       RecordAttemptLoginResult(AttemptLoginResult::kErrorUnknown);
       break;
   }

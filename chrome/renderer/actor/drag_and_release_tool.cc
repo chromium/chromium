@@ -4,6 +4,7 @@
 
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 
+#include "base/notimplemented.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/common/actor/action_result.h"
@@ -226,7 +227,12 @@ DragAndReleaseTool::ValidatedResult DragAndReleaseTool::Validate() const {
   if (resolved_from->GetWidget(*this) != resolved_to->GetWidget(*this)) {
     // Drag across widgets (i.e. between frame and popup) isn't currently
     // supported.
-    return base::unexpected(MakeErrorResult());
+    static constexpr std::string_view kErrorMessage =
+        "Drag across widgets is not supported.";
+    NOTIMPLEMENTED() << kErrorMessage;
+    return base::unexpected(MakeResult(mojom::ActionResultCode::kNotImplemented,
+                                       /*requires_page_stabilization=*/false,
+                                       kErrorMessage));
   }
 
   // TODO(b/450018073): This should be checking the targets for time-of-use

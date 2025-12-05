@@ -72,8 +72,12 @@ SelectTool::ValidatedResult SelectTool::Validate() const {
   CHECK(frame_->GetWebFrame()->FrameWidget());
 
   if (target_->is_coordinate_dip()) {
-    NOTIMPLEMENTED() << "Coordinate-based target is not yet supported.";
-    return base::unexpected(MakeErrorResult());
+    static constexpr std::string_view kErrorMessage =
+        "Coordinate-based target is not yet supported.";
+    NOTIMPLEMENTED() << kErrorMessage;
+    return base::unexpected(MakeResult(mojom::ActionResultCode::kNotImplemented,
+                                       /*requires_page_stabilization=*/false,
+                                       kErrorMessage));
   }
 
   auto resolved_target = ValidateAndResolveTarget();

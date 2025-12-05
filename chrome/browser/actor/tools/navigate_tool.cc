@@ -142,7 +142,7 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
     auto result =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()
             ? MakeOkResult()
-            : MakeErrorResult();
+            : MakeResult(mojom::ActionResultCode::kNavigateCommittedErrorPage);
 
     if (invoke_callback_) {
       PostResponseTask(std::move(invoke_callback_), std::move(result));

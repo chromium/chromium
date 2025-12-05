@@ -25,9 +25,8 @@ namespace {
 mojom::ActionResultPtr OnToolExecuted(
     base::expected<blink::WebString, blink::WebDocument::ScriptToolError>
         response) {
-  // TODO(khushalsagar): Add script tool errors and propagate up the stack.
   if (!response.has_value()) {
-    return MakeResult(mojom::ActionResultCode::kError);
+    return MakeResult(mojom::ActionResultCode::kScriptToolNoResponse);
   }
 
   auto result = MakeOkResult();

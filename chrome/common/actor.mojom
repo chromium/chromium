@@ -151,8 +151,9 @@ union ToolAction {
 enum ActionResultCode {
   kOk = 0,
 
+  // DEPRECATED. Use explicit error codes instead.
   // A generic error that does not have a more specific code. Avoid using this.
-  kError = 10,
+  // kError = 10,
 
   // Actions are not allowed on the current URL.
   kUrlBlocked = 11,
@@ -249,6 +250,10 @@ enum ActionResultCode {
   // The renderer process crashed.
   kRendererCrashed = 39,
 
+  // Only used as place holder for planned but unimplemented features. Do not
+  // use as a generic error code.
+  kNotImplemented = 40,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
@@ -260,6 +265,9 @@ enum ActionResultCode {
 
   // The navigation failed before it started.
   kNavigateFailedToStart = 101,
+
+  // The navigation committed to an error page.
+  kNavigateCommittedErrorPage = 102,
 
   // Please see the comment above about adding new values.
 
@@ -420,6 +428,12 @@ enum ActionResultCode {
   // cancelled it).
   kLoginDeviceReauthFailed = 907,
 
+  // The login attempt failed because the feature is disabled.
+  kLoginFeatureDisabled = 908,
+
+  // Multiple login requests were made at the same time.
+  kLoginTooManyRequests = 909,
+
   // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
@@ -449,6 +463,26 @@ enum ActionResultCode {
 
   // An error occurred during autofill.
   kFormFillingUnknownAutofillError = 1104,
+
+  // No tab observation was found when the TOCTOU check was performed.
+  kFormFillingNoLastTabObservation = 1105,
+
+  // The suggestion ID selected by the user was invalid.
+  kFormFillingInvalidSuggestionId = 1106,
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1200-1299: Errors for script tool.
+
+  // The document did not return a response for the script tool.
+  kScriptToolNoResponse = 1200,
+
+  // Please see the comment above about adding new values.
+
+  ///////////////////////////////////////////////////////////////////////
+  // Codes 1300-1399: Errors for Chrome UI.
+
+  // The Chrome Actor UI could not be shown.
+  kActorUiError = 1300,
 
   // Please see the comment above about adding new values.
 };

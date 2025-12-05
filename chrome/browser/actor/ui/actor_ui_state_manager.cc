@@ -103,7 +103,9 @@ auto GetNewUiStateFn() {
 // TODO(crbug.com/424495020): Bool may be converted to a map of ui
 // components:bool depending on what controller returns.
 void OnUiChangeComplete(UiCompleteCallback complete_callback, bool result) {
-  std::move(complete_callback).Run(result ? MakeOkResult() : MakeErrorResult());
+  std::move(complete_callback)
+      .Run(result ? MakeOkResult()
+                  : MakeResult(mojom::ActionResultCode::kActorUiError));
 }
 
 void LogUiChangeError(bool result) {

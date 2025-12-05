@@ -167,9 +167,9 @@ mojom::ActionResultPtr AttemptFormFillingTool::TimeOfUseValidation(
   CHECK(service_fill_requests_.empty());
 
   if (!last_observation) {
-    ACTOR_LOG() << "APC was null during TimeOfUseValidation.";
-    // Return a generic error for the unexpected state.
-    return MakeErrorResult();
+    return MakeResult(mojom::ActionResultCode::kFormFillingNoLastTabObservation,
+                      /*requires_page_stabilization=*/false,
+                      "AttemptFormFillingTool: last tab observation is null.");
   }
 
   for (const auto& request : tool_fill_requests_) {
@@ -305,9 +305,10 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
     uint32_t id = 0;
     if (!base::StringToUint(response->selected_suggestion_id, &id)) {
       std::move(invoke_callback)
-          .Run(MakeResult(mojom::ActionResultCode::kError,
-                          /*requires_page_stabilization=*/false,
-                          "Invalid suggestion ID received."));
+          .Run(MakeResult(
+              mojom::ActionResultCode::kFormFillingInvalidSuggestionId,
+              /*requires_page_stabilization=*/false,
+              "Invalid suggestion ID received."));
       return;
     }
     autofill::ActorFormFillingSelection selection;

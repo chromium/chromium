@@ -402,7 +402,7 @@ IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, FailedAttemptLogin) {
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
   actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectErrorResult(result, mojom::ActionResultCode::kError);
+  ExpectErrorResult(result, mojom::ActionResultCode::kLoginTooManyRequests);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorAttemptLoginToolTest, CredentialSaved) {
