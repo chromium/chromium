@@ -991,5 +991,346 @@ fn test_unions() {
             33,
             44,
         ),
+    )
+}
+
+macro_rules! array {
+    ($element_type:expr, $num_elements:expr) => {
+        MojomType::Array { element_type: Box::new($element_type), num_elements: $num_elements }
+    };
+}
+
+macro_rules! packed_array {
+    ($element_type:expr, $num_elements:expr) => {
+        MojomWireType::Pointer {
+            nested_data_type: PackedStructuredType::Array {
+                element_type: Box::new($element_type),
+                array_type: if let Some(n) = $num_elements {
+                    PackedArrayType::SizedArray(n)
+                } else {
+                    PackedArrayType::UnsizedArray
+                },
+            },
+        }
+    };
+}
+
+// Mojom Definition:
+// array<int16>
+static ARRAY_INT16_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<int16>",
+    base_type: array!(MojomType::Int16, None),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Int16), None),
+});
+
+fn array_int16_mojom(elts: Vec<i16>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::Int16).collect())
+}
+
+// Mojom Definition:
+// array<uint64, 3>
+static ARRAY_UINT64_SIZED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<uint64, 3>",
+    base_type: array!(MojomType::UInt64, Some(3)),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::UInt64), Some(3)),
+});
+
+fn array_uint64_sized_mojom(elts: [u64; 3]) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::UInt64).collect())
+}
+
+// Mojom Definition:
+// array<bool>
+static ARRAY_BOOL_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<bool>",
+    base_type: array!(MojomType::Bool, None),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Bool), None),
+});
+
+fn array_bool_mojom(elts: Vec<bool>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::Bool).collect())
+}
+
+// Mojom Definition:
+// array<bool, 13>
+static ARRAY_BOOL_SIZED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<bool, 13>",
+    base_type: array!(MojomType::Bool, Some(13)),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Bool), Some(13)),
+});
+
+fn array_bool_sized_mojom(elts: [bool; 13]) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::Bool).collect())
+}
+
+// Mojom Definition:
+// array<TestEnum>
+static ARRAY_ENUM_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<TestEnum>",
+    base_type: array!(MojomType::Enum { is_valid: TEST_ENUM_PRED }, None),
+    packed_type: packed_array!(bare_leaf!(PackedLeafType::Enum { is_valid: TEST_ENUM_PRED }), None),
+});
+
+fn array_enum_mojom(elts: Vec<TestEnum>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(|e| MojomValue::Enum(e.into())).collect())
+}
+
+// Mojom Definition:
+// array<BaseUnion>
+static ARRAY_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<BaseUnion>",
+    base_type: array!(BASE_UNION_TY.base_type.clone(), None),
+    packed_type: packed_array!(BASE_UNION_TY.packed_type.clone(), None),
+});
+
+fn array_union_mojom(elts: Vec<BaseUnion>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+}
+
+// Mojom Definition:
+// array<NestedUnion>
+static ARRAY_UNION_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<NestedUnion>",
+    base_type: array!(NESTED_UNION_TY.base_type.clone(), None),
+    packed_type: packed_array!(NESTED_UNION_TY.packed_type.clone(), None),
+});
+
+fn array_union_nested_mojom(elts: Vec<NestedUnion>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+}
+
+// Mojom Definition:
+// array<FourInts>
+static ARRAY_FOURINTS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<FourInts>",
+    base_type: array!(FOUR_INTS_TY.base_type.clone(), None),
+    packed_type: packed_array!(FOUR_INTS_TY.packed_type.clone(), None),
+});
+
+fn array_fourints_mojom(elts: Vec<FourInts>) -> MojomValue {
+    MojomValue::Array(elts.into_iter().map(MojomValue::from).collect())
+}
+
+// Mojom Definition:
+// array<array<uint8>>
+static ARRAY_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<array<uint8>>",
+    base_type: array!(array!(MojomType::UInt8, None), None),
+    packed_type: packed_array!(packed_array!(bare_leaf!(PackedLeafType::UInt8), None), None),
+});
+
+fn array_nested_mojom(elts: Vec<Vec<u8>>) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter()
+            .map(|inner_vec| {
+                MojomValue::Array(inner_vec.into_iter().map(MojomValue::UInt8).collect())
+            })
+            .collect(),
+    )
+}
+
+// Mojom Definition:
+// array<array<uint8, 2>, 3>
+static ARRAY_NESTED_SIZED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<array<uint8, 2>, 3>",
+    base_type: array!(array!(MojomType::UInt8, Some(2)), Some(3)),
+    packed_type: packed_array!(packed_array!(bare_leaf!(PackedLeafType::UInt8), Some(2)), Some(3)),
+});
+
+fn array_nested_sized_mojom(elts: [[u8; 2]; 3]) -> MojomValue {
+    MojomValue::Array(
+        elts.into_iter()
+            .map(|inner_arr| {
+                MojomValue::Array(inner_arr.into_iter().map(MojomValue::UInt8).collect())
+            })
+            .collect(),
+    )
+}
+
+// Mojom Definition:
+// struct Arrays {
+//   array<int16> ints;
+//   array<uint64, 3> ints_sized;
+//   array<bool> bools;
+//   array<bool, 13> bool_sized;
+//   array<TestEnum> enums;
+//   array<BaseUnion> unions;
+//   array<NestedUnion> unions_nested;
+//   array<FourInts> fourints;
+//   array<array<uint8>> nested;
+//   array<array<uint8, 2>, 3> nested_sized;
+// };
+static ARRAYS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "Arrays",
+    base_type: wrap_struct_fields_type(vec![
+        ("ints".to_string(), ARRAY_INT16_TY.base_type.clone()),
+        ("ints_sized".to_string(), ARRAY_UINT64_SIZED_TY.base_type.clone()),
+        ("bools".to_string(), ARRAY_BOOL_TY.base_type.clone()),
+        ("bool_sized".to_string(), ARRAY_BOOL_SIZED_TY.base_type.clone()),
+        ("enums".to_string(), ARRAY_ENUM_TY.base_type.clone()),
+        ("unions".to_string(), ARRAY_UNION_TY.base_type.clone()),
+        ("unions_nested".to_string(), ARRAY_UNION_NESTED_TY.base_type.clone()),
+        ("fourints".to_string(), ARRAY_FOURINTS_TY.base_type.clone()),
+        ("nested".to_string(), ARRAY_NESTED_TY.base_type.clone()),
+        ("nested_sized".to_string(), ARRAY_NESTED_SIZED_TY.base_type.clone()),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            (
+                "ints".to_string(),
+                StructuredBodyElement::SingleValue(0, ARRAY_INT16_TY.packed_type.clone()),
+            ),
+            (
+                "ints_sized".to_string(),
+                StructuredBodyElement::SingleValue(1, ARRAY_UINT64_SIZED_TY.packed_type.clone()),
+            ),
+            (
+                "bools".to_string(),
+                StructuredBodyElement::SingleValue(2, ARRAY_BOOL_TY.packed_type.clone()),
+            ),
+            (
+                "bool_sized".to_string(),
+                StructuredBodyElement::SingleValue(3, ARRAY_BOOL_SIZED_TY.packed_type.clone()),
+            ),
+            (
+                "enums".to_string(),
+                StructuredBodyElement::SingleValue(4, ARRAY_ENUM_TY.packed_type.clone()),
+            ),
+            (
+                "unions".to_string(),
+                StructuredBodyElement::SingleValue(5, ARRAY_UNION_TY.packed_type.clone()),
+            ),
+            (
+                "unions_nested".to_string(),
+                StructuredBodyElement::SingleValue(6, ARRAY_UNION_NESTED_TY.packed_type.clone()),
+            ),
+            (
+                "fourints".to_string(),
+                StructuredBodyElement::SingleValue(7, ARRAY_FOURINTS_TY.packed_type.clone()),
+            ),
+            (
+                "nested".to_string(),
+                StructuredBodyElement::SingleValue(8, ARRAY_NESTED_TY.packed_type.clone()),
+            ),
+            (
+                "nested_sized".to_string(),
+                StructuredBodyElement::SingleValue(9, ARRAY_NESTED_SIZED_TY.packed_type.clone()),
+            ),
+        ],
+        10,
+    ),
+});
+
+fn arrays_mojom(
+    ints: Vec<i16>,
+    ints_sized: [u64; 3],
+    bools: Vec<bool>,
+    bool_sized: [bool; 13],
+    enums: Vec<TestEnum>,
+    unions: Vec<BaseUnion>,
+    unions_nested: Vec<NestedUnion>,
+    fourints: Vec<FourInts>,
+    nested: Vec<Vec<u8>>,
+    nested_sized: [[u8; 2]; 3],
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("ints".to_string(), array_int16_mojom(ints)),
+        ("ints_sized".to_string(), array_uint64_sized_mojom(ints_sized)),
+        ("bools".to_string(), array_bool_mojom(bools)),
+        ("bool_sized".to_string(), array_bool_sized_mojom(bool_sized)),
+        ("enums".to_string(), array_enum_mojom(enums)),
+        ("unions".to_string(), array_union_mojom(unions)),
+        ("unions_nested".to_string(), array_union_nested_mojom(unions_nested)),
+        ("fourints".to_string(), array_fourints_mojom(fourints)),
+        ("nested".to_string(), array_nested_mojom(nested)),
+        ("nested_sized".to_string(), array_nested_sized_mojom(nested_sized)),
+    ])
+}
+
+#[gtest(MojomParser, TestArrays)]
+fn test_arrays() {
+    ARRAY_INT16_TY
+        .validate_mojomparse::<Vec<i16>>(vec![1, -2, 3, -4], array_int16_mojom(vec![1, -2, 3, -4]));
+    ARRAY_UINT64_SIZED_TY
+        .validate_mojomparse::<[u64; 3]>([5, 6, 7], array_uint64_sized_mojom([5, 6, 7]));
+    ARRAY_BOOL_TY.validate_mojomparse::<Vec<bool>>(
+        vec![true, false, true, false, true, false, true, false, true],
+        array_bool_mojom(vec![true, false, true, false, true, false, true, false, true]),
+    );
+    ARRAY_BOOL_SIZED_TY.validate_mojomparse::<[bool; 13]>(
+        [true, true, false, true, false, false, true, true, false, true, false, false, true],
+        array_bool_sized_mojom([
+            true, true, false, true, false, false, true, true, false, true, false, false, true,
+        ]),
+    );
+    ARRAY_ENUM_TY.validate_mojomparse::<Vec<TestEnum>>(
+        vec![TestEnum::Zero, TestEnum::Seven, TestEnum::Four],
+        array_enum_mojom(vec![TestEnum::Zero, TestEnum::Seven, TestEnum::Four]),
+    );
+    ARRAY_UNION_TY.validate_mojomparse::<Vec<BaseUnion>>(
+        vec![BaseUnion::n1(10), BaseUnion::u1(20), BaseUnion::e1(TestEnum::Three)],
+        array_union_mojom(vec![
+            BaseUnion::n1(10),
+            BaseUnion::u1(20),
+            BaseUnion::e1(TestEnum::Three),
+        ]),
+    );
+    ARRAY_UNION_NESTED_TY.validate_mojomparse::<Vec<NestedUnion>>(
+        vec![NestedUnion::n(30), NestedUnion::u(BaseUnion::n1(40))],
+        array_union_nested_mojom(vec![NestedUnion::n(30), NestedUnion::u(BaseUnion::n1(40))]),
+    );
+    ARRAY_FOURINTS_TY.validate_mojomparse::<Vec<FourInts>>(
+        vec![FourInts { a: 1, b: 2, c: 3, d: 4 }, FourInts { a: 5, b: 6, c: 7, d: 8 }],
+        array_fourints_mojom(vec![
+            FourInts { a: 1, b: 2, c: 3, d: 4 },
+            FourInts { a: 5, b: 6, c: 7, d: 8 },
+        ]),
+    );
+    ARRAY_NESTED_TY.validate_mojomparse::<Vec<Vec<u8>>>(
+        vec![vec![1, 2], vec![3, 4, 5]],
+        array_nested_mojom(vec![vec![1, 2], vec![3, 4, 5]]),
+    );
+    ARRAY_NESTED_SIZED_TY.validate_mojomparse::<[[u8; 2]; 3]>(
+        [[6, 7], [8, 9], [10, 11]],
+        array_nested_sized_mojom([[6, 7], [8, 9], [10, 11]]),
+    );
+
+    let array_val = array_int16_mojom(vec![]);
+    expect_true!(FourInts::try_from(array_val).is_err());
+
+    let empty_val = empty_mojom();
+    expect_true!(<Vec<i16>>::try_from(empty_val.clone()).is_err());
+    expect_true!(<[u64; 3]>::try_from(empty_val.clone()).is_err());
+
+    ARRAYS_TY.validate_mojomparse(
+        Arrays {
+            ints: vec![101, -201, 301, -401],
+            ints_sized: [501, 601, 701],
+            bools: vec![false, true, false, true, false, true, false, true, false],
+            bool_sized: [
+                false, false, true, false, true, true, false, false, true, false, true, true, false,
+            ],
+            enums: vec![TestEnum::Four, TestEnum::Zero, TestEnum::Seven],
+            unions: vec![BaseUnion::n1(12), BaseUnion::u1(22), BaseUnion::e1(TestEnum::Four)],
+            unions_nested: vec![NestedUnion::n(32), NestedUnion::u(BaseUnion::n1(42))],
+            fourints: vec![
+                FourInts { a: 12, b: 22, c: 32, d: 42 },
+                FourInts { a: 52, b: 62, c: 72, d: 82 },
+            ],
+            nested: vec![vec![11, 22], vec![33, 44, 55]],
+            nested_sized: [[16, 17], [18, 19], [20, 21]],
+        },
+        arrays_mojom(
+            vec![101, -201, 301, -401],
+            [501, 601, 701],
+            vec![false, true, false, true, false, true, false, true, false],
+            [false, false, true, false, true, true, false, false, true, false, true, true, false],
+            vec![TestEnum::Four, TestEnum::Zero, TestEnum::Seven],
+            vec![BaseUnion::n1(12), BaseUnion::u1(22), BaseUnion::e1(TestEnum::Four)],
+            vec![NestedUnion::n(32), NestedUnion::u(BaseUnion::n1(42))],
+            vec![FourInts { a: 12, b: 22, c: 32, d: 42 }, FourInts { a: 52, b: 62, c: 72, d: 82 }],
+            vec![vec![11, 22], vec![33, 44, 55]],
+            [[16, 17], [18, 19], [20, 21]],
+        ),
     );
 }

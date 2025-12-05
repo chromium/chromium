@@ -37,16 +37,19 @@ where
             .map_err(anyhow::Error::msg)?
             // We currently don't do anything with handles, so only look at the data field
             .data;
+
         // FOR_RELEASE: It would be nice to use the `verify_` macros from googletest
         // that return a result, if we get access to them.
-        expect_eq!(
-            value,
-            parse_single_value_for_testing(wire_data.as_ref(), T::wire_type())?.try_into()?
-        );
         // FOR_RELEASE: We shouldn't need to clone here
+        // Doing deparse tests first is helpful when writing tests because it
+        // helps check that we wrote the wire data string correctly.
         expect_eq!(
             wire_data.as_ref(),
             deparse_single_value_for_testing(&value.clone().into(), T::wire_type())?
+        );
+        expect_eq!(
+            value,
+            parse_single_value_for_testing(wire_data.as_ref(), T::wire_type())?.try_into()?
         );
         Ok(())
     };
@@ -494,6 +497,125 @@ fn test_unions() -> anyhow::Result<()> {
             "[s4]3000 [u4]0 ",                                  // WithNestedUnion.n2
             "[anchr]u4_w_u_ptr [u4]16 [u4]6 [dist8]u4_f1_ptr ", // BaseUnion::f1 - u4.w.u.u
             "[anchr]u4_f1_ptr [u4]24 [u4]0 [s1]12 [u1]0 [s2]13 [s4]14 [s8]15"  // FourInts
+        ),
+    )?;
+
+    Ok(())
+}
+
+#[gtest(MojomParser, TestArrayParsing)]
+fn test_array_parsing() -> anyhow::Result<()> {
+    // array<int16>
+    validate_parsing::<Vec<i16>>(
+        vec![1, -2, 3, -4, 5],
+        "[u4]18 [u4]5 [s2]1 [s2]-2 [s2]3 [s2]-4 [s2]5 [u2]0 [u4]0",
+    )?;
+
+    validate_parsing::<Vec<i16>>(vec![], "[u4]8 [u4]0")?;
+
+    // array<uint64, 3>
+    validate_parsing::<[u64; 3]>([5, 6, 7], "[u4]32 [u4]3 [u8]5 [u8]6 [u8]7")?;
+    // Wrong number of elements
+    validate_parsing_failure::<[u64; 3]>("[u4]32 [u4]4 [u8]5 [u8]6 [u8]7 [u8]8")?;
+
+    // array<bool>
+    validate_parsing::<Vec<bool>>(
+        vec![true, true, false, true, false, false, true, false, true],
+        "[u4]10 [u4]9 [b]01001011 [b]00000001 [u2]0 [u4]0",
+    )?;
+
+    // array<bool, 20>
+    validate_parsing::<[bool; 20]>(
+        [
+            false, true, true, false, true, true, false, true, true, false, true, true, false,
+            true, true, false, true, true, false, true,
+        ],
+        "[u4]11 [u4]20 [b]10110110 [b]01101101 [b]00001011 [u1]0 [u4]0",
+    )?;
+
+    // array<TestEnum>
+    validate_parsing::<Vec<TestEnum>>(
+        vec![TestEnum::Zero, TestEnum::Four, TestEnum::Seven],
+        "[u4]20 [u4]3 [u4]0 [u4]4 [u4]7 [u4]0",
+    )?;
+
+    // Bad enum value
+    validate_parsing_failure::<Vec<TestEnum>>("[u4]24 [u4]3 [u4]0 [u4]99 [u4]4")?;
+
+    // array<BaseUnion>
+    validate_parsing::<Vec<BaseUnion>>(
+        vec![BaseUnion::n1(10), BaseUnion::u1(20), BaseUnion::e1(TestEnum::Three)],
+        concat!(
+            "[u4]56 [u4]3 ", // Array header
+            "[u4]16 [u4]0 [u8]10 ",
+            "[u4]16 [u4]1 [u8]20 ",
+            "[u4]16 [u4]2 [u8]3",
+        ),
+    )?;
+
+    // Bad union value in array
+    validate_parsing_failure::<Vec<BaseUnion>>(concat!(
+        "[u4]48 [u4]3 ", // Array header
+        "[u4]16 [u4]0 [u8]10 ",
+        "[u4]16 [u4]99 [u8]20 ", // Invalid discriminant
+        "[u4]16 [u4]2 [u8]3",
+    ))?;
+
+    // array<FourInts>
+    validate_parsing::<Vec<FourInts>>(
+        vec![FourInts { a: 1, b: 2, c: 3, d: 4 }, FourInts { a: 5, b: 6, c: 7, d: 8 }],
+        concat!(
+            "[u4]24 [u4]2 ", // Array header
+            "[dist8]fourints_0_ptr ",
+            "[dist8]fourints_1_ptr ",
+            "[anchr]fourints_0_ptr ",
+            "[u4]24 [u4]0 [s1]1 [u1]0 [s2]2 [s4]3 [s8]4 ", // FourInts 0
+            "[anchr]fourints_1_ptr ",
+            "[u4]24 [u4]0 [s1]5 [u1]0 [s2]6 [s4]7 [s8]8", // FourInts 1
+        ),
+    )?;
+
+    // array<array<uint8>>
+    validate_parsing::<Vec<Vec<u8>>>(
+        vec![vec![1, 2], vec![3, 4, 5]],
+        concat!(
+            "[u4]24 [u4]2 ", // Array header
+            "[dist8]nested_0_ptr ",
+            "[dist8]nested_1_ptr ",
+            "[anchr]nested_0_ptr ",
+            "[u4]10 [u4]2 [u1]1 [u1]2 [u2]0 [u4]0 ", // Inner array 0
+            "[anchr]nested_1_ptr ",
+            "[u4]11 [u4]3 [u1]3 [u1]4 [u1]5 [u1]0 [u4]0", // Inner array 1
+        ),
+    )?;
+
+    // array<array<uint8, 2>, 3>
+    validate_parsing::<[[u8; 2]; 3]>(
+        [[6, 7], [8, 9], [10, 11]],
+        concat!(
+            "[u4]32 [u4]3 ", // Outer array header
+            "[dist8]nested_sized_0_ptr ",
+            "[dist8]nested_sized_1_ptr ",
+            "[dist8]nested_sized_2_ptr ",
+            "[anchr]nested_sized_0_ptr ",
+            "[u4]10 [u4]2 [u1]6 [u1]7 [u2]0 [u4]0 ", // Inner array 0
+            "[anchr]nested_sized_1_ptr ",
+            "[u4]10 [u4]2 [u1]8 [u1]9 [u2]0 [u4]0 ", // Inner array 1
+            "[anchr]nested_sized_2_ptr ",
+            "[u4]10 [u4]2 [u1]10 [u1]11 [u2]0 [u4]0", // Inner array 2
+        ),
+    )?;
+
+    // array<NestedUnion>
+    validate_parsing::<Vec<NestedUnion>>(
+        vec![NestedUnion::n(30), NestedUnion::u(BaseUnion::n1(40)), NestedUnion::n(50)],
+        concat!(
+            "[u4]56 [u4]3 ", // Array header
+            "[u4]16 [u4]0 [u8]30 ",
+            "[u4]16 [u4]1 [dist8]nested_union_1_ptr ",
+            "[u4]16 [u4]0 [u8]50 ",
+            "[anchr]nested_union_1_ptr ",
+            "[u4]16 [u4]0 [u8]40",
         ),
     )?;
 

@@ -231,3 +231,50 @@ pub fn pack_struct_field(ty: &MojomType, ordinal: Ordinal) -> StructuredBodyElem
         _ => StructuredBodyElement::SingleValue(ordinal, packed_ty),
     }
 }
+
+/// Create a structured body out of an array. This can be thought of as part of
+/// the packing algorithm, but we can't actually run it until we know the number
+/// of elements in the array.
+///
+/// FOR_RELEASE: It would be nice to return an iterator directly, but the
+/// cleanest way to do that (AFAIK) is to use itertools::Either, and that crate
+/// isn't yet approved for use in chromium.
+pub fn pack_array_body<'a>(
+    element_type: &'a MojomWireType,
+    num_elements: usize,
+) -> Vec<StructuredBodyElementMixed<'a>> {
+    match element_type {
+        // If the array contains booleans we'll need to convert them to bitfields
+        // with the proper ordinals
+        MojomWireType::Leaf { leaf_type: PackedLeafType::Bool } => {
+            let num_full_bitfields = num_elements / 8; // Round down
+            let remaining_bools = num_elements % 8;
+            let num_partial_bitfields = if remaining_bools == 0 { 0 } else { 1 };
+            let mut bitfields: Vec<[Option<Ordinal>; 8]> =
+                Vec::with_capacity(num_full_bitfields + num_partial_bitfields);
+            for i in 0..num_full_bitfields {
+                bitfields.push(std::array::from_fn(|idx| Some(i * 8 + idx)))
+            }
+            if remaining_bools != 0 {
+                bitfields.push(std::array::from_fn(|idx| {
+                    if idx < remaining_bools {
+                        Some(num_full_bitfields * 8 + idx)
+                    } else {
+                        None
+                    }
+                }))
+            }
+
+            return bitfields
+                .into_iter()
+                .map(|bitfield| StructuredBodyElement::Bitfield(bitfield))
+                .collect();
+        }
+        // All non-bool types just pack as themselves, in order
+        _ => {
+            return (0..num_elements)
+                .map(|idx| StructuredBodyElement::SingleValue(idx, element_type))
+                .collect();
+        }
+    }
+}

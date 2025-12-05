@@ -102,9 +102,20 @@ fn deparse_leaf_value(data: &mut Vec<u8>, value: &MojomValue) -> Result<()> {
 // later in the message.
 
 enum NestedData<'a> {
-    Struct { field_values: &'a [MojomValue], packed_fields: &'a [StructuredBodyElementOwned] },
-    Array { elements: &'a Vec<MojomValue>, element_type: &'a Box<MojomWireType> },
-    Union { tag: u32, value: &'a Box<MojomValue>, variants: &'a HashMap<u32, MojomWireType> },
+    Struct {
+        field_values: &'a [MojomValue],
+        packed_fields: &'a [StructuredBodyElementOwned],
+    },
+    Array {
+        elements: &'a Vec<MojomValue>,
+        element_type: &'a Box<MojomWireType>,
+        array_type: &'a PackedArrayType,
+    },
+    Union {
+        tag: u32,
+        value: &'a Box<MojomValue>,
+        variants: &'a HashMap<u32, MojomWireType>,
+    },
 }
 /// Information about a nested struct/array, which we will emit later
 struct NestedDataInfo<'a> {
@@ -133,9 +144,37 @@ pub fn deparse_struct(
     deparse_structured_body(
         data,
         None,
+        false,
         field_values,
         packed_fields.iter().map(StructuredBodyElementOwned::as_ref),
     )
+}
+
+fn deparse_array(
+    data: &mut Vec<u8>,
+    element_values: &Vec<MojomValue>,
+    element_type: &Box<MojomWireType>,
+    array_type: &PackedArrayType,
+) -> Result<()> {
+    let num_elements = element_values.len();
+
+    if let PackedArrayType::SizedArray(expected_num_elements) = array_type
+        && *expected_num_elements != num_elements
+    {
+        bail!(
+            "Array type expected {expected_num_elements} elements but had {num_elements} elements."
+        )
+    };
+
+    data.extend([0; 4]); // Size field of the header; we'll fill this in later
+
+    // We don't support more than 2^32 elements.
+    let num_elements_u32: u32 = num_elements.try_into().unwrap();
+    data.extend(num_elements_u32.to_le_bytes());
+
+    let array_body = crate::pack::pack_array_body(element_type, num_elements);
+
+    deparse_structured_body(data, None, true, &element_values, array_body.into_iter())
 }
 
 /// Serialize a union to the wire.
@@ -163,6 +202,7 @@ fn deparse_union<'a>(
     deparse_structured_body(
         data,
         enclosing_nested_data_list,
+        false,
         std::slice::from_ref(&*value),
         std::iter::once(struct_ref_element),
     )
@@ -172,10 +212,15 @@ fn deparse_union<'a>(
 ///
 /// See the documentation of parse_union in parse_values.rs for an explanation
 /// of the `enclosing_nested_data_list` argument
+///
+/// The is_array argument controls whether we should write padding at the end
+/// of the body before or after we record the size of the body in its header.
+/// For arrays, the padding is not included in the header; for structs, it is.
 // FOR_RELEASE: Try to take the value by value instead of by reference
 fn deparse_structured_body<'a, 'b, IterT, BitfieldT>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
+    is_array: bool,
     field_values: &'a [MojomValue],
     packed_fields: IterT,
 ) -> Result<()>
@@ -238,8 +283,12 @@ where
                             },
                             (
                                 MojomValue::Array(nested_data_fields),
-                                PackedStructuredType::Array { element_type, .. },
-                            ) => NestedData::Array { elements: nested_data_fields, element_type },
+                                PackedStructuredType::Array { element_type, array_type },
+                            ) => NestedData::Array {
+                                elements: nested_data_fields,
+                                element_type,
+                                array_type,
+                            },
                             (
                                 MojomValue::Union(tag, value),
                                 PackedStructuredType::Union { variants, .. },
@@ -279,14 +328,20 @@ where
         }
     }
 
-    // Struct bodies must be a multiple of 8 bytes.
-    pad_to_alignment(data, 8);
+    if !is_array {
+        // Non-array bodies must be a multiple of 8 bytes before we record
+        // their size in their header.
+        pad_to_alignment(data, 8);
+    }
 
     let bytes_written = data.len() - initial_bytes;
     // Write the length of the struct to the first 4 bytes of the header
     // The usize->u32 cast should always work, because hopefully our message
     // is less than 2^32 bytes long!
     write_to_slice(data, initial_bytes, 4, &u32::to_le_bytes(bytes_written.try_into().unwrap()));
+
+    // This is a no_op unless is_array is true.
+    pad_to_alignment(data, 8);
 
     for nested_data_info in local_nested_data_list {
         // Write to this nested data's pointer.
@@ -302,9 +357,8 @@ where
             NestedData::Struct { field_values, packed_fields } => {
                 deparse_struct(data, field_values, packed_fields)?
             }
-            NestedData::Array { elements, element_type } => {
-                let _ = (elements, element_type); // Selectively silence unused code warning
-                bail!("Arrays not yet implemented")
+            NestedData::Array { elements, element_type, array_type } => {
+                deparse_array(data, elements, element_type, array_type)?
             }
             NestedData::Union { tag, value, variants } => {
                 deparse_union(data, None, tag, value, variants)?
@@ -334,9 +388,12 @@ pub fn deparse_single_value_for_testing(
             MojomValue::Struct(_field_names, fields),
         ) => deparse_struct(&mut data, fields, packed_field_types)?,
         (
-            MojomWireType::Pointer { nested_data_type: PackedStructuredType::Array { .. }, .. },
-            MojomValue::Array(_),
-        ) => panic!("Arrays are not yet implemented"),
+            MojomWireType::Pointer {
+                nested_data_type: PackedStructuredType::Array { element_type, array_type },
+                ..
+            },
+            MojomValue::Array(elements),
+        ) => deparse_array(&mut data, elements, element_type, array_type)?,
         (
             MojomWireType::Union { variants, .. }
             | MojomWireType::Pointer {

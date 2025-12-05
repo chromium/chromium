@@ -15,11 +15,13 @@ pub fn derive_mojomparse(input: proc_macro::TokenStream) -> proc_macro::TokenStr
     let derived_tokens = match input.data {
         syn::Data::Struct(syn::DataStruct { fields, .. }) => match fields {
             syn::Fields::Named(syn::FieldsNamed { named, .. }) => {
-                derive_mojomparse_struct(name, named)
+                derive_mojomparse_struct(name.clone(), named)
             }
             _ => panic!("Mojom structs do not support unnamed fields"),
         },
-        syn::Data::Enum(syn::DataEnum { variants, .. }) => derive_mojomparse_union(name, variants),
+        syn::Data::Enum(syn::DataEnum { variants, .. }) => {
+            derive_mojomparse_union(name.clone(), variants)
+        }
         syn::Data::Union(_) => {
             panic!("Mojom does not support untagged unions. Use a Rust enum instead.")
         }
@@ -50,7 +52,7 @@ fn derive_mojomparse_struct(
         .map(|field| {
             let ty = &field.ty;
             let name = field.ident.as_ref().unwrap().to_string();
-            quote! { (#name.to_string(), #ty::mojom_type()) }
+            quote! { (#name.to_string(), <#ty>::mojom_type()) }
         })
         .collect();
 
@@ -161,7 +163,7 @@ fn derive_mojomparse_union(
 
     let mojom_type_fields = variant_info
         .iter()
-        .map(|(_, ty, discriminant)| quote! { (#discriminant, #ty::mojom_type()) });
+        .map(|(_, ty, discriminant)| quote! { (#discriminant, <#ty>::mojom_type()) });
     let to_mojom_value_branches = variant_info
         .iter()
         .map(|(variant_name, _, discriminant)| quote! { #name::#variant_name(v) => (#discriminant, v.into()) });

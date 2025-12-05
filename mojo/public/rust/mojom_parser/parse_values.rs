@@ -84,12 +84,13 @@ struct NestedDataInfo<'a> {
 /// Parse a 32-bit size as part of a struct or array header
 /// FOR_RELEASE: Maybe make a (slightly) more general parse_header function
 /// which parses this and the following 4 bytes as well.
-pub fn parse_size(data: &mut ParserData) -> ParsingResult<usize> {
+pub fn parse_size(data: &mut ParserData, is_array: bool) -> ParsingResult<usize> {
     let parsed_value = parse_u32(data)?;
     let mk_err = || Err(ParsingError::invalid_size(data.bytes_parsed() - 4, parsed_value));
     let size = parsed_value.try_into().or_else(|_| mk_err())?;
-    // Sizes are always divisible by 8
-    if size < 8 || size % 8 != 0 {
+    // Non-array sizes are always divisible by 8.
+    let invalid_remainder = !is_array && size % 8 != 0;
+    if size < 8 || invalid_remainder {
         return mk_err();
     }
     Ok(size)
@@ -115,7 +116,7 @@ pub fn parse_struct(
     num_elements_in_value: usize,
 ) -> ParsingResult<MojomValue> {
     // Parse the struct header
-    let size_in_bytes = parse_size(data)?;
+    let size_in_bytes = parse_size(data, false)?;
     let _version_number = parse_u32(data)?; // We're ignoring versioning for now
 
     let (parsed_names, parsed_fields) = parse_structured_body(
@@ -128,6 +129,44 @@ pub fn parse_struct(
     )?;
 
     Ok(MojomValue::Struct(parsed_names, parsed_fields))
+}
+
+fn parse_array(
+    data: &mut ParserData,
+    element_type: &Box<MojomWireType>,
+    array_type: &PackedArrayType,
+) -> ParsingResult<MojomValue> {
+    // Parse the array header
+    let size_in_bytes = parse_size(data, true)?;
+    // usize always fits into 32 bits on our platforms
+    let num_elements = parse_u32(data)?.try_into().unwrap();
+
+    if let PackedArrayType::SizedArray(expected_num_elements) = array_type
+        && *expected_num_elements != num_elements
+    {
+        return Err(ParsingError::wrong_array_size(
+            // Report the error as originating from the 4 bytes we just parsed
+            data.bytes_parsed() - 4,
+            *expected_num_elements,
+            num_elements,
+        ));
+    }
+
+    // Make up dummy field names for debugging.
+    let field_names =
+        (0..num_elements).map(|idx| format!("Array_Element_{idx}")).collect::<Vec<_>>();
+    // An array body is equivalent to a struct body with `num_elements` copies of
+    // its field
+    let array_body = crate::pack::pack_array_body(element_type, num_elements);
+    let (_names, parsed_fields) = parse_structured_body(
+        data,
+        None,
+        size_in_bytes,
+        &field_names,
+        array_body.into_iter(),
+        num_elements,
+    )?;
+    Ok(MojomValue::Array(parsed_fields))
 }
 
 /// Parse a union value.
@@ -159,7 +198,7 @@ fn parse_union<'a>(
     variants: &'a HashMap<u32, MojomWireType>,
 ) -> ParsingResult<(u32, Option<MojomValue>)> {
     // Parse the union header
-    let size_in_bytes = parse_size(data)?;
+    let size_in_bytes = parse_size(data, false)?;
     let tag = parse_u32(data)?;
     let field_ty = match variants.get(&tag) {
         Some(wire_ty) => wire_ty,
@@ -174,15 +213,14 @@ fn parse_union<'a>(
     let struct_ref_element: StructuredBodyElementMixed =
         StructuredBodyElement::SingleValue(0, field_ty);
 
-    let mut parsed_fields = parse_structured_body(
+    let (_names, mut parsed_fields) = parse_structured_body(
         data,
         enclosing_nested_data_list,
         size_in_bytes,
         std::slice::from_ref(&field_name),
         std::iter::once(struct_ref_element),
         1,
-    )?
-    .1;
+    )?;
     assert_eq!(parsed_fields.len(), 1);
 
     let ret = match (in_enclosing_body, field_ty) {
@@ -332,6 +370,8 @@ where
     // nested data list; if we did, then the nested things will be at the end of the
     // enclosing object instead.
     for nested_data in local_nested_data_list {
+        // All nested data is 8-byte aligned
+        skip_to_alignment(data, 8)?;
         // Nested data is required to appear in the same order as the (packed) fields
         // of the struct. So the expected offset is only useful for validation.
         let bytes_parsed_so_far = data.bytes_parsed() - initial_bytes_parsed;
@@ -351,8 +391,8 @@ where
             } => {
                 parse_struct(data, packed_field_names, packed_field_types, *num_elements_in_value)?
             }
-            PackedStructuredType::Array { .. } => {
-                panic!("Arrays are not yet implemented");
+            PackedStructuredType::Array { element_type, array_type } => {
+                parse_array(data, element_type, array_type)?
             }
             PackedStructuredType::Union { variants } => parse_union(data, None, variants)?
                 .1
@@ -389,8 +429,8 @@ pub fn parse_single_value_for_testing(
                 packed_field_types,
                 *num_elements_in_value,
             ),
-            PackedStructuredType::Array { .. } => {
-                panic!("Arrays are not yet implemented");
+            PackedStructuredType::Array { element_type, array_type } => {
+                parse_array(&mut data, element_type, array_type)
             }
             PackedStructuredType::Union { .. } => {
                 panic!("Standalone unions are never behind pointers")

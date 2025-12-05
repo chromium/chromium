@@ -149,3 +149,16 @@ struct WithManyUnions {
   int32 i3;
   int32 i4;
 };
+
+struct Arrays {
+  array<int16> ints;
+  array<uint64, 3> ints_sized;
+  array<bool> bools; // Will be packed as bitfields
+  array<bool, 13> bool_sized; // Will still be packed as bitfields
+  array<TestEnum> enums;
+  array<BaseUnion> unions;
+  array<NestedUnion> unions_nested;
+  array<FourInts> fourints;
+  array<array<uint8>> nested;
+  array<array<uint8, 2>, 3> nested_sized;
+};
