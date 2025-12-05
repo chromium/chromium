@@ -327,7 +327,7 @@ public class VariationsSeedLoader {
     private void updateSeedFileAndRequestNewFromServiceOnBackgroundThread(
             boolean foundNewSeed, boolean needNewSeed, long seedFileTime) {
         // This work is not time critical.
-        PostTask.postTask(
+        PostTask.postDelayedTask(
                 TaskTraits.BEST_EFFORT_MAY_BLOCK,
                 () -> {
                     if (foundNewSeed) {
@@ -346,7 +346,8 @@ public class VariationsSeedLoader {
                     }
 
                     onBackgroundWorkFinished();
-                });
+                },
+                2500);
     }
 
     // Connects to VariationsSeedServer service. Sends a file descriptor for our local copy of the
