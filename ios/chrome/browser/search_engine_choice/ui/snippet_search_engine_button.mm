@@ -271,6 +271,11 @@ UIColor* GetCheckedTintColor() {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
+  BOOL isExandable = _textView.isSnippetExpandable;
+  if (!isExandable && _snippetExpanded) {
+    // The snippet is now on line, the view should be updated accordingly.
+    [self updateCellWithExpanded:NO animate:NO];
+  }
   _isChevronButtonEnabled = _textView.isSnippetExpandable;
   _chevronButton.alpha = (_isChevronButtonEnabled) ? 1. : .4;
 }
