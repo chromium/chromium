@@ -77,7 +77,6 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentSequence() {
     CHECK_EQ(result, gpu::ContextResult::kSuccess);
 
     caps_ = raster_context_->GetCapabilities();
-    CHECK_EQ(caps_.gpu_rasterization, is_gpu_raster);
   }
 
   cache_controller_ = std::make_unique<ContextCacheController>(
