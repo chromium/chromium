@@ -308,6 +308,7 @@ void GlicInstanceMetrics::OnFloatyClosed() {
   base::UmaHistogramCustomTimes("Glic.Instance.Floaty.OpenDuration",
                                 base::TimeTicks::Now() - floaty_open_time_,
                                 base::Milliseconds(1), base::Hours(1), 50);
+  floaty_open_time_ = base::TimeTicks();
 }
 
 void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {

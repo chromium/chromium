@@ -193,4 +193,57 @@ TEST_F(GlicInstanceMetricsTest, OnUserResizeEnded) {
       "Glic.Instance.Floaty.UserResizeEnded.Height", test_size.height(), 1);
 }
 
+TEST_F(GlicInstanceMetricsTest, ValidFloatyFlow_DoesNotLogError) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+  metrics_.OnFloatyClosed();
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnSidePanelClosed(&mock_tab_);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
+}
+
+TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
+  ShowOptions show_options{FloatingShowOptions{}};
+  metrics_.OnShowInFloaty(show_options);
+  metrics_.OnFloatyClosed();
+  metrics_.OnFloatyClosed();
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kFloatyClosedWithoutOpen, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, SidePanel_OpenCloseClose_LogsError) {
+  EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
+  metrics_.OnShowInSidePanel(&mock_tab_);
+  metrics_.OnSidePanelClosed(&mock_tab_);
+  metrics_.OnSidePanelClosed(&mock_tab_);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kSidePanelClosedWithoutOpen, 1);
+}
+
+TEST_F(GlicInstanceMetricsTest, Response_InputStopStop_LogsError) {
+  metrics_.OnVisibilityChanged(true);
+  metrics_.OnUserInputSubmitted(mojom::WebClientMode::kText);
+  metrics_.OnResponseStarted();
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  metrics_.OnResponseStopped(mojom::ResponseStopCause::kUser);
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.Metrics.Error",
+      GlicInstanceMetricsError::kResponseStopWithoutInput, 1);
+}
+
 }  // namespace glic
