@@ -91,6 +91,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private @Nullable NativePageFactory mNativePageFactory;
     private final BackPressManager mBackPressManager;
     private final MultiInstanceManager mMultiInstanceManager;
+    private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
     public TabbedModeTabDelegateFactory(
             Activity activity,
@@ -121,7 +122,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             StartupMetricsTracker startupMetricsTracker,
             @Nullable ExclusiveAccessManager exclusiveAccessManager,
             BackPressManager backPressManager,
-            MultiInstanceManager multiInstanceManager) {
+            MultiInstanceManager multiInstanceManager,
+            RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
         mActivity = activity;
         mAppBrowserControlsVisibilityDelegate = appBrowserControlsVisibilityDelegate;
         mShareDelegateSupplier = shareDelegateSupplier;
@@ -151,6 +153,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
         mExclusiveAccessManager = exclusiveAccessManager;
         mBackPressManager = backPressManager;
         mMultiInstanceManager = multiInstanceManager;
+        mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
     }
 
     @Override
@@ -223,7 +226,8 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
                             mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker,
                             mBackPressManager,
-                            mMultiInstanceManager);
+                            mMultiInstanceManager,
+                            mRecentlyClosedEntriesManager);
         }
         return mNativePageFactory.createNativePage(url, candidatePage, tab, pdfInfo);
     }

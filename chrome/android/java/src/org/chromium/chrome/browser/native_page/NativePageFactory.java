@@ -26,6 +26,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.app.download.home.DownloadPage;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkPage;
@@ -101,6 +102,7 @@ public class NativePageFactory {
     private static @Nullable NativePage sTestPage;
     private final BackPressManager mBackPressManager;
     private final MultiInstanceManager mMultiInstanceManager;
+    private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
     public NativePageFactory(
             Activity activity,
@@ -121,7 +123,8 @@ public class NativePageFactory {
             ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             StartupMetricsTracker startupMetricsTracker,
             BackPressManager backPressManager,
-            MultiInstanceManager multiInstanceManager) {
+            MultiInstanceManager multiInstanceManager,
+            RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
         mActivity = activity;
         mBottomSheetController = sheetController;
         mBrowserControlsManager = browserControlsManager;
@@ -141,6 +144,7 @@ public class NativePageFactory {
         mStartupMetricsTracker = startupMetricsTracker;
         mBackPressManager = backPressManager;
         mMultiInstanceManager = multiInstanceManager;
+        mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
     }
 
     private NativePageBuilder getBuilder() {
@@ -166,7 +170,8 @@ public class NativePageFactory {
                             mTopInsetCoordinatorSupplier,
                             mStartupMetricsTracker,
                             mBackPressManager,
-                            mMultiInstanceManager);
+                            mMultiInstanceManager,
+                            mRecentlyClosedEntriesManager);
         }
         return mNativePageBuilder;
     }
@@ -201,6 +206,7 @@ public class NativePageFactory {
         private final StartupMetricsTracker mStartupMetricsTracker;
         private final BackPressManager mBackPressManager;
         private final MultiInstanceManager mMultiInstanceManager;
+        private final RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
         public NativePageBuilder(
                 Activity activity,
@@ -222,7 +228,8 @@ public class NativePageFactory {
                 ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
                 StartupMetricsTracker startupMetricsTracker,
                 BackPressManager backPressManager,
-                MultiInstanceManager multiInstanceManager) {
+                MultiInstanceManager multiInstanceManager,
+                RecentlyClosedEntriesManager recentlyClosedEntriesManager) {
             mActivity = activity;
             mNewTabPageCreationTracker = newTabPageCreationTracker;
             mBottomSheetController = sheetController;
@@ -243,6 +250,7 @@ public class NativePageFactory {
             mStartupMetricsTracker = startupMetricsTracker;
             mBackPressManager = backPressManager;
             mMultiInstanceManager = multiInstanceManager;
+            mRecentlyClosedEntriesManager = recentlyClosedEntriesManager;
         }
 
         protected NativePage buildNewTabPage(Tab tab, String url) {
@@ -332,12 +340,12 @@ public class NativePageFactory {
             RecentTabsManager recentTabsManager =
                     new RecentTabsManager(
                             tab,
-                            mTabModelSelector,
                             tab.getProfile(),
                             mActivity,
                             () ->
                                     HistoryManagerUtils.showHistoryManager(
-                                            mActivity, tab, tab.getProfile()));
+                                            mActivity, tab, tab.getProfile()),
+                            mRecentlyClosedEntriesManager);
 
             NativePageHost host =
                     new TabShim(

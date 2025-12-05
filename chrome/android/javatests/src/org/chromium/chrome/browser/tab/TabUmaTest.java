@@ -73,7 +73,7 @@ public class TabUmaTest {
                 mActivityTestRule.getActivity(),
                 visibilityDelegate,
                 new ObservableSupplierImpl<>(),
-                null,
+                /* ephemeralTabCoordinatorSupplier= */ null,
                 CallbackUtils.emptyRunnable(),
                 rootUiCoordinator.getBottomSheetController(),
                 /* chromeActivityNativeDelegate= */ cta,
@@ -89,16 +89,17 @@ public class TabUmaTest {
                 cta.getLifecycleDispatcher(),
                 cta.getWindowAndroid(),
                 rootUiCoordinator.getToolbarManager()::getToolbar,
-                null,
-                null,
+                /* homeSurfaceTracker= */ null,
+                /* tabContentManagerSupplier= */ null,
                 rootUiCoordinator.getToolbarManager().getTabStripHeightSupplier(),
                 new OneshotSupplierImpl<>(),
                 new ObservableSupplierImpl<>(),
                 new ObservableSupplierImpl<>(),
                 cta.getStartupMetricsTracker(),
-                null,
-                null,
-                null);
+                /* exclusiveAccessManager= */ null,
+                /* backPressManager= */ null,
+                /* multiInstanceManager= */ null,
+                /* recentlyClosedEntriesManager= */ null);
     }
 
     private Tab createLazilyLoadedTab(boolean show) throws ExecutionException {

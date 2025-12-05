@@ -58,6 +58,7 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.RecentlyClosedEntriesManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -122,7 +123,7 @@ public class RecentTabsPageTest {
 
     @Before
     public void setUp() throws Exception {
-        RecentTabsManager.setRecentlyClosedTabManagerForTests(mManager);
+        RecentlyClosedEntriesManager.setRecentlyClosedTabManagerForTests(mManager);
         mActivityTestRule.startOnBlankPage();
         mActivity = mActivityTestRule.getActivity();
         mTabModel = mActivity.getTabModelSelector().getModel(false);

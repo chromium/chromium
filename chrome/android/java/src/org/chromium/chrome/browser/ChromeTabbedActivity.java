@@ -630,6 +630,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private @SupportedProfileType int mSupportedProfileType = SupportedProfileType.UNSET;
 
     private TipsPromoCoordinator mTipsPromoCoordinator;
+    private RecentlyClosedEntriesManager mRecentlyClosedEntriesManager;
 
     /** Constructs a ChromeTabbedActivity. */
     public ChromeTabbedActivity() {
@@ -3374,6 +3375,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
     private TabDelegateFactory getTabDelegateFactory() {
         if (mTabDelegateFactory == null) {
             assert getStartupMetricsTracker() != null;
+            mRecentlyClosedEntriesManager =
+                    new RecentlyClosedEntriesManager(mMultiInstanceManager, mTabModelSelector);
             mTabDelegateFactory =
                     new TabbedModeTabDelegateFactory(
                             this,
@@ -3404,7 +3407,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             getStartupMetricsTracker(),
                             mRootUiCoordinator.getExclusiveAccessManager(),
                             mBackPressManager,
-                            mMultiInstanceManager);
+                            mMultiInstanceManager,
+                            mRecentlyClosedEntriesManager);
         }
         return mTabDelegateFactory;
     }
@@ -4422,6 +4426,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (mTipsPromoCoordinator != null) {
             mTipsPromoCoordinator.destroy();
             mTipsPromoCoordinator = null;
+        }
+
+        if (mRecentlyClosedEntriesManager != null) {
+            mRecentlyClosedEntriesManager.destroy();
+            mRecentlyClosedEntriesManager = null;
         }
 
         super.onDestroyInternal();
