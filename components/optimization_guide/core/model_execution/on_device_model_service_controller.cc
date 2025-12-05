@@ -230,14 +230,9 @@ void OnDeviceModelServiceController::UpdateModel(
   TRACE_EVENT("optimization_guide",
               "OnDeviceModelServiceController::UpdateModel", "has_model",
               !!model_metadata);
-  bool did_model_change =
-      !model_metadata.get() != !base_model_controller_->model_metadata();
   base_model_controller_.emplace(weak_ptr_factory_.GetSafeRef(),
                                  std::move(model_metadata));
-
-  if (did_model_change) {
-    UpdateSolutionProviders();
-  }
+  UpdateSolutionProviders();
 }
 
 void OnDeviceModelServiceController::MaybeUpdateModelAdaptation(
