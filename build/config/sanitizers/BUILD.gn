@@ -496,14 +496,6 @@ config("coverage_flags") {
         "-mllvm",
         "-sanitizer-coverage-prune-blocks=1",
       ]
-
-      if (current_cpu == "arm") {
-        # http://crbug.com/517105
-        cflags += [
-          "-mllvm",
-          "-sanitizer-coverage-block-threshold=0",
-        ]
-      }
     }
     if (sanitizer_coverage_allowlist != "") {
       cflags += [ "-fsanitize-coverage-allowlist=" +
