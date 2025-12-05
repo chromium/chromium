@@ -8,6 +8,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
@@ -17,6 +18,7 @@
 #include "ui/views/animation/animation_delegate_views.h"
 
 class SidePanel;
+class SidePanelAnimationPerfReporter;
 
 namespace gfx {
 class Animation;
@@ -49,7 +51,10 @@ class Animation;
 class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
  public:
   using SidePanelAnimationId = ui::ElementIdentifier;
+
+  // LINT.IfChange(AnimationType)
   enum class AnimationType { kOpen, kOpenWithContentTransition, kClose };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
 
   // Represents a single animation sequence for a specific animation id.
   struct AnimationSequence {
@@ -182,6 +187,10 @@ class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
   // AnimationCanceled is called.
   void NotifyAnimationTypeEndedObservers();
 
+  // The side panel the animation coordinator is associated with. Since the side
+  // panel owns the animation coordinator, it's safe to own a raw ptr to it.
+  raw_ptr<SidePanel> side_panel_;
+
   // The current AnimationType of the coordinator.
   AnimationType animation_type_ = AnimationType::kClose;
 
@@ -201,6 +210,9 @@ class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
   // have ended for the current animation cycle. AnimationIdObservers are only
   // notified if a sequence has ended once.
   std::set<SidePanelAnimationId> notified_ended_animations_;
+
+  // Logs the animation performance stats to UMA.
+  std::unique_ptr<SidePanelAnimationPerfReporter> animation_perf_reporter_;
 
   // Linear animation used to coordinate all of the other animations
   // added to this class. This serves as the source of truth timeline

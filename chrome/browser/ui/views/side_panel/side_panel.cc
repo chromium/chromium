@@ -10,7 +10,6 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
@@ -643,14 +642,6 @@ void SidePanel::OnAnimationSequenceProgressed(
     browser_view_->GetSidePanelAnimationContent()->layer()->SetOpacity(
         gfx::Tween::DoubleValueBetween(animation_value, 0.5, 1));
   } else if (animation_id == kSidePanelBoundsAnimation) {
-    const base::TimeTicks now = base::TimeTicks::Now();
-    const base::TimeDelta elapsed = now - last_animation_step_timestamp_;
-    last_animation_step_timestamp_ = now;
-
-    if (!largest_animation_step_time_.has_value() ||
-        elapsed > largest_animation_step_time_.value()) {
-      largest_animation_step_time_ = elapsed;
-    }
     InvalidateLayout();
   } else {
     NOTREACHED() << "Observed animation id is not handled";
@@ -691,12 +682,6 @@ void SidePanel::OnAnimationTypeEnded(
     default:
       NOTREACHED() << "Observed animation type is not handled";
   }
-
-  if (largest_animation_step_time_.has_value()) {
-    SidePanelUtil::RecordSidePanelAnimationMetrics(
-        type_, largest_animation_step_time_.value());
-  }
-
   InvalidateLayout();
 }
 
@@ -840,8 +825,6 @@ void SidePanel::UpdateVisibility(bool should_be_open, bool animate_transition) {
         view->SetVisible(false);
       }
       SetVisible(should_be_open);
-      largest_animation_step_time_.reset();
-      last_animation_step_timestamp_ = base::TimeTicks::Now();
       if (content_starting_bounds_.has_value()) {
         CHECK(content_parent_view_->children().size() == 1);
         browser_view_->SetSidePanelAnimationContent(

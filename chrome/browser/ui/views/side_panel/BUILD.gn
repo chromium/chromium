@@ -50,6 +50,8 @@ source_set("side_panel") {
     "side_panel_animation_coordinator.h",
     "side_panel_animation_ids.cc",
     "side_panel_animation_ids.h",
+    "side_panel_animation_perf_reporter.cc",
+    "side_panel_animation_perf_reporter.h",
     "side_panel_content_proxy.cc",
     "side_panel_content_proxy.h",
     "side_panel_coordinator.cc",

@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/time/time.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
@@ -67,8 +68,10 @@ class SidePanelUtil {
       std::optional<SidePanelOpenTrigger> trigger);
   static void RecordPinnedButtonClicked(SidePanelEntry::Id id, bool is_pinned);
   static void RecordSidePanelAnimationMetrics(
-      SidePanelEntry::PanelType type,
-      base::TimeDelta largest_step_time);
+      SidePanelEntry::PanelType panel_type,
+      SidePanelAnimationCoordinator::AnimationType animation_type,
+      base::TimeDelta largest_step_time,
+      int frames_per_second);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

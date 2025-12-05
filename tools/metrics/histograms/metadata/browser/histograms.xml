@@ -46,6 +46,12 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/spare_render_process_host_manager_impl.h:NoSpareRendererReason) -->
 
+<variants name="SidePanelAnimationType">
+  <variant name="Close" summary="close animation"/>
+  <variant name="Open" summary="open animation"/>
+  <variant name="OpenWithContentTransition" summary="tab to panel animation"/>
+</variants>
+
 <variants name="SidePanelEntry">
   <variant name="AboutThisSite" summary="about this site"/>
   <variant name="Assistant" summary="assistant"/>
@@ -2225,6 +2231,19 @@ chromium-metrics-reviews@google.com.
     panel open or close animation.
   </summary>
   <token key="SidePanelType" variants="SidePanelType"/>
+</histogram>
+
+<histogram name="{SidePanelType}.{SidePanelAnimationType}.AnimationFPS"
+    units="fps" expires_after="2026-04-05">
+  <owner>corising@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the frames per second for the side panel animation. This is recorded
+    after each side panel animation is completed when the side panel opens or
+    closes.
+  </summary>
+  <token key="SidePanelType" variants="SidePanelType"/>
+  <token key="SidePanelAnimationType" variants="SidePanelAnimationType"/>
 </histogram>
 
 <histogram name="{SidePanelType}.{SidePanelEntry}.ResizedWidth" units="px"

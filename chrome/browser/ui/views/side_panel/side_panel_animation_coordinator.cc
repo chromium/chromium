@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_animation_perf_reporter.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -79,7 +80,7 @@ bool AnimationSpecification::IsSequenceRunning(
 
 SidePanelAnimationCoordinator::SidePanelAnimationCoordinator(
     SidePanel* side_panel)
-    : views::AnimationDelegateViews(side_panel) {
+    : views::AnimationDelegateViews(side_panel), side_panel_(side_panel) {
   animation_.SetTweenType(gfx::Tween::Type::LINEAR);
 
   const bool is_content_height_panel =
@@ -167,7 +168,6 @@ void SidePanelAnimationCoordinator::Start(AnimationType type) {
     return;
   }
 
-  notified_ended_animations_.clear();
   animation_type_ = type;
   animation_.SetSlideDuration(GetAnimationDuration(type));
 
@@ -181,7 +181,6 @@ void SidePanelAnimationCoordinator::Start(AnimationType type) {
 }
 
 void SidePanelAnimationCoordinator::Reset(AnimationType type) {
-  notified_ended_animations_.clear();
   animation_type_ = type;
 
   if (IsAnimatingOpen(type)) {
@@ -261,6 +260,13 @@ bool SidePanelAnimationCoordinator::IsClosing() {
 
 void SidePanelAnimationCoordinator::AnimationProgressed(
     const gfx::Animation* animation) {
+  if (!animation_perf_reporter_) {
+    animation_perf_reporter_ = std::make_unique<SidePanelAnimationPerfReporter>(
+        side_panel_, animation_type_, animation_.GetSlideDuration());
+  } else {
+    animation_perf_reporter_->OnAnimationProgressed(animation);
+  }
+
   for (auto& [animation_id, observers] : animation_id_to_observer_map_) {
     if (!IsAnimationSequenceRunning(animation_id)) {
       NotifyOnSequenceEndedObservers(animation_id, observers);
@@ -372,6 +378,8 @@ void SidePanelAnimationCoordinator::NotifyOnSequenceEndedObservers(
 }
 
 void SidePanelAnimationCoordinator::NotifyAnimationTypeStartedObservers() {
+  notified_ended_animations_.clear();
+
   for (AnimationTypeObserver* observer : GetAnimationTypeObservers()) {
     observer->OnAnimationTypeStarted(animation_type_);
   }
@@ -381,4 +389,7 @@ void SidePanelAnimationCoordinator::NotifyAnimationTypeEndedObservers() {
   for (AnimationTypeObserver* observer : GetAnimationTypeObservers()) {
     observer->OnAnimationTypeEnded(animation_type_);
   }
+
+  notified_ended_animations_.clear();
+  animation_perf_reporter_.reset();
 }

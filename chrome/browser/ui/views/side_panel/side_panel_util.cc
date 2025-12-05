@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
@@ -40,9 +41,30 @@
 
 namespace {
 
-std::string GetSidePanelNameFor(SidePanelEntry::PanelType type) {
-  return type == SidePanelEntry::PanelType::kContent ? "SidePanel"
-                                                     : "SidePanelToolbarHeight";
+std::string_view GetSidePanelNameFor(SidePanelEntry::PanelType panel_type) {
+  switch (panel_type) {
+    case SidePanelEntry::PanelType::kContent:
+      return "SidePanel";
+    case SidePanelEntry::PanelType::kToolbar:
+      return "SidePanelToolbarHeight";
+  }
+
+  NOTREACHED() << "Invalid PanelType " << static_cast<int>(panel_type);
+}
+
+std::string_view GetAnimationNameFor(
+    SidePanelAnimationCoordinator::AnimationType animation_type) {
+  switch (animation_type) {
+    case SidePanelAnimationCoordinator::AnimationType::kOpen:
+      return "Open";
+    case SidePanelAnimationCoordinator::AnimationType::
+        kOpenWithContentTransition:
+      return "OpenWithContentTransition";
+    case SidePanelAnimationCoordinator::AnimationType::kClose:
+      return "Close";
+  }
+
+  NOTREACHED() << "Invalid AnimationType " << static_cast<int>(animation_type);
 }
 
 }  // namespace
@@ -253,9 +275,20 @@ void SidePanelUtil::RecordPinnedButtonClicked(SidePanelEntry::Id id,
 }
 
 void SidePanelUtil::RecordSidePanelAnimationMetrics(
-    SidePanelEntry::PanelType type,
-    base::TimeDelta largest_step_time) {
-  base::UmaHistogramTimes(
-      base::StrCat({GetSidePanelNameFor(type), ".TimeOfLongestAnimationStep"}),
-      largest_step_time);
+    SidePanelEntry::PanelType panel_type,
+    SidePanelAnimationCoordinator::AnimationType animation_type,
+    base::TimeDelta largest_step_time,
+    int frames_per_second) {
+  if (!largest_step_time.is_zero()) {
+    base::UmaHistogramTimes(base::StrCat({GetSidePanelNameFor(panel_type),
+                                          ".TimeOfLongestAnimationStep"}),
+                            largest_step_time);
+  }
+
+  if (frames_per_second > 0) {
+    base::UmaHistogramCounts100(
+        base::StrCat({GetSidePanelNameFor(panel_type), ".",
+                      GetAnimationNameFor(animation_type), ".AnimationFPS"}),
+        frames_per_second);
+  }
 }
