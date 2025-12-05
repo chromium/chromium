@@ -273,6 +273,14 @@ const char
         "PageLoad.Experimental.NavigationTiming."
         "FinalLoaderCallbackToNavigationCommitSent";
 
+// Connection timing metrics.
+const char kHistogramConnectTimingFirstRequestDomainLookupDelay[] =
+    "PageLoad.ConnectTiming.FirstRequestDomainLookupDelay";
+const char kHistogramConnectTimingFirstRequestConnectDelay[] =
+    "PageLoad.ConnectTiming.FirstRequestConnectDelay";
+const char kHistogramConnectTimingFirstRequestSslDelay[] =
+    "PageLoad.ConnectTiming.FirstRequestSslDelay";
+
 }  // namespace internal
 
 UmaPageLoadMetricsObserver::UmaPageLoadMetricsObserver()
@@ -803,6 +811,14 @@ void UmaPageLoadMetricsObserver::RecordNavigationTimingHistograms() {
       internal::
           kHistogramNavigationTimingFinalLoaderCallbackToNavigationCommitSent,
       timing.navigation_commit_sent_time - timing.final_loader_callback_time);
+
+  PAGE_LOAD_HISTOGRAM(
+      internal::kHistogramConnectTimingFirstRequestDomainLookupDelay,
+      timing.first_request_domain_lookup_delay);
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramConnectTimingFirstRequestConnectDelay,
+                      timing.first_request_connect_delay);
+  PAGE_LOAD_HISTOGRAM(internal::kHistogramConnectTimingFirstRequestSslDelay,
+                      timing.first_request_ssl_delay);
 }
 
 // This method records values for metrics that were not recorded during any
