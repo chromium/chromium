@@ -195,6 +195,9 @@ base::span<const std::unique_ptr<AutofillField>>::iterator FindEndOfNextSection(
 }  // namespace
 
 void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
+  // It is important to reset the sections before running sectioning again for
+  // consistent cache updates (see AutofillManager::UpdateFormCache() for more
+  // details).
   for (const auto& field : fields)
     field->set_section(Section());
 
