@@ -167,6 +167,9 @@ class TabImpl implements Tab {
     /** Whether the tab is archived. */
     private final boolean mIsArchived;
 
+    // TODO(crbug.com/466371728): For debugging only. Remove after the bug is fixed.
+    private boolean mInitializedWithWindowAndroid;
+
     /** The Profile associated with this tab. */
     private final Profile mProfile;
 
@@ -1014,8 +1017,13 @@ class TabImpl implements Tab {
 
     @Override
     public boolean loadIfNeeded(@TabLoadIfNeededCaller int caller) {
-        if (getActivity() == null) {
-            Log.e(TAG, "Tab couldn't be loaded because Context was null.");
+        if (getActivity(/* withLogs= */ true) == null) {
+            Log.e(
+                    TAG,
+                    "Tab couldn't be loaded because Context was null. mIsArchived: "
+                            + mIsArchived
+                            + ", mInitializedWithWindowAndroid: "
+                            + mInitializedWithWindowAndroid);
             return false;
         }
 
@@ -1315,25 +1323,42 @@ class TabImpl implements Tab {
      * WARNING: This method is deprecated. Consider other ways such as passing the dependencies to
      * the constructor, rather than accessing ChromeActivity from Tab and using getters.
      *
+     * @param withLogs Whether to log the activity state.
      * @return {@link ChromeActivity} that currently contains this {@link Tab} in its {@link
      *     TabModel}.
      */
     @Deprecated
-    @Nullable ChromeActivity getActivity() {
+    @Nullable ChromeActivity getActivity(boolean withLogs) {
         if (getWindowAndroid() == null) {
-            Log.e(TAG, "WindowAndroid is null when requesting activity.");
+            if (withLogs) {
+                Log.e(TAG, "WindowAndroid is null when requesting activity.");
+            }
             return null;
         }
         Activity activity = ContextUtils.activityFromContext(getWindowAndroid().getContext().get());
         if (activity instanceof ChromeActivity chromeActivity) {
             return chromeActivity;
         }
-        if (activity == null) {
-            Log.e(TAG, "Activity is null when requesting activity.");
-        } else {
-            Log.e(TAG, "Activity is not a ChromeActivity when requesting activity.");
+        if (withLogs) {
+            if (activity == null) {
+                Log.e(TAG, "Activity is null when requesting activity.");
+            } else {
+                Log.e(TAG, "Activity is not a ChromeActivity when requesting activity.");
+            }
         }
         return null;
+    }
+
+    /**
+     * WARNING: This method is deprecated. Consider other ways such as passing the dependencies to
+     * the constructor, rather than accessing ChromeActivity from Tab and using getters.
+     *
+     * @return {@link ChromeActivity} that currently contains this {@link Tab} in its {@link
+     *     TabModel}.
+     */
+    @Deprecated
+    @Nullable ChromeActivity getActivity() {
+        return getActivity(/* withLogs= */ false);
     }
 
     /**
@@ -1447,8 +1472,9 @@ class TabImpl implements Tab {
             // models are not associated with BrowserWindowInterface so this shouldn't be an issue
             // for now. In future we should reconsider whether these tab models should even hold a
             // TabImpl vs some kind of light weight tab representation.
+            mInitializedWithWindowAndroid = mWindowAndroid != null;
             if (ChromeFeatureList.sLoadAllTabsAtStartup.isEnabled()
-                    && mWindowAndroid != null
+                    && mInitializedWithWindowAndroid
                     && !mIsArchived) {
                 if (mWebContentsState != null) {
                     assert webContents == null;
