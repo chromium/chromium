@@ -1558,7 +1558,6 @@ void Animation::PauseInternal(ExceptionState& exception_state) {
   // 2. If the play state of animation is paused, abort these steps.
   if (pending_pause_ ||
       CalculateAnimationPlayState() == V8AnimationPlayState::Enum::kPaused) {
-    SetPausedForTrigger(false);
     return;
   }
 
@@ -1593,8 +1592,6 @@ void Animation::PauseInternal(ExceptionState& exception_state) {
       seek_time = EffectEnd();
     }
   }
-
-  SetPausedForTrigger(false);
 
   // 6. If seek time is resolved,
   //        If has finite timeline is true,

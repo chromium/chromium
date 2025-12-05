@@ -2363,13 +2363,20 @@ void CSSAnimations::MaybeApplyPendingUpdate(Element* element) {
     animation->SetTriggerActionPlayState(
         entry.play_state_list[entry.name_index % entry.play_state_list.size()]);
 
-    if (!entry.trigger_attachments) {
+    if (entry.trigger_attachments) {
+      // Pause the trigger in anticipation of later finding the attached
+      // trigger. This allows the animation to show up in getAnimations.
+      animation->pause();
+      animation->SetPausedForTrigger(true);
+      if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
+        element->GetDocument()
+            .GetDocumentAnimations()
+            .AddPendingTriggerAttachmentUpdate(animation);
+      }
+    } else {
       animation->play();
-    } else if (RuntimeEnabledFeatures::LimitTriggerAttachmentUpdatesEnabled()) {
-      element->GetDocument()
-          .GetDocumentAnimations()
-          .AddPendingTriggerAttachmentUpdate(animation);
     }
+
     if (inert_animation->Paused()) {
       animation->pause();
     }
