@@ -4,9 +4,10 @@
 
 #include "chrome/services/sharing/nearby/platform/input_file.h"
 
+#include <optional>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
 #include "third_party/abseil-cpp/absl/time/time.h"
@@ -44,12 +45,14 @@ ExceptionOr<ByteArray> InputFile::Read(std::int64_t size) {
   }
 
   std::vector<char> buf(size);
-  int num_bytes_read = UNSAFE_TODO(file_.ReadAtCurrentPos(buf.data(), size));
-
-  if (num_bytes_read < 0 || num_bytes_read > GetTotalSize())
+  const std::optional<size_t> bytes_read =
+      file_.ReadAtCurrentPos(base::as_writable_byte_span(buf));
+  if (!bytes_read ||
+      base::checked_cast<int64_t>(*bytes_read) > GetTotalSize()) {
     return Exception::kIo;
+  }
 
-  return ExceptionOr<ByteArray>(ByteArray(buf.data(), num_bytes_read));
+  return ExceptionOr<ByteArray>(ByteArray(buf.data(), *bytes_read));
 }
 
 Exception InputFile::Close() {
