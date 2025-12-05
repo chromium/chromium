@@ -722,12 +722,25 @@ void Transaction::SetIndexKeysDone() {
     return;
   }
 
-  ScheduleTask(blink::mojom::IDBTaskType::Preemptive,
-               /*operation_name_for_metrics=*/{},
-               base::BindOnce([](Transaction* transaction) {
-                 transaction->DidCompletePreemptiveEvent();
-                 return Status::OK();
-               }));
+  ScheduleTask(
+      blink::mojom::IDBTaskType::Preemptive,
+      /*operation_name_for_metrics=*/{},
+      base::BindOnce([](Transaction* transaction) {
+        transaction->DidCompletePreemptiveEvent();
+        return Status::OK();
+      }),
+      base::BindOnce(
+          [](mojo::ReportBadMessageCallback report_bad_message_callback,
+             Transaction& transaction) {
+            if (transaction.pending_preemptive_events_ == 0) {
+              constexpr const std::string_view kErrorMessage =
+                  "SetIndexKeysDone called without beginning indexing";
+              std::move(report_bad_message_callback).Run(kErrorMessage);
+              return Status::InvalidArgument(kErrorMessage);
+            }
+            return Status::OK();
+          },
+          mojo::GetBadMessageCallback()));
 }
 
 void Transaction::Commit(int64_t num_errors_handled) {
