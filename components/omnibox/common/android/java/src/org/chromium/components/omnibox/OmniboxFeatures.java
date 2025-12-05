@@ -149,6 +149,9 @@ public class OmniboxFeatures {
     public static final BooleanCachedFeatureParam sCompactFusebox =
             newBooleanParam(sOmniboxMultimodalInput, "compact_fusebox", false);
 
+    public static final BooleanCachedFeatureParam sMultiattachmentFusebox =
+            newBooleanParam(sOmniboxMultimodalInput, "multi_context", false);
+
     public static final CachedFlag sMultilineEditField =
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.ENABLED_IN_TEST);
 

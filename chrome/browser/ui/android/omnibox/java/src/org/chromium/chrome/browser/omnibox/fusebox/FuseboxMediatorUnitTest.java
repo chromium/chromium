@@ -131,6 +131,7 @@ public class FuseboxMediatorUnitTest {
 
     @Before
     public void setUp() {
+        OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
         mTabModelSelectorSupplier = new ObservableSupplierImpl<>(mTabModelSelector);
         mAutocompleteRequestTypeSupplier =
                 new ObservableSupplierImpl<>(AutocompleteRequestType.SEARCH);
