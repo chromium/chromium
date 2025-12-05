@@ -38,12 +38,9 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
 void OmniboxAimPopupWebUIContent::OnWidgetClosed() {
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      omnibox_popup_ui->popup_aim_handler()->OnClose();
-    }
+  auto* handler = popup_aim_handler();
+  if (handler) {
+    handler->OnClose();
   }
 }
 
@@ -61,25 +58,32 @@ void OmniboxAimPopupWebUIContent::CloseUI() {
 void OmniboxAimPopupWebUIContent::ShowUI() {
   OmniboxPopupWebUIBaseContent::ShowUI();
 
+  auto* handler = popup_aim_handler();
+  if (!handler) {
+    return;
+  }
+
   auto* web_contents = contents_wrapper()->web_contents();
   auto* browser_window = webui::GetBrowserWindowInterface(web_contents);
   auto* context_data = browser_window->GetFeatures().searchbox_context_data();
-
-  auto* webui_controller = contents_wrapper()->GetWebUIController();
-  if (webui_controller) {
-    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
-    if (omnibox_popup_ui && omnibox_popup_ui->popup_aim_handler()) {
-      auto context = context_data->TakePendingContext();
-      if (!context) {
-        context = std::make_unique<SearchboxContextData::Context>();
-      }
-      if (!controller()->edit_model()->CurrentTextIsURL()) {
-        context->text =
-            base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
-      }
-      omnibox_popup_ui->popup_aim_handler()->OnShow(std::move(context));
-    }
+  auto context = context_data->TakePendingContext();
+  if (!context) {
+    context = std::make_unique<SearchboxContextData::Context>();
   }
+  if (!controller()->edit_model()->CurrentTextIsURL()) {
+    context->text =
+        base::UTF16ToUTF8(location_bar_view()->GetOmniboxView()->GetText());
+  }
+  handler->OnWidgetShown(std::move(context));
+}
+
+OmniboxPopupAimHandler* OmniboxAimPopupWebUIContent::popup_aim_handler() {
+  auto* webui_controller = contents_wrapper()->GetWebUIController();
+  if (!webui_controller) {
+    return nullptr;
+  }
+  auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
+  return omnibox_popup_ui ? omnibox_popup_ui->popup_aim_handler() : nullptr;
 }
 
 BEGIN_METADATA(OmniboxAimPopupWebUIContent)
