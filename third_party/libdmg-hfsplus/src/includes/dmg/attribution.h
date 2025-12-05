@@ -30,31 +30,31 @@
   // part of a Base64 encoded struct.  We can Base64 decode to bytes,
   // swizzle the 4 bytes of the checksum, and then Base64 encode back
   // to the same number of bytes.
-	/* <dict> */
-	/* 	<key>blkx</key> */
-	/* 	<array> */
-	/* 		<dict> */
-	/* 			<key>Attributes</key> */
-	/* 			<string>0x0050</string> */
-	/* 			<key>CFName</key> */
-	/* 			<string>Driver Descriptor Map (DDM : 0)</string> */
-	/* 			<key>Data</key> */
-	/* 			<data> */
-	/* 			bWlzaAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA */
-	/* 			AAII/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
-	/* 			AAIAAAAgXDMYCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
-	/* 			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
-	/* 			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
-	/* 			AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
-	/* 			AAAAAAACgAAABgAAAAAAAAAAAAAAAAAAAAAAAAABAAAA */
-	/* 			AAAAAAAAAAAAAAAANf////8AAAAAAAAAAAAAAAEAAAAA */
-	/* 			AAAAAAAAAAAAAAA1AAAAAAAAAAA= */
-	/* 			</data> */
-	/* 			<key>ID</key> */
-	/* 			<string>-1</string> */
-	/* 			<key>Name</key> */
-	/* 			<string>Driver Descriptor Map (DDM : 0)</string> */
-	/* 		</dict> */
+  /* <dict> */
+  /*  <key>blkx</key> */
+  /*  <array> */
+  /*    <dict> */
+  /*      <key>Attributes</key> */
+  /*      <string>0x0050</string> */
+  /*      <key>CFName</key> */
+  /*      <string>Driver Descriptor Map (DDM : 0)</string> */
+  /*      <key>Data</key> */
+  /*      <data> */
+  /*      bWlzaAAAAAEAAAAAAAAAAAAAAAAAAAABAAAAAAAAAAAA */
+  /*      AAII/////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+  /*      AAIAAAAgXDMYCQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+  /*      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+  /*      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+  /*      AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA */
+  /*      AAAAAAACgAAABgAAAAAAAAAAAAAAAAAAAAAAAAABAAAA */
+  /*      AAAAAAAAAAAAAAAANf////8AAAAAAAAAAAAAAAEAAAAA */
+  /*      AAAAAAAAAAAAAAA1AAAAAAAAAAA= */
+  /*      </data> */
+  /*      <key>ID</key> */
+  /*      <string>-1</string> */
+  /*      <key>Name</key> */
+  /*      <string>Driver Descriptor Map (DDM : 0)</string> */
+  /*     </dict> */
 
 /**
  * Binary representation of data needed to quickly "attribute" a DMG that is

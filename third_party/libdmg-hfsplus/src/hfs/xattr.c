@@ -5,18 +5,18 @@
 #include "hfs/hfsplus.h"
 
 static inline void flipAttrData(HFSPlusAttrData* data) {
-  FLIPENDIAN(data->recordType);
-  FLIPENDIAN(data->size);
+	FLIPENDIAN(data->recordType);
+	FLIPENDIAN(data->size);
 }
 
 static inline void flipAttrForkData(HFSPlusAttrForkData* data) {
-  FLIPENDIAN(data->recordType);
-  flipForkData(&data->theFork);
+	FLIPENDIAN(data->recordType);
+	flipForkData(&data->theFork);
 }
 
 static inline void flipAttrExtents(HFSPlusAttrExtents* data) {
-  FLIPENDIAN(data->recordType);
-  flipExtentRecord(&data->extents);
+	FLIPENDIAN(data->recordType);
+	flipExtentRecord(&data->extents);
 }
 
 static int attrCompare(BTKey* vLeft, BTKey* vRight) {
@@ -42,10 +42,11 @@ static int attrCompare(BTKey* vLeft, BTKey* vRight) {
 				cLeft = left->name.unicode[i];
 				cRight = right->name.unicode[i];
 
-				if(cLeft < cRight)
+				if(cLeft < cRight) {
 					return -1;
-				else if(cLeft > cRight)
+				} else if(cLeft > cRight) {
 					return 1;
+				}
 			}
 		}
 
@@ -55,11 +56,11 @@ static int attrCompare(BTKey* vLeft, BTKey* vRight) {
 			/* do a safety check on key length. Otherwise, bad things may happen later on when we try to add or remove with this key */
 			/*if(left->keyLength == right->keyLength) {
 			  return 0;
-			  } else if(left->keyLength < right->keyLength) {
+			} else if(left->keyLength < right->keyLength) {
 			  return -1;
-			  } else {
+			} else {
 			  return 1;
-			  }*/
+			}*/
 			return 0;
 		}
 	}
@@ -82,8 +83,9 @@ static BTKey* attrKeyRead(off_t offset, io_func* io) {
 	FLIPENDIAN(key->startBlock);
 	FLIPENDIAN(key->name.length);
 
-	if(!READ(io, offset + UNICODE_START, key->name.length * sizeof(uint16_t), ((unsigned char *)key) + UNICODE_START))
+	if(!READ(io, offset + UNICODE_START, key->name.length * sizeof(uint16_t), ((unsigned char *)key) + UNICODE_START)) {
 		return NULL;
+	}
 
 	for(i = 0; i < key->name.length; i++) {
 		FLIPENDIAN(key->name.unicode[i]);
@@ -245,8 +247,9 @@ size_t getAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t**
 	record = (HFSPlusAttrRecord*) search(volume->attrTree, (BTKey*)(&key), &exact, NULL, NULL);
 
 	if(exact == FALSE) {
-		if(record)
+		if(record) {
 			free(record);
+		}
 
 		return 0;
 	}
@@ -295,8 +298,9 @@ int setAttribute(Volume* volume, uint32_t fileID, const char* name, uint8_t* dat
 int unsetAttribute(Volume* volume, uint32_t fileID, const char* name) {
 	HFSPlusAttrKey key;
 
-	if(!volume->attrTree)
+	if(!volume->attrTree) {
 		return FALSE;
+	}
 
 	memset(&key, 0 , sizeof(HFSPlusAttrKey));
 	key.fileID = fileID;

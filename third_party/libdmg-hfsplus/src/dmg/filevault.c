@@ -51,7 +51,7 @@ static void writeChunk(FileVaultInfo* info) {
 	myChunk = info->curChunk;
 
 	FLIPENDIAN(myChunk);
-    HMAC_Init_ex(info->hmacCTX, NULL, 0, NULL, NULL);
+	HMAC_Init_ex(info->hmacCTX, NULL, 0, NULL, NULL);
 	HMAC_Update(info->hmacCTX, (unsigned char *) &myChunk, sizeof(uint32_t));
 	HMAC_Final(info->hmacCTX, msgDigest, &msgDigestLen);
 
@@ -85,7 +85,7 @@ static void cacheChunk(FileVaultInfo* info, uint32_t chunk) {
 	info->curChunk = chunk;
 
 	FLIPENDIAN(chunk);
-    HMAC_Init_ex(info->hmacCTX, NULL, 0, NULL, NULL);
+	HMAC_Init_ex(info->hmacCTX, NULL, 0, NULL, NULL);
 	HMAC_Update(info->hmacCTX, (unsigned char *) &chunk, sizeof(uint32_t));
 	HMAC_Final(info->hmacCTX, msgDigest, &msgDigestLen);
 
@@ -196,14 +196,15 @@ AbstractFile* createAbstractFileFromFileVault(AbstractFile* file, const char* ke
 	FileVaultInfo* info;
 	AbstractFile* toReturn;
 	uint64_t signature;
-	uint8_t aesKey[16];	
+	uint8_t aesKey[16];
 	uint8_t hmacKey[20];
-	
+
 	int i;
 
-	if(file == NULL)
+	if(file == NULL) {
 		return NULL;
-	
+	}
+
 	file->seek(file, 0);
 	file->read(file, &signature, sizeof(uint64_t));
 	FLIPENDIAN(signature);
@@ -213,7 +214,7 @@ AbstractFile* createAbstractFileFromFileVault(AbstractFile* file, const char* ke
 		return NULL;
 	}
 
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));	
+	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
 	info = (FileVaultInfo*) malloc(sizeof(FileVaultInfo));
 
 	info->version = 2;
@@ -221,7 +222,7 @@ AbstractFile* createAbstractFileFromFileVault(AbstractFile* file, const char* ke
 	file->seek(file, 0);
 	file->read(file, &(info->header.v2), sizeof(FileVaultV2Header));
 	flipFileVaultV2Header(&(info->header.v2));
-	
+
 	for(i = 0; i < 16; i++) {
 		unsigned int curByte;
 		sscanf(&(key[i * 2]), "%02x", &curByte);
@@ -234,7 +235,7 @@ AbstractFile* createAbstractFileFromFileVault(AbstractFile* file, const char* ke
 		hmacKey[i] = curByte;
 	}
 
-    info->hmacCTX = HMAC_CTX_new();
+	info->hmacCTX = HMAC_CTX_new();
 	HMAC_Init_ex(info->hmacCTX, hmacKey, sizeof(hmacKey), EVP_sha1(), NULL);
 	AES_set_decrypt_key(aesKey, FILEVAULT_CIPHER_KEY_LENGTH * 8, &(info->aesKey));
 	AES_set_encrypt_key(aesKey, FILEVAULT_CIPHER_KEY_LENGTH * 8, &(info->aesEncKey));

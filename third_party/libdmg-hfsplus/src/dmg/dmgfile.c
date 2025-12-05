@@ -29,7 +29,7 @@ static void cacheRun(DMG* dmg, BLKXTable* blkx, int run) {
 
 	ASSERT(dmg->dmg->seek(dmg->dmg, blkx->dataStart + blkx->runs[run].compOffset) == 0, "fseeko");
 
-    switch(blkx->runs[run].type) {
+	switch(blkx->runs[run].type) {
 		case BLOCK_RAW:
 			ASSERT((have = dmg->dmg->read(dmg->dmg, dmg->runData, blkx->runs[run].compLength)) == blkx->runs[run].compLength, "fread");
 			break;
@@ -50,10 +50,10 @@ static void cacheRun(DMG* dmg, BLKXTable* blkx, int run) {
 			ASSERT(dmg->dmg->read(dmg->dmg, inBuffer, blkx->runs[run].compLength) == blkx->runs[run].compLength, "fread");
 			ASSERT(decompressRun(type, inBuffer, blkx->runs[run].compLength, dmg->runData, bufferSize) == 0,
 				"decompression failed");
-    }
+	}
 	free(inBuffer);
 
-    dmg->runType = blkx->runs[run].type;
+	dmg->runType = blkx->runs[run].type;
 	dmg->runStart = (blkx->runs[run].sectorStart + blkx->firstSectorNumber) * SECTOR_SIZE;
 	dmg->runEnd = dmg->runStart + (blkx->runs[run].sectorCount * SECTOR_SIZE);
 }
@@ -113,7 +113,7 @@ static int dmgFileRead(io_func* io, off_t location, size_t size, void *buffer) {
 
 static int dmgFileWrite(io_func* io, off_t location, size_t size, void *buffer) {
 	fprintf(stderr, "Error: writing to DMGs is not supported (impossible to achieve with compressed images and retain asr multicast ordering).\n");
-    // hamstergene: is it really that hard? Doesn't seem so to me.
+	// hamstergene: is it really that hard? Doesn't seem so to me.
 	return FALSE;
 }
 
@@ -129,7 +129,7 @@ static void closeDmgFile(io_func* io) {
 
 	free(dmg->blkx);
 	releaseResources(dmg->resources);
-    free(dmg->resourceXML);
+	free(dmg->resourceXML);
 	dmg->dmg->close(dmg->dmg);
 	free(dmg);
 	free(io);
@@ -147,18 +147,18 @@ io_func* openDmgFile(AbstractFile* abstractIn) {
 		return NULL;
 	}
 
-    dmg = (DMG*) malloc(sizeof(DMG));
+	dmg = (DMG*) malloc(sizeof(DMG));
 	dmg->dmg = abstractIn;
 
 	fileLength = abstractIn->getLength(abstractIn);
 	abstractIn->seek(abstractIn, fileLength - sizeof(UDIFResourceFile));
 	readUDIFResourceFile(abstractIn, &dmg->resourceFile);
 
-    dmg->resourceXML = malloc(dmg->resourceFile.fUDIFXMLLength + 1);
-    ASSERT( abstractIn->seek(abstractIn, (off_t)(dmg->resourceFile.fUDIFXMLOffset)) == 0, "fseeko" );
-    ASSERT( abstractIn->read(abstractIn, dmg->resourceXML, (size_t)dmg->resourceFile.fUDIFXMLLength) == (size_t)dmg->resourceFile.fUDIFXMLLength, "fread" );
-    dmg->resourceXML[dmg->resourceFile.fUDIFXMLLength] = 0;
-    
+	dmg->resourceXML = malloc(dmg->resourceFile.fUDIFXMLLength + 1);
+	ASSERT( abstractIn->seek(abstractIn, (off_t)(dmg->resourceFile.fUDIFXMLOffset)) == 0, "fseeko" );
+	ASSERT( abstractIn->read(abstractIn, dmg->resourceXML, (size_t)dmg->resourceFile.fUDIFXMLLength) == (size_t)dmg->resourceFile.fUDIFXMLLength, "fread" );
+	dmg->resourceXML[dmg->resourceFile.fUDIFXMLLength] = 0;
+
 	dmg->resources = readResources(dmg->resourceXML, dmg->resourceFile.fUDIFXMLLength, true);
 	dmg->numBLKX = 0;
 
@@ -195,12 +195,12 @@ io_func* openDmgFile(AbstractFile* abstractIn) {
 
 io_func* openDmgFilePartition(AbstractFile* abstractIn, int partition) {
 	io_func* toReturn = openDmgFile(abstractIn);
-    
+
 	if(toReturn == NULL) {
 		return NULL;
 	}
-    
-    return seekDmgPartition(toReturn, partition);
+
+	return seekDmgPartition(toReturn, partition);
 }
 
 io_func* seekDmgPartition(io_func* toReturn, int partition) {

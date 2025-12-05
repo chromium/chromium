@@ -79,3 +79,11 @@ Local modifications:
     * "C99-ifies" hfs/xattr.c's `updateAttributes` to produce cleaner variable
       scoping within the `switch` statement.
     * Crashes `updateAttributes` on an unrecognized record type.
+  * patches/2025-12-03-spaces-and-braces.patch
+    * Corrects indentation for files previously using a mixture of spaces and
+      tabs by picking a single format and applying it to the entire file. If
+      the file had a predominant indentation format, that format is used;
+      otherwise, uses two-space indentation.
+    * For files that are already being reformatted this way, trim off trailing
+      whitespace, use braces more consistently, and fix indentation that does
+      not match the structure of the code.

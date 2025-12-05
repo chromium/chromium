@@ -70,7 +70,7 @@ struct HFSPlusForkData {
 	HFSPlusExtentRecord extents;
 } __attribute__((__packed__));
 typedef struct HFSPlusForkData HFSPlusForkData;
- 
+
 struct HFSPlusVolumeHeader {
 	uint16_t signature;
 	uint16_t version;
@@ -178,7 +178,7 @@ struct Rect {
 } __attribute__((__packed__));
 typedef struct Rect   Rect;
 
-/* OSType is a 32-bit value made by packing four 1-byte characters 
+/* OSType is a 32-bit value made by packing four 1-byte characters
    together. */
 typedef uint32_t        FourCharCode;
 typedef FourCharCode    OSType;
@@ -322,22 +322,22 @@ enum {
 enum {
 	kHFSFileLockedBit       = 0x0000,       /* file is locked and cannot be written to */
 	kHFSFileLockedMask      = 0x0001,
-	
+
 	kHFSThreadExistsBit     = 0x0001,       /* a file thread record exists for this file */
 	kHFSThreadExistsMask    = 0x0002,
-	
+
 	kHFSHasAttributesBit    = 0x0002,       /* object has extended attributes */
 	kHFSHasAttributesMask   = 0x0004,
-	
+
 	kHFSHasSecurityBit      = 0x0003,       /* object has security data (ACLs) */
 	kHFSHasSecurityMask     = 0x0008,
-	
+
 	kHFSHasFolderCountBit   = 0x0004,       /* only for HFSX, folder maintains a separate sub-folder count */
 	kHFSHasFolderCountMask  = 0x0010,       /* (sum of folder records and directory hard links) */
-	
+
 	kHFSHasLinkChainBit     = 0x0005,       /* has hardlink chain (inode or link) */
 	kHFSHasLinkChainMask    = 0x0020,
-	
+
 	kHFSHasChildLinkBit     = 0x0006,       /* folder has a child that's a dir link */
 	kHFSHasChildLinkMask    = 0x0040
 };
@@ -578,7 +578,7 @@ extern "C" {
 	int removeFromBTree(BTree* tree, BTKey* searchKey);
 
 	int32_t FastUnicodeCompare ( register uint16_t str1[], register uint16_t length1,
-		                    register uint16_t str2[], register uint16_t length2);
+	                             register uint16_t str2[], register uint16_t length2);
 #ifdef __cplusplus
 }
 #endif

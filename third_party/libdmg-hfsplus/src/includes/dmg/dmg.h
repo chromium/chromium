@@ -97,33 +97,33 @@ typedef struct {
 	uint32_t fUDIFVersion;
 	uint32_t fUDIFHeaderSize;
 	uint32_t fUDIFFlags;
-	
+
 	uint64_t fUDIFRunningDataForkOffset;
 	uint64_t fUDIFDataForkOffset;
 	uint64_t fUDIFDataForkLength;
 	uint64_t fUDIFRsrcForkOffset;
 	uint64_t fUDIFRsrcForkLength;
-	
+
 	uint32_t fUDIFSegmentNumber;
 	uint32_t fUDIFSegmentCount;
 	UDIFID fUDIFSegmentID;  /* a 128-bit number like a GUID, but does not seem to be a OSF GUID, since it doesn't have the proper versioning byte */
-	
+
 	UDIFChecksum fUDIFDataForkChecksum;
-	
+
 	uint64_t fUDIFXMLOffset;
 	uint64_t fUDIFXMLLength;
-	
+
 	uint8_t reserved1[0x78]; /* this is actually the perfect amount of space to store every thing in this struct until the checksum */
-	
+
 	UDIFChecksum fUDIFMasterChecksum;
-	
+
 	uint32_t fUDIFImageVariant;
 	uint64_t fUDIFSectorCount;
-	
+
 	uint32_t reserved2;
 	uint32_t reserved3;
 	uint32_t reserved4;
-	
+
 } __attribute__((__packed__)) UDIFResourceFile;
 
 typedef struct {
@@ -175,20 +175,20 @@ typedef struct {
 	uint32_t infoVersion;
 	uint64_t firstSectorNumber;
 	uint64_t sectorCount;
-	
+
 	uint64_t dataStart;
 	uint32_t decompressBufferRequested;
 	uint32_t blocksDescriptor;
-	
+
 	uint32_t reserved1;
 	uint32_t reserved2;
 	uint32_t reserved3;
 	uint32_t reserved4;
 	uint32_t reserved5;
 	uint32_t reserved6;
-	
+
 	UDIFChecksum checksum;
-	
+
 	uint32_t blocksRunCount;
 	BLKXRun runs[0];
 } __attribute__((__packed__)) BLKXTable;
@@ -259,10 +259,10 @@ typedef struct ResourceKey {
 
 static inline uint32_t readUInt32(AbstractFile* file) {
 	uint32_t data;
-	
+
 	ASSERT(file->read(file, &data, sizeof(data)) == sizeof(data), "fread");
 	FLIPENDIAN(data);
-	
+
 	return data;
 }
 
@@ -273,10 +273,10 @@ static inline void writeUInt32(AbstractFile* file, uint32_t data) {
 
 static inline uint64_t readUInt64(AbstractFile* file) {
 	uint64_t data;
-	
+
 	ASSERT(file->read(file, &data, sizeof(data)) == sizeof(data), "fread");
 	FLIPENDIAN(data);
-	
+
 	return data;
 }
 
@@ -346,7 +346,7 @@ extern "C" {
 
 	void extractBLKX(AbstractFile* in, AbstractFile* out, BLKXTable* blkx);
 	BLKXTable* insertBLKX(AbstractFile* out, AbstractFile* in, uint32_t firstSectorNumber, uint32_t numSectors, uint32_t blocksDescriptor,
-	            uint32_t checksumType, ChecksumFunc uncompressedChk, void* uncompressedChkToken, ChecksumFunc compressedChk,
+				uint32_t checksumType, ChecksumFunc uncompressedChk, void* uncompressedChkToken, ChecksumFunc compressedChk,
 				void* compressedChkToken, Volume* volume, AbstractAttribution* attribution, Compressor* comp, size_t runSectors);
 
 

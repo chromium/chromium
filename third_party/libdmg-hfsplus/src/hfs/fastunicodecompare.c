@@ -401,10 +401,10 @@ int32_t FastUnicodeCompare ( register uint16_t str1[], register uint16_t length1
                 c2 = lowerCaseTable[temp + (c2 & 0x00FF)];
         }
         if (c1 == ':') {
-		c1 = '/';
+            c1 = '/';
         }
         if (c2 == ':') {
-		c2 = '/';
+            c2 = '/';
         }
         if (c1 != c2)
             break;

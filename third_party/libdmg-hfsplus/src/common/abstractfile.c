@@ -29,36 +29,36 @@ void fcloseWrapper(AbstractFile* file) {
 }
 
 off_t fileGetLength(AbstractFile* file) {
-	off_t length;
-	off_t pos;
+  off_t length;
+  off_t pos;
 
-	pos = ftello((FILE*) (file->data));
+  pos = ftello((FILE*) (file->data));
 
-	fseeko((FILE*) (file->data), 0, SEEK_END);
-	length = ftello((FILE*) (file->data));
+  fseeko((FILE*) (file->data), 0, SEEK_END);
+  length = ftello((FILE*) (file->data));
 
-	fseeko((FILE*) (file->data), pos, SEEK_SET);
+  fseeko((FILE*) (file->data), pos, SEEK_SET);
 
-	return length;
+  return length;
 }
 
 AbstractFile* createAbstractFileFromFile(FILE* file) {
-	AbstractFile* toReturn;
+  AbstractFile* toReturn;
 
-	if(file == NULL) {
-		return NULL;
-	}
+  if(file == NULL) {
+    return NULL;
+  }
 
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
-	toReturn->data = file;
-	toReturn->read = freadWrapper;
-	toReturn->write = fwriteWrapper;
-	toReturn->seek = fseekWrapper;
-	toReturn->tell = ftellWrapper;
-	toReturn->getLength = fileGetLength;
-	toReturn->close = fcloseWrapper;
-	toReturn->type = AbstractFileTypeFile;
-	return toReturn;
+  toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
+  toReturn->data = file;
+  toReturn->read = freadWrapper;
+  toReturn->write = fwriteWrapper;
+  toReturn->seek = fseekWrapper;
+  toReturn->tell = ftellWrapper;
+  toReturn->getLength = fileGetLength;
+  toReturn->close = fcloseWrapper;
+  toReturn->type = AbstractFileTypeFile;
+  return toReturn;
 }
 
 size_t dummyRead(AbstractFile* file, void* data, size_t len) {
@@ -84,21 +84,21 @@ void dummyClose(AbstractFile* file) {
 }
 
 AbstractFile* createAbstractFileFromDummy() {
-	AbstractFile* toReturn;
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
-	toReturn->data = NULL;
-	toReturn->read = dummyRead;
-	toReturn->write = dummyWrite;
-	toReturn->seek = dummySeek;
-	toReturn->tell = dummyTell;
-	toReturn->getLength = NULL;
-	toReturn->close = dummyClose;
-	toReturn->type = AbstractFileTypeDummy;
-	return toReturn;
+  AbstractFile* toReturn;
+  toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
+  toReturn->data = NULL;
+  toReturn->read = dummyRead;
+  toReturn->write = dummyWrite;
+  toReturn->seek = dummySeek;
+  toReturn->tell = dummyTell;
+  toReturn->getLength = NULL;
+  toReturn->close = dummyClose;
+  toReturn->type = AbstractFileTypeDummy;
+  return toReturn;
 }
 
 size_t memRead(AbstractFile* file, void* data, size_t len) {
-  MemWrapperInfo* info = (MemWrapperInfo*) (file->data); 
+  MemWrapperInfo* info = (MemWrapperInfo*) (file->data);
   if(info->bufferSize < (info->offset + len)) {
     len = info->bufferSize - info->offset;
   }
@@ -109,12 +109,12 @@ size_t memRead(AbstractFile* file, void* data, size_t len) {
 
 size_t memWrite(AbstractFile* file, const void* data, size_t len) {
   MemWrapperInfo* info = (MemWrapperInfo*) (file->data);
-  
+
   while((info->offset + (size_t)len) > info->bufferSize) {
     info->bufferSize <<= 1;
     *(info->buffer) = realloc(*(info->buffer), info->bufferSize);
   }
-  
+
   memcpy((void*)((uint8_t*)(*(info->buffer)) + (uint32_t)info->offset), data, len);
   info->offset += (size_t)len;
   return len;
@@ -142,82 +142,82 @@ void memClose(AbstractFile* file) {
 }
 
 AbstractFile* createAbstractFileFromMemory(void** buffer, size_t size) {
-	MemWrapperInfo* info;
-	AbstractFile* toReturn;
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
-	
-	info = (MemWrapperInfo*) malloc(sizeof(MemWrapperInfo));
-	info->offset = 0;
-	info->buffer = buffer;
-	info->bufferSize = size;
+  MemWrapperInfo* info;
+  AbstractFile* toReturn;
+  toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
 
-	toReturn->data = info;
-	toReturn->read = memRead;
-	toReturn->write = memWrite;
-	toReturn->seek = memSeek;
-	toReturn->tell = memTell;
-	toReturn->getLength = memGetLength;
-	toReturn->close = memClose;
-	toReturn->type = AbstractFileTypeMem;
-	return toReturn;
+  info = (MemWrapperInfo*) malloc(sizeof(MemWrapperInfo));
+  info->offset = 0;
+  info->buffer = buffer;
+  info->bufferSize = size;
+
+  toReturn->data = info;
+  toReturn->read = memRead;
+  toReturn->write = memWrite;
+  toReturn->seek = memSeek;
+  toReturn->tell = memTell;
+  toReturn->getLength = memGetLength;
+  toReturn->close = memClose;
+  toReturn->type = AbstractFileTypeMem;
+  return toReturn;
 }
 
 void abstractFilePrint(AbstractFile* file, const char* format, ...) {
-	va_list args;
-	char buffer[1024];
-	size_t length;
+  va_list args;
+  char buffer[1024];
+  size_t length;
 
-	buffer[0] = '\0';
-	va_start(args, format);
-	length = vsprintf(buffer, format, args);
-	va_end(args);
-	ASSERT(file->write(file, buffer, length) == length, "fwrite");
+  buffer[0] = '\0';
+  va_start(args, format);
+  length = vsprintf(buffer, format, args);
+  va_end(args);
+  ASSERT(file->write(file, buffer, length) == length, "fwrite");
 }
 
 int absFileRead(io_func* io, off_t location, size_t size, void *buffer) {
-	AbstractFile* file;
-	file = (AbstractFile*) io->data;
-	file->seek(file, location);
-	if(file->read(file, buffer, size) == size) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+  AbstractFile* file;
+  file = (AbstractFile*) io->data;
+  file->seek(file, location);
+  if(file->read(file, buffer, size) == size) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 int absFileWrite(io_func* io, off_t location, size_t size, void *buffer) {
-	AbstractFile* file;
-	file = (AbstractFile*) io->data;
-	file->seek(file, location);
-	if(file->write(file, buffer, size) == size) {
-		return TRUE;
-	} else {
-		return FALSE;
-	}
+  AbstractFile* file;
+  file = (AbstractFile*) io->data;
+  file->seek(file, location);
+  if(file->write(file, buffer, size) == size) {
+    return TRUE;
+  } else {
+    return FALSE;
+  }
 }
 
 void closeAbsFile(io_func* io) {
-	AbstractFile* file;
-	file = (AbstractFile*) io->data;
-	file->close(file);
-	free(io);
+  AbstractFile* file;
+  file = (AbstractFile*) io->data;
+  file->close(file);
+  free(io);
 }
 
 
 io_func* IOFuncFromAbstractFile(AbstractFile* file) {
-	io_func* io;
+  io_func* io;
 
-	io = (io_func*) malloc(sizeof(io_func));
-	io->data = file;
-	io->read = &absFileRead;
-	io->write = &absFileWrite;
-	io->close = &closeAbsFile;
+  io = (io_func*) malloc(sizeof(io_func));
+  io->data = file;
+  io->read = &absFileRead;
+  io->write = &absFileWrite;
+  io->close = &closeAbsFile;
 
-	return io;
+  return io;
 }
 
 size_t memFileRead(AbstractFile* file, void* data, size_t len) {
-  MemFileWrapperInfo* info = (MemFileWrapperInfo*) (file->data); 
+  MemFileWrapperInfo* info = (MemFileWrapperInfo*) (file->data);
   memcpy(data, (void*)((uint8_t*)(*(info->buffer)) + (uint32_t)info->offset), len);
   info->offset += (size_t)len;
   return len;
@@ -225,17 +225,17 @@ size_t memFileRead(AbstractFile* file, void* data, size_t len) {
 
 size_t memFileWrite(AbstractFile* file, const void* data, size_t len) {
   MemFileWrapperInfo* info = (MemFileWrapperInfo*) (file->data);
-  
+
   while((info->offset + (size_t)len) > info->actualBufferSize) {
-		info->actualBufferSize <<= 1;
+    info->actualBufferSize <<= 1;
     *(info->buffer) = realloc(*(info->buffer), info->actualBufferSize);
   }
-  
+
   if((info->offset + (size_t)len) > (*(info->bufferSize))) {
-		memset(((uint8_t*)(*(info->buffer))) + *(info->bufferSize), 0, (info->offset + (size_t)len) - *(info->bufferSize));
-		*(info->bufferSize) = info->offset + (size_t)len;
-	}
-      
+    memset(((uint8_t*)(*(info->buffer))) + *(info->bufferSize), 0, (info->offset + (size_t)len) - *(info->bufferSize));
+    *(info->bufferSize) = info->offset + (size_t)len;
+  }
+
   memcpy((void*)((uint8_t*)(*(info->buffer)) + (uint32_t)info->offset), data, len);
   info->offset += (size_t)len;
   return len;
@@ -263,49 +263,49 @@ void memFileClose(AbstractFile* file) {
 }
 
 AbstractFile* createAbstractFileFromMemoryFile(void** buffer, size_t* size) {
-	MemFileWrapperInfo* info;
-	AbstractFile* toReturn;
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
-	
-	info = (MemFileWrapperInfo*) malloc(sizeof(MemFileWrapperInfo));
-	info->offset = 0;
-	info->buffer = buffer;
-	info->bufferSize = size;
-	info->actualBufferSize = (1024 < (*size)) ? (*size) : 1024;
-	if(info->actualBufferSize != *(info->bufferSize)) {
-		*(info->buffer) = realloc(*(info->buffer), info->actualBufferSize);
-	}
+  MemFileWrapperInfo* info;
+  AbstractFile* toReturn;
+  toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
 
-	toReturn->data = info;
-	toReturn->read = memFileRead;
-	toReturn->write = memFileWrite;
-	toReturn->seek = memFileSeek;
-	toReturn->tell = memFileTell;
-	toReturn->getLength = memFileGetLength;
-	toReturn->close = memFileClose;
-	toReturn->type = AbstractFileTypeMemFile;
-	return toReturn;
+  info = (MemFileWrapperInfo*) malloc(sizeof(MemFileWrapperInfo));
+  info->offset = 0;
+  info->buffer = buffer;
+  info->bufferSize = size;
+  info->actualBufferSize = (1024 < (*size)) ? (*size) : 1024;
+  if(info->actualBufferSize != *(info->bufferSize)) {
+    *(info->buffer) = realloc(*(info->buffer), info->actualBufferSize);
+  }
+
+  toReturn->data = info;
+  toReturn->read = memFileRead;
+  toReturn->write = memFileWrite;
+  toReturn->seek = memFileSeek;
+  toReturn->tell = memFileTell;
+  toReturn->getLength = memFileGetLength;
+  toReturn->close = memFileClose;
+  toReturn->type = AbstractFileTypeMemFile;
+  return toReturn;
 }
 
 AbstractFile* createAbstractFileFromMemoryFileBuffer(void** buffer, size_t* size, size_t actualBufferSize) {
-	MemFileWrapperInfo* info;
-	AbstractFile* toReturn;
-	toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
-	
-	info = (MemFileWrapperInfo*) malloc(sizeof(MemFileWrapperInfo));
-	info->offset = 0;
-	info->buffer = buffer;
-	info->bufferSize = size;
-	info->actualBufferSize = actualBufferSize;
+  MemFileWrapperInfo* info;
+  AbstractFile* toReturn;
+  toReturn = (AbstractFile*) malloc(sizeof(AbstractFile));
 
-	toReturn->data = info;
-	toReturn->read = memFileRead;
-	toReturn->write = memFileWrite;
-	toReturn->seek = memFileSeek;
-	toReturn->tell = memFileTell;
-	toReturn->getLength = memFileGetLength;
-	toReturn->close = memFileClose;
-	toReturn->type = AbstractFileTypeMemFile;
-	return toReturn;
+  info = (MemFileWrapperInfo*) malloc(sizeof(MemFileWrapperInfo));
+  info->offset = 0;
+  info->buffer = buffer;
+  info->bufferSize = size;
+  info->actualBufferSize = actualBufferSize;
+
+  toReturn->data = info;
+  toReturn->read = memFileRead;
+  toReturn->write = memFileWrite;
+  toReturn->seek = memFileSeek;
+  toReturn->tell = memFileTell;
+  toReturn->getLength = memFileGetLength;
+  toReturn->close = memFileClose;
+  toReturn->type = AbstractFileTypeMemFile;
+  return toReturn;
 }
 
