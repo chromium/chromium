@@ -204,6 +204,11 @@
     "expiry_milestone": 150
   },
   {
+    "name": "android-adpf-efficiency-mode",
+    "owners": ["ritownsend@google.com", "clank-performance-team@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-animated-progress-bar-in-browser",
     "owners": [ "peilinwang@google.com", "clank-performance-team@google.com" ],
     "expiry_milestone": 150

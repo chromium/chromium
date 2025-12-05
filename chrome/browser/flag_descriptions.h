@@ -532,6 +532,13 @@ inline constexpr char kDevToolsStartingStyleDebuggingName[] =
 inline constexpr char kDevToolsStartingStyleDebuggingDescription[] =
     "Enables the debugging of @starting-style in the elements panel.";
 
+inline constexpr char kEnableAdpfEfficiencyModeName[] =
+    "Android Power Efficiency Mode";
+inline constexpr char kEnableAdpfEfficiencyModeDescription[] =
+    "Enables experimental power management on Pixel devices. When active, "
+    "Chrome instructs the system to prioritize battery life over maximum "
+    "performance. Responsiveness may be affected.";
+
 inline constexpr char kEnableSeamlessSigninName[] = "Enable Seamless Sign-in";
 inline constexpr char kEnableSeamlessSigninDescription[] =
     "Enables the Seamless Sign-in flow that signs in the user without showing "

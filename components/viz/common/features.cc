@@ -275,6 +275,25 @@ BASE_FEATURE(kEnableADPFSeparateRendererMainSession,
 BASE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, Chrome uses ADPF's setPreferPowerEfficiency API to try and save
+// energy at the cost of performance. Supported only on Android >= 16.
+BASE_FEATURE(kEnableAdpfEfficiencyMode, base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<AdpfEfficiencyMode>::Option
+    kAdpfEfficiencyModeOption[] = {
+        // ADPF sessions are always configured for performance.
+        {AdpfEfficiencyMode::kNever, "never"},
+        // ADPF sessions switch between performance and efficiency mode based on
+        // context. TODO(crbug.com/464505581): implement this.
+        {AdpfEfficiencyMode::kAdaptive, "adaptive"},
+        // ADPF sessions are always configured for efficiency.
+        {AdpfEfficiencyMode::kAlwaysEfficient, "always_efficient"}};
+const base::FeatureParam<AdpfEfficiencyMode> kAdpfEfficiencyModeParam{
+    &kEnableAdpfEfficiencyMode,
+    "mode",
+    AdpfEfficiencyMode::kNever,
+    &kAdpfEfficiencyModeOption,
+};
+
 // If enabled, Chrome uses notifyWorkloadReset method on viz wakeup instead of
 // sending a timing report with a fake actual duration > target duration.
 // Supported only on Android >= 16.

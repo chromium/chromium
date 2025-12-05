@@ -17235,6 +17235,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentBlueTitlesOnPageSuggestions:enabled"/>
   <int value="1050664817" label="CSSFragmentIdentifiers:enabled"/>
   <int value="1051252858" label="ClearIdentityInCanMakePaymentEvent:enabled"/>
+  <int value="1051600554" label="EnableAdpfEfficiencyMode:disabled"/>
   <int value="1051797561" label="OngoingProcesses:enabled"/>
   <int value="1051962433" label="AutoPictureInPictureAndroid:disabled"/>
   <int value="1052395429" label="ShimlessRMAHideGoogleSKU:enabled"/>
@@ -19670,6 +19671,7 @@ from previous Chrome versions.
   <int value="1877769074" label="PhoneHubFeatureSetupErrorHandling:enabled"/>
   <int value="1877956196" label="AccessibilityTextFormatting:disabled"/>
   <int value="1878331098" label="GuestViewCrossProcessFrames:enabled"/>
+  <int value="1879175933" label="EnableAdpfEfficiencyMode:enabled"/>
   <int value="1880148987" label="PrivacySandboxAdTopicsContentParity:disabled"/>
   <int value="1880955305" label="enable-preconnect-to-search"/>
   <int value="1881036528" label="disable-multilingual-spellchecker"/>

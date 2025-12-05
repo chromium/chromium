@@ -112,6 +112,23 @@ VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerAllowlist;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kADPFSocManufacturerBlocklist;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFScrollBoost);
+VIZ_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kADPFBoostTimeout;
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableInteractiveOnlyADPFRenderer);
+VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableAdpfEfficiencyMode);
+enum class AdpfEfficiencyMode {
+  // Never opts ADPF sessions into efficient scheduling (default).
+  kNever,
+  // Attempt to shift ADPF sessions between setPreferPowerEfficiency states,
+  // based on the current context.
+  kAdaptive,
+  // Always opt ADPF sessions into efficient scheduling whenever possible -
+  // costs considerable performance.
+  kAlwaysEfficient
+};
+extern const VIZ_COMMON_EXPORT base::FeatureParam<AdpfEfficiencyMode>
+    kAdpfEfficiencyModeParam;
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFSeparateRendererMainSession);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadIncreaseOnPageLoad);
 VIZ_COMMON_EXPORT BASE_DECLARE_FEATURE(kEnableADPFWorkloadReset);
@@ -186,6 +203,7 @@ VIZ_COMMON_EXPORT bool IsBrowserControlsInVizEnabled();
 VIZ_COMMON_EXPORT bool ShouldUseAdpfForSoc(std::string_view soc_allowlist,
                                            std::string_view soc_blocklist,
                                            std::string_view soc);
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 VIZ_COMMON_EXPORT bool ShouldAckCOREarlyForViewTransition();
