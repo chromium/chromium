@@ -19,23 +19,25 @@
 }
 
 .leftSide {
-  display: flex;
   align-items: center;
+  display: flex;
+  font-size: 16px;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .toolbarLogo {
-  background-image: url(chrome://resources/cr_components/searchbox/icons/chrome_product.svg);
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: contain;
   box-sizing: border-box;
+  display: inline-block;
   margin: 0 12px 0 8px;
-  width: 32px;
-  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
 }
 
 .rightSide {
-  flex-grow: 1;
+  flex-shrink: 0;
 }
 
 #rightButtonContainer {
@@ -76,7 +78,7 @@ button > cr-icon {
 }
 
 cr-icon-button {
-  --cr-icon-button-margin-start: 8px;
+  --cr-icon-button-margin-start: 12px;
 }
 
 cr-icon-button[hidden] {

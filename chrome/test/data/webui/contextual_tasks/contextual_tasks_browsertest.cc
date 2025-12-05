@@ -33,6 +33,10 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, PostMessageHandler) {
   RunTest("contextual_tasks/post_message_handler_test.js", "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TopToolbarTest) {
+  RunTest("contextual_tasks/top_toolbar_test.js", "mocha.run();");
+}
+
 #if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)
 // TODO(crbug.com/40284073): Test fails with JS coverage turned on. Since the
 // webview needs to make a request to test the request headers, disabling this

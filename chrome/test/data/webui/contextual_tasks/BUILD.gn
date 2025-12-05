@@ -15,6 +15,7 @@ build_webui_tests("build") {
     "contextual_tasks_webview_browsertest.ts",
     "post_message_handler_test.ts",
     "test_utils.ts",
+    "top_toolbar_test.ts",
   ]
 
   static_files = [ "test.html" ]

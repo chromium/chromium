@@ -10,23 +10,30 @@ import type {TopToolbarElement} from './top_toolbar.js';
 export function getHtml(this: TopToolbarElement) {
   return html`<!--_html_template_start_-->
   <div class="leftSide">
-    <div class="toolbarLogo"></div>
-    <span>${this.title}</span>
+    <if expr="_google_chrome">
+      <img id="topToolbarLogo"
+          src="chrome://resources/cr_components/searchbox/icons/google_g_gradient.svg"
+          class="toolbarLogo">
+    </if>
+    <if expr="not _google_chrome">
+      <img id="topToolbarLogo"
+          src="chrome://resources/cr_components/searchbox/icons/chrome_product.svg"
+          class="toolbarLogo">
+    </if>
+    ${this.title}
   </div>
   <div class="rightSide">
     <div id="rightButtonContainer">
-      <!-- TODO(crbug.com/454388385): Remove this once the authentication flow
-          is implemented. -->
-      <button @click="${this.onSigninClick_}">Press for sign in</button>
-      <cr-icon-button @click="${this.onNewThreadClick_}" iron-icon="cr:add"
-          title="New Thread">
-      </cr-icon-button>
-      <cr-icon-button @click="${this.onThreadHistoryClick_}"
-          iron-icon="cr:history" title="Thread History">
-      </cr-icon-button>
       <cr-icon-button id="sources" iron-icon="cr:attachment"
           ?hidden="${this.shouldHideSourcesButton_()}"
           title="Sources" @click="${this.onSourcesClick_}">
+      </cr-icon-button>
+      <cr-icon-button @click="${this.onNewThreadClick_}"
+          iron-icon="contextual_tasks:edit_square"
+          title="New Thread">
+      </cr-icon-button>
+      <cr-icon-button @click="${this.onThreadHistoryClick_}"
+          iron-icon="contextual_tasks:schedule_auto" title="Thread History">
       </cr-icon-button>
       <cr-icon-button id="more" iron-icon="cr:more-vert"
           title="More" @click="${this.onMoreClick_}">

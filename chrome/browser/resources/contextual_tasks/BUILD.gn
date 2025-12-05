@@ -20,6 +20,7 @@ build_webui("build") {
     "composebox.ts",
     "composebox.html.ts",
     "contextual_tasks_browser_proxy.ts",
+    "icons.html.ts",
     "post_message_handler.ts",
     "top_toolbar.ts",
     "top_toolbar.html.ts",
