@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/os_feedback/chrome_os_feedback_delegate.h"
 
 #include <optional>
@@ -20,6 +15,7 @@
 #include "ash/webui/os_feedback_ui/backend/histogram_util.h"
 #include "ash/webui/os_feedback_ui/mojom/os_feedback_ui.mojom.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -247,7 +243,7 @@ void ChromeOsFeedbackDelegate::GetScreenshotPng(
   scoped_refptr<base::RefCountedMemory> png_data = GetScreenshotData();
   if (png_data && png_data.get()) {
     std::vector<uint8_t> data(png_data->data(),
-                              png_data->data() + png_data->size());
+                              UNSAFE_TODO(png_data->data() + png_data->size()));
     std::move(callback).Run(data);
   } else {
     std::vector<uint8_t> empty_data;

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 
 #include <memory>
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -49,8 +45,9 @@ std::vector<uint8_t> ExtractSpkiDer(const crypto::ScopedSECKEYPrivateKey& key) {
       SECKEY_ConvertToPublicKey(key.get()));
 
   SECItem* public_key_bytes = PK11_DEREncodePublicKey(public_key.get());
-  std::vector<uint8_t> bytes(public_key_bytes->data,
-                             public_key_bytes->data + public_key_bytes->len);
+  std::vector<uint8_t> bytes(
+      public_key_bytes->data,
+      UNSAFE_TODO(public_key_bytes->data + public_key_bytes->len));
   SECITEM_FreeItem(public_key_bytes, PR_TRUE);
 
   return bytes;

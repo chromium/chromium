@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/tether/fake_tether_service.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace ash {
@@ -53,7 +49,8 @@ void FakeTetherService::StartTetherIfPossible() {
 
 void FakeTetherService::StopTetherIfNecessary() {
   for (int i = 0; i < num_tether_networks_; ++i) {
-    network_state_handler()->RemoveTetherNetworkState(kTetherGuidPrefix + i);
+    network_state_handler()->RemoveTetherNetworkState(
+        UNSAFE_TODO(kTetherGuidPrefix + i));
   }
 }
 

@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/intent_helper/arc_intent_helper_mojo_ash.h"
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -146,7 +142,8 @@ void ArcIntentHelperMojoAsh::OnRequestTextSelectionActions(
 
   for (size_t idx = 0; idx < actions_count; ++idx) {
     auto action = std::move(actions[idx]);
-    TextSelectionAction** converted_action = &converted_actions_ptr[idx];
+    TextSelectionAction** converted_action =
+        UNSAFE_TODO(&converted_actions_ptr[idx]);
 
     // If action->icon doesn't meet the size condition, skip generating image.
     if (action->icon->width > kMaxIconSizeInPx ||

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/ownership/owner_key_loader.h"
 
 #include <string>
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/thread_pool.h"
@@ -142,8 +138,9 @@ void GenerateNewOwnerKeyOnWorkerThread(
   scoped_refptr<ownership::PublicKey> public_key =
       base::MakeRefCounted<ownership::PublicKey>(
           /*is_persisted=*/false,
-          std::vector<uint8_t>(sec_pub_key_der->data,
-                               sec_pub_key_der->data + sec_pub_key_der->len));
+          std::vector<uint8_t>(
+              sec_pub_key_der->data,
+              UNSAFE_TODO(sec_pub_key_der->data + sec_pub_key_der->len)));
   scoped_refptr<ownership::PrivateKey> private_key =
       base::MakeRefCounted<ownership::PrivateKey>(std::move(sec_priv_key));
 

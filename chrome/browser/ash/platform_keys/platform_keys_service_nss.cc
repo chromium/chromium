@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <cert.h>
 #include <certdb.h>
 #include <cryptohi.h>
@@ -91,7 +86,8 @@ const int kDefaultSymSignatureLength = 32;
 // Returns a vector containing bytes from `value` or an empty vector if `value`
 // is nullptr.
 std::vector<uint8_t> ScopedSECItemToBytes(const crypto::ScopedSECItem& value) {
-  return value ? std::vector<uint8_t>(value->data, value->data + value->len)
+  return value ? std::vector<uint8_t>(value->data,
+                                      UNSAFE_TODO(value->data + value->len))
                : std::vector<uint8_t>();
 }
 
@@ -1956,7 +1952,8 @@ void GetKeyLocationsWithDB(std::unique_ptr<GetKeyLocationsState> state,
   const uint8_t* public_key_uint8 =
       reinterpret_cast<const uint8_t*>(state->public_key_spki_der_.data());
   std::vector<uint8_t> public_key_vector(
-      public_key_uint8, public_key_uint8 + state->public_key_spki_der_.size());
+      public_key_uint8,
+      UNSAFE_TODO(public_key_uint8 + state->public_key_spki_der_.size()));
 
   if (cert_db->GetPrivateSlot().get()) {
     crypto::ScopedSECKEYPrivateKey rsa_key =
@@ -2105,8 +2102,9 @@ void GetAttributeForKeyWithDbOnWorkerThread(
 
   std::string attribute_value_str;
   if (attribute_value->len > 0) {
-    attribute_value_str.assign(attribute_value->data,
-                               attribute_value->data + attribute_value->len);
+    attribute_value_str.assign(
+        attribute_value->data,
+        UNSAFE_TODO(attribute_value->data + attribute_value->len));
   }
 
   state->OnSuccess(FROM_HERE, ScopedSECItemToBytes(attribute_value));

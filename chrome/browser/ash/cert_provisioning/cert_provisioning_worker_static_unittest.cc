@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_worker_static.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/json/json_writer.h"
@@ -168,8 +164,8 @@ std::vector<uint8_t> GetSignatureBin() {
 
 std::vector<uint8_t> GetCertProfileIdBin() {
   // -1 because of '\0'.
-  return std::vector<uint8_t>(kCertProfileId,
-                              kCertProfileId + sizeof(kCertProfileId) - 1);
+  return std::vector<uint8_t>(
+      kCertProfileId, UNSAFE_TODO(kCertProfileId + sizeof(kCertProfileId) - 1));
 }
 
 void VerifyDeleteKeyCalledOnce(CertScope cert_scope) {

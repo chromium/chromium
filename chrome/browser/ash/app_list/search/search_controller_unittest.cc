@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/compiler_specific.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -895,7 +891,8 @@ TEST_F(SearchControllerTest, ProviderIsFilteredWithSearchControl) {
   for (int i = 0; i < 9; ++i) {
     // The result type needs to be unique.
     auto provider = std::make_unique<TestSearchProvider>(
-        result_categories[i], base::Milliseconds(20), search_categories[i]);
+        UNSAFE_TODO(result_categories[i]), base::Milliseconds(20),
+        UNSAFE_TODO(search_categories[i]));
     provider_ptrs.push_back(provider.get());
     search_controller_->AddProvider(std::move(provider));
   }

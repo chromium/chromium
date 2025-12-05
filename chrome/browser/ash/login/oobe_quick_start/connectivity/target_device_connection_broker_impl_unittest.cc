@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_impl.h"
 
 #include <array>
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -604,8 +600,8 @@ TEST_P(TargetDeviceConnectionBrokerImplEndpointInfoTest, GenerateEndpointInfo) {
 
   // The remaining advertising info fields are base64-encoded. Decode them
   // before proceeding.
-  std::vector<uint8_t> advertising_info = Base64DecodeForgiving(
-      base::span<uint8_t>(endpoint_info.begin() + i, endpoint_info.end()));
+  std::vector<uint8_t> advertising_info = Base64DecodeForgiving(UNSAFE_TODO(
+      base::span<uint8_t>(endpoint_info.begin() + i, endpoint_info.end())));
   ASSERT_EQ(advertising_info.size(), 60u);
   i = 0;
 

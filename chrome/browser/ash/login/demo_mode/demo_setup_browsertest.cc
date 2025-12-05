@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <string>
 #include <string_view>
 
@@ -15,6 +10,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -1163,7 +1159,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupProgressStepsTest,
   ASSERT_EQ(CountNumberOfStepsInUi(), numSteps);
 
   for (int i = 0; i < numSteps; i++) {
-    demoSetupScreen->SetCurrentSetupStepForTest(orderedSteps[i]);
+    demoSetupScreen->SetCurrentSetupStepForTest(UNSAFE_TODO(orderedSteps[i]));
     ASSERT_EQ(CountStepsInUi("pending"), numSteps - i - 1);
     ASSERT_EQ(CountStepsInUi("active"), 1);
     ASSERT_EQ(CountStepsInUi("completed"), i);

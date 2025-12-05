@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -48,7 +44,7 @@ bool AreImagesEqual(const gfx::ImageSkia& first, const gfx::ImageSkia& second) {
   uint8_t* first_data = reinterpret_cast<uint8_t*>(first_bitmap->getPixels());
   uint8_t* second_data = reinterpret_cast<uint8_t*>(second_bitmap->getPixels());
   for (size_t i = 0; i < size; ++i) {
-    if (first_data[i] != second_data[i]) {
+    if (UNSAFE_TODO(first_data[i]) != UNSAFE_TODO(second_data[i])) {
       return false;
     }
   }

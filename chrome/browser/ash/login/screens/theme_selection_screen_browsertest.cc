@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/login/screens/theme_selection_screen.h"
 
 #include "ash/constants/ash_pref_names.h"
@@ -15,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/compiler_specific.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
@@ -166,8 +162,8 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenTest, SelectTheme) {
   test::OobeJS().ExpectVisiblePath(selected_option_path);
   test::OobeJS().ClickOnPath(selected_option_path);
 
-  auto selectedOption =
-      selected_option_path.begin()[selected_option_path.size() - 1];
+  auto selectedOption = UNSAFE_TODO(
+      selected_option_path.begin()[selected_option_path.size() - 1]);
   ThemeSelectionScreen::SelectedTheme theme =
       ThemeSelectionScreen::SelectedTheme::kDark;
   if (selectedOption == kDarkThemeButton) {
@@ -252,7 +248,7 @@ IN_PROC_BROWSER_TEST_P(ThemeSelectionScreenResumeTest, PRE_ResumedScreen) {
   test::OobeJS().ExpectVisiblePath(GetParam());
   test::OobeJS().ClickOnPath(GetParam());
 
-  auto selectedOption = GetParam().begin()[GetParam().size() - 1];
+  auto selectedOption = UNSAFE_TODO(GetParam().begin()[GetParam().size() - 1]);
   if (selectedOption == kDarkThemeButton) {
     EXPECT_EQ(profile->GetPrefs()->GetBoolean(prefs::kDarkModeEnabled), true);
     EXPECT_EQ(profile->GetPrefs()->GetInteger(prefs::kDarkModeScheduleType), 0);

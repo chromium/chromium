@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/file_system_provider/fileapi/provider_async_file_util.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -198,7 +194,7 @@ class FileSystemProviderProviderAsyncFileUtilTest : public testing::Test {
 
     file_url_ = CreateFileSystemURL(
         mount_point_name_,
-        base::FilePath(kFakeFilePath + /*No leading slash.=*/1));
+        base::FilePath(UNSAFE_TODO(kFakeFilePath + /*No leading slash.=*/1)));
     ASSERT_TRUE(file_url_.is_valid());
     directory_url_ = CreateFileSystemURL(
         mount_point_name_, base::FilePath(FILE_PATH_LITERAL("hello")));
@@ -367,8 +363,8 @@ TEST_F(FileSystemProviderProviderAsyncFileUtilTest,
   ASSERT_TRUE(logger.result());
   EXPECT_EQ(base::File::FILE_OK, *logger.result());
   EXPECT_EQ(1U, logger.read_directory_list().size());
-  EXPECT_EQ(base::FilePath(kFakeFilePath + /*No leading slash.=*/1),
-            logger.read_directory_list()[0].name.path());
+  UNSAFE_TODO(EXPECT_EQ(base::FilePath(kFakeFilePath + /*No leading slash.=*/1),
+                        logger.read_directory_list()[0].name.path()));
 }
 
 TEST_F(FileSystemProviderProviderAsyncFileUtilTest, Touch) {

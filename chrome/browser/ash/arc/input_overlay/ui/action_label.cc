@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/arc/input_overlay/ui/action_label.h"
 
 #include <set>
 
 #include "ash/style/style_util.h"
+#include "base/compiler_specific.h"
 #include "base/notimplemented.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -208,9 +204,9 @@ class ActionLabelMove : public ActionLabel {
     auto center = touch_point_size_.width() / 2;
     int offset_to_center =
         touch_point_size_.width() / 2 - kCrossPadding - label_size.height() / 2;
-    int x = center + kDirection[index_][0] * offset_to_center -
+    int x = center + UNSAFE_TODO(kDirection[index_])[0] * offset_to_center -
             label_size.width() / 2;
-    int y = center + kDirection[index_][1] * offset_to_center -
+    int y = center + UNSAFE_TODO(kDirection[index_])[1] * offset_to_center -
             label_size.height() / 2;
     SetPosition(gfx::Point(x, y));
     GetParent()->SetTouchPointCenter(gfx::Point(center, center));

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 
 #include <stddef.h>
 
 #include <set>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ash/fileapi/file_system_backend_delegate.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -266,19 +262,21 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
   for (size_t i = 0; i < std::size(kTestCases); ++i) {
     // Initialize virtual path with a value.
     base::FilePath virtual_path(FPL("/mount"));
-    base::FilePath local_path(kTestCases[i].local_path);
-    EXPECT_EQ(kTestCases[i].success,
-              backend.GetVirtualPath(local_path, &virtual_path))
-        << "Resolving " << kTestCases[i].local_path;
+    base::FilePath local_path(UNSAFE_TODO(kTestCases[i]).local_path);
+    UNSAFE_TODO(EXPECT_EQ(kTestCases[i].success,
+                          backend.GetVirtualPath(local_path, &virtual_path)))
+        << "Resolving " << UNSAFE_TODO(kTestCases[i]).local_path;
 
     // There are no guarantees for |virtual_path| value if |GetVirtualPath|
     // fails.
-    if (!kTestCases[i].success)
+    if (!UNSAFE_TODO(kTestCases[i]).success) {
       continue;
+    }
 
-    base::FilePath expected_virtual_path(kTestCases[i].virtual_path);
+    base::FilePath expected_virtual_path(
+        UNSAFE_TODO(kTestCases[i]).virtual_path);
     EXPECT_EQ(expected_virtual_path, virtual_path)
-        << "Resolving " << kTestCases[i].local_path;
+        << "Resolving " << UNSAFE_TODO(kTestCases[i]).local_path;
   }
 }
 

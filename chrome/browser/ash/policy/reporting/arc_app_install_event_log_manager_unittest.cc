@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ash/policy/reporting/arc_app_install_event_log_manager.h"
 
 #include <iterator>
 #include <map>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_string_value_serializer.h"
@@ -206,9 +202,9 @@ class ArcAppInstallEventLogManagerTest : public testing::Test {
   void AddLogEntry(int app_index) {
     ASSERT_GE(app_index, 0);
     ASSERT_LT(app_index, static_cast<int>(std::size(kPackageNames)));
-    const std::string package_name = kPackageNames[app_index];
+    const std::string package_name = UNSAFE_TODO(kPackageNames[app_index]);
     events_[package_name].push_back(event_);
-    manager_->Add({kPackageNames[app_index]}, event_);
+    manager_->Add({UNSAFE_TODO(kPackageNames[app_index])}, event_);
     FlushNonDelayedTasks();
     event_.set_timestamp(event_.timestamp() + 1000);
   }

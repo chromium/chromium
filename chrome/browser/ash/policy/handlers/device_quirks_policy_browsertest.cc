@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
@@ -44,8 +40,9 @@ class DeviceQuirksPolicyTest : public DevicePolicyCrosBrowserTest {
 
     // Create fake icc file.
     path = path.Append(quirks::IdToFileName(kProductId));
-    bool all_written = base::WriteFile(
-        path, base::span<const uint8_t>(kFakeIccData, sizeof(kFakeIccData)));
+    bool all_written =
+        base::WriteFile(path, UNSAFE_TODO(base::span<const uint8_t>(
+                                  kFakeIccData, sizeof(kFakeIccData))));
     ASSERT_TRUE(all_written);
   }
 
