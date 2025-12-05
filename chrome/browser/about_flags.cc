@@ -4303,15 +4303,6 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID) && PA_BUILDFLAG(HAS_MEMORY_TAGGING) &&
         // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-const FeatureEntry::FeatureParam kServiceWorkerAutoPreload_SWNotRunningOnly[] =
-    {
-        {"enable_only_when_service_worker_not_running", "true"},
-};
-const FeatureEntry::FeatureVariation kServiceWorkerAutoPreloadVariations[] = {
-    {"only when SW is not running", kServiceWorkerAutoPreload_SWNotRunningOnly,
-     std::size(kServiceWorkerAutoPreload_SWNotRunningOnly), nullptr},
-};
-
 #if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kMerchantTrustEnabledWithSampleData[] = {
     {page_info::kMerchantTrustEnabledWithSampleDataName, "true"}};
@@ -11680,13 +11671,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(client_certificates::features::
                             kEnableClientCertificateProvisioningOnAndroid)},
 #endif  // BUILDFLAG(IS_ANDROID)
-
-    {"service-worker-auto-preload",
-     flag_descriptions::kServiceWorkerAutoPreloadName,
-     flag_descriptions::kServiceWorkerAutoPreloadDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kServiceWorkerAutoPreload,
-                                    kServiceWorkerAutoPreloadVariations,
-                                    "ServiceWorkerAutoPreload")},
 
     {"autofill-enable-save-and-fill",
      flag_descriptions::kAutofillEnableSaveAndFillName,

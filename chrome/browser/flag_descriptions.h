@@ -3941,13 +3941,6 @@ inline constexpr char kSegmentationSurveyPageName[] =
 inline constexpr char kSegmentationSurveyPageDescription[] =
     "Enable internals page for survey and fetching model";
 
-inline constexpr char kServiceWorkerAutoPreloadName[] =
-    "ServiceWorkerAutoPreload";
-inline constexpr char kServiceWorkerAutoPreloadDescription[] =
-    "Dispatches a preload request for navigation before starting the service "
-    "worker. See "
-    "https://github.com/explainers-by-googlers/service-worker-auto-preload";
-
 inline constexpr char kServiceWorkerSyntheticResponseName[] =
     "ServiceWorkerSyntheticResponse";
 inline constexpr char kServiceWorkerSyntheticResponseDescription[] =
