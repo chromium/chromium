@@ -482,6 +482,9 @@ bool StructTraits<autofill::mojom::FormDataPredictionsDataView,
   if (!data.ReadAlternativeSignature(&out->alternative_signature)) {
     return false;
   }
+  if (!data.ReadStructuralFormSignature(&out->structural_form_signature)) {
+    return false;
+  }
   if (!data.ReadFields(&out->fields))
     return false;
 

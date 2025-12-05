@@ -390,6 +390,8 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormDataPredictions) {
   FormDataPredictions input;
   input.data = test::CreateTestAddressFormData();
   input.signature = "TestSignature";
+  input.alternative_signature = "TestAlternativeSignature";
+  input.structural_form_signature = "TestStructuralFormSignature";
 
   FormFieldDataPredictions field_predict;
   CreateTestFieldDataPredictions("Tom", &field_predict);
