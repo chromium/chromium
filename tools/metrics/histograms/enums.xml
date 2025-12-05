@@ -3495,6 +3495,18 @@ shown properly on the user-facing crash UI.
   <int value="3" label="Adult"/>
 </enum>
 
+<enum name="DesktopToIOSPromoActionType">
+  <int value="0" label="Accept"/>
+  <int value="1" label="Cancel"/>
+  <int value="2" label="Dismiss"/>
+</enum>
+
+<enum name="DesktopToIOSPromoBubbleType">
+  <int value="0" label="Reminder"/>
+  <int value="1" label="QRCode"/>
+  <int value="2" label="ReminderConfirmation"/>
+</enum>
+
 <enum name="DeviceAuthFinalResult">
   <int value="0" label="Success with unknown method"/>
   <int value="1" label="Success with biometrics"/>

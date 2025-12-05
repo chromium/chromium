@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ui/promos/ios_promo_trigger_service_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/desktop_to_mobile_promos/desktop_to_mobile_promos_metrics.h"
 #include "components/desktop_to_mobile_promos/features.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -125,6 +127,9 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
 
   Profile* GetProfile() { return profile_.get(); }
 
+  // Getter for the histograms tester.
+  base::HistogramTester* histograms() { return &histogram_; }
+
  protected:
   void CreateAndShowBubble(PromoType promo_type = PromoType::kLens,
                            BubbleType bubble_type = BubbleType::kQRCode) {
@@ -142,6 +147,7 @@ class IOSPromoBubbleViewTest : public ChromeViewsTestBase {
     widget->Show();
   }
 
+  base::HistogramTester histogram_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<TestingProfile> profile_;
   raw_ptr<views::View> anchor_view_;
@@ -166,6 +172,10 @@ TEST_F(IOSPromoBubbleViewTest, OnDismissalCallsNotifyUserAction_QRCode) {
   bubble_view_ = nullptr;
   bubble_widget_->Close();
   run_loop.Run();
+
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.QRCode.Action",
+      desktop_to_mobile_promos::DesktopPromoActionType::kDismiss, 1);
 }
 
 // Tests that clicking the Cancel button calls NotifyUserAction with kCancel.
@@ -176,6 +186,10 @@ TEST_F(IOSPromoBubbleViewTest, CancelCallsNotifyUserAction_QRCode) {
               Run(IOSPromoBubbleView::UserAction::kCancel));
 
   bubble_view_->Cancel();
+
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.QRCode.Action",
+      desktop_to_mobile_promos::DesktopPromoActionType::kCancel, 1);
 
   bubble_view_ = nullptr;
   bubble_widget_->CloseNow();
@@ -201,6 +215,10 @@ TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
 
   CreateAndShowBubble(PromoType::kLens, BubbleType::kReminder);
 
+  histograms()->ExpectBucketCount(
+      "UserEducation.DesktopToIOSPromo.Lens.BubbleView.Created",
+      desktop_to_mobile_promos::DesktopPromoBubbleType::kReminder, 1);
+
   // The bubble should be dismissed after the second accept.
   base::RunLoop run_loop;
   EXPECT_CALL(user_action_callback_,
@@ -212,9 +230,22 @@ TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
   EXPECT_FALSE(bubble_view_->Accept());
   EXPECT_FALSE(bubble_widget_->IsClosed());
 
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.Reminder.Action",
+      desktop_to_mobile_promos::DesktopPromoActionType::kAccept, 1);
+
+  histograms()->ExpectBucketCount(
+      "UserEducation.DesktopToIOSPromo.Lens.BubbleView.Created",
+      desktop_to_mobile_promos::DesktopPromoBubbleType::kReminderConfirmation,
+      1);
+
   // Click Accept (Second time - "Got it"). Now it should be in
   // kReminderConfirmation state. Expect it to return true (close bubble).
   EXPECT_TRUE(bubble_view_->Accept());
+
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.ReminderConfirmation.Action",
+      desktop_to_mobile_promos::DesktopPromoActionType::kAccept, 1);
 
   // Close triggers dismissal.
   bubble_view_ = nullptr;
@@ -226,6 +257,10 @@ TEST_F(IOSPromoBubbleViewTest, AcceptShowsConfirmation_Reminder) {
 // and attempts to open the correct URL.
 TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
   CreateAndShowBubble(PromoType::kLens, BubbleType::kQRCode);
+
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.BubbleView.Created",
+      desktop_to_mobile_promos::DesktopPromoBubbleType::kQRCode, 1);
 
   base::MockCallback<IOSPromoBubbleView::OpenUrlCallback> mock_callback;
   bubble_view_->SetOpenUrlCallbackForTesting(mock_callback.Get());
@@ -242,6 +277,10 @@ TEST_F(IOSPromoBubbleViewTest, AcceptOpensUrl_QRCode) {
 
   // Click Accept. Expect it to return true (close bubble).
   EXPECT_TRUE(bubble_view_->Accept());
+
+  histograms()->ExpectUniqueSample(
+      "UserEducation.DesktopToIOSPromo.Lens.QRCode.Action",
+      desktop_to_mobile_promos::DesktopPromoActionType::kAccept, 1);
 
   // Expect dismissal on close.
   base::RunLoop run_loop;

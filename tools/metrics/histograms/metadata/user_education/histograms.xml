@@ -234,6 +234,47 @@ chromium-metrics-reviews@google.com.
   <token key="TutorialID" variants="TutorialID"/>
 </histogram>
 
+<histogram
+    name="UserEducation.DesktopToIOSPromo.{PromoType}.BubbleView.Created"
+    enum="DesktopToIOSPromoBubbleType" expires_after="2026-06-04">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The type of Desktop-to-iOS Promo Bubble that was created (shown) to the
+    user.
+  </summary>
+  <token key="PromoType">
+    <variant name="Address" summary="Address"/>
+    <variant name="EnhancedBrowsing" summary="Enhanced Browsing"/>
+    <variant name="Lens" summary="Lens"/>
+    <variant name="Password" summary="Password"/>
+    <variant name="Payment" summary="Payment"/>
+  </token>
+</histogram>
+
+<histogram
+    name="UserEducation.DesktopToIOSPromo.{PromoType}.{BubbleType}.Action"
+    enum="DesktopToIOSPromoActionType" expires_after="2026-06-04">
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    The action taken by the user on the Desktop-to-iOS Promo Bubble.
+  </summary>
+  <token key="PromoType">
+    <variant name="Address" summary="Address"/>
+    <variant name="EnhancedBrowsing" summary="Enhanced Browsing"/>
+    <variant name="Lens" summary="Lens"/>
+    <variant name="Password" summary="Password"/>
+    <variant name="Payment" summary="Payment"/>
+  </token>
+  <token key="BubbleType">
+    <variant name="QRCode" summary="QR Code Bubble"/>
+    <variant name="Reminder" summary="Reminder Bubble"/>
+    <variant name="ReminderConfirmation"
+        summary="Reminder Confirmation Bubble"/>
+  </token>
+</histogram>
+
 <histogram name="UserEducation.MessageNotShown" enum="PromoFailure"
     expires_after="2026-05-10">
   <owner>mickeyburks@chromium.org</owner>
