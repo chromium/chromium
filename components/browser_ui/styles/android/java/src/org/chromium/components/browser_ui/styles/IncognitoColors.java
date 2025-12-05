@@ -96,24 +96,24 @@ public class IncognitoColors {
                 : R.style.TextAppearance_TextMedium_Primary;
     }
 
-    /** Returns the correct text appearance style res for primary colored small text. */
-    public static @StyleRes int getTextSmallPrimary(boolean isIncognito) {
+    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    public static @StyleRes int getTextMediumThickPrimary(boolean isIncognito) {
         return isIncognito
-                ? R.style.TextAppearance_TextSmall_Primary_Baseline_Light
-                : R.style.TextAppearance_TextSmall_Primary;
+                ? R.style.TextAppearance_TextMediumThick_Primary_Baseline_Light
+                : R.style.TextAppearance_TextMediumThick_Primary;
     }
 
-    /** Returns the correct text appearance style res for accent1 colored small text. */
-    public static @StyleRes int getTextSmallAccent1(boolean isIncognito) {
+    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    public static @StyleRes int getTextMediumThickAccent1(boolean isIncognito) {
         return isIncognito
-                ? R.style.TextAppearance_TextSmall_Blue_Baseline_Light
-                : R.style.TextAppearance_TextSmall_Accent1;
+                ? R.style.TextAppearance_TextMediumThick_Blue_Baseline_Light
+                : R.style.TextAppearance_TextMediumThick_Accent1;
     }
 
-    /** Returns the correct text appearance style res for secondary colored small text. */
-    public static @StyleRes int getTextSmallSecondary(boolean isIncognito) {
+    /** Returns the correct text appearance style res for TODO colored TODO text. */
+    public static @StyleRes int getTextMediumThickSecondary(boolean isIncognito) {
         return isIncognito
-                ? R.style.TextAppearance_TextSmall_Secondary_Baseline_Light
-                : R.style.TextAppearance_TextSmall_Secondary;
+                ? R.style.TextAppearance_TextMediumThick_Secondary_Baseline_Light
+                : R.style.TextAppearance_TextMediumThick_Secondary;
     }
 }

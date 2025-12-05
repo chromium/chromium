@@ -743,21 +743,21 @@ public class OmniboxResourceProvider {
             @BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextSmallPrimary(isIncognito);
+        return IncognitoColors.getTextMediumThickPrimary(isIncognito);
     }
 
     /** Resolves the text appearance for the AI Mode chip. This includes a vivid color. */
     public static @StyleRes int getAiModeButtonTextRes(@BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextSmallAccent1(isIncognito);
+        return IncognitoColors.getTextMediumThickAccent1(isIncognito);
     }
 
     /** Resolves the text appearance for the hint chip, somewhat faded out. */
     public static @StyleRes int getAiModeHintTextRes(@BrandedColorScheme int brandedColorScheme) {
         boolean isIncognito =
                 convertBrandedColorSchemeToIncognitoOrDayNightAdaptive(brandedColorScheme);
-        return IncognitoColors.getTextSmallSecondary(isIncognito);
+        return IncognitoColors.getTextMediumThickSecondary(isIncognito);
     }
 
     /** Resolves the text appearance for menu items in the popup. */
