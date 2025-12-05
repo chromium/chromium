@@ -176,14 +176,16 @@ void SessionStorageImpl::BindStorageArea(
     return;
   }
 
+  SessionStorageMetadata::NamespaceEntry namespace_entry =
+      metadata_.GetOrCreateNamespaceEntry(namespace_id);
+
   if (found->second->state() ==
       SessionStorageNamespaceImpl::State::kNotPopulated) {
-    found->second->PopulateFromMetadata(
-        database_.get(), metadata_.GetOrCreateNamespaceEntry(namespace_id));
+    found->second->PopulateFromMetadata(database_.get(), namespace_entry);
   }
 
   PurgeUnusedAreasIfNeeded();
-  found->second->OpenArea(storage_key, std::move(receiver));
+  found->second->OpenArea(storage_key, std::move(receiver), namespace_entry);
   std::move(callback).Run(/*success=*/true);
 }
 
@@ -570,11 +572,10 @@ void SessionStorageImpl::SetDatabaseOpenCallbackForTesting(
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>
-SessionStorageImpl::RegisterNewAreaMap(
-    SessionStorageMetadata::NamespaceEntry namespace_entry,
-    const blink::StorageKey& storage_key) {
+SessionStorageImpl::RegisterNewAreaMap(const std::string& namespace_id,
+                                       const blink::StorageKey& storage_key) {
   scoped_refptr<SessionStorageMetadata::MapData> map_entry =
-      metadata_.RegisterNewMap(namespace_entry, storage_key);
+      metadata_.RegisterNewMap(namespace_id, storage_key);
 
   if (database_) {
     // Save the new map in the database.
@@ -582,7 +583,7 @@ SessionStorageImpl::RegisterNewAreaMap(
     metadata.next_map_id = map_entry->map_id() + 1;
     metadata.map_metadata.push_back({
         .map_locator{
-            /*session_id=*/namespace_entry->first,
+            /*session_id=*/namespace_id,
             map_entry->storage_key(),
             map_entry->map_id(),
         },
@@ -650,7 +651,7 @@ SessionStorageImpl::MaybeGetExistingDataMapForId(
 }
 
 void SessionStorageImpl::RegisterShallowClonedNamespace(
-    SessionStorageMetadata::NamespaceEntry source_namespace_entry,
+    const std::string& source_namespace_id,
     const std::string& new_namespace_id,
     const SessionStorageNamespaceImpl::StorageKeyAreas& clone_from_areas) {
   bool found = false;
@@ -665,6 +666,8 @@ void SessionStorageImpl::RegisterShallowClonedNamespace(
   }
 
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
+  auto source_namespace_entry =
+      metadata_.GetOrCreateNamespaceEntry(source_namespace_id);
   auto namespace_entry = metadata_.GetOrCreateNamespaceEntry(new_namespace_id);
   metadata_.RegisterShallowClonedNamespace(source_namespace_entry,
                                            namespace_entry);

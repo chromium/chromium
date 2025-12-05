@@ -100,7 +100,7 @@ class SessionStorageMetadata {
   //
   // NOTE: It is invalid to call this method for an area that has a map with
   // only one reference.
-  scoped_refptr<MapData> RegisterNewMap(NamespaceEntry namespace_entry,
+  scoped_refptr<MapData> RegisterNewMap(const std::string& namespace_id,
                                         const blink::StorageKey& storage_key);
 
   // Registers an StorageKey-map in the |destination_namespace| from every

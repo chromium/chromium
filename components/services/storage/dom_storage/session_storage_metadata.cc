@@ -118,13 +118,15 @@ void SessionStorageMetadata::Initialize(DomStorageDatabase::Metadata source) {
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>
-SessionStorageMetadata::RegisterNewMap(NamespaceEntry namespace_entry,
+SessionStorageMetadata::RegisterNewMap(const std::string& namespace_id,
                                        const blink::StorageKey& storage_key) {
   auto new_map_data = base::MakeRefCounted<MapData>(next_map_id_, storage_key);
   ++next_map_id_;
 
+  NamespaceEntry namespace_entry = GetOrCreateNamespaceEntry(namespace_id);
   std::map<blink::StorageKey, scoped_refptr<MapData>>& namespace_storage_keys =
       namespace_entry->second;
+
   auto namespace_it = namespace_storage_keys.find(storage_key);
   if (namespace_it != namespace_storage_keys.end()) {
     // Check the old map doesn't have the same number as the new map.

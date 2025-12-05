@@ -153,7 +153,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   friend class DOMStorageBrowserTest;
 
   scoped_refptr<SessionStorageMetadata::MapData> RegisterNewAreaMap(
-      SessionStorageMetadata::NamespaceEntry namespace_entry,
+      const std::string& namespace_id,
       const blink::StorageKey& storage_key);
 
   // SessionStorageAreaImpl::Listener implementation:
@@ -167,7 +167,7 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   scoped_refptr<SessionStorageDataMap> MaybeGetExistingDataMapForId(
       const std::vector<uint8_t>& map_number_as_bytes) override;
   void RegisterShallowClonedNamespace(
-      SessionStorageMetadata::NamespaceEntry source_namespace_entry,
+      const std::string& source_namespace_id,
       const std::string& new_namespace_id,
       const SessionStorageNamespaceImpl::StorageKeyAreas&
           clone_from_storage_keys) override;

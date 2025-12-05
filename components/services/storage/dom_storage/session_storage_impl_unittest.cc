@@ -1335,7 +1335,6 @@ TEST_F(SessionStorageImplTest, Bug1128318) {
                                   ->GetMetadataForTesting()
                                   .namespace_storage_key_map(),
                               namespace_id3));
-  EXPECT_EQ(ns->namespace_entry(), SessionStorageMetadata::NamespaceEntry());
 }
 
 }  // namespace storage
