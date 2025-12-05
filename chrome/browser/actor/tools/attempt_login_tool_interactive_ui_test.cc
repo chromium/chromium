@@ -200,12 +200,10 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
       actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
 
   // Toggle the glic window.
-  RunTestSequence(
-      InAnyContext(WithElement(
-          glic::test::kGlicContentsElementId,
-          [](::ui::TrackedElement* el) mutable {
-            static constexpr char kHandleDialogRequest[] =
-                R"js(
+  RunTestSequence(InAnyContext(WithElement(
+      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) mutable {
+        static constexpr char kHandleDialogRequest[] =
+            R"js(
       (() => {
         /** Converts a PNG (Blob) to a base64 encoded string. */
         function blobToBase64(blob) {
@@ -259,10 +257,10 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
         });
       })();
               )js";
-            content::WebContents* glic_contents =
-                AsInstrumentedWebContents(el)->web_contents();
-            ASSERT_TRUE(content::ExecJs(glic_contents, kHandleDialogRequest));
-          })));
+        content::WebContents* glic_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        ASSERT_TRUE(content::ExecJs(glic_contents, kHandleDialogRequest));
+      })));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
   ActResultFuture result;
@@ -271,15 +269,23 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
   // shouldn't be placed inside `RunTestSequence()`.
   ExpectOkResult(result);
 
-  // Note that the URL here is actually different from the URL for
-  // `red_bitmap()`. The differences are the metadata but not the pixel values.
-  // The test will compare the pixel values.
+  // Note that the URL here is the bitmap encoded `red_bitmap()` image, as
+  // bitmap encoding is what glic vends. I visually confirmed this is the same
+  // image.
   constexpr char kExpectedIconBase64Url[] =
-      "iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+"
-      "9AAAAI0lEQVR4AeyQMQ0AAAyDSP177hwsCCgJHxcp1BgkC99Res8BAAD//"
-      "+wxhQIAAAAGSURBVAMAZIwUAbOgDh0AAAAASUVORK5CYII=";
+      "Qk0aAgAAAAAAAIoAAAB8AAAACgAAAPb///"
+      "8BACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/"
+      "yBuaVcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA"
+      "AAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w==";
   const std::string kExpectedIconDataUrl =
-      base::StrCat({"data:image/png;base64,", kExpectedIconBase64Url});
+      base::StrCat({"data:image/bmp;base64,", kExpectedIconBase64Url});
   const std::string expected_request_origin =
       url::Origin::Create(url).Serialize();
   const std::string expected_display_origin = "example.com:12345";
@@ -320,13 +326,6 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
         auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
         const auto& actual_request = eval_result.ExtractDict();
         ASSERT_EQ(expected_request, actual_request);
-        // Decode the icon from the web client, and compare the pixel values.
-        std::optional<std::vector<uint8_t>> decoded_icon =
-            base::Base64Decode(kExpectedIconBase64Url);
-        ASSERT_TRUE(decoded_icon.has_value());
-        ASSERT_TRUE(cc::MatchesBitmap(red_bitmap(),
-                                      gfx::PNGCodec::Decode(*decoded_icon),
-                                      cc::ExactPixelComparator()));
       })));
 
   // We selected the second credential in the dialog.

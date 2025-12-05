@@ -11,7 +11,9 @@ import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from 
 import type {ResponseExtras} from './../post_message_transport.js';
 import type {AdditionalContextPrivate, AnnotatedPageDataPrivate, CredentialPrivate, FocusedTabDataPrivate, NavigationConfirmationRequestPrivate, NavigationConfirmationResponsePrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, ResumeActorTaskResultPrivate, RgbaImage, SelectAutofillSuggestionsDialogRequestPrivate, SelectAutofillSuggestionsDialogResponsePrivate, SelectCredentialDialogRequestPrivate, SelectCredentialDialogResponsePrivate, TabContextResultPrivate, TabDataPrivate, TransferableException, UserConfirmationDialogRequestPrivate, UserConfirmationDialogResponsePrivate, WebClientRequestTypes} from './../request_types.js';
 import {ConfirmationRequestErrorReason, ErrorWithReasonImpl, ImageAlphaType, ImageColorType, newTransferableException, SelectAutofillSuggestionsDialogErrorReason, SelectCredentialDialogErrorReason} from './../request_types.js';
+import {rgbaImageToBmpBlob} from './image_utils.js';
 
+let enableRgbaToBmp = false;
 
 // Web client side of the Glic API.
 // Communicates with the Chrome-WebUI-side in glic_api_host.ts
@@ -518,6 +520,7 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const response = await this.sender.requestWithResponse(
         'glicBrowserWebClientCreated', undefined);
     const state = response.initialState;
+    enableRgbaToBmp = state.rgbaToBmp;
     this.receiver.setLoggingEnabled(state.loggingEnabled);
     this.sender.setLoggingEnabled(state.loggingEnabled);
     this.panelState.assignAndSignal(state.panelState);
@@ -1439,8 +1442,13 @@ class PinCandidatesObservable extends ObservableValueImpl<PinCandidate[]> {
   }
 }
 
-// Converts an RgbaImage into a Blob through the canvas API. Output is a PNG.
+
+// Converts an RgbaImage into a Blob through the canvas API. Output is a PNG or
+// BMP.
 async function rgbaImageToBlob(image: RgbaImage): Promise<Blob> {
+  if (enableRgbaToBmp) {
+    return rgbaImageToBmpBlob(image);
+  }
   const canvas = document.createElement('canvas');
   canvas.width = image.width;
   canvas.height = image.height;

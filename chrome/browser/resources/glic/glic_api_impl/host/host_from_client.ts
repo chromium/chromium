@@ -108,6 +108,7 @@ export class HostMessageHandler implements HostMessageHandlerInterface {
         },
         loggingEnabled: loadTimeData.getBoolean('loggingEnabled'),
         hostCapabilities: hostCapabilitiesToClient(hostCapabilities),
+        rgbaToBmp: loadTimeData.getBoolean('glicBitmapsEnabled'),
       }),
     };
   }

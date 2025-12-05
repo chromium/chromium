@@ -19,6 +19,7 @@ build_webui("build") {
     "app_router.ts",
     "browser_proxy.ts",
     "glic_api_impl/client/glic_api_client.ts",
+    "glic_api_impl/client/image_utils.ts",
     "glic_api_impl/conversions.ts",
     "glic_api_impl/glic_api_injected_client.ts",
     "glic_api_impl/host/conversions.ts",

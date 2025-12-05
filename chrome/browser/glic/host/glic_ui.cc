@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/glic/fre/fre_util.h"
@@ -45,6 +46,10 @@
 #include "ui/webui/webui_util.h"
 
 namespace glic {
+
+// Enables sending bitmaps across glic for favicons instead of converting to
+// PNG.
+BASE_FEATURE(kGlicBitmapsEnabled, base::FEATURE_ENABLED_BY_DEFAULT);
 
 class GlicPreloadHandler : public glic::mojom::GlicPreloadHandler {
  public:
@@ -253,6 +258,8 @@ GlicUI::GlicUI(content::WebUI* web_ui)
   source->AddBoolean(
       "glicWebContentsWarming",
       base::FeatureList::IsEnabled(features::kGlicWebContentsWarming));
+  source->AddBoolean("glicBitmapsEnabled",
+                     base::FeatureList::IsEnabled(kGlicBitmapsEnabled));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(GlicUI)

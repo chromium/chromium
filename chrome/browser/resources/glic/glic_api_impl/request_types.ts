@@ -940,6 +940,7 @@ export type WebClientInitialStatePrivate =
       loggingEnabled: boolean,
       enableZeroStateSuggestions: boolean,
       hostCapabilities: HostCapability[],
+      rgbaToBmp: boolean,
     }>;
 
 // TabData format for postMessage transport.
