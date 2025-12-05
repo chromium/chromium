@@ -258,8 +258,11 @@ class BrowserFrameView : public views::FrameView {
   // The BrowserWidget that owns this view.
   const raw_ptr<BrowserWidget, DanglingUntriaged> browser_widget_;
 
-  // The BrowserView hosted within `frame_`.
-  const raw_ptr<BrowserView, DanglingUntriaged> browser_view_;
+  // The BrowserView hosted within `frame_`. Have to watch to reset this so it
+  // doesn't dangle.
+  raw_ptr<BrowserView> browser_view_ = nullptr;
+  class BrowserViewWatcher;
+  std::unique_ptr<BrowserViewWatcher> browser_view_watcher_;
 
   // Subscription to receive notifications when the frame's PaintAsActive state
   // changes.
