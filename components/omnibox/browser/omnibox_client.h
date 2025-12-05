@@ -336,6 +336,9 @@ class OmniboxClient {
   // use it.
   virtual bool IsAimPopupEnabled() const;
 
+  // Returns true if image generation is enabled for the omnibox.
+  virtual bool IsImageGenerationEnabled() const;
+
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };
 

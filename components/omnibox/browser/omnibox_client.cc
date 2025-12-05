@@ -130,3 +130,7 @@ bool OmniboxClient::IsHistoryEmbeddingsEnabled() const {
 bool OmniboxClient::IsAimPopupEnabled() const {
   return false;
 }
+
+bool OmniboxClient::IsImageGenerationEnabled() const {
+  return false;
+}

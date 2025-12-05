@@ -156,11 +156,15 @@ GURL ComposeboxOmniboxClient::GetNavigationEntryURL() const {
 
 metrics::OmniboxEventProto::PageClassification
 ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
-  if ([delegate_ composeboxMode] == ComposeboxMode::kAIM &&
-      base::FeatureList::IsEnabled(
-          omnibox::kComposeboxUsesChromeComposeClient)) {
+  BOOL is_in_ai_mode =
+      ([delegate_ composeboxMode] == ComposeboxMode::kAIM) ||
+      ([delegate_ composeboxMode] == ComposeboxMode::kImageGeneration);
+
+  if (is_in_ai_mode && base::FeatureList::IsEnabled(
+                           omnibox::kComposeboxUsesChromeComposeClient)) {
     return metrics::OmniboxEventProto::NTP_COMPOSEBOX;
   }
+
   return location_bar_->GetLocationBarModel()->GetPageClassification(
       is_prefetch);
 }
@@ -336,4 +340,8 @@ void ComposeboxOmniboxClient::OnAutocompleteAccept(
 
 base::WeakPtr<OmniboxClient> ComposeboxOmniboxClient::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+bool ComposeboxOmniboxClient::IsImageGenerationEnabled() const {
+  return [delegate_ composeboxMode] == ComposeboxMode::kImageGeneration;
 }

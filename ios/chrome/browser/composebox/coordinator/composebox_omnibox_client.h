@@ -103,6 +103,8 @@ class ComposeboxOmniboxClient final : public OmniboxClient {
   std::optional<lens::proto::LensOverlaySuggestInputs>
   GetLensOverlaySuggestInputs() const override;
 
+  bool IsImageGenerationEnabled() const override;
+
  private:
   raw_ptr<WebLocationBar> location_bar_;
   raw_ptr<Browser> browser_;
