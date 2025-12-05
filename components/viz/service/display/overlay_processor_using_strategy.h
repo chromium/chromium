@@ -72,7 +72,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const FilterOperationsMap& render_pass_filters,
       const FilterOperationsMap& render_pass_backdrop_filters,
       SurfaceDamageRectList surface_damage_rect_list,
-      std::optional<OverlayCandidate>& primary_plane,
+      const PrimaryPlaneParams& primary_plane_params,
       CandidateList* overlay_candidates,
       gfx::Rect* damage_rect,
       std::vector<gfx::Rect>* content_bounds)
@@ -148,8 +148,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // confirmed in `OverlayProcessorOzone::ReceiveHardwareCapabilities`.
   int max_overlays_considered_ = 1;
 
-#if BUILDFLAG(IS_CHROMEOS)
  protected:
+  // TODO Can be removed if OverlayProcessorAndroid is removed.
+  virtual bool ShouldCreatePrimaryPlane() const;
+
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/181974042):  Remove when color space is plumbed.
   gfx::ColorSpace primary_plane_color_space_;
 #endif
