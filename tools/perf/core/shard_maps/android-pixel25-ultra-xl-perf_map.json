@@ -49,6 +49,12 @@
                     "--fileserver",
                     "--debug"
                 ]
+            },
+            "loadline2-phone": {
+                "display_name": "loadline2_phone.crossbench",
+                "arguments": [
+                    "--debug"
+                ]
             }
         },
         "benchmarks": {}

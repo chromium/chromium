@@ -512,6 +512,13 @@ def _loadline_tablet_crossbench(estimated_runtime=3600, arguments=()):
                           arguments=arguments)
 
 
+def _loadline2_phone_crossbench(estimated_runtime=1000, arguments=()):
+  return CrossbenchConfig('loadline2_phone.crossbench',
+                          'loadline2-phone',
+                          estimated_runtime=estimated_runtime,
+                          arguments=arguments)
+
+
 # Webview:
 def _crossbench_loading(estimated_runtime=60, arguments=None):
   return CrossbenchConfig('loading.crossbench',
@@ -570,6 +577,7 @@ _CROSSBENCH_PIXEL9 = frozenset([
         '--cool-down-threshold=moderate',
         '--debug',
     ]),
+    _loadline2_phone_crossbench(arguments=['--debug']),
 ])
 
 _CROSSBENCH_ANDROID_AL_BRYA = frozenset([
