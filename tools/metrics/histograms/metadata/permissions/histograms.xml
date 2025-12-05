@@ -546,18 +546,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Permissions.API.CreatedPermissionStatusObjects" units="units"
-    expires_after="2026-01-13">
-  <owner>andypaicu@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records the number of PermissionStatus handles that have been created by a
-    document (via the &quot;navigator.permissions&quot; API). Recorded at the
-    destruction of said document. Only recorded if the document has created at
-    least one PermissionStatus handle.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.AutoBlocker.EmbargoPromptSuppression"
     enum="PermissionEmbargoStatus" expires_after="2026-05-10">
   <owner>engedy@chromium.org</owner>

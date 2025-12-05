@@ -15,7 +15,6 @@
 namespace blink {
 
 class ExecutionContext;
-class Permissions;
 class V8PermissionState;
 
 class PermissionStatusListener final
@@ -35,13 +34,11 @@ class PermissionStatusListener final
     void Trace(Visitor* visitor) const override {}
   };
 
-  static PermissionStatusListener* Create(Permissions&,
-                                          ExecutionContext*,
+  static PermissionStatusListener* Create(ExecutionContext*,
                                           MojoPermissionStatus,
                                           MojoPermissionDescriptor);
 
-  PermissionStatusListener(Permissions&,
-                           ExecutionContext*,
+  PermissionStatusListener(ExecutionContext*,
                            MojoPermissionStatus,
                            MojoPermissionDescriptor);
   ~PermissionStatusListener() override;

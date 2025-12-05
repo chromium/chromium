@@ -49,9 +49,7 @@ class Permissions final : public ScriptWrappable,
   requestAll(ScriptState*, const HeapVector<ScriptObject>&, ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
-  void ContextDestroyed() override;
-
-  void PermissionStatusObjectCreated() { ++created_permission_status_objects_; }
+  void ContextDestroyed() override {}
 
   void Trace(Visitor*) const override;
 
@@ -92,8 +90,6 @@ class Permissions final : public ScriptWrappable,
       const mojom::blink::PermissionDescriptor& descriptor);
   mojom::blink::PermissionDescriptorPtr CreatePermissionVerificationDescriptor(
       PermissionType descriptor_type);
-
-  int created_permission_status_objects_ = 0;
 
   HeapHashMap<PermissionType, Member<PermissionStatusListener>> listeners_;
 

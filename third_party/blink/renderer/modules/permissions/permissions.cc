@@ -212,11 +212,6 @@ ScriptPromise<IDLSequence<PermissionStatus>> Permissions::requestAll(
   return promise;
 }
 
-void Permissions::ContextDestroyed() {
-  base::UmaHistogramCounts1000("Permissions.API.CreatedPermissionStatusObjects",
-                               created_permission_status_objects_);
-}
-
 void Permissions::Trace(Visitor* visitor) const {
   visitor->Trace(service_);
   visitor->Trace(listeners_);
@@ -362,8 +357,8 @@ PermissionStatusListener* Permissions::GetOrCreatePermissionStatusListener(
 
   if (!listeners_.Contains(*type)) {
     listeners_.insert(
-        *type, PermissionStatusListener::Create(*this, GetExecutionContext(),
-                                                status, std::move(descriptor)));
+        *type, PermissionStatusListener::Create(GetExecutionContext(), status,
+                                                std::move(descriptor)));
   } else {
     listeners_.at(*type)->SetStatus(status);
   }

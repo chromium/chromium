@@ -14,29 +14,23 @@
 namespace blink {
 
 PermissionStatusListener* PermissionStatusListener::Create(
-    Permissions& associated_permissions_object,
     ExecutionContext* execution_context,
     MojoPermissionStatus status,
     MojoPermissionDescriptor descriptor) {
   PermissionStatusListener* permission_status =
-      MakeGarbageCollected<PermissionStatusListener>(
-          associated_permissions_object, execution_context, status,
-          std::move(descriptor));
+      MakeGarbageCollected<PermissionStatusListener>(execution_context, status,
+                                                     std::move(descriptor));
   return permission_status;
 }
 
 PermissionStatusListener::PermissionStatusListener(
-    Permissions& associated_permissions_object,
     ExecutionContext* execution_context,
     MojoPermissionStatus status,
     MojoPermissionDescriptor descriptor)
     : ExecutionContextClient(execution_context),
       status_(status),
       descriptor_(std::move(descriptor)),
-      receiver_(this, execution_context) {
-  associated_permissions_object.PermissionStatusObjectCreated();
-}
-
+      receiver_(this, execution_context) {}
 PermissionStatusListener::~PermissionStatusListener() = default;
 
 void PermissionStatusListener::StartListening() {
