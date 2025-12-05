@@ -86,9 +86,6 @@ if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
     if (!is_fuchsia && build_with_tflite_lib) {
       deps += [ "//services/on_device_model/safety:bert_safety_model" ]
     }
-    if (is_win || is_mac || is_linux) {
-      deps += [ "//third_party/xnnpack" ]
-    }
     public_deps = [
       ":api",
       ":ml_holder_no_internal",
