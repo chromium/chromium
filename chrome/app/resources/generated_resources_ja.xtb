@@ -1024,6 +1024,7 @@
 <translation id="167983332380191032">管理サービスから HTTP エラーが送信されました。</translation>
 <translation id="167997285881077031">テキスト読み上げの音声の設定</translation>
 <translation id="1680849702532889074">Linux アプリケーションのインストール中にエラーが発生しました。</translation>
+<translation id="1682195225331129001">今すぐ試す</translation>
 <translation id="1682548588986054654">新規シークレット ウインドウ</translation>
 <translation id="1682696837763999627">大きなマウスカーソル</translation>
 <translation id="1682867089915960590">カーソル ブラウジングをオンにしますか？</translation>
@@ -7232,7 +7233,6 @@
 <translation id="5979421442488174909"><ph name="LANGUAGE" />に翻訳(&amp;T)</translation>
 <translation id="5979469435153841984">ページをブックマークするには、アドレスバーのスターアイコンをクリックしてください</translation>
 <translation id="5982578203375898585">完了したらダウンロードを表示する</translation>
-<translation id="598347738324022917">ブックマークをこのデバイスに保存しました</translation>
 <translation id="5983716913605894570">生成しています...</translation>
 <translation id="5984222099446776634">最近のアクセス</translation>
 <translation id="5984334442529819751">DLC のインストール中にエラーが発生しました（多くの場合、再起動が必要です。詳しくは、[設定]\&gt;\&gt;[ChromeOS について] をご確認ください）。</translation>

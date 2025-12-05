@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Ingen internetanslutning.</translation>
 <translation id="3782614601387961027">Ignorera varning</translation>
 <translation id="3789841737615482174">Installera</translation>
-<translation id="3789849526426236410">Öppna en ny flik</translation>
 <translation id="380329542618494757">Namn</translation>
 <translation id="3803696231112616155">Erbjud översättning av webbplatsen</translation>
 <translation id="3810973564298564668">Hantera</translation>
@@ -2037,6 +2036,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="860043288473659153">Namn på kortinnehavare</translation>
 <translation id="8601611099293226919">Sök på skärmen med Google Lens</translation>
 <translation id="8605219856220328675">Stäng fliken.</translation>
+<translation id="8609384513243082612">Öppna ny flik</translation>
 <translation id="8609743333007776886">Lägg till ${url} i bokmärkena</translation>
 <translation id="8611922158252451755">Alla som har länken kan redigera alla flikar, så tänk efter innan du delar. Länken löper ut om 48 timmar.</translation>
 <translation id="8614671330774943747">Öppna Flikbyte</translation>

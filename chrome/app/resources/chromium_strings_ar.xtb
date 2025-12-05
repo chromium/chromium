@@ -391,7 +391,6 @@
 <translation id="5605834417512968703">‏حدِّد أي محتوى للبحث عنه باستخدام ميزة "البحث بالصور"، أو اضغط على مفتاح Escape للخروج من الميزة</translation>
 <translation id="5618818588972826921">‏يُرجى اختيار أي نصوص أو صور للبحث عنها باستخدام ميزة "البحث بالصور"، أو الضغط على مفتاح Escape للخروج من الميزة</translation>
 <translation id="5623402015214259806">{0,plural, =0{‏يتوفر تحديث لمتصفح Chromium}=1{‏يتوفر تحديث لمتصفح Chromium}two{‏يتوفر تحديث لمتصفح Chromium منذ يومين}few{‏يتوفر تحديث لمتصفح Chromium منذ # أيام}many{‏يتوفر تحديث لمتصفح Chromium منذ # يومًا}other{‏يتوفر تحديث لمتصفح Chromium منذ # يوم}}</translation>
-<translation id="5633450273457573375">‏لتشفير جميع بيانات Chromium في حسابك على Google، يمكنك استخدام <ph name="BEGIN_LINK" />عبارة المرور الخاصة بك<ph name="END_LINK" />. ولن يتم تشفير العناوين وأي بيانات محفوظة في "محفظة Google" باستخدام عبارة المرور، ولن تتم مزامنة سجلّ التصفُّح من Chromium.</translation>
 <translation id="5643865575100044307">‏حذف بيانات الموقع الإلكتروني من جهازك دائمًا عند إغلاق Chromium</translation>
 <translation id="5653831366781983928">‏يُرجى إعادة تشغيل Chromium الآن</translation>
 <translation id="5690427481109656848">Google LLC</translation>

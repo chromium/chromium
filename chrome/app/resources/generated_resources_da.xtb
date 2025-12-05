@@ -1027,6 +1027,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="167983332380191032">Administrationstjenesten sendte en HTTP-fejl.</translation>
 <translation id="167997285881077031">Indstillinger for stemme til oplæsning</translation>
 <translation id="1680849702532889074">Der opstod en fejl ved installationen af Linux-appen.</translation>
+<translation id="1682195225331129001">Prøv nu</translation>
 <translation id="1682548588986054654">Nyt inkognitovindue</translation>
 <translation id="1682696837763999627">Stor musemarkør</translation>
 <translation id="1682867089915960590">Vil du aktivere tastenavigation?</translation>
@@ -7262,7 +7263,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5979421442488174909">&amp;Oversæt til <ph name="LANGUAGE" /></translation>
 <translation id="5979469435153841984">Klik på stjernen i adresselinjen for at gemme sider som bogmærker.</translation>
 <translation id="5982578203375898585">Vis downloads, når de er fuldført</translation>
-<translation id="598347738324022917">Bogmærket er gemt på denne enhed</translation>
 <translation id="5983716913605894570">Genererer…</translation>
 <translation id="5984222099446776634">Besøgt for nylig</translation>
 <translation id="5984334442529819751">Der opstod en fejl under installationen af DLC (det er ofte nødvendigt at genstarte. Tjek Indstillinger\&gt;\&gt;Om ChromeOS).</translation>
@@ -11328,7 +11328,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 Dette kan omfatte oplysninger om installeret software, filer, din browser, enhedens operativsystem og IP-adresser.</translation>
 <translation id="876956356450740926">Kør udviklerværktøjer, IDE'er og redigeringsværktøjer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="8770406935328356739">Udvidelsens rodmappe</translation>
-<translation id="8773535891252326047">Linket er kopieret til fremhævning</translation>
+<translation id="8773535891252326047">Linket til fremhævning er kopieret</translation>
 <translation id="8774379074441005279">Bekræft gendannelse</translation>
 <translation id="8774934320277480003">Topmargen</translation>
 <translation id="8775144690796719618">Ugyldig webadresse</translation>

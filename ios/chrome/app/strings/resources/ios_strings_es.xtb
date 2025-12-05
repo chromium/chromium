@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">No hay conexión a Internet.</translation>
 <translation id="3782614601387961027">Cerrar advertencia</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3789849526426236410">Abrir nueva pestaña</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio web</translation>
 <translation id="3810973564298564668">Gestionar</translation>
@@ -2037,6 +2036,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="860043288473659153">Titular de la tarjeta</translation>
 <translation id="8601611099293226919">Hacer búsquedas en la pantalla con Google Lens</translation>
 <translation id="8605219856220328675">Cerrar pestaña.</translation>
+<translation id="8609384513243082612">Abrir nueva pestaña</translation>
 <translation id="8609743333007776886">Añadir ${url} a Marcadores</translation>
 <translation id="8611922158252451755">Cualquier persona que tenga el enlace puede editar todas las pestañas, así que comparte con cuidado. El enlace caduca al cabo de 48 horas.</translation>
 <translation id="8614671330774943747">Ir a la Función de cambio de pestaña</translation>

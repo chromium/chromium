@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Нет доступа к Интернету</translation>
 <translation id="3782614601387961027">Скрыть предупреждение</translation>
 <translation id="3789841737615482174">Установить</translation>
-<translation id="3789849526426236410">Открыть новую вкладку</translation>
 <translation id="380329542618494757">Имя</translation>
 <translation id="3803696231112616155">Предлагать переводить этот сайт</translation>
 <translation id="3810973564298564668">Управление</translation>
@@ -2037,6 +2036,7 @@
 <translation id="860043288473659153">Имя владельца карты</translation>
 <translation id="8601611099293226919">Искать содержимое экрана с помощью Google Объектива</translation>
 <translation id="8605219856220328675">Закрыть вкладку.</translation>
+<translation id="8609384513243082612">Открыть новую вкладку</translation>
 <translation id="8609743333007776886">Добавить ${url} в закладки</translation>
 <translation id="8611922158252451755">Отправляйте ссылку только тем пользователям, которым вы доверяете. Они смогут изменять все вкладки. Ссылка перестанет работать через 48 часов.</translation>
 <translation id="8614671330774943747">Открыть переключатель вкладок</translation>

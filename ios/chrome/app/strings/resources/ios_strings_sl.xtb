@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
 <translation id="3782614601387961027">Opusti opozorilo</translation>
 <translation id="3789841737615482174">Namesti</translation>
-<translation id="3789849526426236410">Odpri nov zavihek</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803696231112616155">Ponudi prevod tega spletnega mesta</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
@@ -2037,6 +2036,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="860043288473659153">Ime imetnika kartice</translation>
 <translation id="8601611099293226919">Išči po zaslonu z Googlom Lens</translation>
 <translation id="8605219856220328675">Close tab.</translation>
+<translation id="8609384513243082612">Odpiranje novega zavihka</translation>
 <translation id="8609743333007776886">Dodaj ${url} med zaznamke</translation>
 <translation id="8611922158252451755">Vsi s povezavo lahko urejajo vse zavihke, zato premišljeno delite vsebino. Povezava poteče čez 48 ur.</translation>
 <translation id="8614671330774943747">Na preklop med zavihki</translation>

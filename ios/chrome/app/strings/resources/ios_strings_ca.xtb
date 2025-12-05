@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">No hi ha connexió a Internet.</translation>
 <translation id="3782614601387961027">Ignora l'advertiment</translation>
 <translation id="3789841737615482174">Instal·la</translation>
-<translation id="3789849526426236410">Obre una pestanya nova</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803696231112616155">Proposa traduir aquest lloc web</translation>
 <translation id="3810973564298564668">Gestiona</translation>
@@ -2037,6 +2036,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="860043288473659153">Nom del titular de la targeta</translation>
 <translation id="8601611099293226919">Fes cerques a la pantalla amb Google Lens</translation>
 <translation id="8605219856220328675">Tanca la pestanya.</translation>
+<translation id="8609384513243082612">Obre una pestanya nova</translation>
 <translation id="8609743333007776886">Afegeix ${url} a les adreces d'interès</translation>
 <translation id="8611922158252451755">Tothom que tingui l'enllaç podrà editar totes les pestanyes, així que comparteix el grup amb seny. L'enllaç caducarà d'aquí a 48 hores.</translation>
 <translation id="8614671330774943747">Ves al selector de pestanyes</translation>

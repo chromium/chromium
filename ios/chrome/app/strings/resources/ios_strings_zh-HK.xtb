@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">沒有互聯網連線。</translation>
 <translation id="3782614601387961027">關閉警告</translation>
 <translation id="3789841737615482174">安裝</translation>
-<translation id="3789849526426236410">開啟新分頁</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803696231112616155">為此網站提供翻譯選項</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -2037,6 +2036,7 @@
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601611099293226919">使用「Google 智能鏡頭」搜尋螢幕</translation>
 <translation id="8605219856220328675">關閉分頁</translation>
+<translation id="8609384513243082612">開啟新分頁</translation>
 <translation id="8609743333007776886">將 ${url} 新增至書籤</translation>
 <translation id="8611922158252451755">任何擁有連結的人均可編輯所有分頁，因此分享時緊記要謹慎。連結將在 48 小時後失效。</translation>
 <translation id="8614671330774943747">前往「分頁切換工具」</translation>

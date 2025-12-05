@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">无互联网连接。</translation>
 <translation id="3782614601387961027">忽略警告</translation>
 <translation id="3789841737615482174">安装</translation>
-<translation id="3789849526426236410">打开新标签页</translation>
 <translation id="380329542618494757">姓名</translation>
 <translation id="3803696231112616155">主动询问是否翻译此网站</translation>
 <translation id="3810973564298564668">管理</translation>
@@ -2037,6 +2036,7 @@
 <translation id="860043288473659153">持卡人姓名</translation>
 <translation id="8601611099293226919">使用 Google 智能镜头搜索您的屏幕上的内容</translation>
 <translation id="8605219856220328675">关闭标签页。</translation>
+<translation id="8609384513243082612">打开新标签页</translation>
 <translation id="8609743333007776886">将 ${url} 添加到书签</translation>
 <translation id="8611922158252451755">知道链接的任何人都能修改所有标签页，因此请谨慎分享。链接将在 48 小时后失效。</translation>
 <translation id="8614671330774943747">打开标签页切换器</translation>

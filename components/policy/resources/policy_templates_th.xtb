@@ -1262,17 +1262,6 @@ URL ต้องเป็นรูปแบบมาตรฐาน เช่น
 
 นโยบายนี้จะมีผลเมื่อลงทะเบียนเครื่องกับ <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> สำหรับ <ph name="PRODUCT_NAME" /> เท่านั้น
 และจะมีผลเสมอสำหรับ <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="1878535132109943599">เมื่อตั้งค่านโยบายนี้เป็น "เปิดใช้" คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะแสดงคำเตือนใน <ph name="CHROME_DEVTOOLS_NAME" /> เท่านั้นเนื่องจากการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" /> ล้มเหลว
-
-เมื่อตั้งค่านโยบายนี้เป็น "ปิดใช้" หรือไม่ได้ตั้งค่า คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะใช้การจัดการเริ่มต้นสำหรับคำขอเหล่านี้
-
-ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
-
-นโยบายระดับองค์กรนี้เป็นนโยบายชั่วคราวและจะถูกนำออกหลังจาก M146
-
-ในระยะยาว คุณสามารถใช้นโยบาย <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> เพื่อสร้างรายการที่อนุญาตสำหรับรูปแบบ URL ที่ควรได้รับสิทธิ์ <ph name="LOCAL_NETWORK_ACCESS" /> โดยอัตโนมัติ
-
-โปรดทราบว่าหากเปิดใช้นโยบาย <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" /> นโยบายดังกล่าวจะมีความสำคัญเหนือกว่านโยบายนี้</translation>
 <translation id="187961648719201562">ลบไฟล์ในเครื่องที่มีอยู่ (รองรับตั้งแต่เวอร์ชัน 137)</translation>
 <translation id="1883274744253492031">เปิดใช้การอัปเกรดเนื้อหาผสมอัตโนมัติ</translation>
 <translation id="1885782360784839335">เปิดใช้การแสดงเนื้อหาโปรโมตแบบเต็มแท็บ</translation>
@@ -11911,13 +11900,6 @@ https://chromeenterprise.google/policies/url-patterns
        นโยบายนี้จะไม่มีผลอีกต่อไปตั้งแต่ <ph name="PRODUCT_NAME" /> 84</translation>
 <translation id="9010080992450148617">เปิดใช้การส่งเนื้อหาที่ดาวน์โหลดไปให้ Google สแกนอย่างละเอียดสำหรับผู้ใช้ที่ลงทะเบียนในโปรแกรมการปกป้องขั้นสูง</translation>
 <translation id="9012101302849557459">ขยายการรองรับแอป Chrome ใน <ph name="MS_WIN_NAME" />, <ph name="MAC_OS_NAME" /> และ <ph name="LINUX_OS_NAME" /></translation>
-<translation id="9012332684658600011">เมื่อตั้งค่านโยบายนี้เป็น "เปิดใช้" เมื่อใดก็ตามที่คำเตือนแสดงขึ้นใน <ph name="CHROME_DEVTOOLS_NAME" /> เนื่องจากการตรวจสอบ <ph name="LOCAL_NETWORK_ACCESS" /> ล้มเหลว ระบบจะบล็อกคำขอหลักแทน
-
-เมื่อตั้งค่านโยบายนี้เป็น "ปิดใช้" หรือไม่ได้ตั้งค่า คำขอ <ph name="LOCAL_NETWORK_ACCESS" /> จะใช้การจัดการเริ่มต้นสำหรับคำขอเหล่านี้
-
-ดูข้อจำกัดของ <ph name="LOCAL_NETWORK_ACCESS" /> ได้ที่ https://wicg.github.io/local-network-access/
-
-นโยบายนี้เลิกใช้งานไปแล้วเนื่องจาก <ph name="LOCAL_NETWORK_ACCESS" /> เปิดใช้โดยค่าเริ่มต้น เราจะนำนโยบายออกเมื่อเปิดตัวเวอร์ชันใหม่ในอนาคต</translation>
 <translation id="9013875414788074110">ในระหว่างการเข้าสู่ระบบ <ph name="PRODUCT_OS_NAME" /> จะตรวจสอบสิทธิ์กับเซิร์ฟเวอร์ (แบบออนไลน์) หรือใช้รหัสผ่านในแคช (แบบออฟไลน์) ได้
 
       เมื่อตั้งค่านโยบายนี้เป็น -1 ผู้ใช้จะตรวจสอบสิทธิ์แบบออฟไลน์ได้ตลอดเวลา เมื่อตั้งค่านโยบายนี้เป็นค่าอื่นจะเป็นการระบุช่วงเวลานับตั้งแต่การตรวจสอบสิทธิ์ออนไลน์ครั้งสุดท้าย และผู้ใช้ต้องใช้การตรวจสอบสิทธิ์ออนไลน์อีกครั้งหลังจากช่วงเวลาดังกล่าว

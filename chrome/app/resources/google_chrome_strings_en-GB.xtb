@@ -325,6 +325,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="459622048091363950">Once Chrome has access, websites will be able to ask you for access.</translation>
 <translation id="4598116752460667024">Search for any process from the list.</translation>
 <translation id="4600710005438004015">Chrome couldn't update to the latest version, so you're missing out on new features and security fixes.</translation>
+<translation id="4606805686144157064">Get warned if Chrome finds one of your passwords in a public data breach</translation>
 <translation id="4608435347866444037">Search this image with Google Lens</translation>
 <translation id="4624065194742029982">Chrome Incognito</translation>
 <translation id="4627412468266359539">Optional: Help improve Chrome OS Flex features and performance by automatically sending diagnostic and usage data to Google.</translation>
@@ -667,7 +668,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8255190535488645436">Google Chrome is using your camera and microphone.</translation>
 <translation id="8267953129876836456">Chrome found some safety recommendations for your review</translation>
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
-<translation id="8289399803055125418">Use your <ph name="BEGIN_LINK" />own passphrase<ph name="END_LINK" /> to encrypt all the Chrome data in your Google Account. Addresses and any data saved in Google Wallet won't be encrypted by your passphrase. Browsing history from Chrome won't sync.</translation>
 <translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8313851650939857356">Startup error: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Save as image</translation>

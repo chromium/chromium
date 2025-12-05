@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Sem ligação à Internet.</translation>
 <translation id="3782614601387961027">Ignorar aviso</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3789849526426236410">Abrir novo separador</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803696231112616155">Propor tradução deste site</translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -908,6 +907,7 @@
 <translation id="4525629404718770519">Mostrar pré-visualizações de links</translation>
 <translation id="452750746583162491">Rever os dados sincronizados</translation>
 <translation id="4532845899244822526">Escolher pasta</translation>
+<translation id="454217142158335225">Pode reabrir itens fechados a partir das secções de separadores recentes ou grupos de separadores. Os separadores fixos não vão ser fechados.</translation>
 <translation id="4547181496285029457">Volte ao separador Recentes</translation>
 <translation id="4552042254369397518">A copiar…</translation>
 <translation id="4564893319561643483">Oculte "<ph name="TITLE" />"</translation>
@@ -1842,6 +1842,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="7887174313503389866">Inicie uma visita guiada dos principais controlos de privacidade e segurança. Para obter mais opções, aceda às definições individuais.</translation>
 <translation id="7887198238286927132">Para proteger a sua privacidade, o Chrome não irá preencher automaticamente este campo.</translation>
 <translation id="7887552845761062935">Toque duas vezes sem soltar para abrir mais opções</translation>
+<translation id="7888562068293422208">Fechar todos?</translation>
 <translation id="7889910613639381518">Acesso fácil e seguro com o widget do Gestor de Palavras-passe da Google.</translation>
 <translation id="7899199123054742721">Marcar tudo como não lido</translation>
 <translation id="7911190106180361398">A sua entidade não permite que sincronize tudo.</translation>
@@ -2037,6 +2038,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="860043288473659153">Nome do titular do cartão</translation>
 <translation id="8601611099293226919">Pesquisar no ecrã com o Google Lens</translation>
 <translation id="8605219856220328675">Fechar separador.</translation>
+<translation id="8609384513243082612">Abrir novo separador</translation>
 <translation id="8609743333007776886">Adicione ${url} aos marcadores</translation>
 <translation id="8611922158252451755">Qualquer pessoa com o link pode editar todos os separadores, por isso partilhe-o de forma inteligente. O link expira em 48 horas.</translation>
 <translation id="8614671330774943747">Aceda ao Switcher de separadores</translation>

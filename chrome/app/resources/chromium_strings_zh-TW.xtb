@@ -390,7 +390,6 @@
 <translation id="5605834417512968703">請選取任何要使用「圖片搜尋」尋找的內容，或按下 Escape 鍵退出「圖片搜尋」</translation>
 <translation id="5618818588972826921">選取要使用「圖片搜尋」尋找的文字或圖片，或按下 Escape 鍵退出「圖片搜尋」</translation>
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
-<translation id="5633450273457573375">使用<ph name="BEGIN_LINK" />通關密語<ph name="END_LINK" />加密 Google 帳戶的所有 Chromium 資料。地址和儲存在 Google 錢包中的資料都不會使用通關密語加密，Chromium 中的瀏覽記錄也不會同步。</translation>
 <translation id="5643865575100044307">在 Chromium 關閉後一律刪除裝置上的網站資料</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -652,6 +651,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8493179195440786826">Chromium 版本過舊</translation>
 <translation id="850264194101621529">感謝你選擇 Chromium 為預設瀏覽器！</translation>
 <translation id="8522801943730206384">Chromium 可以檢查你儲存的密碼</translation>
+<translation id="8548787790260785208">如果 Chromium 發現你的密碼曾在公開資料侵害事件中外洩，會向你發出警告</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">固定「圖片搜尋」可方便之後存取。點選側邊面板頂端的「固定」按鈕即可固定</translation>
 <translation id="856656450041460113">搜尋語言清單</translation>

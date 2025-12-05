@@ -320,6 +320,7 @@
 <translation id="459622048091363950">一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
 <translation id="4598116752460667024">从列表中搜索任何进程。</translation>
 <translation id="4600710005438004015">Chrome 无法更新至最新版本，因此您未能获得最新的功能和安全修复程序。</translation>
+<translation id="4606805686144157064">如果 Chrome 发现您的密码在公开数据泄露事件中外泄，会向您发出警告</translation>
 <translation id="4608435347866444037">使用 Google 智能镜头搜索此图片</translation>
 <translation id="4624065194742029982">Chrome 无痕模式</translation>
 <translation id="4627412468266359539">可选：自动向 Google 发送诊断数据和使用情况数据，协助改进 ChromeOS Flex 的功能和性能。</translation>
@@ -658,7 +659,6 @@
 <translation id="8255190535488645436">Google Chrome 正在使用您的摄像头和麦克风。</translation>
 <translation id="8267953129876836456">Chrome 找到了一些安全建议需要您审核</translation>
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
-<translation id="8289399803055125418">使用您<ph name="BEGIN_LINK" />自己的口令<ph name="END_LINK" />加密 Google 账号中的所有 Chrome 数据。地址和 Google 钱包中保存的任何数据都不会使用口令加密，Chrome 中的浏览记录也不会同步。</translation>
 <translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8313851650939857356">启动错误：<ph name="STARTUP_ERROR" />。</translation>
 <translation id="8321888067342493336">另存为图片</translation>

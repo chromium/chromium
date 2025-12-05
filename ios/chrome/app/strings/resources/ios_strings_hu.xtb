@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Nincs internetkapcsolat.</translation>
 <translation id="3782614601387961027">Figyelmeztetés elvetése</translation>
 <translation id="3789841737615482174">Telepítés</translation>
-<translation id="3789849526426236410">Új lap megnyitása</translation>
 <translation id="380329542618494757">Név</translation>
 <translation id="3803696231112616155">A webhely lefordításának felajánlása</translation>
 <translation id="3810973564298564668">Kezelés</translation>
@@ -2037,6 +2036,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="860043288473659153">Kártyatulajdonos neve</translation>
 <translation id="8601611099293226919">Keresés a képernyőn a Google Lens segítségével</translation>
 <translation id="8605219856220328675">Lap bezárása.</translation>
+<translation id="8609384513243082612">Új lap megnyitása</translation>
 <translation id="8609743333007776886">${url} felvétele a könyvjelzők közé</translation>
 <translation id="8611922158252451755">A link birtokában bárki szerkesztheti az összes lapot, ezért legyen körültekintő a megosztáskor. A link 48 óra múlva lejár.</translation>
 <translation id="8614671330774943747">Ugrás a Lapváltóhoz</translation>

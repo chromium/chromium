@@ -1020,6 +1020,7 @@
 <translation id="167983332380191032">管理服务向您发送了一项 HTTP 错误。</translation>
 <translation id="167997285881077031">文字转语音的语音设置</translation>
 <translation id="1680849702532889074">安装 Linux 应用时出错。</translation>
+<translation id="1682195225331129001">立即试用</translation>
 <translation id="1682548588986054654">打开新的无痕式窗口</translation>
 <translation id="1682696837763999627">大号鼠标光标</translation>
 <translation id="1682867089915960590">要开启光标浏览模式吗？</translation>
@@ -5048,6 +5049,7 @@
 <translation id="443196770280837407">使用键盘快捷键打开 Gemini。</translation>
 <translation id="4432621511648257259">密码不正确</translation>
 <translation id="4434611816075088065">目前没有任何其他需要您注意的事项</translation>
+<translation id="4435020454241191356">为资料添加名称或标签</translation>
 <translation id="443503224864902151">您会从大多数网站中退出账号。您的 Google 账号仍会保持登录状态，以便删除已同步的数据。</translation>
 <translation id="4437879751057074691">提示保存密码和通行密钥</translation>
 <translation id="4437947179446780764">添加自定义 DNS 服务提供商</translation>
@@ -5059,6 +5061,7 @@
 <translation id="4441928470323187829">已被您的管理员固定</translation>
 <translation id="4442863809158514979">查看网站权限</translation>
 <translation id="4442937638623063085">未找到任何个人资料。请输入您的运营商提供的激活码。</translation>
+<translation id="4443111948803895537">账号和网络保护</translation>
 <translation id="4443536555189480885">帮助(&amp;H)</translation>
 <translation id="4444304522807523469">使用通过 USB 连接的或本地网络中的文档扫描仪</translation>
 <translation id="4444512841222467874">如果没有可用空间，系统可能会自动移除用户和数据。</translation>
@@ -6378,6 +6381,7 @@
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想使用您数字钱包中的个人信息。除非您信任此网站，否则请勿继续操作。危险网站可能会诱骗您泄露法定全名或身份证号码等信息。</translation>
 <translation id="5390677308841849479">深红色和橙色</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
+<translation id="5392864580775235956">添加和编辑图片</translation>
 <translation id="5393330235977997602">PIN 码选项</translation>
 <translation id="5393474451146553463">向 Google 询问与此标签页有关的问题</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
@@ -7228,7 +7232,6 @@
 <translation id="5979421442488174909">翻译成<ph name="LANGUAGE" />(&amp;T)</translation>
 <translation id="5979469435153841984">要为网页添加书签，请点击地址栏中的星形图标</translation>
 <translation id="5982578203375898585">下载完成后显示下载内容</translation>
-<translation id="598347738324022917">书签已保存到此设备</translation>
 <translation id="5983716913605894570">正在生成…</translation>
 <translation id="5984222099446776634">最近访问过的内容</translation>
 <translation id="5984334442529819751">安装 DLC 时出错（通常需要重新启动，请依次查看“设置”\&gt;\&gt;“关于 ChromeOS”了解详情）。</translation>
@@ -7329,6 +7332,7 @@
 <translation id="6057381398996433816">此网站已被禁止使用动态传感器和光传感器。</translation>
 <translation id="6059276912018042191">最近打开的 Chrome 标签页</translation>
 <translation id="6059652578941944813">证书层次结构</translation>
+<translation id="6059775313639803773">根据更多来源提供更深入的回答，但用时稍长</translation>
 <translation id="6059925163896151826">USB 设备</translation>
 <translation id="6061408389284235459">通知已发送至<ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">创建二维码</translation>
@@ -9655,6 +9659,7 @@
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 个应用</translation>
 <translation id="7674542105240814168">已禁止使用位置信息</translation>
 <translation id="7675175806582227035">可以控制您的 MIDI 设备以及为其重新编程</translation>
+<translation id="7676019765091965045">密码泄露检测</translation>
 <translation id="7676119992609591770">找到了 <ph name="NUM" /> 个与“<ph name="SEARCH_TEXT" />”相符的标签页</translation>
 <translation id="7676867886086876795">将您的语音内容发送给 Google，以便能向任何文本字段输入语音内容。</translation>
 <translation id="7678588695732963732">重置所有 USB 设备权限？</translation>
@@ -10748,6 +10753,7 @@
 <translation id="8405118833120731611">{0,plural, =1{关闭此个人资料}other{关闭此个人资料（# 个窗口）}}</translation>
 <translation id="8407199357649073301">日志级别：</translation>
 <translation id="8408270600235826886">您可以控制与 Google 分享哪些数据，并且随时可在“设置”中进行更改。我们会遵照 Google 的<ph name="BEGIN_LINK" />隐私权政策<ph name="END_LINK" />使用相关数据。</translation>
+<translation id="8410079205308393430">显示建议</translation>
 <translation id="8410133743809404768">您可以在地址栏中使用“@history”进行搜索，也可以在“历史记录”页面中搜索</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全屏</translation>

@@ -1026,6 +1026,7 @@
 <translation id="167983332380191032">관리 서비스에서 HTTP 오류를 전송했습니다.</translation>
 <translation id="167997285881077031">텍스트 음성 변환 음성 설정</translation>
 <translation id="1680849702532889074">Linux 애플리케이션을 설치하는 중에 오류가 발생했습니다.</translation>
+<translation id="1682195225331129001">사용해 보기</translation>
 <translation id="1682548588986054654">새 시크릿 창</translation>
 <translation id="1682696837763999627">큰 마우스 커서</translation>
 <translation id="1682867089915960590">캐럿 브라우징을 사용 설정하시겠습니까?</translation>
@@ -5072,6 +5073,7 @@
 <translation id="443196770280837407">단축키를 사용하여 Gemini를 엽니다.</translation>
 <translation id="4432621511648257259">비밀번호가 잘못됨</translation>
 <translation id="4434611816075088065">지금은 확인이 필요한 항목이 없습니다</translation>
+<translation id="4435020454241191356">프로필 이름 또는 라벨 추가</translation>
 <translation id="443503224864902151">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>
 <translation id="4437879751057074691">비밀번호 및 패스키 저장 여부 확인</translation>
 <translation id="4437947179446780764">맞춤 DNS 서비스 제공업체 추가</translation>
@@ -5083,6 +5085,7 @@
 <translation id="4441928470323187829">관리자가 고정함</translation>
 <translation id="4442863809158514979">웹 권한 보기</translation>
 <translation id="4442937638623063085">프로필을 찾을 수 없습니다. 이동통신사에서 제공한 활성화 코드를 입력하세요</translation>
+<translation id="4443111948803895537">계정 및 네트워크 보호</translation>
 <translation id="4443536555189480885">도움말(&amp;H)</translation>
 <translation id="4444304522807523469">USB나 로컬 네트워크에 포함된 문서 스캐너에 액세스</translation>
 <translation id="4444512841222467874">저장 공간이 충분하지 않으면 사용자 및 데이터가 자동으로 삭제될 수 있습니다.</translation>
@@ -6405,6 +6408,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" />에서 디지털 지갑의 개인 정보를 사용하려고 합니다. 이 사이트를 신뢰하는 경우에만 계속 진행하세요. 위험한 사이트는 사용자를 속여 법적 이름이나 신분증 번호 등을 공개하도록 유도할 수 있습니다.</translation>
 <translation id="5390677308841849479">진한 빨간색 및 주황색</translation>
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
+<translation id="5392864580775235956">이미지를 추가 및 수정하세요.</translation>
 <translation id="5393330235977997602">PIN 옵션</translation>
 <translation id="5393474451146553463">Google에 이 탭 알아보기 요청</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
@@ -7258,7 +7262,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5979421442488174909"><ph name="LANGUAGE" />(으)로 번역(&amp;T)</translation>
 <translation id="5979469435153841984">페이지를 북마크에 추가하려면 검색주소창에서 별표를 클릭하세요.</translation>
 <translation id="5982578203375898585">완료 시 다운로드 표시</translation>
-<translation id="598347738324022917">북마크가 이 기기에 저장됨</translation>
 <translation id="5983716913605894570">생성 중…</translation>
 <translation id="5984222099446776634">최근 방문</translation>
 <translation id="5984334442529819751">DLC 설치 중 오류가 발생했습니다(주로 재부팅이 필요합니다. 자세한 내용은 설정\&gt;\&gt;ChromeOS 정보에서 확인하세요).</translation>
@@ -7359,6 +7362,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6057381398996433816">모션 센서 및 조도 센서 사용이 차단된 사이트입니다.</translation>
 <translation id="6059276912018042191">최근 Chrome 탭</translation>
 <translation id="6059652578941944813">인증서 계층</translation>
+<translation id="6059775313639803773">약간의 시간이 더 걸리지만 보다 많은 소스를 활용하여 심층적인 대답을 제공합니다.</translation>
 <translation id="6059925163896151826">USB 기기</translation>
 <translation id="6061408389284235459"><ph name="DEVICE_NAME" /> 기기로 알림이 전송되었습니다.</translation>
 <translation id="6063284707309177505">QR 코드 만들기</translation>
@@ -9684,6 +9688,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7674537509496907005">앱 <ph name="APP_COUNT" />개</translation>
 <translation id="7674542105240814168">위치 정보 액세스 거부됨</translation>
 <translation id="7675175806582227035">MIDI 기기를 제어하고 다시 프로그래밍할 수 있음</translation>
+<translation id="7676019765091965045">유출된 비밀번호 감지</translation>
 <translation id="7676119992609591770">'<ph name="SEARCH_TEXT" />' 검색결과로 탭 <ph name="NUM" />개 찾음</translation>
 <translation id="7676867886086876795">모든 텍스트 입력란에서 음성기록 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>
 <translation id="7678588695732963732">모든 USB 기기 권한을 재설정하시겠습니까?</translation>
@@ -10778,6 +10783,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8405118833120731611">{0,plural, =1{이 프로필 닫기}other{이 프로필 닫기(창 #개)}}</translation>
 <translation id="8407199357649073301">로그 수준:</translation>
 <translation id="8408270600235826886">사용자는 Google과 어떤 데이터를 공유할지 관리할 수 있으며 언제든지 설정에서 변경할 수 있습니다. 데이터는 Google의 <ph name="BEGIN_LINK" />개인정보처리방침<ph name="END_LINK" />에 따라 사용됩니다.</translation>
+<translation id="8410079205308393430">추천 표시</translation>
 <translation id="8410133743809404768">"@history"를 사용하여 주소 표시줄에서 검색할 수 있으며 방문 기록 페이지에서도 검색할 수 있습니다.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">전체 화면</translation>

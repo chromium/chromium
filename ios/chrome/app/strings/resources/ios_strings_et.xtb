@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Interneti-ühendus puudub.</translation>
 <translation id="3782614601387961027">Loobu hoiatusest</translation>
 <translation id="3789841737615482174">Installi</translation>
-<translation id="3789849526426236410">Ava uus vaheleht</translation>
 <translation id="380329542618494757">Nimi</translation>
 <translation id="3803696231112616155">Selle saidi tõlkimise pakkumine</translation>
 <translation id="3810973564298564668">Halda</translation>
@@ -2037,6 +2036,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="860043288473659153">Kaardiomaniku nimi</translation>
 <translation id="8601611099293226919">Otsige Google Lensi abil ekraanikuvalt</translation>
 <translation id="8605219856220328675">Sule vaheleht.</translation>
+<translation id="8609384513243082612">Uue vahelehe avamine</translation>
 <translation id="8609743333007776886">Lisa ${url} järjehoidjatesse</translation>
 <translation id="8611922158252451755">Valige hoolega, kellega linke jagate, sest kõiki vahelehti saab muuta igaüks, kellel on link. Link aegub 48 tunni pärast.</translation>
 <translation id="8614671330774943747">Vahelehtede vaheti avamine</translation>

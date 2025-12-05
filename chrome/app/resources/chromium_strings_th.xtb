@@ -390,7 +390,6 @@
 <translation id="5605834417512968703">เลือกอะไรก็ได้เพื่อค้นหาด้วยการค้นหารูปภาพ หรือกด Escape เพื่อออกจากฟีเจอร์นี้</translation>
 <translation id="5618818588972826921">เลือกข้อความหรือรูปภาพเพื่อค้นหาด้วยการค้นหารูปภาพ หรือกด Escape เพื่อออกจากฟีเจอร์นี้</translation>
 <translation id="5623402015214259806">{0,plural, =0{มีอัปเดต Chromium พร้อมให้ใช้งาน}=1{มีอัปเดต Chromium พร้อมให้ใช้งาน}other{อัปเดต Chromium พร้อมให้ใช้งานมาแล้ว # วัน}}</translation>
-<translation id="5633450273457573375">ใช้<ph name="BEGIN_LINK" />รหัสผ่านของคุณเอง<ph name="END_LINK" />ในการเข้ารหัสข้อมูล Chromium ทั้งหมดในบัญชี Google รหัสผ่านจะไม่เข้ารหัสที่อยู่และข้อมูลใดๆ ที่บันทึกไว้ใน Google Wallet ประวัติการท่องเว็บจาก Chromium จะไม่ซิงค์</translation>
 <translation id="5643865575100044307">ลบข้อมูลเว็บไซต์จากอุปกรณ์เสมอเมื่อปิด Chromium</translation>
 <translation id="5653831366781983928">โปรดรีสตาร์ท Chromium ตอนนี้เลย</translation>
 <translation id="5690427481109656848">Google LLC</translation>

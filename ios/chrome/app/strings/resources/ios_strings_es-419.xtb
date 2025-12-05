@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Sin conexión a Internet</translation>
 <translation id="3782614601387961027">Descartar advertencia</translation>
 <translation id="3789841737615482174">Instalar</translation>
-<translation id="3789849526426236410">Abrir una pestaña nueva</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803696231112616155">Ofrecer traducir este sitio</translation>
 <translation id="3810973564298564668">Administrar</translation>
@@ -2037,6 +2036,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="860043288473659153">Nombre del titular de la tarjeta</translation>
 <translation id="8601611099293226919">Hacer búsquedas en la pantalla con Google Lens</translation>
 <translation id="8605219856220328675">Cierra la pestaña.</translation>
+<translation id="8609384513243082612">Abrir una pestaña nueva</translation>
 <translation id="8609743333007776886">Agregar ${url} a favoritos</translation>
 <translation id="8611922158252451755">Cualquier persona que tenga el vínculo puede editar todas las pestañas, así que compártelo con cuidado. El vínculo vence dentro de 48 horas.</translation>
 <translation id="8614671330774943747">Ir al Alternador de pestañas</translation>

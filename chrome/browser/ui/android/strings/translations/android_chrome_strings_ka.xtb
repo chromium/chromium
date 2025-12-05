@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" />-ის გამოწერა გაუქმებულია. მომდევნო ვიზიტისას ხელახლა გაკითხავთ</translation>
 <translation id="1340839264183302272">ჯგუფიდან გასვლა</translation>
 <translation id="1342886103232377846">გატეხილი პაროლების შესამოწმებლად გადადით Google პაროლების მმართველზე</translation>
+<translation id="1343830902827845050">Chrome-ში შესვლა</translation>
 <translation id="1344653310988386453">გამოყოფილთან ბმულის დართვა</translation>
 <translation id="1347468774581902829">აქტივობის მართვა</translation>
 <translation id="1355088659320425659">ისტორია და ჩანართები</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ნაგულისხმევად მოთხოვნილია დესკტოპის საიტები</translation>
 <translation id="4162867837470729563">გაზიარების ვარიანტების სია სრულ სიმაღლეზეა.</translation>
 <translation id="4170011742729630528">სერვისი არ არის ხელმისაწვდომი, მოგვიანებით სცადეთ.</translation>
+<translation id="4170577491341606575">მიმდინარეობს თქვენი კონტენტის მიღება…</translation>
 <translation id="4177222230309051052">მიიღეთ თქვენი ყველა სანიშნე</translation>
 <translation id="4177501066905053472">სარეკლამო თემები</translation>
 <translation id="417865198503699526">პარამეტრის ძიება</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">სისტემის ნაგულისხმევი</translation>
 <translation id="7117485132243600300">მართეთ გამოწერილი კონტენტი და შემოთავაზებული თემები და ძიებები</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />-ის დახურვა</translation>
+<translation id="7121179479711575744">Chrome-ში შესვლა</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{ნებართვები განახლდა 1 საიტისთვის}other{ნებართვები განახლდა # საიტისთვის}}</translation>
 <translation id="7138678301420049075">სხვა</translation>
 <translation id="7140829094791862589">ხელით დალაგება</translation>

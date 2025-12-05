@@ -325,6 +325,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="459622048091363950">Ko bo imel Chrome dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
 <translation id="4598116752460667024">Na seznamu poiščite poljubni postopek.</translation>
 <translation id="4600710005438004015">Chroma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in popravkov varnosti.</translation>
+<translation id="4606805686144157064">Prejmite opozorilo, če Chrome v javni podatkovni kršitvi najde katero od vaših gesel</translation>
 <translation id="4608435347866444037">Iščite to sliko z Googlom Lens</translation>
 <translation id="4624065194742029982">Anonimni način v Chromu</translation>
 <translation id="4627412468266359539">Izbirno: Pomagajte izboljšati funkcije sistema ChromeOS Flex ter njegovo delovanje s samodejnim pošiljanjem diagnostičnih podatkov in podatkov o uporabi Googlu.</translation>
@@ -667,7 +668,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="8255190535488645436">Google Chrome uporablja vašo kamero in mikrofon.</translation>
 <translation id="8267953129876836456">Chrome je za vaš pregled našel nekaj varnostnih priporočil</translation>
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
-<translation id="8289399803055125418">Za šifriranje vseh podatkov v Chromu v računu Google uporabite <ph name="BEGIN_LINK" />svoje geslo<ph name="END_LINK" />. Naslovi in podatki, shranjeni v Google Denarnici, ne bodo šifrirani z vašim geslom. Zgodovina brskanja v Chromu se ne bo sinhronizirala.</translation>
 <translation id="829923460755755423">Dodajanje bližnjice do Googlovega upravitelja gesel</translation>
 <translation id="8313851650939857356">Napaka pri zagonu: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8321888067342493336">Shrani kot sliko</translation>

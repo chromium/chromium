@@ -710,7 +710,6 @@
 <translation id="3779810277399252432">Internetové pripojenie nie je k dispozícii.</translation>
 <translation id="3782614601387961027">Zavrieť varovanie</translation>
 <translation id="3789841737615482174">Inštalovať</translation>
-<translation id="3789849526426236410">Otvoriť novú kartu</translation>
 <translation id="380329542618494757">Meno</translation>
 <translation id="3803696231112616155">Ponúkať preklad tohto webu</translation>
 <translation id="3810973564298564668">Spravovať</translation>
@@ -2037,6 +2036,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="860043288473659153">Meno držiteľa karty</translation>
 <translation id="8601611099293226919">Hľadať na obrazovke pomocou funkcie Google Lens</translation>
 <translation id="8605219856220328675">Zatvoriť kartu.</translation>
+<translation id="8609384513243082612">Otvorenie novej karty</translation>
 <translation id="8609743333007776886">Pridanie adresy ${url} do záložiek</translation>
 <translation id="8611922158252451755">Každý, kto má odkaz, môže upraviť všetky karty, preto ich zdieľajte uvážlivo. Odkaz vyprší o 48 hodín.</translation>
 <translation id="8614671330774943747">Prechod na prepínač kariet</translation>

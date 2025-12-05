@@ -1248,17 +1248,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
 对于 <ph name="PRODUCT_NAME" />，此政策仅在已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后才有效。
 对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
-<translation id="1878535132109943599">如果此政策设为启用，<ph name="LOCAL_NETWORK_ACCESS" />请求将仅在 <ph name="CHROME_DEVTOOLS_NAME" />中显示警告，因为<ph name="LOCAL_NETWORK_ACCESS" />检查失败。
-
-如果此政策设为停用或未设置，系统将会通过默认方式处理<ph name="LOCAL_NETWORK_ACCESS" />请求。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-这项企业政策只是暂时性政策，将在 M146 之后移除。
-
-从长远来看，可以使用政策 <ph name="LOCAL_NETWORK_ACCESS_ALLOWED_FOR_URLS_POLICY_NAME" /> 将网址格式列入许可名单，以便自动向这些网址授予<ph name="LOCAL_NETWORK_ACCESS" />权限。
-
-请注意，如果启用了政策 <ph name="LOCAL_NETWORK_ACCESS_RESTRICTIONS_ENABLED_POLICY_NAME" />，它将优先于此政策。</translation>
 <translation id="187961648719201562">删除现有本地文件（自 137 版起受支持）</translation>
 <translation id="1883274744253492031">允许混合内容自动升级</translation>
 <translation id="1885782360784839335">允许使用整个标签页显示宣传内容</translation>
@@ -11859,13 +11848,6 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
        从 <ph name="PRODUCT_NAME" /> 84 开始，此政策将失效。</translation>
 <translation id="9010080992450148617">允许已加入高级保护计划的用户将下载内容发送给 Google 进行深度扫描</translation>
 <translation id="9012101302849557459">延长对 <ph name="MS_WIN_NAME" />、<ph name="MAC_OS_NAME" /> 和 <ph name="LINUX_OS_NAME" /> 上的 Chrome 应用的支持时间。</translation>
-<translation id="9012332684658600011">如果此政策设为启用，只要因<ph name="LOCAL_NETWORK_ACCESS" />检查失败而应在 <ph name="CHROME_DEVTOOLS_NAME" />中显示警告，系统就会改为屏蔽主要请求。
-
-如果此政策设为停用或未设置，系统将会通过默认方式处理<ph name="LOCAL_NETWORK_ACCESS" />请求。
-
-如需了解<ph name="LOCAL_NETWORK_ACCESS" />限制，请访问 https://wicg.github.io/local-network-access/。
-
-此政策已被弃用，因为<ph name="LOCAL_NETWORK_ACCESS" />默认已启动。此政策将在未来版本中移除。</translation>
 <translation id="9013875414788074110">在用户登录期间，<ph name="PRODUCT_OS_NAME" />可根据服务器（在线）或使用缓存密码（离线）对用户进行身份验证。
 
       如果将此政策的值设为 -1，用户可以无限期地离线进行身份验证。将此政策设为任何其他值时，即指定了用户自最后一次使用在线身份验证起多长时间后必须再次使用在线身份验证。
