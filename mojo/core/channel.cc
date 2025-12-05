@@ -1053,6 +1053,7 @@ void Channel::ShutDown() {
     // so the Channel can notify once it's finally being destroyed.
     delegate_ = nullptr;
   }
+  delayed_messages_.clear();
 }
 
 void Channel::WriteNextIpczMessage(
