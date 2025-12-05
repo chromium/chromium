@@ -798,8 +798,12 @@ void LensSearchController::CloseLensPart2(
 
 void LensSearchController::OnOverlayHidden(
     std::optional<lens::LensOverlayDismissalSource> dismissal_source) {
+  if (state_ == State::kOff) {
+    return;
+  }
+
   // If the side panel is not open, end the session.
-  if (!results_panel_router_->IsEntryShowing()) {
+  if (results_panel_router_ && !results_panel_router_->IsEntryShowing()) {
     // The caller should not have called this function without a dismissal
     // source if the side panel is not open, because it would leave the Lens
     // session in an inconsistent state.
