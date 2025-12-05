@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.DashboardModu
 import org.chromium.chrome.browser.safety_hub.SafetyHubMetricUtils.LifecycleEvent;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleOption;
 import org.chromium.chrome.browser.safety_hub.SafetyHubModuleMediator.ModuleState;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -374,4 +375,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
     public @Nullable String getMainMenuKey() {
         return "safety_hub";
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    SafetyHubFragment.class.getName(), R.xml.safety_hub_preferences);
 }

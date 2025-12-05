@@ -47,7 +47,9 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.MainSettings;
 import org.chromium.chrome.browser.settings.MultiColumnSettings;
-import org.chromium.chrome.browser.settings.search.SettingsIndexData.SearchResults;
+import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.browser_ui.settings.search.SettingsIndexData.SearchResults;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
@@ -272,7 +274,11 @@ public class SettingsSearchCoordinator {
         // Allow providers to make runtime modifications (e.g., hide preferences). Sometimes we also
         // need to update the title of a pref.
         for (SearchIndexProvider provider : providers) {
-            provider.updateDynamicPreferences(mActivity, mIndexData, mProfile);
+            if (provider instanceof ChromeSearchIndexProvider chromeProvider) {
+                chromeProvider.updateDynamicPreferences(mActivity, mIndexData, mProfile);
+            } else {
+                provider.updateDynamicPreferences(mActivity, mIndexData);
+            }
         }
 
         // Resolve headers and remove any orphaned entries.

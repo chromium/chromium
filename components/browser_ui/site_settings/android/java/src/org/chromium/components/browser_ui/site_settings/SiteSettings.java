@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
+import org.chromium.components.browser_ui.settings.search.BaseSearchIndexProvider;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.CookieControlsMode;
@@ -270,4 +271,9 @@ public class SiteSettings extends BaseSiteSettingsFragment
     public @Nullable String getMainMenuKey() {
         return "content_settings";
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling.
+    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new BaseSearchIndexProvider(
+                    SiteSettings.class.getName(), R.xml.site_settings_preferences);
 }

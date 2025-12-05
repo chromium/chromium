@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings.search;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.browser_ui.settings.search.SearchIndexProvider;
 
 import java.util.List;
 
@@ -65,5 +66,77 @@ public final class SearchIndexProviderRegistry {
                     org.chromium.chrome.browser.privacy_sandbox.TopicsManageFragment
                             .SEARCH_INDEX_DATA_PROVIDER,
                     org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.ChosenObjectSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.page_info.PageInfoAdPersonalizationSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.page_info.PageInfoCookiesSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.RwsCookieSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.SingleCategorySettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.site_settings.SiteSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.components.browser_ui.accessibility.AccessibilitySettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.safe_browsing.settings
+                            .StandardProtectionSettingsFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.safety_hub.SafetyHubFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.sync.settings.AccountManagementFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AutofillBuyNowPayLaterFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AutofillCardBenefitsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AutofillPaymentMethodsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings.AutofillProfilesFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings
+                            .FinancialAccountsManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.sync.settings.GoogleServicesSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.magic_stack.HomeModulesConfigSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.ssl.HttpsFirstModeSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.language.settings.LanguageSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.autofill.settings
+                            .NonCardPaymentMethodsManagementFragment.SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.commerce.PriceNotificationSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.privacy.settings.PrivacySettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.tasks.tab_management.TabsSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.sync.settings.ManageSyncSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.tracing.settings.TracingSettings
+                            .SEARCH_INDEX_DATA_PROVIDER,
+                    org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings
                             .SEARCH_INDEX_DATA_PROVIDER);
 }

@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.settings.search;
+package org.chromium.components.browser_ui.settings.search;
 
 import android.content.Context;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.profiles.Profile;
 
 import java.util.Map;
 import java.util.Set;
@@ -52,17 +51,4 @@ public interface SearchIndexProvider {
      * @param indexData The central {@link SettingsIndexData} object to be populated.
      */
     default void updateDynamicPreferences(Context context, SettingsIndexData indexData) {}
-
-    /**
-     * Similar to {@link #updateDynamicPreferences(Context, SettingsIndexData)} but takes in the
-     * profile. This is for fragments that rely on the profile.
-     *
-     * @param context The {@link Context} used to access application resources.
-     * @param indexData The central {@link SettingsIndexData} object to be populated.
-     * @param profile The current {@link Profile}.
-     */
-    default void updateDynamicPreferences(
-            Context context, SettingsIndexData indexData, Profile profile) {
-        updateDynamicPreferences(context, indexData);
-    }
 }

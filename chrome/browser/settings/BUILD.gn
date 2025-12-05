@@ -13,16 +13,15 @@ android_library_factory("factory_java") {
 
 android_library("search_java") {
   sources = [
-    "search/java/src/org/chromium/chrome/browser/settings/search/BaseSearchIndexProvider.java",
-    "search/java/src/org/chromium/chrome/browser/settings/search/PreferenceParser.java",
-    "search/java/src/org/chromium/chrome/browser/settings/search/SearchIndexProvider.java",
-    "search/java/src/org/chromium/chrome/browser/settings/search/SettingsIndexData.java",
+    "search/java/src/org/chromium/chrome/browser/settings/search/ChromeBaseSearchIndexProvider.java",
+    "search/java/src/org/chromium/chrome/browser/settings/search/ChromeSearchIndexProvider.java",
   ]
 
   deps = [
     "//base:base_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
+    "//components/browser_ui/settings/android:java",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
@@ -122,23 +121,4 @@ android_library("junit_test_support") {
 android_resources("junit_test_resources") {
   testonly = true
   sources = [ "android/java/res/xml/test_settings_fragment.xml" ]
-}
-
-robolectric_library("junit_tests") {
-  sources = [
-    "search/junit/src/org/chromium/chrome/browser/settings/search/BaseSearchIndexProviderTest.java",
-    "search/junit/src/org/chromium/chrome/browser/settings/search/PreferenceParserTest.java",
-    "search/junit/src/org/chromium/chrome/browser/settings/search/SettingsIndexDataTest.java",
-  ]
-
-  deps = [
-    ":search_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/browser/flags:java",
-    "//chrome/browser/ui/android/night_mode:java",
-    "//third_party/androidx:androidx_preference_preference_java",
-    "//third_party/junit",
-  ]
 }

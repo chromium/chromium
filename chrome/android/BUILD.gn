@@ -1131,7 +1131,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/search_engines/android:junit",
       "//chrome/browser/search_resumption:junit",
       "//chrome/browser/serial/android:junit",
-      "//chrome/browser/settings:junit_tests",
       "//chrome/browser/signin/services/android:junit",
       "//chrome/browser/single_tab/android:junit",
       "//chrome/browser/supervised_user:junit",

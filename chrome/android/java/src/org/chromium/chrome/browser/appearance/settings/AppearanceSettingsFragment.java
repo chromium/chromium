@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
@@ -281,4 +282,10 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
     @Nullable PrefObserver getPrefObserverForTesting() {
         return mPrefObserver;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Some
+    // changes here need to be reflected in MainSettings as well.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    AppearanceSettingsFragment.class.getName(), R.xml.appearance_preferences);
 }

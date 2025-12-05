@@ -99,6 +99,7 @@ android_library("java") {
     ":page_info_action_enum_java",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/settings:search_java",
     "//components/browser_ui/settings/android:java",
     "//components/browser_ui/site_settings/android:java",
     "//components/browser_ui/styles/android:java",

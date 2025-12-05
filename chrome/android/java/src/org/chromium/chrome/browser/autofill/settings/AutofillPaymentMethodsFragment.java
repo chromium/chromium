@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.payments.ServiceWorkerPaymentAppBridge;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.MandatoryReauthAuthenticationFlowEvent;
@@ -847,4 +848,9 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.THIRD_PARTY_DISABLE_CHROME_AUTOFILL_SETTINGS_SCREEN);
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. Any
+    // entries that need adding?
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(AutofillPaymentMethodsFragment.class.getName(), 0);
 }

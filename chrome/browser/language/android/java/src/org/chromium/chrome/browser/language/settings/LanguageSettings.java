@@ -31,6 +31,7 @@ import org.chromium.chrome.browser.preferences.PrefServiceUtil;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -96,7 +97,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      *
      * @return Whether or not to show the detailed language preferences.
      */
-    private boolean shouldShowDetailedPreferences() {
+    private static boolean shouldShowDetailedPreferences() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.DETAILED_LANGUAGE_SETTINGS)
                 || GlobalAppLocaleController.getInstance().isOverridden();
     }
@@ -454,4 +455,13 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     public @Nullable String getMainMenuKey() {
         return "languages";
     }
+
+    // TODO(crbug.com/444470792): Verify if these are the prefs to be removed and if dynamic ones
+    // need to be handled.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    LanguageSettings.class.getName(),
+                    shouldShowDetailedPreferences()
+                            ? R.xml.languages_preferences
+                            : R.xml.languages_detailed_preferences);
 }

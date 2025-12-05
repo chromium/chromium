@@ -17,7 +17,7 @@ import org.chromium.chrome.browser.net.SecureDnsManagementMode;
 import org.chromium.chrome.browser.privacy.secure_dns.SecureDnsProviderPreference.State;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.search.BaseSearchIndexProvider;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.net.SecureDnsMode;
@@ -175,7 +175,7 @@ public class SecureDnsSettings extends ChromeBaseSettingsFragment {
         return AnimationType.PROPERTY;
     }
 
-    public static final BaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
-            new BaseSearchIndexProvider(
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
                     SecureDnsSettings.class.getName(), R.xml.secure_dns_settings);
 }

@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.chrome.browser.settings.search.ChromeBaseSearchIndexProvider;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Safe Browsing settings. */
@@ -298,4 +299,10 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public @AnimationType int getAnimationType() {
         return AnimationType.PROPERTY;
     }
+
+    // TODO(crbug.com/444470792): Determine what pieces of logic are dynamic and need handling. If
+    // it's only the summary, it could be worth explicitly defining it in the XML.
+    public static final ChromeBaseSearchIndexProvider SEARCH_INDEX_DATA_PROVIDER =
+            new ChromeBaseSearchIndexProvider(
+                    SafeBrowsingSettingsFragment.class.getName(), R.xml.safe_browsing_preferences);
 }

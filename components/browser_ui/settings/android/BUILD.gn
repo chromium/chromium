@@ -17,6 +17,10 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/settings/SettingsFragment.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
+    "java/src/org/chromium/components/browser_ui/settings/search/BaseSearchIndexProvider.java",
+    "java/src/org/chromium/components/browser_ui/settings/search/PreferenceParser.java",
+    "java/src/org/chromium/components/browser_ui/settings/search/SearchIndexProvider.java",
+    "java/src/org/chromium/components/browser_ui/settings/search/SettingsIndexData.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreference.java",
@@ -158,11 +162,17 @@ android_library("unit_device_javatests") {
 robolectric_library("junit") {
   testonly = true
 
-  sources = [ "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtilsTest.java",
+    "junit/src/org/chromium/components/browser_ui/settings/search/BaseSearchIndexProviderTest.java",
+    "junit/src/org/chromium/components/browser_ui/settings/search/PreferenceParserTest.java",
+    "junit/src/org/chromium/components/browser_ui/settings/search/SettingsIndexDataTest.java",
+  ]
 
   deps = [
     ":java",
     ":java_resources",
+    ":java_test_resources",
     ":managed_prefs_java_resources",
     ":test_support_java",
     "//base:base_java",
@@ -211,6 +221,9 @@ android_library("test_support_java") {
 android_resources("java_test_resources") {
   testonly = true
   sources = [
+    "java/res_test/xml/test_search_child_prefs.xml",
+    "java/res_test/xml/test_search_grandchild_prefs.xml",
+    "java/res_test/xml/test_search_root_prefs.xml",
     "widget/java_test_resources/res/layout/chrome_managed_preference_with_custom_layout.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_checkbox_preference_screen.xml",
     "widget/java_test_resources/res/xml/test_chrome_base_preference_screen.xml",
