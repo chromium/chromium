@@ -96,9 +96,10 @@ struct NET_EXPORT SessionError {
     kSigningQuotaExceeded = 77,
     kInvalidConfigJson = 78,
     kInvalidFederatedSessionProviderFailedToRestoreKey = 79,
-    kMaxValue = kInvalidFederatedSessionProviderFailedToRestoreKey,
+    kFailedToUnwrapKey = 80,
+    kMaxValue = kFailedToUnwrapKey,
   };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError)
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:DeviceBoundSessionError,//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionError)
 
   using enum ErrorType;
 

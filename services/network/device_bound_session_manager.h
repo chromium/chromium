@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/device_bound_sessions/session_error.h"
 #include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 namespace net::device_bound_sessions {
@@ -79,7 +80,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DeviceBoundSessionManager
       const std::vector<net::CanonicalCookie>& cookies_to_set,
       const net::CookieOptions& cookie_options,
       CreateBoundSessionsCallback callback,
-      std::vector<bool> session_success);
+      std::vector<net::device_bound_sessions::SessionError::ErrorType>
+          session_errors);
 
   raw_ptr<net::device_bound_sessions::SessionService> service_;
   // `raw_ptr` is safe because both `this` and `cookie_manager_` are

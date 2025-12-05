@@ -829,10 +829,11 @@ Session* SessionServiceImpl::GetSession(const SessionKey& session_key) {
   return const_cast<Session*>(std::as_const(*this).GetSession(session_key));
 }
 
-void SessionServiceImpl::AddSession(const SchemefulSite& site,
-                                    SessionParams params,
-                                    base::span<const uint8_t> wrapped_key,
-                                    base::OnceCallback<void(bool)> callback) {
+void SessionServiceImpl::AddSession(
+    const SchemefulSite& site,
+    SessionParams params,
+    base::span<const uint8_t> wrapped_key,
+    base::OnceCallback<void(SessionError::ErrorType)> callback) {
   key_service_->FromWrappedSigningKeySlowlyAsync(
       wrapped_key, unexportable_keys::BackgroundTaskPriority::kBestEffort,
       base::BindOnce(&SessionServiceImpl::OnAddSessionKeyRestored,
@@ -861,11 +862,11 @@ void SessionServiceImpl::SetLatestSignedRefreshChallenge(
 void SessionServiceImpl::OnAddSessionKeyRestored(
     const SchemefulSite& site,
     SessionParams params,
-    base::OnceCallback<void(bool)> callback,
+    base::OnceCallback<void(SessionError::ErrorType)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
         key_or_error) {
   if (!key_or_error.has_value()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(SessionError::kFailedToUnwrapKey);
     return;
   }
 
@@ -877,12 +878,12 @@ void SessionServiceImpl::OnAddSessionKeyRestored(
           net::device_bound_sessions::Session::CreateIfValid(params);
 
   if (!session_or_error.has_value()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(session_or_error.error().type);
     return;
   }
 
   AddSession(site, std::move(session_or_error.value()));
-  std::move(callback).Run(true);
+  std::move(callback).Run(SessionError::kSuccess);
 }
 
 void SessionServiceImpl::AddSession(const SchemefulSite& site,

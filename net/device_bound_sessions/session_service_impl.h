@@ -122,10 +122,11 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
       const GURL& url,
       base::RepeatingCallback<void(const SessionAccess&)> callback) override;
   const Session* GetSession(const SessionKey& session_key) const override;
-  void AddSession(const SchemefulSite& site,
-                  SessionParams params,
-                  base::span<const uint8_t> wrapped_key,
-                  base::OnceCallback<void(bool)> callback) override;
+  void AddSession(
+      const SchemefulSite& site,
+      SessionParams params,
+      base::span<const uint8_t> wrapped_key,
+      base::OnceCallback<void(SessionError::ErrorType)> callback) override;
   const SignedRefreshChallenge* GetLatestSignedRefreshChallenge(
       const SessionKey& session_key) override;
   void SetLatestSignedRefreshChallenge(
@@ -301,7 +302,7 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   void OnAddSessionKeyRestored(
       const SchemefulSite& site,
       SessionParams params,
-      base::OnceCallback<void(bool)> callback,
+      base::OnceCallback<void(SessionError::ErrorType)> callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
           key_or_error);
 

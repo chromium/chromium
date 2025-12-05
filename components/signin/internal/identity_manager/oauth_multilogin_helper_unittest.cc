@@ -1431,7 +1431,10 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledTest,
           UnorderedElementsAre(CookieMatcher(
               "__Secure-1PSIDTS", "secure-1p-sidts-value", ".google.com")),
           _, _))
-      .WillOnce(base::test::RunOnceCallback<4>(true));
+      .WillOnce(base::test::RunOnceCallback<4>(
+          std::vector<net::device_bound_sessions::SessionError::ErrorType>{
+              net::device_bound_sessions::SessionError::ErrorType::kSuccess},
+          std::vector<net::CookieInclusionStatus>()));
 
   ASSERT_TRUE(
       url_loader()->IsPending(multilogin_url_with_cookie_enforcement()));
@@ -1656,7 +1659,10 @@ TEST_F(OAuthMultiloginHelperStandardBoundSessionsEnabledPrototypeDisabledTest,
 
   EXPECT_CALL(mock_device_bound_session_manager(),
               CreateBoundSessions(SizeIs(1), binding_key, SizeIs(1), _, _))
-      .WillOnce(base::test::RunOnceCallback<4>(true));
+      .WillOnce(base::test::RunOnceCallback<4>(
+          std::vector<net::device_bound_sessions::SessionError::ErrorType>{
+              net::device_bound_sessions::SessionError::ErrorType::kSuccess},
+          std::vector<net::CookieInclusionStatus>()));
 
   const std::string url = multilogin_url() + "&cookie_binding=2";
   ASSERT_TRUE(url_loader()->IsPending(url));

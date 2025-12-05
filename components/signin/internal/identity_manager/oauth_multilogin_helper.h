@@ -22,6 +22,7 @@
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "net/cookies/cookie_access_result.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom.h"
 
 class GaiaAuthFetcher;
 class GoogleServiceAuthError;
@@ -93,7 +94,10 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
       const OAuthMultiloginResult& result);
 
   // Callback for `DeviceBoundSessionManager::CreateBoundSessions`.
-  void OnBoundSessionsCreated(bool sessions_created);
+  void OnBoundSessionsCreated(
+      const std::vector<net::device_bound_sessions::SessionError::ErrorType>&
+          session_results,
+      std::vector<net::CookieInclusionStatus> cookie_results);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Starts fetching tokens with OAuthMultiloginTokenFetcher.

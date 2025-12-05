@@ -553,6 +553,7 @@ void Session::InformOfRefreshResult(bool was_proactive,
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
       NOTREACHED();
   }
 

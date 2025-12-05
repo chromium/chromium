@@ -323,6 +323,7 @@ chromium-metrics-reviews@google.com.
   <int value="79"
       label="Federated session invalid due to failure to restore session
              provider key"/>
+  <int value="80" label="Failed to unwrap key"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/device_bound_sessions/session_error.h:DeviceBoundSessionError) -->

@@ -481,10 +481,24 @@ bool OAuthMultiloginHelper::StartSettingCookiesViaDeviceBoundSessionManager(
   return true;
 }
 
-void OAuthMultiloginHelper::OnBoundSessionsCreated(bool session_created) {
+void OAuthMultiloginHelper::OnBoundSessionsCreated(
+    const std::vector<net::device_bound_sessions::SessionError::ErrorType>&
+        session_results,
+    std::vector<net::CookieInclusionStatus> cookie_results) {
+  bool all_success = true;
+  for (const auto& error : session_results) {
+    all_success &=
+        (error ==
+         net::device_bound_sessions::SessionError::ErrorType::kSuccess);
+  }
+
   RecordCreateBoundSessionResult(
-      session_created ? DeviceBoundSessionCreateSessionsResult::kSuccess
-                      : DeviceBoundSessionCreateSessionsResult::kFailure);
+      all_success ? DeviceBoundSessionCreateSessionsResult::kSuccess
+                  : DeviceBoundSessionCreateSessionsResult::kFailure);
+
+  for (const auto& status : cookie_results) {
+    base::UmaHistogramBoolean("Signin.SetCookieSuccess", status.IsInclude());
+  }
 
   std::move(callback_).Run(SetAccountsInCookieResult::kSuccess);
 }

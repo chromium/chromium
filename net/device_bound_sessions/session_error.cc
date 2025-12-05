@@ -89,6 +89,7 @@ std::optional<DeletionReason> SessionError::GetDeletionReason() const {
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
       NOTREACHED();
   }
 }
@@ -164,6 +165,7 @@ bool SessionError::IsServerError() const {
     case kEmptySessionConfig:
     case kRegistrationAttemptedChallenge:
     case kInvalidFederatedSessionProviderFailedToRestoreKey:
+    case kFailedToUnwrapKey:
       NOTREACHED();
   }
 }
