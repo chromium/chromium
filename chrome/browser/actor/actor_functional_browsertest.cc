@@ -186,26 +186,10 @@ class ActorFunctionalBrowserTest : public glic::test::InteractiveGlicTest {
 
     const std::string script = R"(
       (async (protoAsBase64) => {
-        // Manually decode the base64 string into a Uint8Array.
-        const binaryString = atob(protoAsBase64);
-        const len = binaryString.length;
-        const bytes = new Uint8Array(len);
-        for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i);
-        }
-
-        // Call performActions with the ArrayBuffer.
         const resultBuffer =
-            await window.client.browser.performActions(bytes.buffer);
-
-        // Manually encode the resulting ArrayBuffer back to a base64 string
-        // to return to C++.
-        const resultBytes = new Uint8Array(resultBuffer);
-        let resultBinaryString = '';
-        for (let i = 0; i < resultBytes.length; i++) {
-            resultBinaryString += String.fromCharCode(resultBytes[i]);
-        }
-        return btoa(resultBinaryString);
+            await window.client.browser.performActions(
+                Uint8Array.fromBase64(protoAsBase64).buffer);
+        return new Uint8Array(resultBuffer).toBase64();
       })($1)
     )";
 
