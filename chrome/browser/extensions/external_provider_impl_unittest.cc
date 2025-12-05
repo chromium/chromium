@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/updater/extension_cache_fake.h"
 #include "extensions/browser/updater/extension_downloader_test_helper.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -84,14 +85,14 @@ constexpr const TestServerExtension kTestServerExtensions[] = {
 };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-const char kExternalAppId[] = "kekdneafjmhmndejhmbcadfiiofngffo";
+const char kExternalExtensionId[] = "ghpipljflpbfljcfjlhfbfcpoklobpji";
 #endif
 
 #if BUILDFLAG(IS_WIN)
-const char kExternalAppCrxPath[] =
-    "external\\kekdneafjmhmndejhmbcadfiiofngffo.crx";
-const wchar_t kExternalAppRegistryKey[] =
-    L"Software\\Google\\Chrome\\Extensions\\kekdneafjmhmndejhmbcadfiiofngffo";
+const char kExternalExtensionCrxPath[] =
+    "external\\ghpipljflpbfljcfjlhfbfcpoklobpji.crx";
+const wchar_t kExternalExtensionRegistryKey[] =
+    L"Software\\Google\\Chrome\\Extensions\\ghpipljflpbfljcfjlhfbfcpoklobpji";
 #endif
 
 class ExternalProviderImplTest : public ExtensionServiceTestBase {
@@ -155,20 +156,22 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 #if BUILDFLAG(IS_WIN)
     EXPECT_NO_FATAL_FAILURE(
         registry_override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
-    EXPECT_EQ(ERROR_SUCCESS,
-              external_extension_key_.Create(
-                  HKEY_CURRENT_USER, kExternalAppRegistryKey, KEY_ALL_ACCESS));
-    EXPECT_EQ(ERROR_SUCCESS,
-              external_extension_key_.WriteValue(
-                  L"path",
-                  data_dir().AppendASCII(kExternalAppCrxPath).value().c_str()));
+    EXPECT_EQ(
+        ERROR_SUCCESS,
+        external_extension_key_.Create(
+            HKEY_CURRENT_USER, kExternalExtensionRegistryKey, KEY_ALL_ACCESS));
+    EXPECT_EQ(
+        ERROR_SUCCESS,
+        external_extension_key_.WriteValue(
+            L"path",
+            data_dir().AppendASCII(kExternalExtensionCrxPath).value().c_str()));
     EXPECT_EQ(ERROR_SUCCESS,
               external_extension_key_.WriteValue(L"version", L"1"));
 #else
     external_externsions_overrides_ =
         std::make_unique<base::ScopedPathOverride>(
             chrome::DIR_EXTERNAL_EXTENSIONS,
-            data_dir().AppendASCII("external"));
+            data_dir().AppendASCII("external_extension"));
 #endif
   }
 
@@ -272,6 +275,8 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
 }  // namespace
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_ANDROID)
+// The in-app payments app is not bundled on Android, see crbug.com/409396604.
 TEST_F(ExternalProviderImplTest, InAppPayments) {
   InitServiceWithExternalProviders();
 
@@ -280,6 +285,7 @@ TEST_F(ExternalProviderImplTest, InAppPayments) {
   EXPECT_TRUE(registry()->GetInstalledExtension(kInAppPaymentsApp.app_id));
   EXPECT_TRUE(registrar()->IsExtensionEnabled(kInAppPaymentsApp.app_id));
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {
   OverrideExternalExtensionsPath();
@@ -287,19 +293,23 @@ TEST_F(ExternalProviderImplTest, BlockedExternalUserProviders) {
 
   AwaitCheckForExternalUpdates();
 
-  EXPECT_FALSE(registry()->GetInstalledExtension(kExternalAppId));
+  EXPECT_FALSE(registry()->GetInstalledExtension(kExternalExtensionId));
 }
 
 TEST_F(ExternalProviderImplTest, NotBlockedExternalUserProviders) {
   OverrideExternalExtensionsPath();
   InitServiceWithExternalProviders(false);
 
+  TestExtensionRegistryObserver observer(registry());
   AwaitCheckForExternalUpdates();
+  observer.WaitForExtensionInstalled();
 
-  EXPECT_TRUE(registry()->GetInstalledExtension(kExternalAppId));
+  EXPECT_TRUE(registry()->GetInstalledExtension(kExternalExtensionId));
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
+// Desktop Android does not support web apps.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
   InitService();
 
@@ -344,5 +354,6 @@ TEST_F(ExternalProviderImplTest, WebAppMigrationFlag) {
     EXPECT_TRUE(registry()->GetInstalledExtension(kGoodApp.app_id));
   }
 }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace extensions

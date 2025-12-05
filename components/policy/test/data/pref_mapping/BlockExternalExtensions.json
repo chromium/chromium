@@ -3,7 +3,8 @@
     "os": [
       "win",
       "linux",
-      "mac"
+      "mac",
+      "desktop_android"
     ],
     "simple_policy_pref_mapping_test": {
       "pref_name": "extensions.block_external_extensions",

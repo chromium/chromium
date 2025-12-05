@@ -13,6 +13,8 @@ example_value: true
 features:
   dynamic_refresh: false
   per_profile: true
+future_on:
+- android
 items:
 - caption: Block installation of external extensions
   value: true

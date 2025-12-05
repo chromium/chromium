@@ -91,7 +91,8 @@ class ExternalProviderImplChromeOSTest : public ExtensionServiceTestBase {
     } else {
       external_externsions_overrides_ =
           std::make_unique<base::ScopedPathOverride>(
-              chrome::DIR_EXTERNAL_EXTENSIONS, data_dir().Append("external"));
+              chrome::DIR_EXTERNAL_EXTENSIONS,
+              data_dir().Append("external_app"));
     }
 
     // This switch is set when creating a TestingProfile, but needs to be
