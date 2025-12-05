@@ -76,7 +76,9 @@ public class AboutChromeSettings extends ChromeBaseSettingsFragment
         p.setSummary(AboutSettingsBridge.getOSVersion());
         p = findPreference(PREF_LEGAL_INFORMATION);
         assumeNonNull(p);
-        int currentYear = CalendarFactory.get().get(Calendar.YEAR);
+        Calendar calendar = CalendarFactory.get();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        int currentYear = calendar.get(Calendar.YEAR);
         p.setSummary(getString(R.string.legal_information_summary, currentYear));
     }
 
