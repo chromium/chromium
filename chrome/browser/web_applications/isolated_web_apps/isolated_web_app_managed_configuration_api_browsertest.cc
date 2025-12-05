@@ -10,6 +10,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
@@ -66,6 +68,10 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
     return test::GetDefaultEd25519WebBundleId();
   }
 
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
+  }
+
   void EnableTestServer(
       const std::map<std::string, ResponseTemplate>& templates) {
     embedded_test_server()->RegisterRequestHandler(
@@ -89,6 +95,7 @@ class ManagedConfigurationAPIInIsolatedWebAppTest
 
  protected:
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
+  FakeIwaRuntimeDataProvider data_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
@@ -104,8 +111,7 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIInIsolatedWebAppTest,
       IsolatedWebAppBuilder(ManifestBuilder())
           .BuildBundle(GetWebBundleId(), {test::GetDefaultEd25519KeyPair()}));
 
-  SetIwaManagedAllowlist({GetWebBundleId()},
-                         /*component_version=*/base::Version("1.0"));
+  data_provider_.SetManagedAllowlist({GetWebBundleId()});
   profile()->GetPrefs()->SetList(
       prefs::kIsolatedWebAppInstallForceList,
       base::Value::List().Append(

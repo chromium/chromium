@@ -27,7 +27,6 @@
 #include "base/test/test_timeouts.h"
 #include "base/types/expected.h"
 #include "base/version.h"
-#include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -41,11 +40,11 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
-#include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_info_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_constants.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/fake_chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/integrity_block_data_matcher.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
@@ -58,7 +57,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/webapps/isolated_web_apps/test_support/signing_keys.h"
@@ -245,9 +243,12 @@ class IsolatedWebAppUpdateManagerBrowserTest
  protected:
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    SetIwaManagedAllowlist({kWebBundleId1},
-                           /*component_version=*/base::Version("1.0"));
+    data_provider_.SetManagedAllowlist({kWebBundleId1});
     AddInitialBundle();
+  }
+
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
   }
 
   void AddInitialBundle() {
@@ -261,8 +262,7 @@ class IsolatedWebAppUpdateManagerBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-  base::test::ScopedFeatureList features_{
-      features::kIsolatedWebAppManagedAllowlist};
+  FakeIwaRuntimeDataProvider data_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
@@ -327,20 +327,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
   IwaVersion installed_version = app_isolation_data.version();
 
   // Clear the allowlist, so the app is not allowlisted
-  SetIwaManagedAllowlist(/*managed_allowlist=*/{}, base::Version("1.0.1"));
+  data_provider_.SetManagedAllowlist({});
 
   AddNewBundleToUpdateServer("app-7.0.6", "7.0.6");
 
   ASSERT_FALSE(web_app::ChromeIwaRuntimeDataProvider::GetInstance()
                    .IsManagedUpdatePermitted(GetWebBundleId().id()));
   EXPECT_THAT(provider().iwa_update_manager().DiscoverUpdatesNow(), Eq(0ul));
-
-  histogram_tester.ExpectBucketCount(
-      kIwaKeyDistributionManagedUpdateAllowedHistogramName, /*sample=*/false,
-      /*expected_count=*/2);
-  histogram_tester.ExpectBucketCount(
-      kIwaKeyDistributionManagedUpdateAllowedHistogramName, /*sample=*/true,
-      /*expected_count=*/0);
 
   histogram_tester.ExpectBucketCount("WebApp.Isolated.UpdateSuccess",
                                      /*sample=*/true, /*expected_count=*/0);
@@ -1318,16 +1311,8 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
  protected:
-  void SetUpOnMainThread() override {
-    IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(true);
-  }
-
-  void TearDownOnMainThread() override {
-    IwaKeyDistributionInfoProvider::GetInstance()
-        .SkipManagedAllowlistChecksForTesting(false);
-    IsolatedWebAppBrowserTestHarness::TearDownOnMainThread();
+  ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider() override {
+    return &data_provider_;
   }
 
   void AddBundleSignedBy(const web_package::test::KeyPair& key_pair) {
@@ -1348,24 +1333,13 @@ class IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest
   }
 
   IsolatedWebAppTestUpdateServer iwa_test_update_server_;
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  base::test::ScopedFeatureList features_{
-      component_updater::kIwaKeyDistributionComponent};
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
+  FakeIwaRuntimeDataProvider data_provider_;
   web_package::SignedWebBundleId web_bundle_id_ = kWebBundleId1;
-
-  // Override the pre-install component directory and its alternative directory
-  // so that the component update will not find the pre-installed key dist
-  // component.
-  base::ScopedPathOverride preinstalled_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED};
-  base::ScopedPathOverride preinstalled_alt_dir_override_{
-      component_updater::DIR_COMPONENT_PREINSTALLED_ALT};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        Succeeds) {
+  data_provider_.SetManagedAllowlist({web_bundle_id_});
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
           .app_id();
@@ -1401,10 +1375,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
       &provider().install_manager());
   manifest_updated_observer.BeginListening({app_id});
   // Key rotation should trigger a discovery in the update manager.
-  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
-                  base::Version("0.1.0"), kWebBundleId1.id(),
-                  kKeyPair2.public_key.bytes()),
-              HasValue());
+  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
   manifest_updated_observer.Wait();
 
   // The app's integrity block data must be different now due to an update.
@@ -1422,6 +1393,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        AppStopsOpeningOnUpdateFailure) {
+  data_provider_.SetManagedAllowlist({web_bundle_id_});
   auto app_id =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_)
           .app_id();
@@ -1465,10 +1437,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and clear the reader cache.
-  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
-                  base::Version("0.1.0"), kWebBundleId1.id(),
-                  kKeyPair2.public_key.bytes()),
-              HasValue());
+  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
 
   // Now an attempt to open the app should display the "missing or damaged"
   // page.
@@ -1509,6 +1478,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        DoesntAffectRunningApps) {
+  data_provider_.SetManagedAllowlist({web_bundle_id_});
   auto url_info =
       IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id_);
   auto app_id = url_info.app_id();
@@ -1550,10 +1520,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
   // Key rotation should trigger an unsuccessful discovery in the update manager
   // and queue a cache clear request for this bundle reader.
-  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
-                  base::Version("0.1.0"), kWebBundleId1.id(),
-                  kKeyPair2.public_key.bytes()),
-              HasValue());
+  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
 
   // The currently open app should not be affected.
   {
@@ -1584,6 +1551,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
                        PolicyReprocessOnComponentUpdate) {
+  data_provider_.SetManagedAllowlist({web_bundle_id_});
   base::HistogramTester ht;
 
   auto url_info =
@@ -1621,10 +1589,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerWithKeyRotationBrowserTest,
   waiter.BeginListening({app_id});
 
   // Key rotation should trigger a policy reprocess.
-  EXPECT_THAT(test::InstallIwaKeyDistributionComponent(
-                  base::Version("0.1.0"), kWebBundleId1.id(),
-                  kKeyPair2.public_key.bytes()),
-              HasValue());
+  data_provider_.RotateKey(kWebBundleId1, kKeyPair2.public_key.bytes());
 
   waiter.Wait();
 

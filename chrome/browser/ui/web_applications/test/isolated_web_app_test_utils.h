@@ -15,6 +15,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -56,19 +57,12 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   ~IsolatedWebAppBrowserTestHarness() override;
 
  protected:
+  void PreRunTestOnMainThread() override;
+
   std::unique_ptr<net::EmbeddedTestServer> CreateAndStartServer(
       base::FilePath::StringViewType chrome_test_data_relative_root);
 
-  // Overrides the Key Distribution component. Sets managed allowlist of bundle
-  // ids which enables installing and updating Isolated Web Apps from policy.
-  // CAUTION: This function fully overrides all fields of the Key Distribution
-  // component (see IwaKeyDistributionInfoProvider::ComponentData), take care to
-  // not override other fields important for a testing feature or previously
-  // allowlisted bundles. CAUTION: Subsequent calls must use a higher
-  // `component_version`.
-  void SetIwaManagedAllowlist(
-      const std::vector<web_package::SignedWebBundleId>& managed_allowlist,
-      const base::Version& component_version);
+  virtual ChromeIwaRuntimeDataProvider* GetRuntimeDataProvider();
 
   IsolatedWebAppUrlInfo InstallDevModeProxyIsolatedWebApp(
       const url::Origin& origin);
@@ -88,6 +82,8 @@ class IsolatedWebAppBrowserTestHarness : public WebAppBrowserTestBase {
   // stable channel doesn't enable a required feature.
   // TODO(b/309153867): Remove this when underlying issue is figured out.
   extensions::ScopedCurrentChannel channel_{version_info::Channel::CANARY};
+
+  std::optional<base::AutoReset<ChromeIwaRuntimeDataProvider*>> resetter_;
 };
 
 class UpdateDiscoveryTaskResultWaiter

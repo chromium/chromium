@@ -19,9 +19,11 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install/isolated_web_app_install_source.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/chrome_iwa_runtime_data_provider.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/key_distribution/test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -84,6 +86,13 @@ IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
 
 IsolatedWebAppBrowserTestHarness::~IsolatedWebAppBrowserTestHarness() = default;
 
+void IsolatedWebAppBrowserTestHarness::PreRunTestOnMainThread() {
+  if (auto* provider = GetRuntimeDataProvider()) {
+    resetter_ = ChromeIwaRuntimeDataProvider::SetInstanceForTesting(provider);
+  }
+  WebAppBrowserTestBase::PreRunTestOnMainThread();
+}
+
 std::unique_ptr<net::EmbeddedTestServer>
 IsolatedWebAppBrowserTestHarness::CreateAndStartServer(
     base::FilePath::StringViewType chrome_test_data_relative_root) {
@@ -102,6 +111,11 @@ Browser* IsolatedWebAppBrowserTestHarness::GetBrowserFromFrame(
       content::WebContents::FromRenderFrameHost(frame));
   EXPECT_TRUE(browser);
   return browser;
+}
+
+ChromeIwaRuntimeDataProvider*
+IsolatedWebAppBrowserTestHarness::GetRuntimeDataProvider() {
+  return nullptr;
 }
 
 content::RenderFrameHost* IsolatedWebAppBrowserTestHarness::OpenApp(
@@ -262,15 +276,6 @@ void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
   }
 
   CommitNavigation(content::NavigationSimulator::CreateFromPending(controller));
-}
-
-void IsolatedWebAppBrowserTestHarness::SetIwaManagedAllowlist(
-    const std::vector<web_package::SignedWebBundleId>& managed_allowlist,
-    const base::Version& component_version) {
-  ASSERT_OK(test::KeyDistributionComponentBuilder(component_version)
-                .WithManagedAllowlist(managed_allowlist)
-                .Build()
-                .UploadFromComponentFolder());
 }
 
 }  // namespace web_app
