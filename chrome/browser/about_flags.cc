@@ -11657,6 +11657,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"glic-unified-fre-screen", flag_descriptions::kGlicUnifiedFreScreenName,
      flag_descriptions::kGlicUnifiedFreScreenDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kGlicUnifiedFreScreen)},
+    {"glic-live-mode-only-glow", flag_descriptions::kGlicLiveModeOnlyGlowName,
+     flag_descriptions::kGlicLiveModeOnlyGlowDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicLiveModeOnlyGlow)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,

@@ -1359,6 +1359,10 @@ inline constexpr char kGlicCaptureRegionName[] = "Glic Capture Region";
 inline constexpr char kGlicDetachedName[] = "Glic detached-only mode";
 inline constexpr char kGlicDetachedDescription[] =
     "Detach only mode forces the Glic UI to always be floating";
+inline constexpr char kGlicLiveModeOnlyGlowName[] = "Glic Live Mode Only Glow";
+inline constexpr char kGlicLiveModeOnlyGlowDescription[] =
+    "The Gemini glow around the web contents will only appear when in live "
+    "mode, rather than being always on the current page.";
 inline constexpr char kGlicSidePanelName[] = "Glic side panel";
 inline constexpr char kGlicSidePanelDescription[] =
     "Enable mulitple side panels for Glic";

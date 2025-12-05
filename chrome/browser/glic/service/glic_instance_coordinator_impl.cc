@@ -64,7 +64,6 @@ constexpr base::TimeDelta kSidePanelMaxRecency = base::Minutes(20);
 constexpr base::TimeDelta kFloatyMaxRecency = base::Hours(3);
 
 BASE_FEATURE(kGlicMaxRecency, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kGlicLiveModeOnlyGlow, base::FEATURE_DISABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<base::TimeDelta> kGlicMaxRecencyValue{
     &kGlicMaxRecency, "duration", base::Minutes(30)};
@@ -143,7 +142,7 @@ void GlicInstanceCoordinatorImpl::NotifyActiveInstanceChanged() {
 
 void GlicInstanceCoordinatorImpl::ComputeContentAccessIndicator() {
   if (active_instance_) {
-    if (base::FeatureList::IsEnabled(kGlicLiveModeOnlyGlow)) {
+    if (base::FeatureList::IsEnabled(features::kGlicLiveModeOnlyGlow)) {
       service_->SetContextAccessIndicator(
           active_instance_->IsShowing() && active_instance_->IsLiveMode() &&
           active_instance_->host().IsContextAccessIndicatorEnabled());

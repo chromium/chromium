@@ -5648,6 +5648,11 @@
     "expiry_milestone": 146
   },
   {
+    "name": "glic-live-mode-only-glow",
+    "owners": [ "wry@chromium.org", "//chrome/browser/glic/OWNERS" ],
+    "expiry_milestone": 150
+  },
+  {
     "name":"glic-panel-reset-on-session-timeout" ,
     "owners": [
       "perrier@chromium.org",
