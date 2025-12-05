@@ -950,6 +950,7 @@ UIImage* SendButtonImage(BOOL highlighted) {
   self.aimButtonWidthConstraint.active = YES;
 
   [self createImageGenerationButton];
+  _imageGenerationButton.hidden = YES;
 
   // Horizontal stack view for buttons
   UIView* spacerView = [[UIView alloc] init];
