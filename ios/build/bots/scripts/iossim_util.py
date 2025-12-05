@@ -44,7 +44,7 @@ def get_simulator_list(path=SIMULATOR_DEFAULT_PATH):
                                '-j']).decode('utf-8'))
 
 
-def get_simulator(platform, version):
+def get_simulator(platform, version, out_dir=None):
   """Gets a simulator or creates a new one if not exist by platform and version.
 
   Args:
@@ -54,7 +54,8 @@ def get_simulator(platform, version):
   Returns:
     A udid of a simulator device.
   """
-  udids = get_simulator_udids_by_platform_and_version(platform, version)
+  udids = get_simulator_udids_by_platform_and_version(platform, version,
+                                                      out_dir)
   if udids:
     return udids[0]
   return create_device_by_platform_and_version(platform, version)
@@ -82,8 +83,54 @@ def get_simulator_device_type_by_platform(simulators, platform):
       (platform, simulators['devicetypes']))
 
 
-def get_simulator_runtime_by_platform_and_version(simulators, platform,
-                                                  version):
+def debug_missing_simulator(checked_runtimes, out_dir=None):
+  if out_dir == None:
+    return
+  # where we looked and didn't find the given version
+  checked_runtimes_path = os.path.join(
+      os.path.abspath(out_dir), 'checked_runtimes.json')
+  with open(checked_runtimes_path, "w") as f:
+    f.write(json.dumps(checked_runtimes, indent=2))
+
+  # sanity check of 'xcrun simctl runtime list -j'
+  runtimes_path = os.path.join(os.path.abspath(out_dir), 'runtimes.json')
+  runtimes = subprocess.check_output(
+      ['xcrun', 'simctl', 'runtime', 'list', '-j']).decode('utf-8')
+  with open(runtimes_path, "w") as f:
+    f.write(runtimes)
+
+  # is the runtime DMG still mounted?
+  coresim_volumes_path = os.path.join(
+      os.path.abspath(out_dir), 'coresim_volumes.txt')
+  target_vol_path = '/Library/Developer/CoreSimulator/Volumes'
+  if os.path.exists(target_vol_path):
+    coresim_volumes_list = os.listdir(target_vol_path)
+    coresim_volumes_str = "\n".join(
+        coresim_volumes_list)  # Convert list to string
+  else:
+    coresim_volumes_str = "DIRECTORY MISSING"
+  try:
+    all_mounts = subprocess.check_output(['mount']).decode('utf-8')
+    # Filter for the relevant lines in Python
+    relevant_mounts = [
+        line for line in all_mounts.splitlines()
+        if '/Library/Developer/CoreSimulator/Volumes' in line
+    ]
+    coresim_mounts_str = "\n".join(relevant_mounts)
+  except subprocess.CalledProcessError as e:
+    coresim_mounts_str = f"Error running mount: {str(e)}"
+
+  with open(coresim_volumes_path, "w") as f:
+    f.write("--- os.listdir contents ---\n")
+    f.write(coresim_volumes_str)
+    f.write("\n\n--- 'mount' command output ---\n")
+    f.write(coresim_mounts_str)
+
+
+def get_simulator_runtime_by_platform_and_version(simulators,
+                                                  platform,
+                                                  version,
+                                                  out_dir=None):
   """Finds the simulator runtime identifier for a given platform and OS version.
 
   Args:
@@ -106,6 +153,8 @@ def get_simulator_runtime_by_platform_and_version(simulators, platform,
       if any(supported_device_type['name'] == platform
              for supported_device_type in runtime['supportedDeviceTypes']):
         return runtime['identifier']
+  # TODO(crbug.com/454911750): remove debugging after bug is resolved
+  debug_missing_simulator(simulators['runtimes'], out_dir)
   raise test_runner.SimulatorNotFoundError('Not found "%s" SDK in runtimes %s' %
                                            (version, simulators['runtimes']))
 
@@ -126,7 +175,9 @@ def get_simulator_runtime_by_device_udid(simulator_udid):
                                                             simulator_list))
 
 
-def get_simulator_udids_by_platform_and_version(platform, version):
+def get_simulator_udids_by_platform_and_version(platform,
+                                                version,
+                                                out_dir=None):
   """Gets list of simulators UDID based on platform name and iOS version.
 
     Args:
@@ -136,7 +187,7 @@ def get_simulator_udids_by_platform_and_version(platform, version):
   simulators = get_simulator_list()
   devices = simulators['devices']
   sdk_id = get_simulator_runtime_by_platform_and_version(
-      simulators, platform, version)
+      simulators, platform, version, out_dir)
   results = []
   for device in devices.get(sdk_id, []):
     if device['name'] == _compose_simulator_name(platform, version):

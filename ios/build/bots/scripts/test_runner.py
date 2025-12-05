@@ -769,7 +769,8 @@ class SimulatorTestRunner(TestRunner):
     self.start_time = None
     self.version = version
     self.clones = kwargs.get('clones') or 1
-    self.udid = iossim_util.get_simulator(self.platform, self.version)
+    self.udid = iossim_util.get_simulator(self.platform, self.version,
+                                          self.out_dir)
     self.platform_type = iossim_util.get_platform_type_by_platform(
         self.platform)
     self.use_clang_coverage = kwargs.get('use_clang_coverage') or False
