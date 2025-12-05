@@ -198,9 +198,6 @@ bool ContextualSearchSessionHandle::DeleteFile(
 
 void ContextualSearchSessionHandle::ClearFiles() {
   uploaded_context_tokens_.clear();
-  if (auto* controller = GetController()) {
-    controller->ClearFiles();
-  }
 }
 
 GURL ContextualSearchSessionHandle::CreateSearchUrl(

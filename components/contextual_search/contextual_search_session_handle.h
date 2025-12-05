@@ -95,7 +95,9 @@ class ContextualSearchSessionHandle {
   // and deleted.
   bool DeleteFile(const base::UnguessableToken& file_token);
 
-  // Clear all context controller files.
+  // Clear all context controller files from this particular instance of the
+  // session handle. This does not clear the internal state of the context
+  // controller, which may be shared with other session handles.
   void ClearFiles();
 
   // Returns the search url for a new query for opening.

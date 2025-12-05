@@ -265,10 +265,35 @@ TEST_F(ContextualSearchboxHandlerTest, AddFile_Image) {
 }
 
 TEST_F(ContextualSearchboxHandlerTest, ClearFiles) {
-  EXPECT_CALL(query_controller(), ClearFiles);
+  searchbox::mojom::SelectedFileInfoPtr file_info =
+      searchbox::mojom::SelectedFileInfo::New();
+  file_info->file_name = "test.png";
+  file_info->selection_time = base::Time::Now();
+  file_info->mime_type = "application/image";
+
+  std::vector<uint8_t> test_data = {1, 2, 3, 4};
+  auto test_data_span = base::span<const uint8_t>(test_data);
+  mojo_base::BigBuffer file_data(test_data_span);
+
+  std::optional<lens::ImageEncodingOptions> image_options;
+  base::UnguessableToken controller_file_info_token;
+  EXPECT_CALL(query_controller(), StartFileUploadFlow)
+      .WillOnce([&](const base::UnguessableToken& file_token, auto,
+                    std::optional<lens::ImageEncodingOptions> options_arg) {
+        controller_file_info_token = file_token;
+        image_options = std::move(options_arg);
+      });
+  base::MockCallback<ComposeboxHandler::AddFileContextCallback> callback;
+  base::UnguessableToken callback_token;
+  EXPECT_CALL(callback, Run).WillOnce(testing::SaveArg<0>(&callback_token));
+
+  handler().AddFileContext(std::move(file_info), std::move(file_data),
+                           callback.Get());
+  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 1u);
+
+  EXPECT_CALL(query_controller(), ClearFiles).Times(0);
   handler().ClearFiles();
-  auto uploaded_context_tokens = handler().GetUploadedContextTokensForTesting();
-  EXPECT_EQ(uploaded_context_tokens.size(), 0u);
+  EXPECT_EQ(handler().GetUploadedContextTokensForTesting().size(), 0u);
 }
 
 TEST_F(ContextualSearchboxHandlerTest, SubmitQuery) {
