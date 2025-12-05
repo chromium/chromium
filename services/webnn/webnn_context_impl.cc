@@ -203,7 +203,6 @@ void WebNNContextImpl::CreateTensor(
 
 const scoped_refptr<gpu::SchedulerTaskRunner>&
 WebNNContextImpl::scheduler_task_runner() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
   return gpu_sequence_->scheduler_task_runner();
 }
 

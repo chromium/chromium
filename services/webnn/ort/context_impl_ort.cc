@@ -341,6 +341,15 @@ base::WeakPtr<WebNNContextImpl> ContextImplOrt::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+void ContextImplOrt::HandleContextLostOrCrash(const std::string& error_message,
+                                              OrtErrorCode error_code) {
+  // Currently, we decide to destroy all contexts and kill the GPU process for
+  // any error code.
+  // TODO(crbug.com/462937875): Handle errors differently when ORT can report a
+  // device-removal error code in the future.
+  DestroyAllContextsAndKillGpuProcess(error_message);
+}
+
 void ContextImplOrt::CreateGraphImpl(
     mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
     mojom::GraphInfoPtr graph_info,

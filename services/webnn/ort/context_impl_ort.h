@@ -71,6 +71,9 @@ class ContextImplOrt final : public WebNNContextImpl {
     return session_options_;
   }
 
+  void HandleContextLostOrCrash(const std::string& error_message,
+                                OrtErrorCode error_code);
+
  private:
   ~ContextImplOrt() override;
 
