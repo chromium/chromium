@@ -53,8 +53,8 @@ export class OmniboxAimAppElement extends CrLitElement implements Page {
         this.pageHandler_.$.bindNewPipeAndPassReceiver());
 
     this.callbackRouter_.onShow.addListener(this.onShow_.bind(this));
-    this.callbackRouter_.onClose.addListener(this.onClose_.bind(this));
     this.callbackRouter_.addContext.addListener(this.addContext_.bind(this));
+    this.callbackRouter_.onClose.addListener(this.onClose_.bind(this));
   }
 
   override connectedCallback() {
