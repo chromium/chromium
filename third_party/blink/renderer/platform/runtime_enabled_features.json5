@@ -3454,7 +3454,7 @@
     },
     {
       name: "MulticolColumnWrapping",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NavigateEventCanTransition",

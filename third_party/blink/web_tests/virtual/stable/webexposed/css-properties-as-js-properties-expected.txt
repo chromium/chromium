@@ -131,12 +131,14 @@ colorScheme
 columnCount
 columnFill
 columnGap
+columnHeight
 columnRule
 columnRuleColor
 columnRuleStyle
 columnRuleWidth
 columnSpan
 columnWidth
+columnWrap
 columns
 contain
 containIntrinsicBlockSize
