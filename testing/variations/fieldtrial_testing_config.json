@@ -26352,6 +26352,23 @@
             ]
         }
     ],
+    "UserValueDefaultBrowserStrings": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UserValueDefaultBrowserStrings"
+                    ]
+                }
+            ]
+        }
+    ],
     "V8CodeFlushing": [
         {
             "platforms": [
