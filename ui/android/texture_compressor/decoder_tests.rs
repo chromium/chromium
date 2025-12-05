@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//ui/android:texture_compressor";
+}
+
 use rust_gtest_interop::expect_eq;
 use rust_gtest_interop::prelude::*;
-use ui_sandroid_ctexture_ucompressor::decoder::apply_modifier;
-use ui_sandroid_ctexture_ucompressor::decoder::decode_etc1_block;
-use ui_sandroid_ctexture_ucompressor::decoder::parse_block_metadata;
-use ui_sandroid_ctexture_ucompressor::decoder::read_delta_bits;
-use ui_sandroid_ctexture_ucompressor::decoder::scale_4bit_to_8bit;
-use ui_sandroid_ctexture_ucompressor::decoder::scale_5bit_to_8bit;
-use ui_sandroid_ctexture_ucompressor::decoder::BlockMetadata;
+
+use texture_compressor::decoder::apply_modifier;
+use texture_compressor::decoder::decode_etc1_block;
+use texture_compressor::decoder::parse_block_metadata;
+use texture_compressor::decoder::read_delta_bits;
+use texture_compressor::decoder::scale_4bit_to_8bit;
+use texture_compressor::decoder::scale_5bit_to_8bit;
+use texture_compressor::decoder::BlockMetadata;
 
 #[gtest(TextureCompressorTest, CalculateColorIndividualMode)]
 fn test() {

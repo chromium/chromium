@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+chromium::import! {
+    "//ui/android:texture_compressor";
+}
+
 use std::env;
 use std::fs;
 use std::fs::File;
@@ -9,7 +13,8 @@ use std::io::{BufReader, BufWriter};
 use std::path::Path;
 
 use bytemuck::cast_slice;
-use ui_sandroid_ctexture_ucompressor::{compress_etc1, decompress_etc1};
+
+use texture_compressor::{compress_etc1, decompress_etc1};
 
 const ETC1_BLOCK_SIZE: u32 = 8;
 
