@@ -120,6 +120,11 @@ void ContextualTasksComposeboxHandler::CreateAndSendQueryMessage(
           ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
               web_ui_controller_->GetWebUIWebContents());
       contextual_search_web_contents_helper->session_handle()) {
+    // If there is an auto-added tab, the user sending the query means we should
+    // upload it.
+    UploadSnapshotTabContextIfPresent();
+
+    // Create a client to aim message and send it to the page.
     auto create_client_to_aim_request_info =
         std::make_unique<contextual_search::ContextualSearchContextController::
                              CreateClientToAimRequestInfo>();
