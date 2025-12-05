@@ -108,11 +108,13 @@ final class SigninPromoViewBinder {
                             : View.VISIBLE;
             view.getDismissButton().setVisibility(dismissButtonVisibility);
         } else if (key == SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR) {
-            showHeaderWithAvatar(
-                    model.get(SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR),
-                    seamlessSigninPromoType,
-                    context,
-                    view);
+            if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
+                if (model.get(SigninPromoProperties.SHOULD_SHOW_HEADER_WITH_AVATAR)) {
+                    showHeaderWithAvatar(context, view);
+                } else {
+                    showHeaderWithoutAvatar(context, view);
+                }
+            }
         } else if (key == SigninPromoProperties.SHOULD_SHOW_ACCOUNT_PICKER) {
             if (seamlessSigninPromoType == SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
                 int accountPickerVisibility =
@@ -169,46 +171,43 @@ final class SigninPromoViewBinder {
         view.setLayoutParams(lp);
     }
 
-    // TODO(crbug.com/465022302): Refactor to split into signed in and non signed in methods.
-    private static void showHeaderWithAvatar(
-            boolean showLayout,
-            @SigninFeatureMap.SeamlessSigninPromoType int promoType,
-            Context context,
-            PersonalizedSigninPromoView view) {
-        if (promoType != SigninFeatureMap.SeamlessSigninPromoType.COMPACT) {
-            return;
-        }
+    private static void showHeaderWithAvatar(Context context, PersonalizedSigninPromoView view) {
         ImageView signedInPromoImage = view.findViewById(R.id.signed_in_promo_image);
-        TextView descriptionText = view.findViewById(R.id.signin_promo_description);
+        signedInPromoImage.setVisibility(View.VISIBLE);
         LinearLayout compactLayoutImageAndDescriptionContainer =
                 view.getImageAndDescriptionContainer();
+        int imageAndDescriptionContainerMarginTop =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                R.dimen.signin_promo_desc_margin_top_signed_in_compact);
+        updateViewMargins(
+                compactLayoutImageAndDescriptionContainer,
+                null,
+                imageAndDescriptionContainerMarginTop,
+                null,
+                null);
+        TextView descriptionText = view.findViewById(R.id.signin_promo_description);
+        descriptionText.setGravity(Gravity.CENTER_VERTICAL);
+        int buttonMargins =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.signin_promo_button_margin_two_buttons);
         ButtonCompat primaryButton = view.getPrimaryButton();
-        if (showLayout) {
-            signedInPromoImage.setVisibility(View.VISIBLE);
-            int imageAndDescriptionContainerMarginTop =
-                    context.getResources()
-                            .getDimensionPixelSize(
-                                    R.dimen.signin_promo_desc_margin_top_signed_in_compact);
-            updateViewMargins(
-                    compactLayoutImageAndDescriptionContainer,
-                    null,
-                    imageAndDescriptionContainerMarginTop,
-                    null,
-                    null);
-            descriptionText.setGravity(Gravity.CENTER_VERTICAL);
-            int buttonMargins =
-                    context.getResources()
-                            .getDimensionPixelSize(R.dimen.signin_promo_button_margin_two_buttons);
-            updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
-        } else {
-            signedInPromoImage.setVisibility(View.GONE);
-            updateViewMargins(compactLayoutImageAndDescriptionContainer, null, 0, null, null);
-            descriptionText.setGravity(Gravity.CENTER);
-            int buttonMargins =
-                    context.getResources()
-                            .getDimensionPixelSize(R.dimen.signin_promo_button_margin_compact);
-            updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
-        }
+        updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
+    }
+
+    private static void showHeaderWithoutAvatar(Context context, PersonalizedSigninPromoView view) {
+        ImageView signedInPromoImage = view.findViewById(R.id.signed_in_promo_image);
+        signedInPromoImage.setVisibility(View.GONE);
+        LinearLayout compactLayoutImageAndDescriptionContainer =
+                view.getImageAndDescriptionContainer();
+        updateViewMargins(compactLayoutImageAndDescriptionContainer, null, 0, null, null);
+        TextView descriptionText = view.findViewById(R.id.signin_promo_description);
+        descriptionText.setGravity(Gravity.CENTER);
+        int buttonMargins =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.signin_promo_button_margin_compact);
+        ButtonCompat primaryButton = view.getPrimaryButton();
+        updateViewMargins(primaryButton, buttonMargins, null, buttonMargins, null);
     }
 
     private static void showLoadingState(
