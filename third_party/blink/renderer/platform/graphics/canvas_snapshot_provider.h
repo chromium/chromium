@@ -17,9 +17,7 @@ class PLATFORM_EXPORT CanvasSnapshotProvider {
  public:
   virtual scoped_refptr<StaticBitmapImage> DoExternalDrawAndSnapshot(
       base::FunctionRef<void(MemoryManagedPaintCanvas&)> draw_callback,
-      ImageOrientation orientation) {
-    NOTREACHED();
-  }
+      ImageOrientation orientation) = 0;
   virtual ~CanvasSnapshotProvider() = default;
 
   virtual bool IsAccelerated() const = 0;
