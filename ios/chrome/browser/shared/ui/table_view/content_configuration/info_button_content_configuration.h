@@ -26,7 +26,8 @@
 // The tag for the button.
 @property(nonatomic, assign) NSInteger tag;
 
-// Whether the button should be the target of VoiceOver taps. Default is YES.
+// Whether the button should be the target of VoiceOver taps. Default is YES. If
+// NO, a custom action will be provided to trigger a touch on the button.
 @property(nonatomic, assign) BOOL selectedForVoiceOver;
 
 // LINT.ThenChange(info_button_content_configuration.mm:Copy)

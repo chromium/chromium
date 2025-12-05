@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item.h"
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/legacy_table_view_cell.h"
-#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_info_button_item_delegate.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/colorful_symbol_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/info_button_content_configuration.h"
 #import "ios/chrome/browser/shared/ui/table_view/content_configuration/table_view_cell_content_configuration.h"
@@ -37,9 +36,6 @@
   contentConfiguration.subtitleColor = self.detailTextColor;
   contentConfiguration.trailingText = self.statusText;
 
-  if (self.accessibilityDelegate) {
-    cell.accessibilityCustomActions = [self createAccessibilityActions];
-  }
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   if (self.iconImage) {
@@ -73,31 +69,6 @@
   [TableViewCellContentConfiguration legacyRegisterCellForTableView:tableView];
   return
       [TableViewCellContentConfiguration legacyDequeueTableViewCell:tableView];
-}
-
-#pragma mark - Accessibility
-
-// Creates custom accessibility actions.
-- (NSArray*)createAccessibilityActions {
-  NSMutableArray* customActions = [[NSMutableArray alloc] init];
-
-  // Custom action for when the activation point is on the center of row.
-  if (!self.accessibilityActivationPointOnButton) {
-    UIAccessibilityCustomAction* tapButtonAction =
-        [[UIAccessibilityCustomAction alloc]
-            initWithName:l10n_util::GetNSString(
-                             IDS_IOS_INFO_BUTTON_ACCESSIBILITY_HINT)
-                  target:self
-                selector:@selector(handleTappedInfoButtonForItem)];
-    [customActions addObject:tapButtonAction];
-  }
-
-  return customActions;
-}
-
-// Handles accessibility action for tapping outside the info button.
-- (void)handleTappedInfoButtonForItem {
-  [self.accessibilityDelegate handleTappedInfoButtonForItem:self];
 }
 
 @end

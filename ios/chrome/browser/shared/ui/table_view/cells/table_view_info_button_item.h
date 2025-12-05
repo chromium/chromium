@@ -9,8 +9,6 @@
 
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_item.h"
 
-@protocol TableViewInfoButtonItemDelegate;
-
 // TableViewInfoButtonItem is a model class that uses TableViewInfoButtonCell.
 @interface TableViewInfoButtonItem : TableViewItem
 
@@ -45,10 +43,6 @@
 @property(nonatomic, weak) id target;
 @property(nonatomic, assign) SEL selector;
 @property(nonatomic, assign) NSInteger tag;
-
-// Accessibility delegate for custom accessibility actions.
-@property(nonatomic, weak) id<TableViewInfoButtonItemDelegate>
-    accessibilityDelegate;
 
 // Boolean for if the accessibility activation point should be on the button of
 // cell. The default value is YES. If value is changed to NO, the activation

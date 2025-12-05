@@ -467,11 +467,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewInfoButtonItem alloc]
           initWithType:ItemTypeTableViewInfoButtonWithDetailText];
   tableViewInfoButtonItemWithDetailText.text = @"Info button item";
-  tableViewInfoButtonItemWithDetailText.detailText = @"Detail text";
+  tableViewInfoButtonItemWithDetailText.detailText =
+      @"Button is not activated by VoiceOver";
   tableViewInfoButtonItemWithDetailText.statusText = @"Status";
   tableViewInfoButtonItemWithDetailText.target = self;
   tableViewInfoButtonItemWithDetailText.selector =
       @selector(didTapManagedUIInfoButton:);
+  tableViewInfoButtonItemWithDetailText.accessibilityActivationPointOnButton =
+      NO;
   [model addItem:tableViewInfoButtonItemWithDetailText
       toSectionWithIdentifier:SectionIdentifierSettings];
 

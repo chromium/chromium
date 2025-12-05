@@ -459,4 +459,19 @@ constexpr CGFloat kTrailingMarginWithAccessory = 8;
   return [super accessibilityActivationPoint];
 }
 
+- (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
+  NSMutableArray<UIAccessibilityCustomAction*>* actions =
+      [NSMutableArray array];
+  if (_trailingContentView.accessibilityCustomActions.count > 0) {
+    [actions
+        addObjectsFromArray:_trailingContentView.accessibilityCustomActions];
+  }
+  if (_leadingContentView.accessibilityCustomActions.count > 0) {
+    [actions arrayByAddingObjectsFromArray:_leadingContentView
+                                               .accessibilityCustomActions];
+  }
+  [actions addObjectsFromArray:[super accessibilityCustomActions]];
+  return actions;
+}
+
 @end

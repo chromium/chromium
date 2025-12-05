@@ -85,4 +85,19 @@
   return [super accessibilityActivationPoint];
 }
 
+- (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
+  NSMutableArray<UIAccessibilityCustomAction*>* actions =
+      [NSMutableArray array];
+  if ([self.contentView conformsToProtocol:@protocol(ChromeContentView)]) {
+    UIView<ChromeContentView>* chromeContentView =
+        static_cast<UIView<ChromeContentView>*>(self.contentView);
+    if (chromeContentView.accessibilityCustomActions.count > 0) {
+      [actions
+          addObjectsFromArray:chromeContentView.accessibilityCustomActions];
+    }
+  }
+  [actions addObjectsFromArray:[super accessibilityCustomActions]];
+  return actions;
+}
+
 @end
