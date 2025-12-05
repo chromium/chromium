@@ -29,7 +29,7 @@ void ColorChangeHandler::Bind(
   // TODO(crbug.com/452983498): Remove this check once we have migrated all
   // RegisterWebUIControllerInterfaceBinder calls to registry.ForWebUI().Add()
   // calls.
-  if (!web_contents()->GetWebUI()) {
+  if (!render_frame_host().GetWebUI()) {
     mojo::ReportBadMessage(
         "Attempted to bind ColorChangeHandler to a non-WebUI frame");
     return;
