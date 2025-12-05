@@ -461,10 +461,9 @@ AutofillField::AutofillField(FieldSignature field_signature) : AutofillField() {
   field_signature_ = field_signature;
 }
 
-AutofillField::AutofillField(const FormFieldData& field)
-    : FormFieldData(field),
-      field_signature_(
-          CalculateFieldSignatureByNameAndType(name(), form_control_type())) {
+AutofillField::AutofillField(const FormFieldData& field) {
+  UpdateFieldData(field);
+  initial_value_ = value();
   local_type_predictions_.fill(NO_SERVER_DATA);
 }
 
@@ -818,6 +817,13 @@ base::optional_ref<const AutofillFormatString> AutofillField::format_string()
     return std::nullopt;
   }
   return format_string_;
+}
+
+void AutofillField::UpdateFieldData(const FormFieldData& field_data) {
+  FormFieldData::operator=(field_data);
+
+  field_signature_ =
+      CalculateFieldSignatureByNameAndType(name(), form_control_type());
 }
 
 bool AutofillField::IsCreditCardPrediction() const {

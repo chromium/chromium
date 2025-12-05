@@ -10,13 +10,16 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
+#include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/browser/test_utils/field_prediction_test_matchers.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_field_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -315,6 +318,39 @@ TEST_F(AutofillFieldTest, UnionTypesFromHtmlAndServerTypes) {
               is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, false));
   EXPECT_THAT(f(kCountryCode, ADDRESS_HOME_ZIP, PASSPORT_NUMBER),
               is_type({ADDRESS_HOME_COUNTRY, PASSPORT_NUMBER}, true));
+}
+
+// Tests that `AutofillField::UpdateFieldData()` correctly updates information
+// of `AutofillField` coming from `FormFieldData` and leaves other information
+// unchanged.
+TEST_F(AutofillFieldTest, UpdateFieldData) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillFixFormEquality};
+  FormFieldData field = test::GetFormFieldData(
+      {.role = NAME_FULL, .autocomplete_attribute = "name"});
+
+  AutofillField autofill_field(field);
+  // Set information contained in `AutofillField` and not `FormFieldData`.
+  autofill_field.SetTypeTo(AutofillType(NAME_FULL),
+                           /*source=*/std::nullopt);
+  autofill_field.set_did_trigger_suggestions(true);
+  ASSERT_TRUE(
+      FormFieldData::IdenticalAndEquivalentDomElements(field, autofill_field));
+
+  // Update information in `AutofillField` that come from `FormFieldData`.
+  field.set_value(u"John Doe");
+  field.set_is_autofilled(true);
+  ASSERT_FALSE(
+      FormFieldData::IdenticalAndEquivalentDomElements(field, autofill_field));
+
+  // By updating the `FormFieldData` in `autofill_field`, `field` matches again
+  // with `autofill_field`, and the other  information in `autofill_field`
+  // remain unchanged.
+  test_api(autofill_field).UpdateFieldData(field);
+  EXPECT_TRUE(
+      FormFieldData::IdenticalAndEquivalentDomElements(field, autofill_field));
+  EXPECT_EQ(autofill_field.Type().GetAddressType(), NAME_FULL);
+  EXPECT_TRUE(autofill_field.did_trigger_suggestions());
 }
 
 constexpr HeuristicSource kRegexSource = HeuristicSource::kRegexes;

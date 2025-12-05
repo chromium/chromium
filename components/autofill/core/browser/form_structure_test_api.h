@@ -61,6 +61,10 @@ class FormStructureTestApi {
 
   void AssignSections() { autofill::AssignSections(form_structure_->fields_); }
 
+  void UpdateFormData(const FormData& form) {
+    form_structure_->UpdateFormData(form);
+  }
+
  private:
   const raw_ref<FormStructure> form_structure_;
 };

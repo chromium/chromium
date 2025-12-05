@@ -22,6 +22,10 @@ class AutofillFieldTestApi {
     autofill_field_->initial_value_ = std::move(initial_value);
   }
 
+  void UpdateFieldData(const FormFieldData& field_data) {
+    autofill_field_->UpdateFieldData(field_data);
+  }
+
  private:
   const raw_ref<AutofillField> autofill_field_;
 };

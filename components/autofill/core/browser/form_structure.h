@@ -18,6 +18,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/pass_key.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/country_type.h"
@@ -48,6 +49,7 @@ using FormAndFieldSignatures =
     std::vector<std::pair<FormSignature, std::vector<FieldSignature>>>;
 using FieldSuggestion = AutofillQueryResponse::FormSuggestion::FieldSuggestion;
 
+class AutofillManager;
 struct AutofillServerPrediction;
 class FormData;
 struct FormDataPredictions;
@@ -174,6 +176,11 @@ class FormStructure {
     kFormImport,
   };
 
+  void UpdateFormData(const FormData& form_data,
+                      base::PassKey<AutofillManager> pass_key) {
+    UpdateFormData(form_data);
+  }
+
   // Assumes that `*this` is FormStructure which was freshly created from a
   // FormData object that the renderer sent to the browser and copies relevant
   // information from a `cached_form` to `*this`. Depending on the passed
@@ -298,6 +305,11 @@ class FormStructure {
 
  private:
   friend class FormStructureTestApi;
+
+  // Copies the information from `form_data` into the members of `FormStructure`
+  // that are copies of information in `FormData`. `this` and `form_data` must
+  // have the same `global_id()`.
+  void UpdateFormData(const FormData& form_data);
 
   // Sets the rank of each field in the form.
   void DetermineFieldRanks();

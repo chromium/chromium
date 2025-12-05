@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -45,6 +47,7 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/html_field_types.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-data-view.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/version_info/version_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -2325,6 +2328,40 @@ TEST_F(FormStructureTestImpl, LoyaltyCardsHeuristics_BigForms) {
   // Phone number.
   EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER,
             form_structure->field(4)->heuristic_type());
+}
+
+// Tests that `FormStructure::UpdateFormData()` correctly updates information of
+// `FormStructure` coming from `FormData` and leaves other information
+// unchanged.
+TEST_F(FormStructureTestImpl, UpdateFormData) {
+  base::test::ScopedFeatureList scoped_feature_list{
+      features::kAutofillFixFormEquality};
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FULL, .autocomplete_attribute = "name"}},
+       .name = u"form-name"});
+
+  FormStructure form_structure(form);
+  // Set information that is contained in `FormStructure` and not `FormData`.
+  form_structure.field(0)->SetTypeTo(AutofillType(NAME_FULL),
+                                     /*source=*/std::nullopt);
+  form_structure.set_submission_source(mojom::SubmissionSource::XHR_SUCCEEDED);
+  ASSERT_EQ(form_structure.ToFormData(), form);
+
+  // Update some information in `FormStructure` that come from `FormData`.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields.front().set_value(u"John Doe");
+  form.set_fields(std::move(fields));
+  form.set_name_attribute(u"new-form-name");
+  ASSERT_NE(form_structure.ToFormData(), form);
+
+  // By updating the `FormData` in `form_structure`, `form` matches again with
+  // `form_structure.ToFormData()`, and the other  information in
+  // `form_structure` remain unchanged.
+  test_api(form_structure).UpdateFormData(form);
+  EXPECT_EQ(form_structure.ToFormData(), form);
+  EXPECT_EQ(form_structure.field(0)->Type().GetAddressType(), NAME_FULL);
+  EXPECT_EQ(form_structure.submission_source(),
+            mojom::SubmissionSource::XHR_SUCCEEDED);
 }
 
 }  // namespace

@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 
 #include <algorithm>
+#include <memory>
 #include <optional>
 #include <ranges>
 
@@ -26,6 +27,7 @@
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
 #include "components/autofill/core/browser/form_qualifiers.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -903,6 +905,23 @@ void AutofillManager::UpdateFormCache(
     bool preserve_signatures) {
   SCOPED_UMA_HISTOGRAM_TIMER("Autofill.Timing.ParseFormsAsync.UpdateCache");
 
+  auto reset_predictions = [](FormStructure& form_structure) {
+    for (const std::unique_ptr<AutofillField>& field :
+         form_structure.fields()) {
+      // This is set by running field classification heuristics and the ML
+      // model.
+      for (int i = 0; i <= static_cast<int>(HeuristicSource::kMaxValue); ++i) {
+        HeuristicSource s = static_cast<HeuristicSource>(i);
+        // Resetting all `HeuristicSource`s also resets the
+        // `GetActiveHeuristicSource()`, which in turn resets
+        // AutofillField::overall_type_.
+        field->set_heuristic_type(s, NO_SERVER_DATA);
+      }
+      // This is set by running the ML model.
+      field->set_ml_supported_types({});
+    }
+  };
+
   auto apply_predictions = [](FormStructure& form_structure,
                               const AsyncContext& context, size_t i) {
     if (!context.autofill_predictions.empty()) {
@@ -920,7 +939,7 @@ void AutofillManager::UpdateFormCache(
   };
 
   for (size_t i = 0; i < forms.size(); ++i) {
-    const FormStructure* const cached_form_structure =
+    FormStructure* cached_form_structure =
         FindCachedFormById(forms[i].global_id());
     const bool is_new_form = !cached_form_structure;
     if (form_structures_.size() + is_new_form >
@@ -942,26 +961,49 @@ void AutofillManager::UpdateFormCache(
       continue;
     }
 
-    auto form_structure = std::make_unique<FormStructure>(forms[i]);
-    form_structure->RetrieveFromCache(*cached_form_structure, reason);
-    if (context) {
-      apply_predictions(*form_structure, *context, i);
-    }
+    if (base::FeatureList::IsEnabled(features::kAutofillOptimizeCacheUpdates)) {
+      FormSignature form_signature = cached_form_structure->form_signature();
+      FormSignature structural_form_signature =
+          cached_form_structure->structural_form_signature();
+      cached_form_structure->UpdateFormData(forms[i], /*pass_key=*/{});
+      if (context) {
+        reset_predictions(*cached_form_structure);
+        apply_predictions(*cached_form_structure, *context, i);
+      }
+      if (preserve_signatures ||
+          IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
+        // Not updating signatures of credit card forms is legacy behaviour. We
+        // believe that the signatures are kept stable for voting purposes.
+        // Credit card forms are those which contain only credit card fields.
+        // TODO(crbug.com/431754194): Investigate making the behavior consistent
+        // across all form types.
+        cached_form_structure->set_form_signature(form_signature);
+        cached_form_structure->set_structural_form_signature(
+            structural_form_signature);
+      }
+    } else {
+      auto form_structure = std::make_unique<FormStructure>(forms[i]);
+      form_structure->RetrieveFromCache(*cached_form_structure, reason);
+      if (context) {
+        apply_predictions(*form_structure, *context, i);
+      }
 
-    if (!preserve_signatures &&
-        !IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
-      // Not updating signatures of credit card forms is legacy behaviour. We
-      // believe that the signatures are kept stable for voting purposes.
-      // Credit card forms are those which contain only credit card fields.
-      // TODO(crbug.com/431754194): Investigate making the behavior consistent
-      // across all form types.
-      form_structure->set_form_signature(CalculateFormSignature(forms[i]));
-      form_structure->set_alternative_form_signature(
-          CalculateAlternativeFormSignature(forms[i]));
-      form_structure->set_structural_form_signature(
-          CalculateStructuralFormSignature(forms[i]));
+      if (!preserve_signatures &&
+          !IsCreditCardFormForSignaturePurposes(*cached_form_structure)) {
+        // Not updating signatures of credit card forms is legacy behaviour. We
+        // believe that the signatures are kept stable for voting purposes.
+        // Credit card forms are those which contain only credit card fields.
+        // TODO(crbug.com/431754194): Investigate making the behavior consistent
+        // across all form types.
+        form_structure->set_form_signature(CalculateFormSignature(forms[i]));
+        form_structure->set_alternative_form_signature(
+            CalculateAlternativeFormSignature(forms[i]));
+        form_structure->set_structural_form_signature(
+            CalculateStructuralFormSignature(forms[i]));
+      }
+
+      form_structures_[forms[i].global_id()] = std::move(form_structure);
     }
-    form_structures_[forms[i].global_id()] = std::move(form_structure);
   }
 }
 

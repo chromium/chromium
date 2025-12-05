@@ -17,10 +17,12 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
@@ -37,6 +39,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -120,33 +123,44 @@ std::string_view ToYesOrNo(bool value) {
   return value ? "Yes" : "No";
 }
 
+// Searches in `field_map` for a field matching `field_data` either by
+// `FieldGlobalId` or uniquely by `FieldSignature`. Returns the found field and
+// erases it from `field_map` if found, and `nullptr` otherwise.
+std::unique_ptr<AutofillField> ExtractMatchingFieldToUpdate(
+    const FormFieldData& field_data,
+    std::map<FieldGlobalId, std::unique_ptr<AutofillField>>& field_map) {
+  auto find_unique_signature_match = [&](FieldSignature signature) {
+    auto pred = [&](const auto& p) {
+      return p.second->GetFieldSignature() == signature;
+    };
+    auto it = std::ranges::find_if(field_map, pred);
+    return it != field_map.end() &&
+                   std::ranges::find_if(std::next(it), field_map.end(), pred) ==
+                       field_map.end()
+               ? it
+               : field_map.end();
+  };
+
+  auto it = field_map.find(field_data.global_id());
+  if (it == field_map.end()) {
+    it = find_unique_signature_match(
+        CalculateFieldSignatureForField(field_data));
+  }
+  if (it == field_map.end()) {
+    return nullptr;
+  }
+  std::unique_ptr<AutofillField> field = std::move(it->second);
+  field_map.erase(it);
+  return field;
+}
+
 }  // namespace
 
 FormStructure::FormStructure(const FormData& form)
-    : id_attribute_(form.id_attribute()),
-      name_attribute_(form.name_attribute()),
-      form_name_(form.name()),
-      button_titles_(form.button_titles()),
-      source_url_(form.url()),
-      full_source_url_(form.full_url()),
-      target_url_(form.action()),
-      main_frame_origin_(form.main_frame_origin()),
-      form_parsed_timestamp_(base::TimeTicks::Now()),
+    : form_parsed_timestamp_(base::TimeTicks::Now()),
       host_frame_(form.host_frame()),
-      version_(form.version()),
-      renderer_id_(form.renderer_id()),
-      child_frames_(form.child_frames()) {
-  // Copy the form fields.
-  for (const FormFieldData& field : form.fields()) {
-    fields_.push_back(std::make_unique<AutofillField>(field));
-  }
-
-  form_signature_ = CalculateFormSignature(form);
-  alternative_form_signature_ = CalculateAlternativeFormSignature(form);
-  structural_form_signature_ = CalculateStructuralFormSignature(form);
-  // Do further processing on the fields, as needed.
-  SetFieldTypesFromAutocompleteAttribute();
-  DetermineFieldRanks();
+      renderer_id_(form.renderer_id()) {
+  UpdateFormData(form);
 }
 
 FormStructure::FormStructure(
@@ -365,6 +379,71 @@ bool FormStructure::IsCompleteCreditCardForm(
              found_cc_name;
     }
   }
+}
+
+void FormStructure::UpdateFormData(const FormData& form_data) {
+  CHECK_EQ(form_data.global_id(), global_id());
+
+  id_attribute_ = form_data.id_attribute();
+  name_attribute_ = form_data.name_attribute();
+  form_name_ = form_data.name();
+  button_titles_ = form_data.button_titles();
+  source_url_ = form_data.url();
+  full_source_url_ = form_data.full_url();
+  target_url_ = form_data.action();
+  main_frame_origin_ = form_data.main_frame_origin();
+  version_ = form_data.version();
+  child_frames_ = form_data.child_frames();
+
+  // No need to copy these members as it is assumed that
+  // `this->global_id() == form_data.global_id()`.
+  // host_frame_ = form_data.host_frame();
+  // renderer_id_ = form_data.renderer_id();
+
+  // TODO(crbug.com/456719060): Figure out whether those members should be
+  // replicated in `FormStructure`.
+  // form_data.is_gaia_with_skip_save_password_form();
+  // form_data.likely_contains_captcha();
+  // form_data.submission_event();
+  // form_data.username_predictions();
+
+  std::map<FieldGlobalId, std::unique_ptr<AutofillField>> field_map;
+  for (std::unique_ptr<AutofillField>& field : fields_) {
+    field_map[field->global_id()] = std::move(field);
+  }
+
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  fields.reserve(form_data.fields().size());
+  for (const FormFieldData& field_data : form_data.fields()) {
+    std::unique_ptr<AutofillField> autofill_field =
+        ExtractMatchingFieldToUpdate(field_data, field_map);
+    if (!autofill_field) {
+      // The field was newly added to the form, create an `AutofillField` from
+      // it and add it to the list.
+      fields.push_back(std::make_unique<AutofillField>(field_data));
+      continue;
+    }
+    const bool old_is_autofilled = autofill_field->is_autofilled();
+
+    // The field existed in the cache previously, update the cached members of
+    // `FormFieldData` in `autofill_field` provided by `field_data`.
+    autofill_field->UpdateFieldData(field_data, /*pass_key=*/{});
+
+    // TODO(crbug.com/393114125): Remove the special handling of
+    // `FormFieldData::is_autofilled_` below after fixing its semantics.
+    autofill_field->set_is_autofilled(old_is_autofilled);
+
+    fields.push_back(std::move(autofill_field));
+  }
+
+  fields_ = std::move(fields);
+
+  form_signature_ = CalculateFormSignature(form_data);
+  alternative_form_signature_ = CalculateAlternativeFormSignature(form_data);
+  structural_form_signature_ = CalculateStructuralFormSignature(form_data);
+  // Do further processing on the fields, as needed.
+  SetFieldTypesFromAutocompleteAttribute();
+  DetermineFieldRanks();
 }
 
 void FormStructure::RetrieveFromCache(const FormStructure& cached_form,

@@ -447,6 +447,11 @@ class AutofillField : public FormFieldData {
     return ml_supported_types_;
   }
 
+  void UpdateFieldData(const FormFieldData& field_data,
+                       base::PassKey<FormStructure> pass_key) {
+    UpdateFieldData(field_data);
+  }
+
 #if defined(UNIT_TEST)
   const std::array<FieldType,
                    static_cast<size_t>(HeuristicSource::kMaxValue) + 1>&
@@ -469,6 +474,10 @@ class AutofillField : public FormFieldData {
   };
 
   explicit AutofillField(FieldSignature field_signature);
+
+  // Copies the information from `field_data` into the members of
+  // `AutofillField` that were inherited from `FormFieldData`.
+  void UpdateFieldData(const FormFieldData& field_data);
 
   // Whether the heuristics or server predict a credit card field.
   bool IsCreditCardPrediction() const;
@@ -543,7 +552,7 @@ class AutofillField : public FormFieldData {
   // The field's initial value. Initially, it is the same as
   // `FormFieldData::value()`, but unlike value(), it remains unchanged over
   // time.
-  std::u16string initial_value_ = value();
+  std::u16string initial_value_;
 
   // Used to hold the position of the first digit to be copied as a substring
   // from credit card number.
