@@ -36,8 +36,7 @@ class FakeBuffer {
   IdType GetID() const;
   VAContextID GetContextID() const;
   VABufferType GetType() const;
-  size_t GetDataSize() const;
-  void* GetData() const;
+  base::span<uint8_t> GetData() const;
 
  private:
   const IdType id_;

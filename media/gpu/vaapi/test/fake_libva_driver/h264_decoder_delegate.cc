@@ -443,7 +443,7 @@ void BuildPackedH264PPS(
   LOG_ASSERT(!slice_param_buffers.empty());
   const VASliceParameterBufferH264* first_sp =
       reinterpret_cast<VASliceParameterBufferH264*>(
-          slice_param_buffers[0]->GetData());
+          slice_param_buffers[0]->GetData().data());
 
   // TODO(b/328430784): we don't have access to the
   // num_ref_idx_l0_default_active_minus1 and
@@ -532,7 +532,7 @@ void H264DecoderDelegate::EnqueueWork(
         break;
       default:
         break;
-    };
+    }
   }
 }
 
@@ -542,7 +542,7 @@ void H264DecoderDelegate::Run() {
   CHECK(pic_param_buffer_);
   const VAPictureParameterBufferH264* pic_param_buffer =
       reinterpret_cast<VAPictureParameterBufferH264*>(
-          pic_param_buffer_->GetData());
+          pic_param_buffer_->GetData().data());
 
   BuildPackedH264SPS(pic_param_buffer, profile_, bitstream_builder);
   BuildPackedH264PPS(pic_param_buffer, slice_param_buffers_, profile_,
@@ -551,11 +551,8 @@ void H264DecoderDelegate::Run() {
   for (const auto& slice_data_buffer : slice_data_buffers_) {
     // Add the H264 start code for each slice.
     bitstream_builder.AppendBits(32, 0x00000001);
-    const base::span<const uint8_t> UNSAFE_TODO(
-        data(reinterpret_cast<uint8_t*>(slice_data_buffer->GetData()),
-             slice_data_buffer->GetDataSize()));
-    for (size_t i = 0; i < slice_data_buffer->GetDataSize(); i++) {
-      bitstream_builder.AppendBits<uint8_t>(8, data[i]);
+    for (uint8_t data_byte : slice_data_buffer->GetData()) {
+      bitstream_builder.AppendBits<uint8_t>(8, data_byte);
     }
   }
 

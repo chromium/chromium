@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium OS Authors.
+// Copyright 2020 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -467,7 +467,7 @@ VAStatus FakeBufferSetNumElements(VADriverContextP ctx,
 VAStatus FakeMapBuffer(VADriverContextP ctx, VABufferID buf_id, void** pbuf) {
   media::internal::FakeDriver* fdrv =
       static_cast<media::internal::FakeDriver*>(ctx->pDriverData);
-  *pbuf = fdrv->GetBuffer(buf_id).GetData();
+  *pbuf = fdrv->GetBuffer(buf_id).GetData().data();
   return VA_STATUS_SUCCESS;
 }
 
@@ -652,15 +652,12 @@ VAStatus FakeGetImage(VADriverContextP ctx,
   CHECK_GE(base::checked_cast<unsigned int>(fake_image.GetWidth()), width);
   CHECK_GE(base::checked_cast<unsigned int>(fake_image.GetHeight()), height);
 
-  uint8_t* const dst_y_addr =
-      static_cast<uint8_t*>(fake_image.GetBuffer().GetData()) +
-      fake_image.GetPlaneOffset(0);
+  base::span<uint8_t> image_data = fake_image.GetBuffer().GetData();
+  uint8_t* const dst_y_addr = &image_data[fake_image.GetPlaneOffset(0)];
   const int dst_y_stride =
       base::checked_cast<int>(fake_image.GetPlaneStride(0));
 
-  uint8_t* const dst_uv_addr =
-      static_cast<uint8_t*>(fake_image.GetBuffer().GetData()) +
-      fake_image.GetPlaneOffset(1);
+  uint8_t* const dst_uv_addr = &image_data[fake_image.GetPlaneOffset(1)];
   const int dst_uv_stride =
       base::checked_cast<int>(fake_image.GetPlaneStride(1));
 
