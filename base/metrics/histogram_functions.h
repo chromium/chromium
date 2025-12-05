@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/byte_count.h"
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -198,16 +199,23 @@ BASE_EXPORT void UmaHistogramMicrosecondsTimes(std::string_view name,
 // Used to measure common KB-granularity memory stats. Range is from 1000KB
 // (see crbug.com/40526504) to 500M. For measuring sizes less than 1000K, use
 // `UmaHistogramCounts`.
+//
+// TODO(crbug.com/448661443): Remove the ByteCount overloads once all callers
+// have been migrated to ByteSize.
 BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, int sample_kb);
 BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryKB(std::string_view name, ByteSize sample);
 // Used to measure common MB-granularity memory stats. Range is 1MB to ~1G.
 BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, int sample_mb);
 BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryMB(std::string_view name, ByteSize sample);
 // Used to measure common MB-granularity memory stats. Range is 1MB to ~64G.
 BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name,
                                            int sample_mb);
 BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name,
                                            ByteCount sample);
+BASE_EXPORT void UmaHistogramMemoryLargeMB(std::string_view name,
+                                           ByteSize sample);
 // LINT.ThenChange(/base/metrics/histogram_functions_internal_overloads.h:UmaHistogramMemory)
 
 // For recording sparse histograms.
