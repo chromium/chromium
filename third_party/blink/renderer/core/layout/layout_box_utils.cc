@@ -61,8 +61,12 @@ void SetChildLocation(const PhysicalBoxFragment& parent_node_fragment,
                       const PhysicalBoxFragment* parent_fragmentainer,
                       PhysicalOffset parent_fragmentainer_offset,
                       OutOfFlowDescendants* oof_descendants) {
-  // Incomplete layout? See crbug.com/464464623
-  CHECK(!child_fragment.IsLayoutObjectDestroyedOrMoved());
+  if (child_fragment.IsLayoutObjectDestroyedOrMoved()) {
+    // Layout is incomplete somehow, which shouldn't be the case at this
+    // point. Bail, like we do everywhere else when that happens (e.g. in
+    // pre-paint and paint).
+    return;
+  }
 
   if (!child_fragment.IsFirstForNode()) {
     return;
