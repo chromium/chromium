@@ -72,11 +72,6 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
     GTEST_SKIP();
   }
 
-  // Check for GPU and driver support
-  if (!context_->GetCapabilities().gpu_rasterization) {
-    GTEST_SKIP();
-  }
-
   // Create shared image and allocate storage.
   auto* sii = context_->GetSharedImageInterface();
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
