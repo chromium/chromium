@@ -162,6 +162,8 @@ void ContextualSearchMetricsRecorder::RecordFileSizeMetric(
                                   MimeTypeToString(mime_type) + "." +
                                   metrics_suffix_,
                               file_size_bytes);
+  base::UmaHistogramCounts10M(
+      kContextualSearchFileSizePerType + metrics_suffix_, file_size_bytes);
 }
 
 void ContextualSearchMetricsRecorder::RecordFileDeletedMetrics(
@@ -276,33 +278,51 @@ void ContextualSearchMetricsRecorder::RecordTotalSessionDuration(
 
 void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
   // Log upload attempt metrics.
+  int total_attempts = 0;
   for (const auto& file_info :
        session_metrics_->file_upload_attempt_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
     std::string histogram_name = kContextualSearchFileUploadAttemptPerFileType +
                                  file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
+    total_attempts += file_info.second;
   }
 
+  base::UmaHistogramCounts100(
+      kContextualSearchFileUploadAttemptPerFileType + metrics_suffix_,
+      total_attempts);
+
   // Log successful uploads.
+  int total_successes = 0;
   for (const auto& file_info :
        session_metrics_->file_upload_success_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
     std::string histogram_name = kContextualSearchFileUploadSuccessPerFileType +
                                  file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
+    total_successes += file_info.second;
   }
 
+  base::UmaHistogramCounts100(
+      kContextualSearchFileUploadSuccessPerFileType + metrics_suffix_,
+      total_successes);
+
   // Log file upload failures.
+  int total_failures = 0;
   for (const auto& file_info :
        session_metrics_->file_upload_failure_count_per_type) {
     std::string file_type = MimeTypeToString(file_info.first);
     std::string histogram_name =
         kContextualSearchFileUploadFailure + file_type + "." + metrics_suffix_;
     base::UmaHistogramCounts100(histogram_name, file_info.second);
+    total_failures += file_info.second;
   }
 
+  base::UmaHistogramCounts100(
+      kContextualSearchFileUploadFailure + metrics_suffix_, total_failures);
+
   // Log file validation errors.
+  std::map<FileUploadErrorType, int> total_errors_by_type;
   for (const auto& file_info :
        session_metrics_->file_validation_failure_count_per_type) {
     for (const auto& error_info : file_info.second) {
@@ -312,7 +332,14 @@ void ContextualSearchMetricsRecorder::FinalizeSessionMetrics() {
                                    file_type + "." + error_type + "." +
                                    metrics_suffix_;
       base::UmaHistogramCounts100(histogram_name, error_info.second);
+      total_errors_by_type[error_info.first] += error_info.second;
     }
+  }
+  for (const auto& agg_error : total_errors_by_type) {
+    std::string error_type = FileErrorToString(agg_error.first);
+    base::UmaHistogramCounts100(kContextualSearchFileValidationErrorTypes +
+                                    error_type + "." + metrics_suffix_,
+                                agg_error.second);
   }
   ResetSessionMetrics();
 }

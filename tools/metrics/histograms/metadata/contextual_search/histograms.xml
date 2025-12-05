@@ -122,6 +122,17 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
+<histogram name="ContextualSearch.File.Size.{ContextualSearchSource}"
+    units="bytes" expires_after="2026-03-29">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The aggregate size of all file types received by the browser from the WebUI.
+    Recorded as soon as the browser receives it.
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
 <histogram
     name="ContextualSearch.File.WebUI.UploadAttemptFailure.{ContextualSearchSource}"
     enum="ContextualSearchFileValidationError" expires_after="2026-05-17">
@@ -227,6 +238,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.Session.File.Browser.UploadAttemptCount.{ContextualSearchSource}"
+    units="count" expires_after="2026-01-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The aggregated number of times the browser attempted to process all file
+    types. Recorded at the end of the session. Note: Only recorded for files
+    that the WebUI approved for file upload (e.g., they passed the file size
+    check).
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.Session.File.Browser.UploadFailureCount.{ContextualSearchFileTypes}.{ContextualSearchSource}"
     units="count" expires_after="2026-04-19">
   <owner>hujasonx@google.com</owner>
@@ -240,6 +265,20 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchFileTypes" variants="ContextualSearchFileTypes">
     <variant name=""/>
   </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.Session.File.Browser.UploadFailureCount.{ContextualSearchSource}"
+    units="count" expires_after="2026-04-19">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The number of failures aggregated across all file types within the session.
+    Recorded at the end of the session. This does not include files that failed
+    browser validation. Note: Only recorded for files that the WebUI approved
+    for file upload (e.g., they passed the file size check).
+  </summary>
   <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
 </histogram>
 
@@ -261,6 +300,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="ContextualSearch.Session.File.Browser.UploadSuccessCount.{ContextualSearchSource}"
+    units="count" expires_after="2026-03-22">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The total number of successful file upload attempts to the Lens server
+    aggregated for all file types within the session. Recorded at the end of the
+    session. Note: Only recorded for files that the WebUI approved for file
+    upload (e.g., they passed the file size check).
+  </summary>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
     name="ContextualSearch.Session.File.Browser.ValidationFailureCount.{ContextualSearchFileTypes}.{ErrorType}.{ContextualSearchSource}"
     units="count" expires_after="2026-01-20">
   <owner>hujasonx@google.com</owner>
@@ -274,6 +327,29 @@ chromium-metrics-reviews@google.com.
   <token key="ContextualSearchFileTypes" variants="ContextualSearchFileTypes">
     <variant name=""/>
   </token>
+  <token key="ErrorType">
+    <variant name="AbortedError"/>
+    <variant name="BrowserProcessingError"/>
+    <variant name="ImageProcessingError"/>
+    <variant name="NetworkError"/>
+    <variant name="ServerError"/>
+    <variant name="ServerLimitExceededError"/>
+    <variant name="Unknown"/>
+  </token>
+  <token key="ContextualSearchSource" variants="ContextualSearchSource"/>
+</histogram>
+
+<histogram
+    name="ContextualSearch.Session.File.Browser.ValidationFailureCount.{ErrorType}.{ContextualSearchSource}"
+    units="count" expires_after="2026-01-20">
+  <owner>wenhuc@google.com</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    The aggregated number across all file types that failed validation with the
+    error {ErrorType}. Recorded at the end of the session. Note: Only recorded
+    for files that the WebUI approved for file upload (e.g., they passed the
+    file size check).
+  </summary>
   <token key="ErrorType">
     <variant name="AbortedError"/>
     <variant name="BrowserProcessingError"/>
