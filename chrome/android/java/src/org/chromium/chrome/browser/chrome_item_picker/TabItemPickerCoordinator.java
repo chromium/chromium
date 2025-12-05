@@ -227,11 +227,27 @@ public class TabItemPickerCoordinator {
 
         controller.getHandleBackPressChangedSupplier().addObserver(mBackPressEnabledObserver);
 
-        Profile profile = mProfileSupplier.get();
-        int currentTabIndex =
-                mTabModelSelector
-                        .getModel(profile == null ? false : profile.isIncognitoBranded())
-                        .index();
+        Tab currentTab = mTabModelSelector.getCurrentTab();
+        int currentTabIndex = 0;
+        if (currentTab != null) {
+            int indexInFilteredList = tabs.indexOf(currentTab);
+            if (indexInFilteredList != -1) {
+                currentTabIndex = indexInFilteredList;
+            }
+        } else if (!tabs.isEmpty()) {
+            // Find the last opened tab.
+            Tab mostRecentTab = tabs.get(0);
+            for (int i = 1; i < tabs.size(); i++) {
+                Tab tab = tabs.get(i);
+                // It is important to check if the tab is active, because we only want to scroll to
+                // something that's been opened in our current session.
+                if (tab.getTimestampMillis() > mostRecentTab.getTimestampMillis()
+                        && FuseboxTabUtils.isTabActive(tab)) {
+                    mostRecentTab = tab;
+                }
+            }
+            currentTabIndex = tabs.indexOf(mostRecentTab);
+        }
         RecyclerViewPosition position = new RecyclerViewPosition(currentTabIndex, 0);
 
         controller.show(
