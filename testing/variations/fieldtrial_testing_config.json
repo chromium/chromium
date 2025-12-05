@@ -207,6 +207,21 @@
             ]
         }
     ],
+    "AccessibilityExtendedSelection": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AccessibilityExtendedSelection"
+                    ]
+                }
+            ]
+        }
+    ],
     "AccessibilityImproveLiveRegionAnnounce": [
         {
             "platforms": [

@@ -29,6 +29,8 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_DEPRECATE_TYPE_ANNOUNCE =
             "AccessibilityDeprecateTypeAnnounce";
 
+    public static final String ACCESSIBILITY_EXTENDED_SELECTION = "AccessibilityExtendedSelection";
+
     public static final String ACCESSIBILITY_IMPROVE_LIVE_REGION_ANNOUNCE =
             "AccessibilityImproveLiveRegionAnnounce";
 

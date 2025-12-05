@@ -335,6 +335,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_ariaComboboxFocus() {
         performTest("aria-combo-box-focus.html", "aria-combo-box-focus-expected-android.txt");
     }
@@ -633,12 +634,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_caretBrowsingDisabled() {
         performTest("caret-browsing-disabled.html", "caret-browsing-disabled-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_caretBrowsingEnabled() {
         performTest("caret-browsing-enabled.html", "caret-browsing-enabled-expected-android.txt");
     }
@@ -1320,12 +1323,14 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_textSelectionChanged() {
         performTest("text-selection-changed.html", "text-selection-changed-expected-android.txt");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_textSelectionInsideHiddenElement() {
         performTest(
                 "text-selection-inside-hidden-element.html",
@@ -1334,6 +1339,7 @@ public class WebContentsAccessibilityEventsTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_EXTENDED_SELECTION)
     public void test_textSelectionInsideVideo() {
         performTest(
                 "text-selection-inside-video.html",
