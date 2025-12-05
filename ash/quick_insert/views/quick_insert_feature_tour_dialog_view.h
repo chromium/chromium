@@ -15,6 +15,11 @@ namespace ui {
 class Accelerator;
 }
 
+namespace views {
+class StyledLabel;
+class Link;
+}  // namespace views
+
 namespace ash {
 
 class ASH_EXPORT QuickInsertFeatureTourDialogView
@@ -29,15 +34,15 @@ class ASH_EXPORT QuickInsertFeatureTourDialogView
 
   explicit QuickInsertFeatureTourDialogView(
       EditorStatus editor_status,
-      base::OnceClosure learn_more_callback,
+      base::RepeatingClosure learn_more_callback,
       base::OnceClosure completion_callback);
   ~QuickInsertFeatureTourDialogView() override;
 
   // SystemDialogDelegateView:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
-  // Returns the button to learn more.
-  const views::Button* learn_more_button_for_testing() const;
+  // Returns the link to learn more.
+  const views::Link* learn_more_link_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
   // Returns the button to close the tour.
@@ -46,6 +51,7 @@ class ASH_EXPORT QuickInsertFeatureTourDialogView
  private:
   void CloseWidget();
 
+  raw_ptr<views::StyledLabel> body_text_for_testing_ = nullptr;
   raw_ptr<views::Button> close_button_for_testing_ = nullptr;
 
   base::WeakPtrFactory<QuickInsertFeatureTourDialogView> weak_ptr_factory_{

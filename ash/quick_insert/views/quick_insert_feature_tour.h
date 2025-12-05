@@ -65,8 +65,8 @@ class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
 
   views::Widget* widget_for_testing();
 
-  // Returns the button to learn more.
-  const views::Button* learn_more_button_for_testing() const;
+  // Returns the link to learn more.
+  const views::Link* learn_more_link_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
   // Returns the button to close the tour.

@@ -7844,6 +7844,14 @@ New install
         desc="This string appears as the heading text of a section. This section contains a grid of featured GIFs (in the sense of highlighted or promoted). The featured GIFs change throughout the day.">
         Featured GIFs
       </message>
+      <message name="IDS_QUICK_INSERT_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT"
+        desc="The body text for the Quick Insert feature tour when Help Me Write is available.">
+        Insert links, emojis, and more. You can also get help writing with Google AI. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
+      <message name="IDS_QUICK_INSERT_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT"
+        desc="The body text for the Quick Insert feature tour when Help Me Write is unavailable.">
+        Insert links from places such as your browsing history and Google Drive. You can also insert emojis, image files, and more. <ph name="LINK_TO_LEARN_MORE">$1<ex>Learn more</ex></ph>
+      </message>
 
       <!-- Lobster -->
       <message name="IDS_LOBSTER_SELECTION_LABEL" desc="The label for the option to open Image Generation.">

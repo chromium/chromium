@@ -29,7 +29,7 @@ namespace {
 
 std::unique_ptr<views::Widget> CreateWidget(
     QuickInsertFeatureTour::EditorStatus editor_status,
-    base::OnceClosure learn_more_callback,
+    base::RepeatingClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   auto feature_tour_dialog =
       views::Builder<QuickInsertFeatureTourDialogView>(
@@ -81,9 +81,9 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
 
   widget_ = CreateWidget(
       editor_status,
-      base::BindOnce(&QuickInsertFeatureTour::SetOnWindowDeactivatedCallback,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     std::move(learn_more_callback)),
+      base::BindRepeating(
+          &QuickInsertFeatureTour::SetOnWindowDeactivatedCallback,
+          weak_ptr_factory_.GetWeakPtr(), std::move(learn_more_callback)),
       base::BindOnce(&QuickInsertFeatureTour::SetOnWindowDeactivatedCallback,
                      weak_ptr_factory_.GetWeakPtr(),
                      std::move(completion_callback)));
@@ -102,8 +102,7 @@ bool QuickInsertFeatureTour::MaybeShowForFirstUse(
   return true;
 }
 
-const views::Button* QuickInsertFeatureTour::learn_more_button_for_testing()
-    const {
+const views::Link* QuickInsertFeatureTour::learn_more_link_for_testing() const {
   if (!widget_) {
     return nullptr;
   }
@@ -111,7 +110,7 @@ const views::Button* QuickInsertFeatureTour::learn_more_button_for_testing()
   auto* feature_tour_dialog = static_cast<QuickInsertFeatureTourDialogView*>(
       widget_->GetContentsView());
   return feature_tour_dialog != nullptr
-             ? feature_tour_dialog->learn_more_button_for_testing()  // IN-TEST
+             ? feature_tour_dialog->learn_more_link_for_testing()  // IN-TEST
              : nullptr;
 }
 

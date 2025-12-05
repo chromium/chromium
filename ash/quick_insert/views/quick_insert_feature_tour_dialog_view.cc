@@ -7,6 +7,7 @@
 #include "ash/quick_insert/resources/grit/quick_insert_resources.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/close_button.h"
+#include "ash/style/typography.h"
 #include "base/check_op.h"
 #include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -19,6 +20,7 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
+#include "ui/views/controls/styled_label.h"
 #include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
@@ -43,6 +45,26 @@ constexpr auto kFeatureTourDialogIllustrationCornerRadii =
 
 constexpr auto kCloseButtonInsets = gfx::Insets::TLBR(8, 0, 0, 8);
 
+views::Builder<views::StyledLabel> GetTextBodyBuilder() {
+  // Copied from
+  // https://crsrc.org/c/ash/capture_mode/disclaimer_view.cc;l=95;drc=f4a1156e602a7d751e24f70e30c90695098aaea9
+  return views::Builder<views::StyledLabel>()
+      .SetDefaultTextStyle(views::style::TextStyle::STYLE_BODY_2)
+      .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetAutoColorReadabilityEnabled(false);
+}
+
+views::StyledLabel::RangeStyleInfo GetLinkTextStyle(
+    base::RepeatingClosure callback) {
+  // Copied from
+  // https://crsrc.org/c/ash/capture_mode/disclaimer_view.cc;l=131;drc=f4a1156e602a7d751e24f70e30c90695098aaea9
+  auto info =
+      views::StyledLabel::RangeStyleInfo::CreateForLink(std::move(callback));
+  info.text_style = views::style::STYLE_LINK_2;
+  return info;
+}
+
 std::u16string GetHeadingText(
     QuickInsertFeatureTourDialogView::EditorStatus editor_status) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -59,20 +81,35 @@ std::u16string GetHeadingText(
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
-std::u16string GetBodyText(
+int GetBodyTextMessageId(
     QuickInsertFeatureTourDialogView::EditorStatus editor_status) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   switch (editor_status) {
     case QuickInsertFeatureTourDialogView::EditorStatus::kEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
+      return IDS_QUICK_INSERT_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT;
     case QuickInsertFeatureTourDialogView::EditorStatus::kNotEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT);
+      return IDS_QUICK_INSERT_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT;
   }
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+views::Builder<views::StyledLabel> CreateMiddleContentView(
+    QuickInsertFeatureTourDialogView::EditorStatus editor_status,
+    base::RepeatingClosure press_link_callback) {
+  std::vector<size_t> offsets;
+  const std::u16string link_text = l10n_util::GetStringUTF16(
+      IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL);
+  const std::u16string text = l10n_util::GetStringFUTF16(
+      GetBodyTextMessageId(editor_status), {link_text}, &offsets);
+
+  return GetTextBodyBuilder()
+      .SetText(text)
+      // TODO: https://crbug.com/465882905 - Temporary workaround to
+      // remove margins automatically created by SystemDialogDelegateView
+      // Remove this once QuickInsertFeatureTourDialogView is no longer a
+      // SystemDialogDelegateView.
+      .SetProperty(views::kMarginsKey, gfx::Insets::TLBR(1, 0, 0, 0))
+      .AddStyleRange(
+          gfx::Range(offsets.at(0), offsets.at(0) + link_text.length()),
+          GetLinkTextStyle(std::move(press_link_callback)));
 }
 
 ui::ImageModel GetIllustration() {
@@ -84,7 +121,7 @@ ui::ImageModel GetIllustration() {
 
 QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
     EditorStatus editor_status,
-    base::OnceClosure learn_more_callback,
+    base::RepeatingClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   views::Builder<QuickInsertFeatureTourDialogView>(this)
       .SetBorder(views::CreatePaddedBorder(
@@ -93,13 +130,17 @@ QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
               views::HighlightBorder::Type::kHighlightBorderOnShadow),
           kFeatureTourDialogBorderInsets))
       .SetTitleText(GetHeadingText(editor_status))
-      .SetDescription(GetBodyText(editor_status))
+      .SetMiddleContentView(
+          CreateMiddleContentView(
+              editor_status, base::BindRepeating(
+                                 &QuickInsertFeatureTourDialogView::CloseWidget,
+                                 base::Unretained(this))
+                                 .Then(std::move(learn_more_callback)))
+              .CopyAddressTo(&body_text_for_testing_))
+      .SetMiddleContentAlignment(views::LayoutAlignment::kStretch)
       .SetAcceptButtonText(
           l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL))
       .SetAcceptCallback(std::move(completion_callback))
-      .SetCancelButtonText(l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL))
-      .SetCancelCallback(std::move(learn_more_callback))
       .SetTopContentView(
           views::Builder<views::View>()
               .SetUseDefaultFillLayout(true)
@@ -128,6 +169,7 @@ QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
                               .CopyAddressTo(&close_button_for_testing_))))
       .SetModalType(ui::mojom::ModalType::kSystem)
       .BuildChildren();
+  SetCancelButtonVisible(false);
 
   AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 }
@@ -145,9 +187,9 @@ bool QuickInsertFeatureTourDialogView::AcceleratorPressed(
   return false;
 }
 
-const views::Button*
-QuickInsertFeatureTourDialogView::learn_more_button_for_testing() const {
-  return GetCancelButtonForTesting();  // IN-TEST
+const views::Link*
+QuickInsertFeatureTourDialogView::learn_more_link_for_testing() const {
+  return body_text_for_testing_->GetFirstLinkForTesting();  // IN-TEST
 }
 
 const views::Button*
