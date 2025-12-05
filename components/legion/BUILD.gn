@@ -31,6 +31,8 @@ source_set("legion") {
     "attestation_handler_impl.h",
     "client.cc",
     "client.h",
+    "client_impl.cc",
+    "client_impl.h",
     "error_code.h",
     "legion_common.h",
     "secure_channel.h",
@@ -61,6 +63,7 @@ source_set("legion") {
     "//third_party/boringssl",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
+    "//url",
   ]
 }
 
@@ -68,7 +71,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "attestation_handler_impl_unittest.cc",
-    "client_unittest.cc",
+    "client_impl_unittest.cc",
     "secure_channel_impl_unittest.cc",
   ]
   deps = [

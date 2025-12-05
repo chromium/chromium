@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/legion/client.h"
+#include "components/legion/client_impl.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
-#include <vector>
 
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -108,13 +106,13 @@ void SetUpMockWrite(MockSecureChannelClient* mock_secure_channel,
 
 }  // namespace
 
-class ClientTest : public ::testing::Test {
+class ClientImplTest : public ::testing::Test {
  public:
-  ClientTest() = default;
-  ~ClientTest() override = default;
+  ClientImplTest() = default;
+  ~ClientImplTest() override = default;
 
   void SetUp() override {
-    client_ = base::WrapUnique(new Client(base::BindRepeating(
+    client_ = base::WrapUnique(new ClientImpl(base::BindRepeating(
         &FakeSecureChannelFactory::Create, base::Unretained(&factory_))));
   }
 
@@ -127,7 +125,7 @@ class ClientTest : public ::testing::Test {
 };
 
 // Test the successful request flow.
-TEST_F(ClientTest, SendTextRequestSuccess) {
+TEST_F(ClientImplTest, SendTextRequestSuccess) {
   const std::string kExpectedResponseText = "response text";
 
   proto::LegionResponse legion_response;
@@ -166,7 +164,7 @@ TEST_F(ClientTest, SendTextRequestSuccess) {
 }
 
 // Test that SendRequest fails if SecureChannel::Write fails.
-TEST_F(ClientTest, SendTextRequestWriteFails) {
+TEST_F(ClientImplTest, SendTextRequestWriteFails) {
   EXPECT_CALL(*factory_.secure_channel_, Write(_))
       .WillOnce(testing::Return(false));
 
@@ -190,7 +188,7 @@ TEST_F(ClientTest, SendTextRequestWriteFails) {
 }
 
 // Test that a response with an unknown request_id is ignored.
-TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
+TEST_F(ClientImplTest, IgnoresResponseWithUnknownRequestId) {
   const std::string kExpectedResponseText = "response text";
 
   proto::LegionResponse legion_response;
@@ -232,7 +230,7 @@ TEST_F(ClientTest, IgnoresResponseWithUnknownRequestId) {
 }
 
 // Test that the secure channel is recreated after a permanent failure.
-TEST_F(ClientTest, SecureChannelRecreation) {
+TEST_F(ClientImplTest, SecureChannelRecreation) {
   auto* first_channel = factory_.secure_channel_.get();
   EXPECT_CALL(*factory_.secure_channel_, Write(_))
       .WillOnce(testing::Return(true));
@@ -296,7 +294,7 @@ TEST_F(ClientTest, SecureChannelRecreation) {
 }
 
 // Test that a request times out correctly.
-TEST_F(ClientTest, SendTextRequestTimeout) {
+TEST_F(ClientImplTest, SendTextRequestTimeout) {
   // Mock the secure channel to never respond.
   EXPECT_CALL(*factory_.secure_channel_, Write(_))
       .WillOnce(testing::Return(true));
@@ -328,7 +326,7 @@ TEST_F(ClientTest, SendTextRequestTimeout) {
 }
 
 // Test that a response received after a timeout is ignored.
-TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
+TEST_F(ClientImplTest, SendTextRequestResponseAfterTimeout) {
   // Mock the secure channel to not invoke the response callback.
   EXPECT_CALL(*factory_.secure_channel_, Write(_))
       .WillOnce(testing::Return(true));
@@ -383,11 +381,11 @@ TEST_F(ClientTest, SendTextRequestResponseAfterTimeout) {
 
 // Test fixture for error conditions in SendTextRequest where the
 // SecureChannel returns an error.
-class ClientSendTextRequestSecureChannelErrorTest
-    : public ClientTest,
+class ClientImplSendTextRequestSecureChannelErrorTest
+    : public ClientImplTest,
       public ::testing::WithParamInterface<ErrorCode> {};
 
-TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
+TEST_P(ClientImplSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
   ErrorCode error_code = GetParam();
   EXPECT_CALL(*factory_.secure_channel_, Write(_))
       .WillOnce([&](const Request& request) {
@@ -417,17 +415,17 @@ TEST_P(ClientSendTextRequestSecureChannelErrorTest, SendTextRequestError) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
-                         ClientSendTextRequestSecureChannelErrorTest,
+                         ClientImplSendTextRequestSecureChannelErrorTest,
                          ::testing::Values(ErrorCode::kNetworkError,
                                            ErrorCode::kError));
 
 // Test fixture for error conditions in SendTextRequest where the server
 // response is malformed.
-class ClientSendTextRequestResponseErrorTest
-    : public ClientTest,
+class ClientImplSendTextRequestResponseErrorTest
+    : public ClientImplTest,
       public ::testing::WithParamInterface<ResponseErrorTestParam> {};
 
-TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
+TEST_P(ClientImplSendTextRequestResponseErrorTest, SendTextRequestError) {
   const auto& param = GetParam();
 
   SetUpMockWrite(factory_.secure_channel_, factory_.response_callback_,
@@ -463,7 +461,7 @@ TEST_P(ClientSendTextRequestResponseErrorTest, SendTextRequestError) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ClientSendTextRequestResponseErrorTest,
+    ClientImplSendTextRequestResponseErrorTest,
     ::testing::Values(
         // Empty response.
         ResponseErrorTestParam{
@@ -493,11 +491,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Test fixture for error conditions in SendGenerateContentRequest where the
 // server response is malformed.
-class ClientSendGenerateContentRequestErrorTest
-    : public ClientTest,
+class ClientImplSendGenerateContentRequestErrorTest
+    : public ClientImplTest,
       public ::testing::WithParamInterface<ResponseErrorTestParam> {};
 
-TEST_P(ClientSendGenerateContentRequestErrorTest,
+TEST_P(ClientImplSendGenerateContentRequestErrorTest,
        SendGenerateContentRequestMalformedResponse) {
   const auto& param = GetParam();
 
@@ -540,7 +538,7 @@ TEST_P(ClientSendGenerateContentRequestErrorTest,
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ClientSendGenerateContentRequestErrorTest,
+    ClientImplSendGenerateContentRequestErrorTest,
     ::testing::Values(
         // Invalid response that cannot be parsed.
         ResponseErrorTestParam{
@@ -560,7 +558,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Tests that if session establishment fails, any pending requests are also
 // failed.
-TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
+TEST_F(ClientImplTest, EstablishSessionFailureFailsPendingRequests) {
   auto* first_channel = factory_.secure_channel_.get();
 
   // The first write will be queued.
@@ -581,8 +579,9 @@ TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
 
   // Send a request that will get queued.
   base::test::TestFuture<base::expected<std::string, ErrorCode>> text_future;
-  client_->SendTextRequest(proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
-                           "some text", text_future.GetCallback());
+  client_->SendTextRequest(
+      proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
+      "some text", text_future.GetCallback());
 
   // Attempt to establish the session, which will fail.
   base::test::TestFuture<base::expected<void, ErrorCode>> establish_future;
@@ -602,8 +601,8 @@ TEST_F(ClientTest, EstablishSessionFailureFailsPendingRequests) {
   EXPECT_NE(first_channel, factory_.secure_channel_.get());
 
   histogram_tester_.ExpectUniqueSample(
-      "Legion.Client.FeatureName", proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT,
-      1);
+      "Legion.Client.FeatureName",
+      proto::FeatureName::FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT, 1);
 }
 
 }  // namespace legion
