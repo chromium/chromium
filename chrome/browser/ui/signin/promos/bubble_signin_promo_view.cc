@@ -33,6 +33,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -92,7 +93,9 @@ int GetSubtitleID(bool is_signin_promo,
         switch (signed_in_state) {
           case SignedInState::kSignedOut:
           case SignedInState::kWebOnlySignedIn:
-            return IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
+            return base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)
+                       ? IDS_BOOKMARK_INSTALLED_BUBBLE_PROMO_EXPLICIT_SIGNIN_MESSAGE
+                       : IDS_BOOKMARK_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE;
           case SignedInState::kSignInPending:
             return IDS_BOOKMARK_VERIFY_PROMO_SUBTITLE;
           case SignedInState::kSignedIn:
@@ -337,7 +340,7 @@ void BubbleSignInPromoView::SignIn() {
 }
 
 void BubbleSignInPromoView::AddedToWidget() {
-  if (signin::IsAutofillSigninPromo(access_point_)) {
+  if (signin::IsBubbleSigninPromo(access_point_)) {
     scoped_widget_observation_.Observe(GetWidget());
   }
 }
@@ -345,7 +348,7 @@ void BubbleSignInPromoView::AddedToWidget() {
 void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   // This should only be recorded for autofill bubble promos. Not for those
   // displayed in another bubble's footer.
-  if (!signin::IsAutofillSigninPromo(access_point_)) {
+  if (!signin::IsBubbleSigninPromo(access_point_)) {
     return;
   }
 

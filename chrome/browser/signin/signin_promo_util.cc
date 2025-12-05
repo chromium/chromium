@@ -243,11 +243,24 @@ int GetPasswordPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
           : prefs::kPasswordSignInPromoShownCountPerProfile);
 }
 
+int GetBookmarkPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
+  if (!gaia_id.empty()) {
+    return SigninPrefs(*profile.GetPrefs())
+        .GetBookmarkSigninPromoImpressionCount(gaia_id);
+  }
+
+  return profile.GetPrefs()->GetInteger(
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment
+          : prefs::kBookmarkSignInPromoShownCountPerProfile);
+}
+
 bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
                                                       SignInPromoType type) {
   // Footer sign in promos are always shown.
   if (type == signin::SignInPromoType::kExtension ||
-      type == signin::SignInPromoType::kBookmark) {
+      (type == signin::SignInPromoType::kBookmark &&
+       !base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp))) {
     return true;
   }
 
@@ -263,6 +276,11 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
       show_count = GetPasswordPromoShownCount(profile, account.gaia);
       break;
     case SignInPromoType::kBookmark:
+      if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        NOTREACHED();
+      }
+      show_count = GetBookmarkPromoShownCount(profile, account.gaia);
+      break;
     case SignInPromoType::kExtension:
       NOTREACHED();
   }
@@ -508,13 +526,19 @@ bool ShouldShowBookmarkSignInPromo(Profile& profile) {
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
-bool IsAutofillSigninPromo(signin_metrics::AccessPoint access_point) {
+bool IsBubbleSigninPromo(signin_metrics::AccessPoint access_point) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   return access_point == signin_metrics::AccessPoint::kPasswordBubble ||
-         access_point == signin_metrics::AccessPoint::kAddressBubble;
+         access_point == signin_metrics::AccessPoint::kAddressBubble ||
+         (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp) &&
+          access_point == signin_metrics::AccessPoint::kBookmarkBubble);
+#else
+  return false;
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 bool IsSignInPromo(signin_metrics::AccessPoint access_point) {
-  if (IsAutofillSigninPromo(access_point)) {
+  if (IsBubbleSigninPromo(access_point)) {
     return true;
   }
 
@@ -575,6 +599,15 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
                 : prefs::kAddressSignInPromoShownCountPerProfile;
         break;
       case SignInPromoType::kBookmark:
+        if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+          return;
+        }
+        pref_name =
+            base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+                ? prefs::
+                      kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment
+                : prefs::kBookmarkSignInPromoShownCountPerProfile;
+        break;
       case SignInPromoType::kExtension:
         return;
     }
@@ -596,6 +629,11 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
           .IncrementAddressSigninPromoImpressionCount(account.gaia);
       return;
     case SignInPromoType::kBookmark:
+      if (base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
+        SigninPrefs(*profile->GetPrefs())
+            .IncrementBookmarkSigninPromoImpressionCount(account.gaia);
+      }
+      return;
     case SignInPromoType::kExtension:
       return;
   }

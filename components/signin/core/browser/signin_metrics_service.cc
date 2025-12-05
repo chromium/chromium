@@ -116,6 +116,9 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kAddressBubble:
       access_point_string = "AddressSigninPromo";
       break;
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+      access_point_string = "BookmarkSigninPromo";
+      break;
     // All other access point should not record this metric.
     case signin_metrics::AccessPoint::kStartPage:
     case signin_metrics::AccessPoint::kNtpLink:
@@ -125,7 +128,6 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kSupervisedUser:
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
-    case signin_metrics::AccessPoint::kBookmarkBubble:
     case signin_metrics::AccessPoint::kBookmarkManager:
     case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
@@ -537,6 +539,16 @@ void SigninMetricsService::MaybeRecordMetricsForSigninPromoLimitsExperiment(
               : pref_service_->GetInteger(
                     prefs::
                         kPasswordSignInPromoShownCountPerProfileForLimitsExperiment));
+      break;
+    case signin_metrics::AccessPoint::kBookmarkBubble:
+      base::UmaHistogramBoolean(
+          "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin",
+          is_from_web_signin
+              ? SigninPrefs(pref_service_.get())
+                    .GetBookmarkSigninPromoImpressionCount(account_info.gaia)
+              : pref_service_->GetInteger(
+                    prefs::
+                        kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
       break;
     case signin_metrics::AccessPoint::kChromeSigninInterceptBubble: {
       const int uno_bubble_reprompt_count =

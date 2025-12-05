@@ -426,6 +426,8 @@ const AccessPointParam params[] = {
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
     {signin_metrics::AccessPoint::kAddressBubble,
      "Signin.WebSignin.TimeToChromeSignin.AddressSigninPromo"},
+    {signin_metrics::AccessPoint::kBookmarkBubble,
+     "Signin.WebSignin.TimeToChromeSignin.BookmarkSigninPromo"},
     {signin_metrics::AccessPoint::kSettings, ""},
 };
 
@@ -799,6 +801,8 @@ class SigninMetricsServicePromoLimitsExperimentTest
         prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
     pref_service().registry()->RegisterIntegerPref(
         prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+    pref_service().registry()->RegisterIntegerPref(
+        prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
   }
 
  private:
@@ -882,6 +886,46 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
 
   histogram_tester.ExpectUniqueSample(
       "Signin.PromoLimitsExperiment.PasswordSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromWebSignin) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  // Set a random profile value, to ensure that this is not the value being
+  // recorded.
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 8);
+
+  SigninPrefs signin_prefs(pref_service());
+  GaiaId gaia_id("gaia_id_for_test_gmail.com");
+  const std::string email("test@gmail.com");
+  WebSignin(email);
+
+  signin_prefs.IncrementBookmarkSigninPromoImpressionCount(gaia_id);
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble, gaia_id);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
+      1);
+}
+
+TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+       BookmarkPromoShownCountAtSigninFromSignedOut) {
+  base::HistogramTester histogram_tester;
+  CreateSigninMetricsService();
+
+  pref_service().SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 1);
+
+  const std::string email("test@gmail.com");
+
+  Signin(email, signin_metrics::AccessPoint::kBookmarkBubble);
+
+  histogram_tester.ExpectUniqueSample(
+      "Signin.PromoLimitsExperiment.BookmarkSigninPromoShownCountAtSignin", 1,
       1);
 }
 

@@ -140,12 +140,23 @@ TEST(SigninPromoTest, SigninURLForDiceWithHistorySyncOptin) {
       GetAddAccountURLForDice("email@gmail.com",
                               GURL("https://continue_url/")));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 TEST(SigninPromoTest, IsSignInPromo_AutofillTypes) {
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
   EXPECT_TRUE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
 }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+// ChromeOS currently does not show any sign in promos.
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(SigninPromoTest, IsSignInPromo) {
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kPasswordBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kAddressBubble));
+  EXPECT_FALSE(IsSignInPromo(signin_metrics::AccessPoint::kBookmarkBubble));
+  EXPECT_FALSE(
+      IsSignInPromo(signin_metrics::AccessPoint::kExtensionInstallBubble));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Extensions explicit signin is not enabled in ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
@@ -343,7 +354,7 @@ class ShowSigninPromoTestWithFeatureFlags : public ShowPromoTest {
         autofill::AddressCountryCode(country_code));
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -488,6 +499,17 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
+       DoNotShowBookmarkPromoAfterFiveTimesShown) {
+  ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfile, 5);
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlags,
        DoNotShowPromoAfterTwoTimesDismissed) {
   ASSERT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
 
@@ -496,6 +518,7 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
@@ -550,18 +573,25 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
                          profile());
   RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
                          profile());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                         profile());
 
   EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
                    prefs::kPasswordSignInPromoShownCountPerProfile));
   EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
                    prefs::kAddressSignInPromoShownCountPerProfile));
+  EXPECT_EQ(1, profile()->GetPrefs()->GetInteger(
+                   prefs::kBookmarkSignInPromoShownCountPerProfile));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
 
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
@@ -584,21 +614,6 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
   EXPECT_FALSE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
-}
-
-TEST_F(ShowSigninPromoTestWithFeatureFlags,
-       RecordSignInPromoShownWithoutAccount_BookmarkPromoAlwaysShown) {
-  // Add an account without cookies. The per-profile pref will be recorded.
-  MakeAccountAvailable(identity_manager(), "test@email.com");
-  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
-
-  // Show the bookmark promo five times. This does not influence whether it is
-  // shown again or not.
-  for (int i = 0; i < 5; i++) {
-    RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
-                           profile());
-  }
-
   EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
@@ -633,15 +648,21 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags, RecordSignInPromoShownWithAccount) {
                          profile.get());
   RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
                          profile.get());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                         profile.get());
 
   EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
                    prefs::kPasswordSignInPromoShownCountPerProfile));
   EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
                    prefs::kAddressSignInPromoShownCountPerProfile));
+  EXPECT_EQ(0, profile.get()->GetPrefs()->GetInteger(
+                   prefs::kBookmarkSignInPromoShownCountPerProfile));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
@@ -697,9 +718,91 @@ TEST_F(ShowSigninPromoTestWithFeatureFlags,
 
   EXPECT_FALSE(ShouldShowAddressSignInPromo(*profile.get(), CreateAddress()));
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile.get()));
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlags,
+       RecordSignInPromoShownWithAccount_BookmarkPromoNotAlwaysShown) {
+  // Test setup for adding an account with cookies.
+  network::TestURLLoaderFactory url_loader_factory =
+      network::TestURLLoaderFactory();
+
+  TestingProfile::Builder builder;
+  builder.AddTestingFactories(
+      IdentityTestEnvironmentProfileAdaptor::
+          GetIdentityTestEnvironmentFactoriesWithAppendedFactories(
+              {TestingProfile::TestingFactory{
+                   ChromeSigninClientFactory::GetInstance(),
+                   base::BindRepeating(&BuildChromeSigninClientWithURLLoader,
+                                       &url_loader_factory)},
+               TestingProfile::TestingFactory{
+                   SyncServiceFactory::GetInstance(),
+                   base::BindRepeating([](content::BrowserContext* context) {
+                     return static_cast<std::unique_ptr<KeyedService>>(
+                         std::make_unique<syncer::MockSyncService>());
+                   })}}));
+
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+  auto identity_test_env_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile.get());
+  auto* identity_test_env = identity_test_env_adaptor->identity_test_env();
+  identity_test_env->SetTestURLLoaderFactory(&url_loader_factory);
+
+  ON_CALL(*static_cast<syncer::MockSyncService*>(
+              SyncServiceFactory::GetForProfile(profile.get())),
+          GetDataTypesForTransportOnlyMode())
+      .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
+
+  // Add an account with cookies, which will record the per-account prefs.
+  identity_test_env->MakeAccountAvailable(
+      identity_test_env->CreateAccountAvailabilityOptionsBuilder()
+          .WithAccessPoint(signin_metrics::AccessPoint::kUnknown)
+          .WithCookie(true)
+          .Build("test@email.com"));
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile.get()));
+
+  // Show the bookmark promo five times. After this, the bookmark promo will not
+  // be shown again.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                           profile.get());
+  }
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile.get()));
+}
+class ShowSigninPromoTestWithoutPhase2FollowUp
+    : public ShowSigninPromoTestWithFeatureFlags {
+ public:
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            switches::kSyncEnableBookmarksInTransportMode,
+            syncer::kReplaceSyncPromosWithSignInPromos,
+        },
+        /*disabled_features=*/{syncer::kUnoPhase2FollowUp});
+    ON_CALL(*sync_service(), GetDataTypesForTransportOnlyMode())
+        .WillByDefault(testing::Return(syncer::DataTypeSet::All()));
+  }
+};
+
+TEST_F(ShowSigninPromoTestWithoutPhase2FollowUp,
+       RecordSignInPromoShownWithoutAccount_BookmarkPromoAlwaysShown) {
+  // Add an account without cookies. The per-profile pref will be recorded.
+  MakeAccountAvailable(identity_manager(), "test@email.com");
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  // Show the bookmark promo five times. This does not influence whether it is
+  // shown again or not.
+  for (int i = 0; i < 5; i++) {
+    RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                           profile());
+  }
+
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+}
+
+TEST_F(ShowSigninPromoTestWithoutPhase2FollowUp,
        RecordSignInPromoShownWithAccount_BookmarkPromoAlwaysShown) {
   // Test setup for adding an account with cookies.
   network::TestURLLoaderFactory url_loader_factory =
@@ -785,6 +888,17 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       DoNotShowBookmarkPromoAfterTwentyTimesShown) {
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 20);
+
+  EXPECT_FALSE(ShouldShowBookmarkSignInPromo(*profile()));
+  EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
        RecordSignInPromoShownWithoutAccount) {
   // Add an account without cookies. The per-profile pref will be recorded.
   AccountInfo account =
@@ -793,6 +907,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
   RecordSignInPromoShown(signin_metrics::AccessPoint::kPasswordBubble,
                          profile());
   RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
+                         profile());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
                          profile());
 
   EXPECT_EQ(
@@ -803,13 +919,20 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
       1,
       profile()->GetPrefs()->GetInteger(
           prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(
+      1,
+      profile()->GetPrefs()->GetInteger(
+          prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(0, SigninPrefs(*profile()->GetPrefs())
+                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
 
   EXPECT_TRUE(ShouldShowPasswordSignInPromo(*profile()));
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
@@ -843,6 +966,8 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
                          profile.get());
   RecordSignInPromoShown(signin_metrics::AccessPoint::kAddressBubble,
                          profile.get());
+  RecordSignInPromoShown(signin_metrics::AccessPoint::kBookmarkBubble,
+                         profile.get());
 
   EXPECT_EQ(
       0,
@@ -852,10 +977,16 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
       0,
       profile.get()->GetPrefs()->GetInteger(
           prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment));
+  EXPECT_EQ(
+      0,
+      profile.get()->GetPrefs()->GetInteger(
+          prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
                    .GetPasswordSigninPromoImpressionCount(account.gaia));
   EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
                    .GetAddressSigninPromoImpressionCount(account.gaia));
+  EXPECT_EQ(1, SigninPrefs(*profile.get()->GetPrefs())
+                   .GetBookmarkSigninPromoImpressionCount(account.gaia));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
@@ -876,6 +1007,16 @@ TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
       prefs::kAddressSignInPromoShownCountPerProfile, INT_MAX);
 
   EXPECT_TRUE(ShouldShowAddressSignInPromo(*profile(), CreateAddress()));
+}
+
+TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,
+       SkipCheckForNonExperimentNumberOfTimesShownForBookmarkPromo) {
+  ASSERT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
+
+  profile()->GetPrefs()->SetInteger(
+      prefs::kBookmarkSignInPromoShownCountPerProfile, INT_MAX);
+
+  EXPECT_TRUE(ShouldShowBookmarkSignInPromo(*profile()));
 }
 
 TEST_F(ShowSigninPromoTestWithFeatureFlagsPromoLimitsExperiment,

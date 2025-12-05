@@ -5042,6 +5042,8 @@ static_library("ui") {
       sources += [
         "views/autofill/address_sign_in_promo_view.cc",
         "views/autofill/address_sign_in_promo_view.h",
+        "views/bookmarks/bookmark_sign_in_promo_bubble_view.cc",
+        "views/bookmarks/bookmark_sign_in_promo_bubble_view.h",
       ]
     }
   }

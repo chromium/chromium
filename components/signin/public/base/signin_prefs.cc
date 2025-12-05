@@ -79,6 +79,16 @@ constexpr char kAddressSignInPromoShownCount[] = "AddressSignInPromoShownCount";
 constexpr char kAddressSignInPromoShownCountForLimitsExperiment[] =
     "AddressSignInPromoShownCountForLimitsExperiment";
 
+// Pref to store the number of times the bookmark bubble signin promo
+// has been shown per account.
+constexpr char kBookmarkSignInPromoShownCount[] =
+    "BookmarkSignInPromoShownCount";
+
+// Pref to store the number of times the bookmark bubble signin promo
+// has been shown per account used for SigninPromoLimitsExperiment.
+constexpr char kBookmarkSignInPromoShownCountForLimitsExperiment[] =
+    "BookmarkSignInPromoShownCountForLimitsExperiment";
+
 // Pref to store the number of times any autofill bubble signin promo
 // has been dismissed per account.
 constexpr char kAutofillSignInPromoDismissCount[] =
@@ -325,6 +335,24 @@ int SigninPrefs::GetAddressSigninPromoImpressionCount(
           ? kAddressSignInPromoShownCountForLimitsExperiment
           : kAddressSignInPromoShownCount
   );
+}
+
+void SigninPrefs::IncrementBookmarkSigninPromoImpressionCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kBookmarkSignInPromoShownCountForLimitsExperiment
+          : kBookmarkSignInPromoShownCount);
+}
+
+int SigninPrefs::GetBookmarkSigninPromoImpressionCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(
+      gaia_id,
+      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
+          ? kBookmarkSignInPromoShownCountForLimitsExperiment
+          : kBookmarkSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementAutofillSigninPromoDismissCount(

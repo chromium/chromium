@@ -189,6 +189,10 @@ void RegisterProfilePrefs(
                                 0);
   registry->RegisterIntegerPref(
       prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(prefs::kBookmarkSignInPromoShownCountPerProfile,
+                                0);
+  registry->RegisterIntegerPref(
+      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(
       prefs::kHistoryPageHistorySyncPromoShownCountPerProfile, 0);
 }
