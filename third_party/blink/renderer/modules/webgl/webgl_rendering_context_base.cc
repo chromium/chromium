@@ -5703,7 +5703,8 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBufferForTexImage(
 WebGLTexture* WebGLRenderingContextBase::ValidateTexImageBinding(
     const TexImageParams& params) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
-  return ValidateTexture2DBinding(func_name, params.target, true);
+  return ValidateTexture2DBinding(func_name, params.target,
+                                  params.function_id != kTexSubImage2D);
 }
 
 const char* WebGLRenderingContextBase::GetTexImageFunctionName(
