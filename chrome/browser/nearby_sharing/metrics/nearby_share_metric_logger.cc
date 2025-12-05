@@ -86,8 +86,6 @@ void NearbyShareMetricLogger::OnTransferUpdated(const ShareTarget& share_target,
   transfer_progress_[share_target.id] = progress_complete;
 }
 
-// TODO(b/266739400): Test this once there is Structured Metrics unittesting
-// infrastructure available.
 void NearbyShareMetricLogger::OnTransferCompleted(
     const ShareTarget& share_target,
     TransferMetadata::Status status) {
