@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/id_type.h"
 #include "cc/cc_export.h"
-#include "cc/metrics/scroll_jank_v4_result.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "ui/events/types/event_type.h"
 #include "ui/events/types/scroll_input_type.h"
@@ -475,13 +474,6 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   void set_did_scroll(bool did_scroll) { did_scroll_ = did_scroll; }
   bool did_scroll() const { return did_scroll_; }
 
-  void set_scroll_jank_v4(std::optional<ScrollJankV4Result> result) {
-    scroll_jank_v4_ = std::move(result);
-  }
-  const std::optional<ScrollJankV4Result>& scroll_jank_v4() const {
-    return scroll_jank_v4_;
-  }
-
   void set_is_synthetic(bool is_synthetic) { is_synthetic_ = is_synthetic; }
   bool is_synthetic() const { return is_synthetic_; }
 
@@ -518,7 +510,6 @@ class CC_EXPORT ScrollUpdateEventMetrics : public ScrollEventMetrics {
   int32_t coalesced_event_count_ = 1;
 
   std::optional<bool> is_janky_scrolled_frame_ = std::nullopt;
-  std::optional<ScrollJankV4Result> scroll_jank_v4_ = std::nullopt;
 
   // The scroll delta may not be actually applied. Event if it is consumed. This
   // denotes that a scroll did actually occur.

@@ -877,8 +877,8 @@ message EventLatency {
   // ChromeGraphicsPipeline.display_trace_id.
   optional int64 display_trace_id = 8;
 
-  // Deprecated in favor of `scroll_jank_v4.is_janky`. Not filled
-  // anymore in newer versions of Chrome.
+  // Deprecated in favor of `ChromeTrackEvent.scroll_jank_v4.is_janky`. Not
+  // filled anymore in newer versions of Chrome.
   optional bool is_janky_scrolled_frame_v3 = 9 [deprecated = true];
 
   // Result of the Scroll Jank V4 Metric for a scroll update. This is set only
@@ -891,6 +891,8 @@ message EventLatency {
   // To simplify the documentation below, we use "this frame" to refer to the
   // frame in which the scroll update was presented.
   message ScrollJankV4Result {
+    // Next ID: 13
+
     // This field is a new version of `EventLatency.is_janky_scrolled_frame`
     // based on the Event.ScrollJank.DelayedFramesPercentage4.FixedWindow
     // metric. This field aims to address the old field's shortcomings and
@@ -929,13 +931,10 @@ message EventLatency {
     }
     repeated MissedVsyncsForJankReason missed_vsyncs_per_jank_reason = 2;
 
-    // The absolute total raw (unpredicted) delta of all scroll updates included
-    // in this frame (in pixels).
+    // Deprecated in favor of `updates.real.abs_total_raw_delta_pixels`.
     optional float abs_total_raw_delta_pixels = 3;
 
-    // The maximum absolute raw (unpredicted) delta out of all inertial (fling)
-    // scroll updates included in this frame (in pixels). Zero if there were no
-    // inertial scroll updates in this frame.
+    // Deprecated in favor of `updates.real.max_abs_inertial_raw_delta_pixels`.
     optional float max_abs_inertial_raw_delta_pixels = 4;
 
     // How many VSyncs were between (A) this frame and (B) the previous frame.
@@ -969,20 +968,131 @@ message EventLatency {
     // The delivery cut-off of this frame. Empty if this frame is non-damaging.
     optional int64 current_delivery_cutoff_us = 8;
 
-    // Whether this frame is damaging. This frame is non-damaging if the
+    // Deprecated in favor of `damage_type`.
+    optional bool is_damaging_frame = 9;
+
+    // Information about the scroll updates that were included in this frame.
+    message ScrollUpdates {
+      // Real scroll updates which originated from hardware/OS.
+      message Real {
+        // Trace IDs of the first real scroll update included in this frame. Can
+        // be joined with EventLatency.event_latency_id.
+        optional int64 first_event_latency_id = 1;
+
+        // The absolute total raw (unpredicted) delta of all real scroll updates
+        // included in this frame (in pixels).
+        optional float abs_total_raw_delta_pixels = 2;
+
+        // The maximum absolute raw (unpredicted) delta out of all inertial
+        // (fling) scroll updates included in this frame (in pixels). Empty if
+        // there were no inertial scroll updates in this frame.
+        optional float max_abs_inertial_raw_delta_pixels = 3;
+      }
+      optional Real real = 1;
+
+      // Synthetic scroll updates which were predicted by Chrome
+      message Synthetic {
+        // Trace IDs of the first synthetic scroll update included in this
+        // frame. Can be joined with EventLatency.event_latency_id.
+        optional int64 first_event_latency_id = 1;
+      }
+      optional Synthetic synthetic = 2;
+
+      // Type of the first scroll update in this frame based on:
+      //
+      //   * For real scroll updates, we consider their actual input generation
+      //     timestamp.
+      //   * For synthetic scroll updates, we extrapolate their input generation
+      //     timestamp based on the input generation → begin frame duration of
+      //     the most recent real scroll update UNLESS ANY of the following
+      //     holds (in which case we DON'T extrapolate input generation
+      //     timestamps for synthetic scroll updates in this frame):
+      //       * This frame is janky.
+      //       * All frames since the beginning of the scroll up to and
+      //         including the previous frame have contained only synthetic
+      //         scroll updates.
+      //       * The most recent janky frame contained only synthetic scroll
+      //         updates and all frames since then up to and including the
+      //         previous frame have contained only synthetic scroll updates.
+      //
+      // If, based on the above rules, the scroll update with the earliest input
+      // generation timestamp is a real scroll update, then this frame's type is
+      // `REAL`. If the scroll update with the earliest input generation
+      // timestamp is a synthetic scroll update, then this frame's type is
+      // `SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP`.
+      //
+      // If this frame contained only synthetic scroll updates but it wasn't
+      // possible to extrapolate their input generation timestamp (for any of
+      // the reasons listed above), then this frame's type is
+      // `SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP`.
+      //
+      // See `cc::ScrollJankV4FrameStage::ScrollUpdates` and
+      // `cc::ScrollJankV4Result::first_input_generation`.
+      enum FirstScrollUpdateType {
+        UNKNOWN = 0;
+        REAL = 1;
+        SYNTHETIC_WITH_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP = 2;
+        SYNTHETIC_WITHOUT_EXTRAPOLATED_INPUT_GENERATION_TIMESTAMP = 3;
+      }
+      optional FirstScrollUpdateType first_scroll_update_type = 3;
+    }
+    optional ScrollUpdates updates = 10;
+
+    // Type of scroll damage in this frame. A frame F is non-damaging if the
     // following conditions are BOTH true:
     //
-    //   1. All scroll updates in this frame are non-damaging. A scroll update
-    //      is non-damaging if it didn't cause a frame update and/or didn't
-    //      change the scroll offset.
+    //   1. All scroll updates in F are non-damaging. A scroll update
+    //      is non-damaging if it didn't cause a frame update (i.e.
+    //      `EventMetrics::caused_frame_update()` is false) and/or didn't change
+    //      the scroll offset (i.e. `ScrollEventMetrics::did_scroll()` is
+    //      false).
     //
     //   2. All frames between (both ends exclusive):
-    //        a. the last frame presented by Chrome before this frame and
-    //        b. this frame
+    //        a. the last frame presented by Chrome before F and
+    //        b. F
     //      are non-damaging.
-    optional bool is_damaging_frame = 9;
+    //
+    // A non-damaging frame has its presentation timestamp extrapolated based on
+    // the begin frame → presentation duration of the most recent damaging frame
+    // UNLESS ANY of the following holds:
+    //
+    //   * This frame is janky and non-damaging.
+    //   * All frames since the beginning of the scroll up to and including this
+    //     frame have been non-damaging.
+    //   * The most recent janky frame was non-damaging and all frames since
+    //     then up to and including the this frame have been non-damaging.
+    //
+    // See `cc::ScrollJankV4Frame::ScrollDamage` and
+    // `cc::ScrollJankV4Result::presentation`.
+    //
+    // Note: The `updates.first_scroll_update_type` and `damage_type` fields are
+    // orthogonal. The former depends on whether the frame is synthetic (only
+    // contains synthetic scroll updates). The latter depends on whether the
+    // frame is damaging. For example:
+    //
+    //   * If a frame is synthetic and damaging, it will[1] have an extrapolated
+    //     input generation timestamp.
+    //   * If a frame is real and non-damaging, it will[1] have an extrapolated
+    //     presentation timestamp.
+    //   * If a frame is both synthetic and damaging, it will[1] have both
+    //     timestamps extrapolated.
+    //
+    // [1] As long as there's Chrome past performance to extrapolate based on.
+    enum DamageType {
+      UNKNOWN = 0;
+      DAMAGING = 1;
+      NON_DAMAGING_WITH_EXTRAPOLATED_PRESENTATION_TIMESTAMP = 2;
+      NON_DAMAGING_WITHOUT_EXTRAPOLATED_PRESENTATION_TIMESTAMP = 3;
+    }
+    optional DamageType damage_type = 11;
+
+    // The VSync interval that this frame was produced for according to the
+    // BeginFrameArgs.
+    optional int64 vsync_interval_us = 12;
   }
-  optional ScrollJankV4Result scroll_jank_v4 = 10;
+
+  // Deprecated in favor of top-level `ChromeTrackEvent.scroll_jank_v4`.
+  optional ScrollJankV4Result scroll_jank_v4 = 10 [deprecated = true];
 }
 
 message ProcessSingleton {
@@ -2766,7 +2876,7 @@ message ResponseInfo {
 
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1078
+  // Next ID: 1079
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2933,5 +3043,7 @@ message ChromeTrackEvent {
     optional InputTransferHandler input_transfer_handler = 1076;
 
     optional ResponseInfo response_info = 1077;
+
+    optional EventLatency.ScrollJankV4Result scroll_jank_v4 = 1078;
   }
 }

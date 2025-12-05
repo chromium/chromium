@@ -2716,95 +2716,29 @@ TEST_F(CompositorFrameReportingControllerTest, EmitsEventLatencyId) {
 
 constexpr const char kScrollJankMetricArgsQuery[] =
     R"(
-    SELECT
-      EXTRACT_ARG(arg_set_id, 'event_latency.is_janky_scrolled_frame')
-        AS is_janky,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.is_janky'
-      ) AS is_janky_v4,
-      (
-        -- Concatenate the `missed_vsyncs_per_jank_reason` repeated field into a
-        -- single string. For example, the following value:
-        --
-        --   { jank_reason: REASON_A, missed_vsyncs: 1 }
-        --   { jank_reason: REASON_B, missed_vsyncs: 2 }
-        --   { jank_reason: REASON_C, missed_vsyncs: 3 }
-        --
-        -- is converted to 'REASON_A(1),REASON_B(2),REASON_C(3)'.
-        SELECT
-          GROUP_CONCAT(
-            FORMAT('%s(%d)', jank_reason, missed_vsyncs),
-            ','
-            ORDER BY jank_reason ASC
-          )
-        FROM
-          (
-            SELECT
-              args.string_value AS jank_reason,
-              SUBSTRING(args.key, 1, LENGTH(args.key) - LENGTH('.jank_reason'))
-                AS key_prefix
-            FROM args
-            WHERE
-              args.arg_set_id = slice.arg_set_id
-              AND args.flat_key =
-                'event_latency.scroll_jank_v4.'
-                  || 'missed_vsyncs_per_jank_reason.jank_reason'
-          )
-        JOIN
-          (
-            SELECT
-              args.int_value AS missed_vsyncs,
-              SUBSTRING(
-                args.key,
-                1,
-                LENGTH(args.key) - LENGTH('.missed_vsyncs')
-              ) AS key_prefix
-            FROM args
-            WHERE
-              args.arg_set_id = slice.arg_set_id
-              AND args.flat_key =
-                'event_latency.scroll_jank_v4.'
-                  || 'missed_vsyncs_per_jank_reason.missed_vsyncs'
-          )
-          -- Join the corresponding `jank_reason` and `missed_vsyncs` via
-          -- their shared
-          -- 'event_latency.scroll_jank_v4.
-          -- missed_vsyncs_per_jank_reason[INDEX]'
-          -- key prefix.
-          USING(key_prefix)
-      ) AS jank_reasons,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.abs_total_raw_delta_pixels'
-      ) AS abs_total_raw_delta_pixels,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.max_abs_inertial_raw_delta_pixels'
-      ) AS max_abs_inertial_raw_delta_pixels,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.vsyncs_since_previous_frame'
-      ) AS vsyncs_since_previous_frame,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.running_delivery_cutoff_us'
-      ) AS running_delivery_cutoff_us,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.adjusted_delivery_cutoff_us'
-      ) AS adjusted_delivery_cutoff_us,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.current_delivery_cutoff_us'
-      ) AS current_delivery_cutoff_us,
-      EXTRACT_ARG(
-        arg_set_id,
-        'event_latency.scroll_jank_v4.is_damaging_frame'
-      ) AS is_damaging_frame
-    FROM slice
-    WHERE name = 'EventLatency'
-    ORDER BY ts ASC;
+    WITH event_latencies AS (
+      SELECT
+        ts,
+        EXTRACT_ARG(arg_set_id, 'event_latency.event_latency_id')
+          AS event_latency_id,
+        EXTRACT_ARG(arg_set_id, 'event_latency.is_janky_scrolled_frame')
+          AS is_janky
+      FROM slice
+      WHERE name = 'EventLatency'
+    ), scroll_jank_v4_results AS (
+      SELECT
+        EXTRACT_ARG(
+          arg_set_id,
+          'scroll_jank_v4.updates.real.first_event_latency_id'
+        ) AS event_latency_id,
+        EXTRACT_ARG(arg_set_id, 'scroll_jank_v4.is_janky') AS is_janky_v4
+      FROM slice
+      WHERE name = 'ScrollJankV4'
+    )
+    SELECT is_janky, is_janky_v4
+    FROM event_latencies
+    FULL OUTER JOIN scroll_jank_v4_results USING(event_latency_id)
+    ORDER BY ts ASC
     )";
 
 /*
@@ -2825,22 +2759,25 @@ TEST_F(CompositorFrameReportingControllerTest, ScrollJankMetricArgs) {
 
   std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+      EventMetrics::TraceId(123));
   base::TimeTicks event1_generation_ts = metrics_1->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
   std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      EventMetrics::TraceId(456));
   base::TimeTicks event2_generation_ts = metrics_2->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
   std::unique_ptr<EventMetrics> metrics_3 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/true,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      EventMetrics::TraceId(789));
 
-  std::unique_ptr<EventMetrics> non_scroll_event =
-      CreateEventMetrics(ui::EventType::kTouchPressed, std::nullopt);
+  std::unique_ptr<EventMetrics> non_scroll_event = CreateEventMetrics(
+      ui::EventType::kTouchPressed, EventMetrics::TraceId(1000));
 
   base::TimeDelta vsync_interval = event2_generation_ts - event1_generation_ts;
   args_.interval = vsync_interval;
@@ -2903,27 +2840,14 @@ TEST_F(CompositorFrameReportingControllerTest, ScrollJankMetricArgs) {
   auto result = ttp.RunQuery(kScrollJankMetricArgsQuery);
   ASSERT_TRUE(result.has_value()) << result.error();
 
-  EXPECT_THAT(
-      result.value(),
-      ::testing::ElementsAre(
-          std::vector<std::string>{
-              "is_janky", "is_janky_v4", "jank_reasons",
-              "abs_total_raw_delta_pixels", "max_abs_inertial_raw_delta_pixels",
-              "vsyncs_since_previous_frame", "running_delivery_cutoff_us",
-              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us",
-              "is_damaging_frame"},
-          std::vector<std::string>{"0", "0", "[NULL]", "10", "0", "[NULL]",
-                                   "[NULL]", "[NULL]", "248000", "1"},
-          std::vector<std::string>{
-              "1", "1",
-              "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),MISSED_"
-              "VSYNC_DURING_FAST_SCROLL(1)",
-              "10", "0", "2", "248000", "246000", "291000", "1"},
-          std::vector<std::string>{"0", "0", "[NULL]", "10", "10", "1",
-                                   "291000", "[NULL]", "291000", "1"},
-          std::vector<std::string>{"[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]", "[NULL]"}));
+  EXPECT_THAT(result.value(), ::testing::ElementsAreArray(
+                                  base::test::TestTraceProcessor::QueryResult{
+                                      {"is_janky", "is_janky_v4"},
+                                      {"0", "0"},
+                                      {"1", "1"},
+                                      {"0", "0"},
+                                      {"[NULL]", "[NULL]"},
+                                  }));
 }
 
 /*
@@ -2944,19 +2868,22 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrame) {
 
   std::unique_ptr<EventMetrics> metrics_1 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kStarted,
+      EventMetrics::TraceId(123));
   base::TimeTicks event1_generation_ts = metrics_1->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
   std::unique_ptr<EventMetrics> metrics_2 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      EventMetrics::TraceId(456));
   base::TimeTicks event2_generation_ts = metrics_2->GetDispatchStageTimestamp(
       EventMetrics::DispatchStage::kGenerated);
 
   std::unique_ptr<EventMetrics> metrics_3 = CreateScrollUpdateEventMetrics(
       ui::ScrollInputType::kWheel, /*is_inertial=*/false,
-      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued, std::nullopt);
+      ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+      EventMetrics::TraceId(789));
 
   base::TimeDelta vsync_interval = event2_generation_ts - event1_generation_ts;
   args_.interval = vsync_interval;
@@ -3000,25 +2927,13 @@ TEST_F(CompositorFrameReportingControllerTest, JankyThrottledScrolledFrame) {
   ASSERT_TRUE(status.ok()) << status.message();
   auto result = ttp.RunQuery(kScrollJankMetricArgsQuery);
   ASSERT_TRUE(result.has_value()) << result.error();
-  EXPECT_THAT(
-      result.value(),
-      ::testing::ElementsAre(
-          std::vector<std::string>{
-              "is_janky", "is_janky_v4", "jank_reasons",
-              "abs_total_raw_delta_pixels", "max_abs_inertial_raw_delta_pixels",
-              "vsyncs_since_previous_frame", "running_delivery_cutoff_us",
-              "adjusted_delivery_cutoff_us", "current_delivery_cutoff_us",
-              "is_damaging_frame"},
-          std::vector<std::string>{"0", "0", "[NULL]", "10", "0", "[NULL]",
-                                   "[NULL]", "[NULL]", "205000", "1"},
-          std::vector<std::string>{
-              "[NULL]", "1",
-              "MISSED_VSYNC_DUE_TO_DECELERATING_INPUT_FRAME_DELIVERY(1),MISSED_"
-              "VSYNC_DURING_FAST_SCROLL(1)",
-              "20", "0", "2", "205000", "203000", "205000", "1"},
-          std::vector<std::string>{"0", "[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]", "[NULL]", "[NULL]", "[NULL]",
-                                   "[NULL]"}));
+  EXPECT_THAT(result.value(), ::testing::ElementsAreArray(
+                                  base::test::TestTraceProcessor::QueryResult{
+                                      {"is_janky", "is_janky_v4"},
+                                      {"0", "0"},
+                                      {"[NULL]", "1"},
+                                      {"0", "[NULL]"},
+                                  }));
 }
 
 /*

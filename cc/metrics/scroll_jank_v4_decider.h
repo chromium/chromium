@@ -276,8 +276,8 @@ class CC_EXPORT ScrollJankV4Decider {
 
   void Reset();
 
-  // Returns the earliest input generation timestamp of scroll updates in
-  // `updates`.
+  // Returns the scroll update in `updates` with the earliest input generation
+  // timestamp.
   //
   // For real scroll updates, this method uses their actual input generation
   // timestamp.
@@ -286,7 +286,7 @@ class CC_EXPORT ScrollJankV4Decider {
   // generation timestamp from their begin frame timestamp and the most recently
   // presented real frame (similarly to
   // `PreviousFrameData::last_input_generation_ts`).
-  std::optional<base::TimeTicks> GetEarliestScrollUpdateGenerationTs(
+  ScrollJankV4Result::FirstScrollUpdate GetFirstScrollUpdate(
       const ScrollJankV4FrameStage::ScrollUpdates& updates) const;
 
   // Information about the previous frame, for which the decider has most
