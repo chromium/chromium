@@ -103,7 +103,7 @@
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/url/url_search_params.h"
@@ -501,7 +501,7 @@ void FrameFetchContext::AddResourceTiming(
 
   // Timing for main resource is handled in DocumentLoader.
   // All other resources are reported to the corresponding Document.
-  DOMWindowPerformance::performance(*document_->domWindow())
+  GlobalPerformance::performance(*document_->domWindow())
       ->AddResourceTiming(std::move(info), initiator_type);
 }
 

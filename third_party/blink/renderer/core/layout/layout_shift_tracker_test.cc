@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -332,7 +332,7 @@ void LayoutShiftTrackerNavigationTest::RunTest(bool is_browser_initiated) {
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto entries =
       perf.getBufferedEntriesByType(performance_entry_names::kLayoutShift);
   EXPECT_EQ(1u, entries.size());
@@ -411,7 +411,7 @@ void LayoutShiftTrackerPointerdownTest::RunTest(
   Compositor().BeginFrame();
   test::RunPendingTasks();
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
   EXPECT_EQ(0u,
@@ -500,7 +500,7 @@ TEST_F(LayoutShiftTrackerSimTest, MouseMoveDraggingAction) {
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event1, ui::LatencyInfo()));
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
   Compositor().BeginFrame();
   test::RunPendingTasks();
@@ -587,7 +587,7 @@ TEST_F(LayoutShiftTrackerSimTest, TouchDraggingAction) {
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event1, ui::LatencyInfo()));
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
   EXPECT_EQ(0u,
@@ -673,7 +673,7 @@ TEST_F(LayoutShiftTrackerSimTest, TouchScrollingAction) {
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event1, ui::LatencyInfo()));
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
   EXPECT_EQ(0u,
@@ -777,7 +777,7 @@ TEST_F(LayoutShiftTrackerSimTest, MultiplePointerDownUps) {
   WebView().MainFrameWidget()->HandleInputEvent(
       WebCoalescedInputEvent(event1, ui::LatencyInfo()));
 
-  WindowPerformance& perf = *DOMWindowPerformance::performance(Window());
+  WindowPerformance& perf = *GlobalPerformance::performance(Window());
   auto& tracker = MainFrame().GetFrameView()->GetLayoutShiftTracker();
 
   EXPECT_EQ(0u,

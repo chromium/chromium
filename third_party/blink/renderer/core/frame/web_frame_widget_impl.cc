@@ -139,7 +139,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
@@ -1646,7 +1646,7 @@ void WebFrameWidgetImpl::ReportLongTaskTiming(base::TimeTicks start_time,
         CHECK(local_frame->GetFrame()->DomWindow());
         // Note: |task_context| could be the execution context of any same-agent
         // frame.
-        DOMWindowPerformance::performance(*local_frame->GetFrame()->DomWindow())
+        GlobalPerformance::performance(*local_frame->GetFrame()->DomWindow())
             ->ReportLongTask(start_time, end_time, task_context,
                              /*has_multiple_contexts=*/false);
       });
@@ -2706,8 +2706,8 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       ->GetUkmAggregator()
       ->RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
                                    commit_start_time, commit_finish_time);
-  WindowPerformance* performance = DOMWindowPerformance::performance(
-      *LocalRootImpl()->GetFrame()->DomWindow());
+  WindowPerformance* performance =
+      GlobalPerformance::performance(*LocalRootImpl()->GetFrame()->DomWindow());
   performance->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
 
   commit_compositor_frame_start_time_ =
@@ -2773,8 +2773,8 @@ void WebFrameWidgetImpl::CountDroppedPointerDownForEventTiming(unsigned count) {
       !(local_root_->GetFrame()->DomWindow())) {
     return;
   }
-  WindowPerformance* performance = DOMWindowPerformance::performance(
-      *(local_root_->GetFrame()->DomWindow()));
+  WindowPerformance* performance =
+      GlobalPerformance::performance(*(local_root_->GetFrame()->DomWindow()));
 
   performance->eventCounts()->AddMultipleEvents(event_type_names::kPointerdown,
                                                 count);
@@ -4095,7 +4095,7 @@ void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
     CHECK(local_root_frame);
     if (LocalDOMWindow* current_window = local_root_frame->DomWindow()) {
       WindowPerformance* window_performance =
-          DOMWindowPerformance::performance(*current_window);
+          GlobalPerformance::performance(*current_window);
       window_performance->ResetAutoscroll();
     }
   }

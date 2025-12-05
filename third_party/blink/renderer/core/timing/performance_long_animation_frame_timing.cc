@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/performance_entry_names.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_script_timing.h"
 #include "third_party/blink/renderer/core/timing/task_attribution_timing.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -28,7 +28,7 @@ PerformanceLongAnimationFrameTiming::Create(
     const std::optional<DOMPaintTimingInfo>& paint_timing_info,
     uint32_t navigation_id) {
   Performance* performance =
-      DOMWindowPerformance::performance(*source->ToLocalDOMWindow());
+      GlobalPerformance::performance(*source->ToLocalDOMWindow());
   DOMHighResTimeStamp startTime =
       performance->MonotonicTimeToDOMHighResTimeStamp(info->FrameStartTime());
   double duration = paint_timing_info

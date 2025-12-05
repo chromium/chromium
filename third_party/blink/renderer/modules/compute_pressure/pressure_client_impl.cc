@@ -14,10 +14,9 @@
 #include "third_party/blink/public/mojom/compute_pressure/web_pressure_update.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/compute_pressure/pressure_observer_manager.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -110,9 +109,9 @@ DOMHighResTimeStamp PressureClientImpl::CalculateTimestamp(
   auto* context = GetExecutionContext();
   Performance* performance;
   if (auto* window = DynamicTo<LocalDOMWindow>(context); window) {
-    performance = DOMWindowPerformance::performance(*window);
+    performance = GlobalPerformance::performance(*window);
   } else if (auto* worker = DynamicTo<WorkerGlobalScope>(context); worker) {
-    performance = WorkerGlobalScopePerformance::performance(*worker);
+    performance = GlobalPerformance::performance(*worker);
   } else {
     NOTREACHED();
   }

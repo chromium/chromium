@@ -142,7 +142,7 @@
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rule_set.h"
 #include "third_party/blink/renderer/core/speculation_rules/speculation_rules_header.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -1384,7 +1384,7 @@ void DocumentLoader::BodyLoadingFinished(
       total_decoded_body_length = total_body_size_from_service_worker_;
     }
 
-    DOMWindowPerformance::performance(*frame_->DomWindow())
+    GlobalPerformance::performance(*frame_->DomWindow())
         ->OnBodyLoadFinished(total_encoded_body_length,
                              total_decoded_body_length);
 
@@ -3143,7 +3143,7 @@ void DocumentLoader::CommitNavigation() {
 
   // TODO(crbug.com/1476866): We should check for protocols and not emit
   // performance timeline entries for file protocol navigations.
-  DOMWindowPerformance::performance(*frame_->DomWindow())
+  GlobalPerformance::performance(*frame_->DomWindow())
       ->CreateNavigationTimingInstance(std::move(navigation_timing_info));
 
   {

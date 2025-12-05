@@ -30,7 +30,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/svg/svg_image_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_timing_for_reporting.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -110,7 +110,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
 
   const PerformanceTimingForReporting& GetPerformanceTimingForReporting() {
     PerformanceTimingForReporting* performance_for_reporting =
-        DOMWindowPerformance::performance(*GetFrame()->DomWindow())
+        GlobalPerformance::performance(*GetFrame()->DomWindow())
             ->timingForReporting();
     return *performance_for_reporting;
   }
@@ -243,7 +243,7 @@ class ImagePaintTimingDetectorTest : public testing::Test,
     base::TimeTicks presentation_time = test_task_runner_->NowTicks();
     DOMHighResTimeStamp timestamp =
         (presentation_time -
-         DOMWindowPerformance::performance(*GetDocument().domWindow())
+         GlobalPerformance::performance(*GetDocument().domWindow())
              ->GetTimeOriginInternal())
             .InMillisecondsF();
     image_callback_manager->InvokePresentationTimeCallback(

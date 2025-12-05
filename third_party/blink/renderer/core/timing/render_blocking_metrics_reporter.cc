@@ -6,7 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 
 namespace blink {
 
@@ -36,7 +36,7 @@ base::TimeDelta RenderBlockingMetricsReporter::GetDeltaFromTimeOrigin() {
   if (!window) {
     return base::TimeDelta();
   }
-  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
+  WindowPerformance* performance = GlobalPerformance::performance(*window);
   DCHECK(performance);
 
   return (base::TimeTicks::Now() - performance->GetTimeOriginInternal());

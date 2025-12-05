@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observation.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -36,7 +36,7 @@ DOMHighResTimeStamp ComputeIntersectionsContext::GetTimeStamp(
   }
 
   DOMHighResTimeStamp timestamp =
-      DOMWindowPerformance::performance(To<LocalDOMWindow>(*context))
+      GlobalPerformance::performance(To<LocalDOMWindow>(*context))
           ->MonotonicTimeToDOMHighResTimeStamp(GetMonotonicTime());
 
   if (observer.RootIsImplicit()) {

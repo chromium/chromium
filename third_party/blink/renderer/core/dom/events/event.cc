@@ -38,9 +38,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -395,13 +394,12 @@ double Event::timeStamp(ScriptState* script_state) const {
   }
 
   if (auto* window = LocalDOMWindow::From(script_state)) {
-    Performance* performance = DOMWindowPerformance::performance(*window);
+    Performance* performance = GlobalPerformance::performance(*window);
     return performance->MonotonicTimeToDOMHighResTimeStamp(
         platform_time_stamp_);
   } else if (auto* worker = DynamicTo<WorkerGlobalScope>(
                  ExecutionContext::From(script_state))) {
-    Performance* performance =
-        WorkerGlobalScopePerformance::performance(*worker);
+    Performance* performance = GlobalPerformance::performance(*worker);
     return performance->MonotonicTimeToDOMHighResTimeStamp(
         platform_time_stamp_);
   }

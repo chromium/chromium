@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -21,12 +21,12 @@ namespace blink {
 namespace {
 
 base::TimeTicks GetTimeOriginTimeTicks(V8TestingScope& v8_scope) {
-  return DOMWindowPerformance::performance(v8_scope.GetWindow())
+  return GlobalPerformance::performance(v8_scope.GetWindow())
       ->GetTimeOriginInternal();
 }
 
 DOMHighResTimeStamp GetTimeOriginNtp(V8TestingScope& v8_scope) {
-  return DOMWindowPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
+  return GlobalPerformance::performance(v8_scope.GetWindow())->timeOrigin() +
          2208988800000.0;
 }
 

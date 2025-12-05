@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "ui/gfx/geometry/point_conversions.h"
 
@@ -27,7 +27,7 @@ WebInputEventResult WidgetEventHandler::HandleInputEvent(
     if (LocalFrameView* view = document->View())
       view->GetLayoutShiftTracker().NotifyInput(event);
     WindowPerformance* performance =
-        DOMWindowPerformance::performance(*root->DomWindow());
+        GlobalPerformance::performance(*root->DomWindow());
     performance->GetResponsivenessMetrics()
         .SetCurrentInteractionEventQueuedTimestamp(event.QueuedTimeStamp());
   }

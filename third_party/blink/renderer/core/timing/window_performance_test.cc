@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/performance_entry_names.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -212,7 +212,7 @@ class WindowPerformanceTest : public testing::Test,
     page_holder_->GetDocument().SetURL(KURL("https://example.com"));
 
     LocalDOMWindow* window = LocalDOMWindow::From(GetScriptState());
-    performance_ = DOMWindowPerformance::performance(*window);
+    performance_ = GlobalPerformance::performance(*window);
     performance_->SetClocksForTesting(test_task_runner_->GetMockClock(),
                                       test_task_runner_->GetMockTickClock());
     performance_->time_origin_ = GetTimeOrigin();
@@ -303,7 +303,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
       .SetSecurityOriginForTesting(SecurityOrigin::Create(KURL(url)));
 
   WindowPerformance* perf =
-      DOMWindowPerformance::performance(*page_holder->GetFrame().DomWindow());
+      GlobalPerformance::performance(*page_holder->GetFrame().DomWindow());
   PerformanceTiming* timing = perf->timing();
   uint64_t navigation_id = perf->NavigationId();
 
@@ -325,7 +325,7 @@ TEST(PerformanceLifetimeTest, SurviveContextSwitch) {
       mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
   page_holder->GetFrame().Loader().CommitNavigation(std::move(params), nullptr);
 
-  EXPECT_EQ(perf, DOMWindowPerformance::performance(
+  EXPECT_EQ(perf, GlobalPerformance::performance(
                       *page_holder->GetFrame().DomWindow()));
   EXPECT_EQ(navigation_id, perf->NavigationId());
   EXPECT_EQ(timing, perf->timing());
@@ -2214,7 +2214,7 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdHardNavigations) {
     // constructor of LocalDOMWindow).
     V8TestingScope scope;
     const WindowPerformance* performance =
-        DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
+        GlobalPerformance::performance(*scope.GetFrame().DomWindow());
     ASSERT_TRUE(performance);
     ids.push_back(performance->NavigationId());
   }
@@ -2234,7 +2234,7 @@ TEST_F(WindowPerformanceNavigationIdTest, NavigationIdSoftNavigations) {
   // Initial navigation: randomly generated ID, assumed to be hard nav.
   V8TestingScope scope;
   WindowPerformance* performance =
-      DOMWindowPerformance::performance(*scope.GetFrame().DomWindow());
+      GlobalPerformance::performance(*scope.GetFrame().DomWindow());
   uint32_t navigation_id1 = performance->NavigationId();
 
   // Soft navigation or back-forward cache restoration: incremented ID.

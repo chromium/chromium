@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
@@ -802,7 +802,7 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
   if (!window) {
     return result;
   }
-  WindowPerformance* performance = DOMWindowPerformance::performance(*window);
+  WindowPerformance* performance = GlobalPerformance::performance(*window);
   DCHECK(performance);
 
   DeferredTaskHandler::GraphAutoLocker locker(this);

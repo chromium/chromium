@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/timing/back_forward_cache_restoration.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_long_task_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_observer.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
@@ -250,7 +250,7 @@ TEST_F(PerformanceTest, InsertEntryOnEmptyBuffer) {
 
   auto* window = LocalDOMWindow::From(scope.GetScriptState());
   ASSERT_TRUE(window);
-  auto* performance = DOMWindowPerformance::performance(*window);
+  auto* performance = GlobalPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceEventTiming* test_entry = PerformanceEventTiming::Create(
@@ -272,7 +272,7 @@ TEST_F(PerformanceTest, InsertEntryOnExistingBuffer) {
   Initialize(scope.GetScriptState());
   auto* window = LocalDOMWindow::From(scope.GetScriptState());
   ASSERT_TRUE(window);
-  auto* performance = DOMWindowPerformance::performance(*window);
+  auto* performance = GlobalPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceEntryVector test_buffer_;
@@ -319,7 +319,7 @@ TEST_F(PerformanceTest, InsertEntryToFrontOfBuffer) {
   Initialize(scope.GetScriptState());
   auto* window = LocalDOMWindow::From(scope.GetScriptState());
   ASSERT_TRUE(window);
-  auto* performance = DOMWindowPerformance::performance(*window);
+  auto* performance = GlobalPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceEntryVector test_buffer_;
@@ -366,7 +366,7 @@ TEST_F(PerformanceTest, MergePerformanceEntryVectorsTest) {
   Initialize(scope.GetScriptState());
   auto* window = LocalDOMWindow::From(scope.GetScriptState());
   ASSERT_TRUE(window);
-  auto* performance = DOMWindowPerformance::performance(*window);
+  auto* performance = GlobalPerformance::performance(*window);
   ASSERT_TRUE(performance);
 
   PerformanceEntryVector first_vector;

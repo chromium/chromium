@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/style/style_fetched_image.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_context.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
@@ -485,7 +485,7 @@ bool ImageRecordsManager::OnFirstAnimatedFramePainted(
       // TODO(crbug.com/383568320): this timestamp it not specified, and it's
       // not clear how it should be coarsened.
       DOMHighResTimeStamp dom_timestamp =
-          DOMWindowPerformance::performance(
+          GlobalPerformance::performance(
               *frame_view_->GetFrame().GetDocument()->domWindow())
               ->MonotonicTimeToDOMHighResTimeStamp(paint_time);
       record->SetPaintTime(paint_time,

@@ -36,9 +36,8 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -72,10 +71,10 @@ base::TimeTicks GetTimeOrigin(ExecutionContext* context) {
   DCHECK(context);
   Performance* performance = nullptr;
   if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(context)) {
-    performance = DOMWindowPerformance::performance(*window);
+    performance = GlobalPerformance::performance(*window);
   } else {
     DCHECK(context->IsWorkerGlobalScope());
-    performance = WorkerGlobalScopePerformance::performance(
+    performance = GlobalPerformance::performance(
         *static_cast<WorkerGlobalScope*>(context));
   }
 

@@ -15,11 +15,11 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/layout_shift_attribution.h"
-#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
+#include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 
 namespace blink {
 
@@ -145,9 +145,9 @@ void InspectorPerformanceTimelineAgent::PerformanceEntryAdded(
   Performance* performance = nullptr;
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     frame_id = IdentifiersFactory::FrameId(window->GetFrame());
-    performance = DOMWindowPerformance::performance(*window);
+    performance = GlobalPerformance::performance(*window);
   } else if (auto* global_scope = DynamicTo<WorkerGlobalScope>(context)) {
-    performance = WorkerGlobalScopePerformance::performance(*global_scope);
+    performance = GlobalPerformance::performance(*global_scope);
   } else {
     NOTREACHED() << "Unexpected subtype of ExecutionContext";
   }
@@ -206,7 +206,7 @@ void InspectorPerformanceTimelineAgent::CollectEntries(AtomicString type,
     LocalDOMWindow* window = frame->DomWindow();
     if (!window)
       continue;
-    WindowPerformance* performance = DOMWindowPerformance::performance(*window);
+    WindowPerformance* performance = GlobalPerformance::performance(*window);
     for (Member<PerformanceEntry>& entry :
          performance->getBufferedEntriesByType(type)) {
       events->push_back(

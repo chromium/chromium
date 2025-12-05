@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
@@ -43,7 +43,7 @@ class PerformanceResourceTimingTest : public testing::Test {
     script_state_ = script_state;
     auto* window = LocalDOMWindow::From(script_state_);
     ASSERT_TRUE(window);
-    performance_ = DOMWindowPerformance::performance(*window);
+    performance_ = GlobalPerformance::performance(*window);
     ASSERT_TRUE(performance_);
   }
 

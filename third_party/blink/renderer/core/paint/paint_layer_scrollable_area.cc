@@ -119,8 +119,8 @@
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/event_timing.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -507,7 +507,7 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
 
   if (LocalDOMWindow* current_window = frame->DomWindow()) {
     WindowPerformance* window_performance =
-        DOMWindowPerformance::performance(*current_window);
+        GlobalPerformance::performance(*current_window);
     window_performance->OnPageScroll();
   }
 

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
 #include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 #include "ui/gfx/geometry/rect.h"
@@ -30,7 +30,7 @@ TextElementTiming& TextElementTiming::From(LocalDOMWindow& window) {
 
 TextElementTiming::TextElementTiming(LocalDOMWindow& window)
     : local_dom_window_(window),
-      performance_(DOMWindowPerformance::performance(window)) {}
+      performance_(GlobalPerformance::performance(window)) {}
 
 // static
 gfx::RectF TextElementTiming::ComputeIntersectionRect(

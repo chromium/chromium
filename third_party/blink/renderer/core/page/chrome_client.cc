@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scoped_page_pauser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/rect.h"
@@ -95,7 +95,7 @@ template <typename Delegate>
 static bool OpenJavaScriptDialog(LocalFrame* frame,
                                  const String& message,
                                  const Delegate& delegate) {
-  DOMWindowPerformance::performance(*frame->DomWindow())->WillShowModalDialog();
+  GlobalPerformance::performance(*frame->DomWindow())->WillShowModalDialog();
   // Suspend pages in case the client method runs a new event loop that would
   // otherwise cause the load to continue while we're in the middle of
   // executing JavaScript.
@@ -271,7 +271,7 @@ bool ChromeClient::Print(LocalFrame* frame) {
     return false;
   }
 
-  DOMWindowPerformance::performance(*frame->DomWindow())->WillShowModalDialog();
+  GlobalPerformance::performance(*frame->DomWindow())->WillShowModalDialog();
 
   // Suspend pages in case the client method runs a new event loop that would
   // otherwise cause the load to continue while we're in the middle of

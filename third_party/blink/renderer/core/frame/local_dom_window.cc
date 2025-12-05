@@ -148,7 +148,7 @@
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
-#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/global_performance.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
@@ -2204,7 +2204,7 @@ void LocalDOMWindow::DispatchLoadEvent() {
   }
 
   if (LocalFrame* frame = GetFrame()) {
-    WindowPerformance* performance = DOMWindowPerformance::performance(*this);
+    WindowPerformance* performance = GlobalPerformance::performance(*this);
     DCHECK(performance);
     performance->NotifyNavigationTimingToObservers();
 
