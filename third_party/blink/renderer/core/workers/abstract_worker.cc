@@ -55,8 +55,9 @@ KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
                                 ExceptionState& exception_state) {
   KURL script_url = execution_context->CompleteURL(url);
   if (!script_url.IsValid()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kSyntaxError,
-                                      "'" + url + "' is not a valid URL.");
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        StrCat({"'", url, "' is not a valid URL."}));
     return KURL();
   }
 
@@ -65,9 +66,9 @@ KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
   // information.
   if (!execution_context->GetSecurityOrigin()->CanReadContent(script_url)) {
     exception_state.ThrowSecurityError(
-        "Script at '" + script_url.ElidedString() +
-        "' cannot be accessed from origin '" +
-        execution_context->GetSecurityOrigin()->ToString() + "'.");
+        StrCat({"Script at '", script_url.ElidedString(),
+                "' cannot be accessed from origin '",
+                execution_context->GetSecurityOrigin()->ToString(), "'."}));
     return KURL();
   }
 
@@ -78,8 +79,8 @@ KURL AbstractWorker::ResolveURL(ExecutionContext* execution_context,
       UseCounter::Count(execution_context,
                         WebFeature::kCSPBlockedWorkerCreation);
       exception_state.ThrowSecurityError(
-          "Access to the script at '" + script_url.ElidedString() +
-          "' is denied by the document's Content Security Policy.");
+          StrCat({"Access to the script at '", script_url.ElidedString(),
+                  "' is denied by the document's Content Security Policy."}));
       return KURL();
     }
   }

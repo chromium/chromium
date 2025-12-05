@@ -122,7 +122,8 @@ void MessagePort::postMessage(ScriptState* script_state,
     if (transferables.message_ports[i] == this) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "Port at index " + String::Number(i) + " contains the source port.");
+          StrCat({"Port at index ", String::Number(i),
+                  " contains the source port."}));
       return;
     }
   }
@@ -288,7 +289,7 @@ Vector<MessagePortChannel> MessagePort::DisentanglePorts(
         type = "a duplicate";
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataCloneError,
-          "Port at index " + String::Number(i) + " is " + type + ".");
+          StrCat({"Port at index ", String::Number(i), " is ", type, "."}));
       return Vector<MessagePortChannel>();
     }
     if (port->closed_)

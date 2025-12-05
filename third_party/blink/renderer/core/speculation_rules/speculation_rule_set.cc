@@ -744,8 +744,8 @@ SpeculationRuleSet* SpeculationRuleSet::Parse(Source* source,
           // Rejects if "form_submission" is set but not allowed.
           if (!allow_form_submission && rule->form_submission()) {
             result->SetError(SpeculationRuleSetErrorType::kInvalidRulesSkipped,
-                             "\"form_submission\" may not be set for " +
-                                 String(key) + " rules.");
+                             StrCat({"\"form_submission\" may not be set for ",
+                                     key, " rules."}));
             continue;
           }
 

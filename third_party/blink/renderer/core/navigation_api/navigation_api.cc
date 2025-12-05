@@ -471,8 +471,9 @@ NavigationResult* NavigationApi::navigate(ScriptState* script_state,
                                           NavigationNavigateOptions* options) {
   KURL completed_url = KURL(window_->BaseURL(), url);
   if (!completed_url.IsValid()) {
-    return EarlyErrorResult(script_state, DOMExceptionCode::kSyntaxError,
-                            "Invalid URL '" + completed_url.GetString() + "'.");
+    return EarlyErrorResult(
+        script_state, DOMExceptionCode::kSyntaxError,
+        StrCat({"Invalid URL '", completed_url.GetString(), "'."}));
   }
 
   if (completed_url.ProtocolIsJavaScript()) {
@@ -679,14 +680,14 @@ DOMException* NavigationApi::PerformSharedNavigationChecks(
   if (!window_->GetFrame()) {
     return MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
-        method_name_for_error_message +
-            " cannot be called when the Window is detached.");
+        StrCat({method_name_for_error_message,
+                " cannot be called when the Window is detached."}));
   }
   if (window_->document()->PageDismissalEventBeingDispatched()) {
     return MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
-        method_name_for_error_message +
-            " cannot be called during unload or beforeunload.");
+        StrCat({method_name_for_error_message,
+                " cannot be called during unload or beforeunload."}));
   }
   return nullptr;
 }
@@ -945,9 +946,9 @@ void NavigationApi::TraverseCancelled(
              mojom::blink::TraverseCancelledReason::kSandboxViolation) {
     exception = MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSecurityError,
-        "Navigating to key " + key +
-            " would require a navigation that "
-            "violates this frame's sandbox policy");
+        StrCat({"Navigating to key ", key,
+                " would require a navigation that violates this frame's "
+                "sandbox policy"}));
   } else if (reason ==
              mojom::blink::TraverseCancelledReason::kAbortedBeforeCommit) {
     exception = MakeGarbageCollected<DOMException>(

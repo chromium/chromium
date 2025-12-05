@@ -76,7 +76,7 @@ ScriptPromise<IDLUndefined> Worklet::addModule(
   if (!module_url_record.IsValid()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError,
-        "'" + module_url + "' is not a valid URL."));
+        StrCat({"'", module_url, "' is not a valid URL."})));
     return promise;
   }
 

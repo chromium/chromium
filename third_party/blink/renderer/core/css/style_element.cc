@@ -288,7 +288,7 @@ void StyleElement::AddImportMapEntry(Element& element, const String& text) {
   if (use_data_uri) {
     // TODO(crbug.com/448174611) - consider encoding in base64 to decrease
     // string size in memory (at the expense of decoding on the CPU).
-    url_string = "data:text/css," + EncodeWithURLEscapeSequences(text);
+    url_string = StrCat({"data:text/css,", EncodeWithURLEscapeSequences(text)});
   } else {
     auto* blob = Blob::Create(text.Span8(), "text/css");
     CHECK(blob);

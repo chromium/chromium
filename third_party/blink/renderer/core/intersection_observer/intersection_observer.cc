@@ -100,7 +100,7 @@ void ParseMargin(const String& margin_parameter,
     if (margin.size() == 4) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "Extra text found at the end of " + marginName + "Margin.");
+          StrCat({"Extra text found at the end of ", marginName, "Margin."}));
       break;
     }
     const CSSParserToken token = stream.Peek();
@@ -121,14 +121,16 @@ void ParseMargin(const String& margin_parameter,
           default:
             exception_state.ThrowDOMException(
                 DOMExceptionCode::kSyntaxError,
-                marginName + "Margin must be specified in pixels or percent.");
+                StrCat({marginName,
+                        "Margin must be specified in pixels or percent."}));
         }
         stream.ConsumeIncludingWhitespace();
         break;
       default:
         exception_state.ThrowDOMException(
             DOMExceptionCode::kSyntaxError,
-            marginName + "Margin must be specified in pixels or percent.");
+            StrCat({marginName,
+                    "Margin must be specified in pixels or percent."}));
     }
   }
 }

@@ -1835,8 +1835,8 @@ PaintPropertyChangeType ViewTransitionStyleTracker::UpdateCaptureClip(
       element_data->clip_node =
           ClipPaintPropertyNode::Create(*current_clip, std::move(state));
 #if DCHECK_IS_ON()
-      element_data->clip_node->SetDebugName(element.DebugName() +
-                                            "ViewTransition");
+      element_data->clip_node->SetDebugName(
+          StrCat({element.DebugName(), "ViewTransition"}));
 #endif
       return PaintPropertyChangeType::kNodeAddedOrRemoved;
     }

@@ -55,8 +55,8 @@ void MathMLSpaceElement::CollectStyleForPresentationAttribute(
     if (height_value && depth_value) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kHeight,
-          "calc(" + FastGetAttribute(mathml_names::kHeightAttr) + " + " +
-              FastGetAttribute(mathml_names::kDepthAttr) + ")");
+          StrCat({"calc(", FastGetAttribute(mathml_names::kHeightAttr), " + ",
+                  FastGetAttribute(mathml_names::kDepthAttr), ")"}));
     } else if (attribute_value) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
                                               *attribute_value);

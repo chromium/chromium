@@ -595,13 +595,13 @@ void LocaleWin::InitializeLocaleData() {
       negative_suffix = ")";
       break;
     case kNegativeFormatSignSpacePrefix:
-      negative_prefix = negative_sign + " ";
+      negative_prefix = StrCat({negative_sign, " "});
       break;
     case kNegativeFormatSignSuffix:
       negative_suffix = negative_sign;
       break;
     case kNegativeFormatSpaceSignSuffix:
-      negative_suffix = " " + negative_sign;
+      negative_suffix = StrCat({" ", negative_sign});
       break;
     case kNegativeFormatSignPrefix:  // Fall through.
     default:

@@ -531,9 +531,9 @@ bool Animation::ConvertCSSNumberishToTime(
       if (!numberish_as_percentage) {
         exception_state.ThrowDOMException(
             DOMExceptionCode::kNotSupportedError,
-            "Invalid " + variable_name +
-                ". CSSNumericValue must be a percentage for "
-                "progress based animations.");
+            StrCat({"Invalid ", variable_name,
+                    ". CSSNumericValue must be a percentage for progress based "
+                    "animations."}));
         return false;
       }
       timeline_duration_ = timeline_->GetDuration();
@@ -543,9 +543,9 @@ bool Animation::ConvertCSSNumberishToTime(
     } else {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kNotSupportedError,
-          "Invalid " + variable_name + ". Setting " + variable_name +
-              " using absolute time "
-              "values is not supported for progress based animations.");
+          StrCat({"Invalid ", variable_name, ". Setting ", variable_name,
+                  " using absolute time values is not supported for progress "
+                  "based animations."}));
       return false;
     }
   }
@@ -580,9 +580,9 @@ bool Animation::ConvertCSSNumberishToTime(
     // currentTime and startTime using CSSNumericValues that are percentages.
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "Invalid " + variable_name +
-            ". CSSNumericValue must be either a number or a time value for "
-            "time based animations.");
+        StrCat({"Invalid ", variable_name,
+                ". CSSNumericValue must be either a number or a time value for "
+                "time based animations."}));
     return false;
   }
 

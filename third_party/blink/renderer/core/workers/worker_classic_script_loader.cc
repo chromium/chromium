@@ -72,10 +72,10 @@ String CheckSameOriginEnforcement(const KURL& request_url,
                                   const KURL& response_url) {
   if (request_url != response_url &&
       !SecurityOrigin::AreSameOrigin(request_url, response_url)) {
-    return "Refused to load the top-level worker script from '" +
-           response_url.ElidedString() +
-           "' because it doesn't match the origin of the request URL '" +
-           request_url.ElidedString() + "'";
+    return StrCat({"Refused to load the top-level worker script from '",
+                   response_url.ElidedString(),
+                   "' because it doesn't match the origin of the request URL '",
+                   request_url.ElidedString(), "'"});
   }
   return String();
 }

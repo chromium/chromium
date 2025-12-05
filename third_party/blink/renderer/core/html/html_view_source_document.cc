@@ -451,7 +451,7 @@ int HTMLViewSourceDocument::AddSrcset(const String& source,
       }
     } else {
       if (i + 1 < size) {
-        AddText(srclist[i] + ",", class_attribute_value_);
+        AddText(StrCat({srclist[i], ","}), class_attribute_value_);
       } else {
         AddText(srclist[i], class_attribute_value_);
       }

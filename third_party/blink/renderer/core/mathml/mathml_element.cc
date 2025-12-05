@@ -98,7 +98,7 @@ void MathMLElement::CollectStyleForPresentationAttribute(
     if (ParseScriptLevel(value, scriptLevel, add)) {
       if (add) {
         AddPropertyToPresentationAttributeStyle(
-            style, CSSPropertyID::kMathDepth, "add(" + value + ")");
+            style, CSSPropertyID::kMathDepth, StrCat({"add(", value, ")"}));
       } else {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kMathDepth, scriptLevel,

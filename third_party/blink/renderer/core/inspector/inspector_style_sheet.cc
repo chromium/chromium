@@ -1346,7 +1346,7 @@ CSSRule* InspectorStyleSheet::SetStyleText(
     }
 
     auto new_text =
-        String("@font-feature-values ") + old_prefix + text + old_suffix + "}";
+        StrCat({"@font-feature-values ", old_prefix, text, old_suffix, "}"});
 
     // @font-feature-values rules don't support text replacement. Instead, we
     // find the old rule's index in the style sheet, insert a new rule, and

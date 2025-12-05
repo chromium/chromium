@@ -105,7 +105,7 @@ void BlinkOTSContext::AppendErrorMessage(const String&& new_error_string) {
       return;
     }
     accumulated_error_string_ =
-        accumulated_error_string_ + "\n" + new_error_string;
+        StrCat({accumulated_error_string_, "\n", new_error_string});
   }
 }
 

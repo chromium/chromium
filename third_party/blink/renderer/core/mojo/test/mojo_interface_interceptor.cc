@@ -68,8 +68,9 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
                           WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
 
     return;
@@ -89,8 +90,9 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
                           WrapWeakPersistent(this)))) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kInvalidModificationError,
-          "Interface " + interface_name_ +
-              " is already intercepted by another MojoInterfaceInterceptor.");
+          StrCat({"Interface ", interface_name_,
+                  " is already intercepted by another "
+                  "MojoInterfaceInterceptor."}));
     }
     return;
   }
@@ -101,8 +103,9 @@ void MojoInterfaceInterceptor::start(ExceptionState& exception_state) {
                         WrapWeakPersistent(this)))) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidModificationError,
-        "Interface " + interface_name_ +
-            " is already intercepted by another MojoInterfaceInterceptor.");
+        StrCat(
+            {"Interface ", interface_name_,
+             " is already intercepted by another MojoInterfaceInterceptor."}));
   }
 }
 

@@ -144,8 +144,8 @@ SharedWorker* SharedWorker::CreateImpl(
   worker->port_->SetIsSharedWorkerPort(true);
   if (!window->GetSecurityOrigin()->CanAccessSharedWorkers()) {
     exception_state.ThrowSecurityError(
-        "Access to shared workers is denied to origin '" +
-        window->GetSecurityOrigin()->ToString() + "'.");
+        StrCat({"Access to shared workers is denied to origin '",
+                window->GetSecurityOrigin()->ToString(), "'."}));
     return nullptr;
   } else if (window->GetSecurityOrigin()->IsLocal()) {
     UseCounter::Count(window, WebFeature::kFileAccessedSharedWorker);

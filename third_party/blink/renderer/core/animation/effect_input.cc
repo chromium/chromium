@@ -305,8 +305,8 @@ void SetKeyframeValue(Document& document,
             MakeGarbageCollected<ConsoleMessage>(
                 mojom::ConsoleMessageSource::kJavaScript,
                 mojom::ConsoleMessageLevel::kWarning,
-                "Invalid keyframe value for property " + property + ": " +
-                    value));
+                StrCat({"Invalid keyframe value for property ", property, ": ",
+                        value})));
       }
     }
   }

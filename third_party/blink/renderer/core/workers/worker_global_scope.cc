@@ -277,7 +277,7 @@ void WorkerGlobalScope::importScripts(
 namespace {
 
 String NetworkErrorMessageAtImportScript(const KURL& url) {
-  return "The script at '" + url.ElidedString() + "' failed to load.";
+  return StrCat({"The script at '", url.ElidedString(), "' failed to load."});
 }
 
 }  // namespace
@@ -313,7 +313,7 @@ void WorkerGlobalScope::ImportScriptsInternal(const Vector<String>& urls,
     if (!url.IsValid()) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kSyntaxError,
-          "The URL '" + url_string + "' is invalid.");
+          StrCat({"The URL '", url_string, "' is invalid."}));
       return;
     }
     if (!GetContentSecurityPolicy()->AllowScriptFromSource(

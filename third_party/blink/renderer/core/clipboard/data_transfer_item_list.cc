@@ -74,7 +74,7 @@ DataTransferItem* DataTransferItemList::add(const String& data,
   if (!item) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
-        "An item already exists for type '" + type + "'.");
+        StrCat({"An item already exists for type '", type, "'."}));
     return nullptr;
   }
   return MakeGarbageCollected<DataTransferItem>(data_transfer_, item);
