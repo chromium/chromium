@@ -177,11 +177,14 @@ class SupervisedUserMetricsServiceFieldTrialTest
         << "Create test environment first with CreateTestEnvironment().";
 
     if (GetFieldTrialName() == "AndroidDeviceSearchContentFilters") {
-      test_environment_->search_content_filters_observer()->SetEnabled(enabled);
+      test_environment_->service()
+          ->GetSearchContentFiltersObserverWeakPtrForTesting()
+          ->SetEnabledForTesting(enabled);
       return;
     } else if (GetFieldTrialName() == "AndroidDeviceBrowserContentFilters") {
-      test_environment_->browser_content_filters_observer()->SetEnabled(
-          enabled);
+      test_environment_->service()
+          ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+          ->SetEnabledForTesting(enabled);
       return;
     }
 
@@ -286,7 +289,6 @@ TEST_P(SupervisedUserMetricsServiceWebFilterTypePeriodicalTest,
         histogram_name, WebFilterType::kTryToBlockMatureSites, expected_count);
   }
 }
-
 
 const PeriodicalWebFilterTypeTestParams kPeriodicalWebFilterTypeTestParams[] = {
     {"Unsupervised",

@@ -62,13 +62,14 @@ class MockUrlCheckerClient : public URLCheckerClient {
 class SupervisedUserServiceBootstrapAndroidBrowserTestBase
     : public AndroidBrowserTest {
  protected:
-  // Creates a fake content filters observer bridge for testing, and binds it to
-  // this test fixture.
-  virtual std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled,
-      base::RepeatingCallback<bool()> is_subject_to_parental_controls) = 0;
+  SupervisedUserServiceBootstrapAndroidBrowserTestBase() = default;
+  SupervisedUserServiceBootstrapAndroidBrowserTestBase(
+      bool initial_browser_content_filters_value,
+      bool initial_search_content_filters_value)
+      : initial_browser_content_filters_value_(
+            initial_browser_content_filters_value),
+        initial_search_content_filters_value_(
+            initial_search_content_filters_value) {}
 
   // Called just before supervised user service is created. Much like
   // SetUpLocalStatePrefService, but called after prefs are registered.
@@ -80,9 +81,8 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
-  TestSupervisedUserService* GetTestSupervisedUserService() {
-    return static_cast<TestSupervisedUserService*>(
-        SupervisedUserServiceFactory::GetForProfile(GetProfile()));
+  SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(GetProfile());
   }
 
  private:
@@ -136,7 +136,22 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
         std::make_unique<MockUrlCheckerClient>();
     url_checker_client_ = url_checker_client.get();
 
-    return std::make_unique<TestSupervisedUserService>(
+    // Create the bridge and configure its initial value before passing
+    // ownership to the SupervisedUserService.
+    std::unique_ptr<FakeContentFiltersObserverBridge> browser_bridge =
+        std::make_unique<FakeContentFiltersObserverBridge>(
+            kBrowserContentFiltersSettingName, *profile->GetPrefs());
+    browser_bridge->SetEnabledForTesting(
+        initial_browser_content_filters_value_);
+
+    // Create the bridge and configure its initial value before passing
+    // ownership to the SupervisedUserService.
+    std::unique_ptr<FakeContentFiltersObserverBridge> search_bridge =
+        std::make_unique<FakeContentFiltersObserverBridge>(
+            kSearchContentFiltersSettingName, *profile->GetPrefs());
+    search_bridge->SetEnabledForTesting(initial_search_content_filters_value_);
+
+    return std::make_unique<SupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
@@ -149,11 +164,12 @@ class SupervisedUserServiceBootstrapAndroidBrowserTestBase
         std::make_unique<SupervisedUserURLFilter>(
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
             std::move(url_checker_client)),
-        std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        base::BindRepeating(
-            &SupervisedUserServiceBootstrapAndroidBrowserTestBase::CreateBridge,
-            base::Unretained(this)));
+        std::move(platform_delegate), std::move(browser_bridge),
+        std::move(search_bridge));
   }
+
+  bool initial_browser_content_filters_value_ = false;
+  bool initial_search_content_filters_value_ = false;
 
   base::HistogramTester histogram_tester_;
   raw_ptr<MockUrlCheckerClient> url_checker_client_;
@@ -167,17 +183,6 @@ struct BootstrapServiceTestCase {
   bool initial_browser_content_filters_value;
   // Determines the value of search device filter on browser startup.
   bool initial_search_content_filters_value;
-
-  // Returns the initial value for the given content filters setting.
-  bool ResolveInitialValueForFilter(std::string_view setting_name) const {
-    if (setting_name == kBrowserContentFiltersSettingName) {
-      return initial_browser_content_filters_value;
-    }
-    if (setting_name == kSearchContentFiltersSettingName) {
-      return initial_search_content_filters_value;
-    }
-    NOTREACHED() << "Unsupported setting name: " << setting_name;
-  }
 
   // Returns true if incognito should be blocked based on the initial values of
   // the content filters settings.
@@ -193,20 +198,16 @@ class SupervisedUserServiceBootstrapAndroidBrowserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase,
       public ::testing::WithParamInterface<BootstrapServiceTestCase> {
  protected:
-  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled,
-      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
-      override {
-    return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
-        GetParam().ResolveInitialValueForFilter(setting_name));
-  }
+  SupervisedUserServiceBootstrapAndroidBrowserTest()
+      : SupervisedUserServiceBootstrapAndroidBrowserTestBase(
+            GetParam().initial_browser_content_filters_value,
+            GetParam().initial_search_content_filters_value) {}
 };
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        IncognitoIsBlockedWhenAnyFilterIsEnabled) {
+  ASSERT_NE(nullptr, SupervisedUserServiceFactory::GetForProfile(GetProfile()));
+
   policy::IncognitoModeAvailability expected_incognito_mode_availability =
       GetParam().ShouldBlockIncognito()
           ? policy::IncognitoModeAvailability::kDisabled
@@ -214,10 +215,10 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
 
   // TODO(http://crbug.com/433234589): this test could actually try to open
   // incognito (to no avail).
-  EXPECT_EQ(static_cast<policy::IncognitoModeAvailability>(
+  EXPECT_EQ(expected_incognito_mode_availability,
+            static_cast<policy::IncognitoModeAvailability>(
                 GetProfile()->GetPrefs()->GetInteger(
-                    policy::policy_prefs::kIncognitoModeAvailability)),
-            expected_incognito_mode_availability);
+                    policy::policy_prefs::kIncognitoModeAvailability)));
 }
 
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
@@ -314,13 +315,13 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
                        FamilyLinkOverridesLocalSupervision) {
   SupervisedUserService* service =
       SupervisedUserServiceFactory::GetForProfile(GetProfile());
-  bool is_initiall_supervised_locally =
+  bool is_initially_supervised_locally =
       GetParam().initial_browser_content_filters_value ||
       GetParam().initial_search_content_filters_value;
 
   // Local supervision is initially enabled/disabled based on the test case, but
   // Family Link supervision is always disabled.
-  ASSERT_EQ(service->IsSupervisedLocally(), is_initiall_supervised_locally);
+  ASSERT_EQ(is_initially_supervised_locally, service->IsSupervisedLocally());
   ASSERT_FALSE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   EnableParentalControls(*GetProfile()->GetPrefs());
@@ -329,7 +330,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBootstrapAndroidBrowserTest,
   // always enabled, and if there was a conflict, it's recorded.
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1,
-      is_initiall_supervised_locally ? 1 : 0);
+      is_initially_supervised_locally ? 1 : 0);
   EXPECT_FALSE(service->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 }
@@ -361,17 +362,6 @@ INSTANTIATE_TEST_SUITE_P(
 class SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest
     : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
  protected:
-  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled,
-      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
-      override {
-    return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
-        /*initial_value=*/false);
-  }
-
   void SetUpPrefs(PrefService* local_state) override {
     EnableParentalControls(*local_state);
   }
@@ -421,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithSupervisedUserTest,
     FamilyLinkIsImmuneToLocalSupervision) {
-  TestSupervisedUserService* service = GetTestSupervisedUserService();
+  SupervisedUserService* service = GetSupervisedUserService();
 
   // Local supervision is initially disabled and Family Link supervision is
   // initially enabled.
@@ -429,18 +419,16 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
 
   // Try turning the knob on the local supervision (browser filtering).
-  service->browser_content_filters_observer_weak_ptr()->OnChange(
-      /*env=*/nullptr,
-      /*enabled=*/true);
+  service->GetBrowserContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
   EXPECT_FALSE(service->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
       "SupervisedUsers.FamilyLinkSupervisionConflict", 1, 1);
 
   // Try turning the knob on the local supervision (search filtering).
-  service->search_content_filters_observer_weak_ptr()->OnChange(
-      /*env=*/nullptr,
-      /*enabled=*/true);
+  service->GetSearchContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
   EXPECT_FALSE(service->IsSupervisedLocally());
   EXPECT_TRUE(IsSubjectToParentalControls(*GetProfile()->GetPrefs()));
   histogram_tester().ExpectBucketCount(
@@ -450,19 +438,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests the aspect where the Family Link supervision is disabled and the
 // content filters are not set.
 class SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest
-    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {
- protected:
-  std::unique_ptr<ContentFiltersObserverBridge> CreateBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled,
-      base::RepeatingCallback<bool()> is_subject_to_parental_controls)
-      override {
-    return std::make_unique<FakeContentFiltersObserverBridge>(
-        setting_name, on_enabled, on_disabled, is_subject_to_parental_controls,
-        /*initial_value=*/false);
-  }
-};
+    : public SupervisedUserServiceBootstrapAndroidBrowserTestBase {};
 
 IN_PROC_BROWSER_TEST_F(
     SupervisedUserServiceBootstrapAndroidBrowserWithRegularUserTest,

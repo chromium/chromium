@@ -74,7 +74,7 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
-  return std::make_unique<supervised_user::TestSupervisedUserService>(
+  return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
@@ -86,13 +86,19 @@ std::unique_ptr<KeyedService> BuildTestSupervisedUserService(
       SyncServiceFactory::GetInstance()->GetForProfile(profile),
       std::make_unique<MockSupervisedUserURLFilter>(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
-          std::make_unique<
-              supervised_user::KidsChromeManagementURLCheckerClient>(
+          std::make_unique<KidsChromeManagementURLCheckerClient>(
               identity_manager, url_loader_factory, *profile->GetPrefs(),
               platform_delegate->GetCountryCode(),
               platform_delegate->GetChannel())),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-      InitialSupervisionState::kUnsupervised);
+      std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
+#if BUILDFLAG(IS_ANDROID)
+          ,
+      std::make_unique<FakeContentFiltersObserverBridge>(
+          kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+      std::make_unique<FakeContentFiltersObserverBridge>(
+          kSearchContentFiltersSettingName, *profile->GetPrefs())
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 }
 
 class ClassifyUrlNavigationThrottleTest
@@ -166,11 +172,8 @@ class ClassifyUrlNavigationThrottleTest
         SupervisedUserServiceFactory::GetForProfile(profile())->GetURLFilter());
   }
 
-  TestSupervisedUserService* GetSupervisedUserService() {
-    // Cast is safe: TestSupervisedUserService is created with TestingProfile
-    // (see ::GetTestingFactories()).
-    return static_cast<TestSupervisedUserService*>(
-        SupervisedUserServiceFactory::GetForProfile(profile()));
+  SupervisedUserService* GetSupervisedUserService() {
+    return SupervisedUserServiceFactory::GetForProfile(profile());
   }
 
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
@@ -287,8 +290,8 @@ class ClassifyUrlNavigationThrottleAsyncCheckerTest
 #if BUILDFLAG(IS_ANDROID)
       case SupervisionMode::kLocalSupervision:
         GetSupervisedUserService()
-            ->browser_content_filters_observer_weak_ptr()
-            ->SetEnabled(true);
+            ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+            ->SetEnabledForTesting(true);
         break;
 #endif  // BUILDFLAG(IS_ANDROID)
     }

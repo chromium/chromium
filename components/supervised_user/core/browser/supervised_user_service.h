@@ -81,7 +81,12 @@ class Custodian {
 // * `profile.managed_user_id` for url filtering, remove approvals and custodian
 //    data,
 // * `incognito.mode_availability` for incognito mode.
-class SupervisedUserService : public KeyedService {
+class SupervisedUserService : public KeyedService
+#if BUILDFLAG(IS_ANDROID)
+    ,
+                              public ContentFiltersObserverBridge::Observer
+#endif
+{
  public:
   // Delegate encapsulating platform-specific logic that is invoked from this
   // service.
@@ -143,6 +148,12 @@ class SupervisedUserService : public KeyedService {
   // ProfileKeyedService override:
   void Shutdown() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  // ContentFiltersObserverBridge::Observer:
+  void OnContentFiltersObserverEnabled(std::string_view setting_name) override;
+  void OnContentFiltersObserverDisabled(std::string_view setting_name) override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
 #if BUILDFLAG(IS_CHROMEOS)
   bool signout_required_after_supervision_enabled() {
     return signout_required_after_supervision_enabled_;
@@ -166,15 +177,18 @@ class SupervisedUserService : public KeyedService {
       std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
 #if BUILDFLAG(IS_ANDROID)
       ,
-      ContentFiltersObserverBridge::Factory
-          content_filters_observer_bridge_factory
+      std::unique_ptr<ContentFiltersObserverBridge>
+          browser_content_filters_observer,
+      std::unique_ptr<ContentFiltersObserverBridge>
+          search_content_filters_observer
 #endif
   );
 
- protected:
 #if BUILDFLAG(IS_ANDROID)
-  ContentFiltersObserverBridge* browser_content_filters_observer();
-  ContentFiltersObserverBridge* search_content_filters_observer();
+  base::WeakPtr<ContentFiltersObserverBridge>
+  GetBrowserContentFiltersObserverWeakPtrForTesting();
+  base::WeakPtr<ContentFiltersObserverBridge>
+  GetSearchContentFiltersObserverWeakPtrForTesting();
 #endif  // BUILDFLAG(IS_ANDROID)
 
  private:

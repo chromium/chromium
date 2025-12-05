@@ -47,25 +47,10 @@ bool IsFeatureEnabledForSetting(std::string_view setting_name) {
 }
 }  // namespace
 
-std::unique_ptr<ContentFiltersObserverBridge>
-ContentFiltersObserverBridge::Create(
-    std::string_view setting_name,
-    base::RepeatingClosure on_enabled,
-    base::RepeatingClosure on_disabled,
-    base::RepeatingCallback<bool()> is_subject_to_parental_controls) {
-  return std::make_unique<ContentFiltersObserverBridge>(
-      setting_name, on_enabled, on_disabled, is_subject_to_parental_controls);
-}
-
 ContentFiltersObserverBridge::ContentFiltersObserverBridge(
     std::string_view setting_name,
-    base::RepeatingClosure on_enabled,
-    base::RepeatingClosure on_disabled,
-    base::RepeatingCallback<bool()> is_subject_to_parental_controls)
-    : setting_name_(setting_name),
-      on_enabled_(on_enabled),
-      on_disabled_(on_disabled),
-      is_subject_to_parental_controls_(is_subject_to_parental_controls) {}
+    const PrefService& pref_service)
+    : setting_name_(setting_name), pref_service_(pref_service) {}
 
 ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
   if (bridge_) {
@@ -75,12 +60,18 @@ ContentFiltersObserverBridge::~ContentFiltersObserverBridge() {
   }
 }
 
-void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
-  // Warning: callsites can pass env=nullptr. Update them before utilizing *env.
+void ContentFiltersObserverBridge::SetEnabledForTesting(bool enabled) {
+  SetEnabled(enabled);
+}
 
+void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
   LOG(INFO) << "ContentFiltersObserverBridge received onChange for setting "
             << setting_name_ << " with value "
             << (enabled ? "enabled" : "disabled");
+  SetEnabled(enabled);
+}
+
+void ContentFiltersObserverBridge::SetEnabled(bool enabled) {
   if (!IsFeatureEnabledForSetting(setting_name_)) {
     LOG(INFO)
         << "ContentFiltersObserverBridge change ignored: feature disabled";
@@ -91,7 +82,7 @@ void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
   // accounts.
   if (base::FeatureList::IsEnabled(
           kSupervisedUserOverrideLocalSupervisionForFamilyLinkAccounts) &&
-      is_subject_to_parental_controls_.Run() && enabled) {
+      IsSubjectToParentalControls(*pref_service_) && enabled) {
     base::UmaHistogramEnumeration(kSupervisionConflictHistogramName,
                                   SupervisionHasConflict::kHasConflict);
     LOG(INFO)
@@ -100,10 +91,16 @@ void ContentFiltersObserverBridge::OnChange(JNIEnv* env, bool enabled) {
   }
 
   enabled_ = enabled;
-  if (enabled) {
-    on_enabled_.Run();
+  NotifyObservers();
+}
+
+void ContentFiltersObserverBridge::NotifyObservers() {
+  if (enabled_) {
+    observer_list_.Notify(&Observer::OnContentFiltersObserverEnabled,
+                          setting_name_);
   } else {
-    on_disabled_.Run();
+    observer_list_.Notify(&Observer::OnContentFiltersObserverDisabled,
+                          setting_name_);
   }
 }
 
@@ -135,8 +132,16 @@ bool ContentFiltersObserverBridge::IsEnabled() const {
   return enabled_;
 }
 
-void ContentFiltersObserverBridge::SetEnabled(bool enabled) {
-  enabled_ = enabled;
+void ContentFiltersObserverBridge::AddObserver(Observer* observer) {
+  observer_list_.AddObserver(observer);
+}
+void ContentFiltersObserverBridge::RemoveObserver(Observer* observer) {
+  observer_list_.RemoveObserver(observer);
+}
+
+base::WeakPtr<ContentFiltersObserverBridge>
+ContentFiltersObserverBridge::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 }  // namespace supervised_user

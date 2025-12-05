@@ -433,12 +433,14 @@ class SupervisedUserServiceLocallySupervisedWebFilterTypeTransitionsTest
     : public SupervisedUserServiceWebFilterTypeTransitionsTest {
  protected:
   void SetBrowserFilterEnabled(bool enabled) {
-    supervised_user_test_environment_->browser_content_filters_observer()
-        ->SetEnabled(enabled);
+    supervised_user_test_environment_->service()
+        ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+        ->SetEnabledForTesting(enabled);
   }
   void SetSearchFilterEnabled(bool enabled) {
-    supervised_user_test_environment_->search_content_filters_observer()
-        ->SetEnabled(enabled);
+    supervised_user_test_environment_->service()
+        ->GetSearchContentFiltersObserverWeakPtrForTesting()
+        ->SetEnabledForTesting(enabled);
   }
   bool IsSupervisedLocally() const {
     return supervised_user_test_environment_->service()->IsSupervisedLocally();

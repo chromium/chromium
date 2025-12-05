@@ -31,9 +31,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
-  // Test Supervised User Service also substitutes the content filters with
-  // fakes.
-  return std::make_unique<TestSupervisedUserService>(
+  return std::make_unique<SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
@@ -47,15 +45,14 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
           *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
           std::make_unique<safe_search_api::FakeURLCheckerClient>()),
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-      InitialSupervisionState::kUnsupervised);
+#if BUILDFLAG(IS_ANDROID)
+      std::make_unique<ContentFiltersObserverBridge>(
+          kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+      std::make_unique<ContentFiltersObserverBridge>(
+          kSearchContentFiltersSettingName, *profile->GetPrefs())
+#endif  // BUILDFLAG(IS_ANDROID)
+  );
 }
-
-TestSupervisedUserService* GetTestSupervisedUserService(Profile* profile) {
-  return static_cast<TestSupervisedUserService*>(
-      SupervisedUserServiceFactory::GetInstance()->GetForBrowserContext(
-          profile));
-}
-
 }  // namespace
 
 static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
@@ -67,17 +64,19 @@ static void JNI_SupervisedUserServiceTestBridge_Init(JNIEnv* env,
 static void JNI_SupervisedUserServiceTestBridge_EnableBrowserContentFilters(
     JNIEnv* env,
     Profile* profile) {
-  GetTestSupervisedUserService(profile)
-      ->browser_content_filters_observer_weak_ptr()
-      ->SetEnabled(true);
+  SupervisedUserServiceFactory::GetInstance()
+      ->GetForBrowserContext(profile)
+      ->GetBrowserContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
 }
 
 static void JNI_SupervisedUserServiceTestBridge_EnableSearchContentFilters(
     JNIEnv* env,
     Profile* profile) {
-  GetTestSupervisedUserService(profile)
-      ->search_content_filters_observer_weak_ptr()
-      ->SetEnabled(true);
+  SupervisedUserServiceFactory::GetInstance()
+      ->GetForBrowserContext(profile)
+      ->GetSearchContentFiltersObserverWeakPtrForTesting()
+      ->SetEnabledForTesting(true);
 }
 }  // namespace supervised_user
 

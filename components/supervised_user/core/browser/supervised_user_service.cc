@@ -186,8 +186,10 @@ SupervisedUserService::SupervisedUserService(
     std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
 #if BUILDFLAG(IS_ANDROID)
     ,
-    ContentFiltersObserverBridge::Factory
-        content_filters_observer_bridge_factory
+    std::unique_ptr<ContentFiltersObserverBridge>
+        browser_content_filters_observer,
+    std::unique_ptr<ContentFiltersObserverBridge>
+        search_content_filters_observer
 #endif
     )
     : user_prefs_(user_prefs),
@@ -202,27 +204,9 @@ SupervisedUserService::SupervisedUserService(
 #if BUILDFLAG(IS_ANDROID)
       ,
       browser_content_filters_observer_(
-          content_filters_observer_bridge_factory.Run(
-              kBrowserContentFiltersSettingName,
-              base::BindRepeating(
-                  &SupervisedUserService::EnableBrowserContentFilters,
-                  base::Unretained(this)),
-              base::BindRepeating(
-                  &SupervisedUserService::DisableBrowserContentFilters,
-                  base::Unretained(this)),
-              base::BindRepeating(&IsSubjectToParentalControls,
-                                  base::Unretained(user_prefs_)))),
+          std::move(browser_content_filters_observer)),
       search_content_filters_observer_(
-          content_filters_observer_bridge_factory.Run(
-              kSearchContentFiltersSettingName,
-              base::BindRepeating(
-                  &SupervisedUserService::EnableSearchContentFilters,
-                  base::Unretained(this)),
-              base::BindRepeating(
-                  &SupervisedUserService::DisableSearchContentFilters,
-                  base::Unretained(this)),
-              base::BindRepeating(&IsSubjectToParentalControls,
-                                  base::Unretained(user_prefs_))))
+          std::move(search_content_filters_observer))
 #endif  // BUILDFLAG(IS_ANDROID)
 {
   CHECK(settings_service_->IsReady())
@@ -230,6 +214,8 @@ SupervisedUserService::SupervisedUserService(
          "a dependency of this service.";
 
 #if BUILDFLAG(IS_ANDROID)
+  browser_content_filters_observer_->AddObserver(this);
+  search_content_filters_observer_->AddObserver(this);
   browser_content_filters_observer_->Init();
   search_content_filters_observer_->Init();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -397,7 +383,9 @@ void SupervisedUserService::Shutdown() {
   did_shutdown_ = true;
 
 #if BUILDFLAG(IS_ANDROID)
+  browser_content_filters_observer_->RemoveObserver(this);
   browser_content_filters_observer_->Shutdown();
+  search_content_filters_observer_->RemoveObserver(this);
   search_content_filters_observer_->Shutdown();
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -422,6 +410,28 @@ bool IsEligibleForContentFilters(const PrefService& user_prefs) {
   return !IsSubjectToParentalControls(user_prefs);
 }
 }  // namespace
+
+void SupervisedUserService::OnContentFiltersObserverEnabled(
+    std::string_view setting_name) {
+  if (setting_name == kBrowserContentFiltersSettingName) {
+    EnableBrowserContentFilters();
+  } else if (setting_name == kSearchContentFiltersSettingName) {
+    EnableSearchContentFilters();
+  } else {
+    NOTREACHED();
+  }
+}
+
+void SupervisedUserService::OnContentFiltersObserverDisabled(
+    std::string_view setting_name) {
+  if (setting_name == kBrowserContentFiltersSettingName) {
+    DisableBrowserContentFilters();
+  } else if (setting_name == kSearchContentFiltersSettingName) {
+    DisableSearchContentFilters();
+  } else {
+    NOTREACHED();
+  }
+}
 
 void SupervisedUserService::EnableSearchContentFilters() {
   if (!IsEligibleForContentFilters(user_prefs_.get())) {
@@ -492,14 +502,14 @@ void SupervisedUserService::DisableBrowserContentFilters() {
   UpdateURLFilter();
 }
 
-ContentFiltersObserverBridge*
-SupervisedUserService::browser_content_filters_observer() {
-  return browser_content_filters_observer_.get();
+base::WeakPtr<ContentFiltersObserverBridge>
+SupervisedUserService::GetBrowserContentFiltersObserverWeakPtrForTesting() {
+  return browser_content_filters_observer_->GetWeakPtr();
 }
 
-ContentFiltersObserverBridge*
-SupervisedUserService::search_content_filters_observer() {
-  return search_content_filters_observer_.get();
+base::WeakPtr<ContentFiltersObserverBridge>
+SupervisedUserService::GetSearchContentFiltersObserverWeakPtrForTesting() {
+  return search_content_filters_observer_->GetWeakPtr();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

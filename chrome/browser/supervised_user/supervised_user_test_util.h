@@ -13,9 +13,9 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/core/keyed_service_factory.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
@@ -93,6 +93,7 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess();
+
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetDefaultStoragePartition()
@@ -113,8 +114,12 @@ std::unique_ptr<KeyedService> BuildSupervisedUserService(
       std::make_unique<SupervisedUserServicePlatformDelegate>(*profile)
 #if BUILDFLAG(IS_ANDROID)
           ,
-      base::BindRepeating(
-          &supervised_user::ContentFiltersObserverBridge::Create)
+      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
+          supervised_user::kBrowserContentFiltersSettingName,
+          *profile->GetPrefs()),
+      std::make_unique<supervised_user::ContentFiltersObserverBridge>(
+          supervised_user::kSearchContentFiltersSettingName,
+          *profile->GetPrefs())
 #endif  // BUILDFLAG(IS_ANDROID)
   );
 }

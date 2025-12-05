@@ -112,22 +112,17 @@ class MetricsServiceAccessorDelegateMock
 };
 
 #if BUILDFLAG(IS_ANDROID)
-// Fake implementation of ContentFiltersObserverBridge for testing. Imitates
-// events that would normally be produced by the Android's secure settings
-// (which store content filter settings). Content bridge is initialized with
-// "disabled" setting.
+// Fake implementation of ContentFiltersObserverBridge for testing stripped from
+// the Java class backend. Imitates events that would normally be produced by
+// the Android's secure settings (which store content filter settings). Content
+// bridge is initialized with "disabled" setting. Use "SetEnabledForTesting" to
+// simulate the changing value of the setting.
 class FakeContentFiltersObserverBridge final
     : public ContentFiltersObserverBridge {
  public:
-  // Matching constructor of ContentFiltersObserverBridge. Setting the initial
-  // value to true helps to test scenarios when the browser is started with the
-  // setting already enabled.
-  FakeContentFiltersObserverBridge(
-      std::string_view setting_name,
-      base::RepeatingClosure on_enabled,
-      base::RepeatingClosure on_disabled,
-      base::RepeatingCallback<bool()> is_subject_to_parental_controls,
-      bool initial_value = false);
+  // Matching constructor of ContentFiltersObserverBridge.
+  FakeContentFiltersObserverBridge(std::string_view setting_name,
+                                   const PrefService& pref_service);
   FakeContentFiltersObserverBridge(const FakeContentFiltersObserverBridge&) =
       delete;
   FakeContentFiltersObserverBridge& operator=(
@@ -137,61 +132,8 @@ class FakeContentFiltersObserverBridge final
   // Override to suppress initialization of the java bridge.
   void Init() override;
   void Shutdown() override;
-
-  // Set mocked value and trigger native code callbacks.
-  void SetEnabled(bool enabled) override;
-
-  base::WeakPtr<FakeContentFiltersObserverBridge> GetWeakPtr();
-
- private:
-  bool initial_value_ = false;
-  base::WeakPtrFactory<FakeContentFiltersObserverBridge> weak_ptr_factory_{
-      this};
 };
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Offers access to the protected constructor of SupervisedUserService, used
-// to inject fake content filters observers (with initial values described in
-// initial_state)
-class TestSupervisedUserService : public SupervisedUserService {
- public:
-  // Matching constructor of SupervisedUserService.
-  TestSupervisedUserService(
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService& user_prefs,
-      SupervisedUserSettingsService& settings_service,
-      SupervisedUserContentFiltersService* content_filters_service,
-      syncer::SyncService* sync_service,
-      std::unique_ptr<SupervisedUserURLFilter> url_filter,
-      std::unique_ptr<SupervisedUserService::PlatformDelegate> platform_delegate
-#if BUILDFLAG(IS_ANDROID)
-      ,
-      ContentFiltersObserverBridge::Factory
-          content_filters_observer_bridge_factory
-#endif
-  );
-
-  // Constructor that takes the initial state of supervision.
-  TestSupervisedUserService(
-      signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      PrefService& user_prefs,
-      SupervisedUserSettingsService& settings_service,
-      SupervisedUserContentFiltersService* content_filters_service,
-      syncer::SyncService* sync_service,
-      std::unique_ptr<SupervisedUserURLFilter> url_filter,
-      std::unique_ptr<SupervisedUserService::PlatformDelegate>
-          platform_delegate,
-      InitialSupervisionState initial_state);
-
-#if BUILDFLAG(IS_ANDROID)
-  base::WeakPtr<FakeContentFiltersObserverBridge>
-  browser_content_filters_observer_weak_ptr();
-  base::WeakPtr<FakeContentFiltersObserverBridge>
-  search_content_filters_observer_weak_ptr();
-#endif  // BUILDFLAG(IS_ANDROID)
-};
 
 // Configures a handy set of components that form supervised user features, for
 // unit testing. This is a lightweight, unit-test oriented alternative to a
@@ -215,17 +157,10 @@ class SupervisedUserTestEnvironment {
   ~SupervisedUserTestEnvironment();
 
   SupervisedUserURLFilter* url_filter() const;
-  TestSupervisedUserService* service() const;
+  SupervisedUserService* service() const;
   PrefService* pref_service();
   sync_preferences::TestingPrefServiceSyncable* pref_service_syncable();
   safe_search_api::FakeURLCheckerClient* url_checker_client();
-
-#if BUILDFLAG(IS_ANDROID)
-  base::WeakPtr<FakeContentFiltersObserverBridge>
-  browser_content_filters_observer();
-  base::WeakPtr<FakeContentFiltersObserverBridge>
-  search_content_filters_observer();
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Simulators of parental controls. Instance methods use services from this
   // test environment, while static methods are suitable for heavier testing
@@ -262,7 +197,7 @@ class SupervisedUserTestEnvironment {
   syncer::MockSyncService sync_service_;
 
   // Core services under test
-  std::unique_ptr<TestSupervisedUserService> service_;
+  std::unique_ptr<SupervisedUserService> service_;
   std::unique_ptr<SupervisedUserMetricsService> metrics_service_;
 
   // The objects are actually owned by the service_, but are referenced here for

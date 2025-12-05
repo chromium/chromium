@@ -26,6 +26,7 @@ source_set("unit_tests") {
     ":content_filters_observer_bridge",
     "//base",
     "//base/test:test_support",
+    "//components/prefs:test_support",
     "//components/supervised_user/core/common:features",
     "//testing/gmock",
     "//testing/gtest",

@@ -65,13 +65,13 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
   content::WebContents* web_contents() {
     return chrome_test_utils::GetActiveWebContents(this);
   }
-  base::WeakPtr<FakeContentFiltersObserverBridge> search_content_filter() {
+  base::WeakPtr<ContentFiltersObserverBridge> search_content_filter() {
     return supervised_user_service()
-        ->search_content_filters_observer_weak_ptr();
+        ->GetSearchContentFiltersObserverWeakPtrForTesting();
   }
-  base::WeakPtr<FakeContentFiltersObserverBridge> browser_content_filter() {
+  base::WeakPtr<ContentFiltersObserverBridge> browser_content_filter() {
     return supervised_user_service()
-        ->browser_content_filters_observer_weak_ptr();
+        ->GetBrowserContentFiltersObserverWeakPtrForTesting();
   }
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
@@ -116,7 +116,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
         std::make_unique<MockUrlCheckerClient>();
     url_checker_client_ = url_checker_client.get();
 
-    return std::make_unique<TestSupervisedUserService>(
+    return std::make_unique<SupervisedUserService>(
         IdentityManagerFactory::GetForProfile(profile),
         profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
@@ -130,13 +130,15 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
             *profile->GetPrefs(), std::make_unique<FakeURLFilterDelegate>(),
             std::move(url_checker_client)),
         std::make_unique<SupervisedUserServicePlatformDelegate>(*profile),
-        InitialSupervisionState::kUnsupervised);
+        std::make_unique<FakeContentFiltersObserverBridge>(
+            kBrowserContentFiltersSettingName, *profile->GetPrefs()),
+        std::make_unique<FakeContentFiltersObserverBridge>(
+            kSearchContentFiltersSettingName, *profile->GetPrefs()));
   }
 
-  TestSupervisedUserService* supervised_user_service() {
-    return static_cast<TestSupervisedUserService*>(
-        SupervisedUserServiceFactory::GetInstance()->GetForProfile(
-            GetProfile()));
+  SupervisedUserService* supervised_user_service() {
+    return SupervisedUserServiceFactory::GetInstance()->GetForProfile(
+        GetProfile());
   }
 
   base::HistogramTester histogram_tester_;
@@ -163,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // feature consistency.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        LoadSafeSearchResultsWithSearchContentFilterPreset) {
-  search_content_filter()->SetEnabled(true);
+  search_content_filter()->SetEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
 
   // The final url will be different: with safe search query params.
@@ -177,7 +179,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 // params are appended.
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        PreexistingSafeSearchParamsAreRemovedBeforeAppending) {
-  search_content_filter()->SetEnabled(true);
+  search_content_filter()->SetEnabledForTesting(true);
   GURL url = embedded_test_server()->GetURL("google.com",
                                             "/search?safe=off&ssui=on&q=cat");
 
@@ -194,19 +196,19 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
 IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationObserverAndroidBrowserTest,
                        ReloadSearchResultAfterSearchContentFilterIsEnabled) {
   // Verify that the observer is attached.
-  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
-            nullptr);
+  ASSERT_NE(nullptr,
+            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
 
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
 
   content::TestNavigationObserver navigation_observer(web_contents());
-  search_content_filter()->SetEnabled(true);
+  search_content_filter()->SetEnabledForTesting(true);
   navigation_observer.Wait();
 
   // Key part: the search results are reloaded with extra query params.
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(),
-            url.spec() + "&safe=active&ssui=on");
+  EXPECT_EQ(url.spec() + "&safe=active&ssui=on",
+            web_contents()->GetLastCommittedURL());
 }
 
 // Tests if no-approval interstitial is shown when the browser content filter
@@ -218,7 +220,7 @@ class SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest
     content::TestNavigationObserver navigation_observer(web_contents());
     // Turn the filtering on. That will trigger a url check which is resolved to
     // restricted.
-    browser_content_filter()->SetEnabled(true);
+    browser_content_filter()->SetEnabledForTesting(true);
     navigation_observer.Wait();
   }
 
@@ -238,8 +240,8 @@ IN_PROC_BROWSER_TEST_F(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     ShowInterstitialPage) {
   // Verify that the observer is attached.
-  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
-            nullptr);
+  ASSERT_NE(nullptr,
+            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
   GURL url = embedded_test_server()->GetURL("/supervised_user/simple.html");
 
   // In this test, all classifications are restricted after enabling the
@@ -252,15 +254,14 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a simple page and verify the title. The page is not filtered.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+  ASSERT_EQ(u"Supervised User test: simple page", web_contents()->GetTitle());
 
   EnableBrowserFilteringAndWaitForInterstitial();
 
-  EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
+  EXPECT_EQ(u"Site blocked", web_contents()->GetTitle());
   // Learn more button is specific to this interstitial.
-  EXPECT_EQ(content::ExecJs(web_contents(),
-                            "document.getElementById('learn-more-button');"),
-            true);
+  EXPECT_TRUE(content::ExecJs(web_contents(),
+                              "document.getElementById('learn-more-button');"));
 }
 
 // Clicks the learn more button on the interstitial page and verifies that the
@@ -269,8 +270,8 @@ IN_PROC_BROWSER_TEST_F(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     GoToHelpCenterPage) {
   // Verify that the observer is attached.
-  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
-            nullptr);
+  ASSERT_NE(nullptr,
+            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
 
   // In this test, all classifications are restricted after enabling the
   // browser content filter.
@@ -284,11 +285,11 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(content::NavigateToURL(
       web_contents(),
       embedded_test_server()->GetURL("/supervised_user/simple.html")));
-  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+  ASSERT_EQ(u"Supervised User test: simple page", web_contents()->GetTitle());
 
   // After filters are enabled, the interstitial page is shown.
   EnableBrowserFilteringAndWaitForInterstitial();
-  EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
+  EXPECT_EQ(u"Site blocked", web_contents()->GetTitle());
 
   // Navigation to google.com pages is expected to be always allowed.
   GURL help_center_url = GURL(kDeviceFiltersHelpCenterUrl);
@@ -307,8 +308,8 @@ IN_PROC_BROWSER_TEST_F(
 
   // This expectation verifies that the help center page was attempted to be
   // loaded (test don't have internet)
-  EXPECT_EQ(web_contents()->GetTitle(),
-            base::UTF8ToUTF16(help_center_url.GetHost()));
+  EXPECT_EQ(base::UTF8ToUTF16(help_center_url.GetHost()),
+            web_contents()->GetTitle());
 }
 
 // Clicks the back button on the interstitial page and verifies that the
@@ -327,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // In this test to facilitate the back button click, one url is allowed but
   // others are not. All navigations are subject to classification in this test.
-  browser_content_filter()->SetEnabled(true);
+  browser_content_filter()->SetEnabledForTesting(true);
 
   // Three classification calls are expected:
   // 1. when the page is first loaded
@@ -347,13 +348,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Navigate to a simple page and verify the title. The page is not filtered.
   ASSERT_TRUE(content::NavigateToURL(web_contents(), allowed_url));
-  ASSERT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
+  ASSERT_EQ(u"Supervised User test: simple page", web_contents()->GetTitle());
 
   // Navigate to blocked url. The navigation is not successful even though the
   // url is committed, because the interstitial blocks it.
   EXPECT_FALSE(content::NavigateToURL(web_contents(), blocked_url));
-  EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), blocked_url);
+  EXPECT_EQ(u"Site blocked", web_contents()->GetTitle());
+  EXPECT_EQ(blocked_url, web_contents()->GetLastCommittedURL());
 
   // After clicking the back button, the previous page is available back again.
   histogram_tester().ExpectTotalCount("ManagedMode.BlockingInterstitialCommand",
@@ -363,8 +364,8 @@ IN_PROC_BROWSER_TEST_F(
       "ManagedMode.BlockingInterstitialCommand",
       SupervisedUserInterstitial::Commands::BACK, 1);
 
-  EXPECT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
-  EXPECT_EQ(web_contents()->GetLastCommittedURL(), allowed_url);
+  EXPECT_EQ(u"Supervised User test: simple page", web_contents()->GetTitle());
+  EXPECT_EQ(allowed_url, web_contents()->GetLastCommittedURL());
 }
 
 }  // namespace
