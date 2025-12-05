@@ -29,7 +29,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -895,12 +894,11 @@ void ChromeContentBrowserClientExtensionsPart::GetURLRequestAutoMountHandlers(
 void ChromeContentBrowserClientExtensionsPart::GetAdditionalFileSystemBackends(
     content::BrowserContext* browser_context,
     const base::FilePath& storage_partition_path,
-    download::QuarantineConnectionCallback quarantine_connection_callback,
     std::vector<std::unique_ptr<storage::FileSystemBackend>>*
         additional_backends) {
 #if BUILDFLAG(IS_CHROMEOS)
-  additional_backends->push_back(std::make_unique<MediaFileSystemBackend>(
-      storage_partition_path, std::move(quarantine_connection_callback)));
+  additional_backends->push_back(
+      std::make_unique<MediaFileSystemBackend>(storage_partition_path));
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

@@ -19,7 +19,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/browser/image_decoder/image_decoder.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "content/public/browser/browser_thread.h"
 
 using content::BrowserThread;
@@ -109,10 +108,19 @@ void SupportedImageTypeValidator::StartPreWriteValidation(
                      weak_factory_.GetWeakPtr()));
 }
 
+void SupportedImageTypeValidator::StartPostWriteValidation(
+    const base::FilePath& dest_platform_path,
+    ResultCallback result_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+  // StartPostWriteValidation() implementation is required. So effectively do
+  // nothing here.
+  std::move(result_callback).Run(base::File::FILE_OK);
+}
+
 SupportedImageTypeValidator::SupportedImageTypeValidator(
-    const base::FilePath& path,
-    download::QuarantineConnectionCallback quarantine_connection_callback)
-    : AVScanningFileValidator(quarantine_connection_callback), path_(path) {}
+    const base::FilePath& path)
+    : path_(path) {}
 
 void SupportedImageTypeValidator::OnFileOpen(
     std::unique_ptr<std::string> data) {

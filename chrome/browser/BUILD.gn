@@ -4908,8 +4908,6 @@ static_library("browser") {
       "media/chromeos_login_and_lock_media_access_handler.h",
       "media/platform_verification_chromeos.cc",
       "media/platform_verification_chromeos.h",
-      "media_galleries/fileapi/av_scanning_file_validator.cc",
-      "media_galleries/fileapi/av_scanning_file_validator.h",
       "media_galleries/fileapi/device_media_async_file_util.cc",
       "media_galleries/fileapi/device_media_async_file_util.h",
       "media_galleries/fileapi/media_file_system_backend.cc",

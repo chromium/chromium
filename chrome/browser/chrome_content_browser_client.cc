@@ -5012,8 +5012,7 @@ void ChromeContentBrowserClient::GetAdditionalFileSystemBackends(
 
   for (auto& part : extra_parts_) {
     part->GetAdditionalFileSystemBackends(
-        browser_context, storage_partition_path,
-        GetQuarantineConnectionCallback(), additional_backends);
+        browser_context, storage_partition_path, additional_backends);
   }
 }
 

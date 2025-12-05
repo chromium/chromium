@@ -27,7 +27,6 @@
 #include "chrome/browser/media_galleries/fileapi/native_media_file_util.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/download/public/common/quarantine_connection.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -128,12 +127,10 @@ content::WebContents* GetWebContentsFromFrameTreeNodeID(
 }  // namespace
 
 MediaFileSystemBackend::MediaFileSystemBackend(
-    const base::FilePath& profile_path,
-    download::QuarantineConnectionCallback quarantine_connection_callback)
+    const base::FilePath& profile_path)
     : profile_path_(profile_path),
       media_copy_or_move_file_validator_factory_(
-          std::make_unique<MediaFileValidatorFactory>(
-              std::move(quarantine_connection_callback))),
+          std::make_unique<MediaFileValidatorFactory>()),
       native_media_file_util_(
           std::make_unique<NativeMediaFileUtil>(g_media_task_runner.Get())),
       device_media_async_file_util_(
