@@ -10,7 +10,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -36,12 +35,6 @@ class VerticalTabsBrowserTestMixin : public T {
   VerticalTabsBrowserTestMixin(const VerticalTabsBrowserTestMixin&) = delete;
   VerticalTabsBrowserTestMixin& operator=(const VerticalTabsBrowserTestMixin&) =
       delete;
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    T::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitWithFeaturesAndParameters(GetEnabledFeatures(),
-                                                       {});
-  }
 
   void SetUpOnMainThread() override {
     T::SetUpOnMainThread();
@@ -79,14 +72,6 @@ class VerticalTabsBrowserTestMixin : public T {
         .tab_strip_service_feature()
         ->GetTabStripService();
   }
-
-  virtual const std::vector<base::test::FeatureRefAndParams>
-  GetEnabledFeatures() {
-    return {{tabs::kVerticalTabs, {}}};
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TEST_VERTICAL_TABS_BROWSER_TEST_MIXIN_H_

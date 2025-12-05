@@ -24,7 +24,16 @@
 #include "ui/views/controls/label.h"
 
 class VerticalTabViewTest
-    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {};
+    : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({tabs::kVerticalTabs}, {});
+    VerticalTabsBrowserTestMixin::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   // Create view hierarchy from an arbitrary parent view since we don't

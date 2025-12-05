@@ -24,6 +24,12 @@
 class VerticalSplitTabViewTest
     : public VerticalTabsBrowserTestMixin<InProcessBrowserTest> {
  public:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {tabs::kVerticalTabs, features::kSideBySide}, {});
+    VerticalTabsBrowserTestMixin::SetUp();
+  }
+
   void CreateSplitTab() {
     // Add pinned split tabs.
     content::WebContents* contents1 = AppendTab();
@@ -50,12 +56,15 @@ class VerticalSplitTabViewTest
     tab_strip_model()->AppendWebContents(std::move(contents), true);
     return raw_contents;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
   CreateSplitTab();
-  // Create view hierarchy from an arbitrary parent view since we don't
-  // currently support updates from the API.
+  // // Create view hierarchy from an arbitrary parent view since we don't
+  // // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
       tab_strip_service(),
@@ -87,8 +96,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_Unbounded) {
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
   CreateSplitTab();
-  // Create view hierarchy from an arbitrary parent view since we don't
-  // currently support updates from the API.
+  // // Create view hierarchy from an arbitrary parent view since we don't
+  // // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
       tab_strip_service(),
@@ -125,8 +134,8 @@ IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LargeBounds) {
 
 IN_PROC_BROWSER_TEST_F(VerticalSplitTabViewTest, ProposedLayout_LimitedBounds) {
   CreateSplitTab();
-  // Create view hierarchy from an arbitrary parent view since we don't
-  // currently support updates from the API.
+  // // Create view hierarchy from an arbitrary parent view since we don't
+  // // currently support updates from the API.
   std::unique_ptr<views::View> parent_view = std::make_unique<views::View>();
   RootTabCollectionNode root_node(
       tab_strip_service(),
