@@ -4,6 +4,10 @@
 
 source_set("content_configuration") {
   sources = [
+    "activity_indicator_content_configuration.h",
+    "activity_indicator_content_configuration.mm",
+    "activity_indicator_content_view.h",
+    "activity_indicator_content_view.mm",
     "colorful_symbol_content_configuration.h",
     "colorful_symbol_content_configuration.mm",
     "colorful_symbol_content_view.h",
@@ -54,6 +58,7 @@ source_set("generic_content") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "activity_indicator_content_configuration_unittest.mm",
     "colorful_symbol_content_configuration_unittest.mm",
     "favicon_content_configuration_unittest.mm",
     "image_content_configuration_unittest.mm",

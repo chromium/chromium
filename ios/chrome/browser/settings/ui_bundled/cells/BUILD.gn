@@ -16,8 +16,6 @@ source_set("cells") {
     "passphrase_error_item.mm",
     "safe_browsing_header_item.h",
     "safe_browsing_header_item.mm",
-    "settings_check_cell.h",
-    "settings_check_cell.mm",
     "settings_check_item.h",
     "settings_check_item.mm",
     "settings_image_detail_text_item.h",

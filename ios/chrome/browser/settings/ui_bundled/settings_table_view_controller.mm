@@ -933,8 +933,6 @@ struct EnhancedSafeBrowsingActivePromoData
   _safetyCheckItem.leadingIconBackgroundColor =
       [UIColor colorNamed:kBlue500Color];
   _safetyCheckItem.leadingIconTintColor = UIColor.whiteColor;
-  _safetyCheckItem.leadingIconCornerRadius =
-      kColorfulBackgroundSymbolCornerRadius;
   _safetyCheckItem.accessibilityIdentifier = kSettingsSafetyCheckCellId;
   // Check if an issue state should be shown for updates.
   if (!IsAppUpToDate() && PreviousSafetyCheckIssueFound()) {

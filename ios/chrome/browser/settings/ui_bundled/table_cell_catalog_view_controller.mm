@@ -14,7 +14,6 @@
 #import "ios/chrome/browser/reading_list/ui_bundled/reading_list_table_view_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/address_bar_preference/cells/address_bar_options_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/inline_promo_item.h"
-#import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_cell.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_check_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/cells/sync_switch_item.h"
@@ -574,6 +573,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   checkWithInfoButton.enabled = YES;
   checkWithInfoButton.indicatorHidden = YES;
   checkWithInfoButton.infoButtonHidden = NO;
+  checkWithInfoButton.infoButtonTarget = self;
+  checkWithInfoButton.infoButtonSelector = @selector(didTapCheckInfoButton:);
   [model addItem:checkWithInfoButton
       toSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -777,16 +778,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
           });
     }
   }
-  UITableViewCell* cell = [super tableView:tableView
-                     cellForRowAtIndexPath:indexPath];
-  if (itemType == ItemTypeCheck6) {
-    SettingsCheckCell* checkCell =
-        base::apple::ObjCCastStrict<SettingsCheckCell>(cell);
-    [checkCell.infoButton addTarget:self
-                             action:@selector(didTapCheckInfoButton:)
-                   forControlEvents:UIControlEventTouchUpInside];
-  }
-  return cell;
+  return [super tableView:tableView cellForRowAtIndexPath:indexPath];
 }
 
 @end
