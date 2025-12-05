@@ -324,7 +324,7 @@ GinPort* NativeRendererMessagingService::Connect(
     return nullptr;
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      script_context->v8_context(), kCreateIfMissing);
+      script_context->v8_context(), CreatePerContextData::kCreateIfMissing);
   if (!data)
     return nullptr;
 
@@ -359,7 +359,7 @@ v8::Local<v8::Promise> NativeRendererMessagingService::SendOneTimeMessage(
     return v8::Local<v8::Promise>();
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      script_context->v8_context(), kCreateIfMissing);
+      script_context->v8_context(), CreatePerContextData::kCreateIfMissing);
 
   MessagePortScope* scope =
       GetMessagePortScope(script_context->GetRenderFrame());
@@ -411,7 +411,7 @@ void NativeRendererMessagingService::ClosePort(v8::Local<v8::Context> context,
   CHECK(script_context);
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      script_context->v8_context(), kDontCreateIfMissing);
+      script_context->v8_context(), CreatePerContextData::kDontCreateIfMissing);
   if (!data)
     return;
 
@@ -594,7 +594,7 @@ bool NativeRendererMessagingService::ContextHasMessagePort(
     return true;
   v8::HandleScope handle_scope(script_context->isolate());
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      script_context->v8_context(), kDontCreateIfMissing);
+      script_context->v8_context(), CreatePerContextData::kDontCreateIfMissing);
   return data && base::Contains(data->ports, port_id);
 }
 
@@ -754,7 +754,7 @@ void NativeRendererMessagingService::DispatchOnDisconnectToListeners(
   }
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      v8_context, kDontCreateIfMissing);
+      v8_context, CreatePerContextData::kDontCreateIfMissing);
   DCHECK(data);
   data->ports.erase(port_id);
 }
@@ -778,8 +778,8 @@ GinPort* NativeRendererMessagingService::CreatePort(
   else
     DCHECK_NE(port_id.context_id, script_context->context_id());
 
-  MessagingPerContextData* data =
-      GetPerContextData<MessagingPerContextData>(context, kCreateIfMissing);
+  MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
+      context, CreatePerContextData::kCreateIfMissing);
   DCHECK(data);
   DCHECK(!base::Contains(data->ports, port_id));
 
@@ -800,7 +800,7 @@ GinPort* NativeRendererMessagingService::GetPort(
   v8::Isolate* isolate = script_context->isolate();
 
   MessagingPerContextData* data = GetPerContextData<MessagingPerContextData>(
-      script_context->v8_context(), kDontCreateIfMissing);
+      script_context->v8_context(), CreatePerContextData::kDontCreateIfMissing);
   DCHECK(data);
   DCHECK(base::Contains(data->ports, port_id));
 

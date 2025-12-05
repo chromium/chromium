@@ -60,10 +60,10 @@ class SendMessageTester {
                    const MessageTarget& expected_target);
 
  private:
-  enum Method {
-    SEND_REQUEST,
-    SEND_MESSAGE,
-    SEND_NATIVE_MESSAGE,
+  enum class Method {
+    kSendRequest,
+    kSendMessage,
+    kSendNativeMessage,
   };
 
   // Common handler for testing sendMessage and sendRequest.

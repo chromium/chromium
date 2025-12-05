@@ -32,10 +32,10 @@ struct ScriptsRunInfo;
 // and contains the implementation to do so.
 class ScriptInjection {
  public:
-  enum InjectionResult {
-    INJECTION_FINISHED,
-    INJECTION_BLOCKED,
-    INJECTION_WAITING
+  enum class InjectionResult {
+    kFinished,
+    kBlocked,
+    kWaiting,
   };
 
   // Represents the purpose of calling StatusUpdatedCallback.
@@ -65,20 +65,21 @@ class ScriptInjection {
   ~ScriptInjection();
 
   // Try to inject the script at the `current_location`. This returns
-  // INJECTION_FINISHED if injection has injected or will never inject, returns
-  // INJECTION_BLOCKED if injection is running asynchronously and has not
-  // finished yet, returns INJECTION_WAITING if injections is delayed (either
-  // for permission purposes or because `current_location` is not the designated
-  // `run_location_`).
-  // If INJECTION_BLOCKED or INJECTION_WAITING is returned,
-  // `async_updated_callback` will be called upon the status updated.
+  // InjectionResult::kFinished if injection has injected or will never inject,
+  // returns InjectionResult::kBlocked if injection is running asynchronously
+  // and has not finished yet, returns InjectionResult::kWaiting if injections
+  // is delayed (either for permission purposes or because `current_location` is
+  // not the designated `run_location_`). If InjectionResult::kBlocked or
+  // InjectionResult::kWaiting is returned, `async_updated_callback` will be
+  // called upon the status updated.
   InjectionResult TryToInject(mojom::RunLocation current_location,
                               ScriptsRunInfo* scripts_run_info,
                               StatusUpdatedCallback async_updated_callback);
 
   // Called when permission for the given injection has been granted.
-  // Returns INJECTION_FINISHED if injection has injected or will never inject,
-  // returns INJECTION_BLOCKED if injection is ran asynchronously.
+  // Returns InjectionResult::kFinished if injection has injected or will never
+  // inject, returns InjectionResult::kBlocked if injection is ran
+  // asynchronously.
   InjectionResult OnPermissionGranted(ScriptsRunInfo* scripts_run_info);
 
   // Resets the pointer of the injection host when the host is gone.
@@ -109,8 +110,8 @@ class ScriptInjection {
   void HandlePermission(StatusUpdatedCallback async_updated_callback,
                         bool granted);
 
-  // Injects the script. Returns INJECTION_FINISHED if injection has finished,
-  // otherwise INJECTION_BLOCKED.
+  // Injects the script. Returns InjectionResult::kFinished if injection has
+  // finished, otherwise InjectionResult::kBlocked.
   InjectionResult Inject(ScriptsRunInfo* scripts_run_info);
 
   // Inject any JS scripts into the frame for the injection.

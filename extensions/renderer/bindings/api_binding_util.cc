@@ -117,8 +117,8 @@ bool IsContextValidOrThrowError(v8::Local<v8::Context> context) {
 }
 
 void InvalidateContext(v8::Local<v8::Context> context) {
-  ContextInvalidationData* data =
-      GetPerContextData<ContextInvalidationData>(context, kCreateIfMissing);
+  ContextInvalidationData* data = GetPerContextData<ContextInvalidationData>(
+      context, CreatePerContextData::kCreateIfMissing);
   if (!data)
     return;
 
@@ -145,9 +145,9 @@ ContextInvalidationListener::ContextInvalidationListener(
     v8::Local<v8::Context> context,
     base::OnceClosure on_invalidated)
     : on_invalidated_(std::move(on_invalidated)),
-      context_invalidation_data_(
-          GetPerContextData<ContextInvalidationData>(context,
-                                                     kCreateIfMissing)) {
+      context_invalidation_data_(GetPerContextData<ContextInvalidationData>(
+          context,
+          CreatePerContextData::kCreateIfMissing)) {
   // We should never add an invalidation observer to an invalid context.
   DCHECK(context_invalidation_data_);
   DCHECK(context_invalidation_data_->is_context_valid());
