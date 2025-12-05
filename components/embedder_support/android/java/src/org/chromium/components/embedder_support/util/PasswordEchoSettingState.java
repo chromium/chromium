@@ -7,9 +7,7 @@ package org.chromium.components.embedder_support.util;
 import android.content.ContentResolver;
 import android.database.ContentObserver;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Handler;
-import android.os.flagging.AconfigPackage;
 import android.provider.Settings;
 
 import androidx.annotation.VisibleForTesting;
@@ -75,10 +73,8 @@ public class PasswordEchoSettingState {
             return sSplitEnabledForTesting;
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA) {
-            return AconfigPackage.load("com.android.systemui")
-                    .getBooleanFlagValue("split_show_passwords_to_touch_and_physical", false);
-        }
+        // TODO(crbug.com/466343369): Implement the logic to check if the split setting feature is
+        // enabled on the platform side.
         return false;
     }
 
