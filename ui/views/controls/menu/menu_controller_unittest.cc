@@ -326,6 +326,12 @@ class MenuControllerTest : public ViewsTestBase,
 
   void DispatchKey(ui::KeyboardCode key_code);
 
+  void DispatchKeyWithFlags(ui::KeyboardCode key_code,
+                            bool alt,
+                            bool shift,
+                            bool control_or_command,
+                            bool caps_lock);
+
   gfx::Rect CalculateMenuBounds(const MenuBoundsOptions& options);
 
   gfx::Rect CalculateBubbleMenuBoundsWithoutInsets(
@@ -579,7 +585,29 @@ void MenuControllerTest::PressKey(ui::KeyboardCode key_code) {
 }
 
 void MenuControllerTest::DispatchKey(ui::KeyboardCode key_code) {
-  ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, 0);
+  DispatchKeyWithFlags(key_code, false, false, false, false);
+}
+
+void MenuControllerTest::DispatchKeyWithFlags(ui::KeyboardCode key_code,
+                                              bool alt,
+                                              bool shift,
+                                              bool control_or_command,
+                                              bool caps_lock) {
+  bool control = control_or_command;
+  bool command = false;
+
+  // By default, swap control and command for native events on Mac. This
+  // handles most cases.
+#if BUILDFLAG(IS_MAC)
+  std::swap(control, command);
+#endif
+
+  int flags =
+      (shift ? ui::EF_SHIFT_DOWN : 0) | (control ? ui::EF_CONTROL_DOWN : 0) |
+      (alt ? ui::EF_ALT_DOWN : 0) | (command ? ui::EF_COMMAND_DOWN : 0) |
+      (caps_lock ? ui::EF_CAPS_LOCK_ON : 0);
+
+  ui::KeyEvent event(ui::EventType::kKeyPressed, key_code, flags);
   menu_controller_->OnWillDispatchKeyEvent(&event);
 }
 
@@ -3627,6 +3655,45 @@ TEST_F(MenuControllerTest,
   GET_CHILD_BUTTON(button1, buttons_view, 0);
 
   EXPECT_FALSE(button1->IsHotTracked());
+}
+
+// Pressing the APPS key should show the context menu for the selected item
+// (keyboard-initiated). Verifies that MenuDelegate::ShowContextMenu is called
+// with the currently selected menu item as source.
+TEST_F(MenuControllerTest, ContextMenuShownOnAppsKey) {
+  // Ensure menu is open and a selection exists.
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  SetPendingStateItem(submenu->GetMenuItemAt(0));
+
+  // Dispatch APPS key and expect a context menu request routed to delegate.
+  DispatchKey(ui::VKEY_APPS);
+
+#if !BUILDFLAG(IS_MAC)
+  EXPECT_EQ(1, menu_delegate()->show_context_menu_count());
+  EXPECT_EQ(pending_state_item(), menu_delegate()->show_context_menu_source());
+#else
+  EXPECT_EQ(0, menu_delegate()->show_context_menu_count());
+#endif
+}
+
+// Pressing Shift+F10 should show the context menu for the selected item
+TEST_F(MenuControllerTest, ContextMenuShownOnShiftF10Key) {
+  // Ensure menu is open and a selection exists.
+  ShowSubmenu();
+  SubmenuView* const submenu = menu_item()->GetSubmenu();
+  SetPendingStateItem(submenu->GetMenuItemAt(0));
+
+  // Dispatch Shift+F10 key and expect a context menu request routed to
+  // delegate.
+  DispatchKeyWithFlags(ui::VKEY_F10, false, true, false, false);
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_EQ(1, menu_delegate()->show_context_menu_count());
+  EXPECT_EQ(pending_state_item(), menu_delegate()->show_context_menu_source());
+#else
+  EXPECT_EQ(0, menu_delegate()->show_context_menu_count());
+#endif
 }
 
 }  // namespace views

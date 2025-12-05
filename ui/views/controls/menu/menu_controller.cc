@@ -1977,33 +1977,26 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
 #if !BUILDFLAG(IS_MAC)
-    case ui::VKEY_APPS: {
-      Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
-      if (hot_view) {
-        hot_view->ShowContextMenu(hot_view->GetKeyboardContextMenuLocation(),
-                                  ui::mojom::MenuSourceType::kKeyboard);
-      } else if (pending_state_.item->GetEnabled() &&
-                 pending_state_.item->GetRootMenuItem() !=
-                     pending_state_.item) {
-        // Show the context menu for the given menu item. We don't try to show
-        // the menu for the (boundless) root menu item. This can happen, e.g.,
-        // when the user hits the APPS key after opening the menu, when no item
-        // is selected, but showing a context menu for an implicitly-selected
-        // and invisible item doesn't make sense.
-        ShowContextMenu(pending_state_.item,
-                        pending_state_.item->GetKeyboardContextMenuLocation(),
-                        ui::mojom::MenuSourceType::kKeyboard);
-      }
+    case ui::VKEY_APPS:
+      ShowContextMenu();
       break;
-    }
 #endif
 
 #if BUILDFLAG(IS_WIN)
     // On Windows, pressing Alt and F10 keys should hide the menu to match the
     // OS behavior.
     case ui::VKEY_MENU:
-    case ui::VKEY_F10:
       Cancel(ExitType::kAll);
+      break;
+    // On Windows, the Shift+F10 shortcut is equivalent to ui::VKEY_APPS,
+    // and will open the context menu for the selected item or the focused
+    // control.
+    case ui::VKEY_F10:
+      if (event.IsShiftDown()) {
+        ShowContextMenu();
+      } else {
+        Cancel(ExitType::kAll);
+      }
       break;
 #endif
 
@@ -2011,6 +2004,24 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
   }
   return handled_key_code;
+}
+
+void MenuController::ShowContextMenu() {
+  Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
+  if (hot_view) {
+    hot_view->ShowContextMenu(hot_view->GetKeyboardContextMenuLocation(),
+                              ui::mojom::MenuSourceType::kKeyboard);
+  } else if (pending_state_.item->GetEnabled() &&
+             pending_state_.item->GetRootMenuItem() != pending_state_.item) {
+    // Show the context menu for the given menu item. We don't try to show
+    // the menu for the (boundless) root menu item. This can happen, e.g.,
+    // when the user hits the APPS key after opening the menu, when no item
+    // is selected, but showing a context menu for an implicitly-selected
+    // and invisible item doesn't make sense.
+    ShowContextMenu(pending_state_.item,
+                    pending_state_.item->GetKeyboardContextMenuLocation(),
+                    ui::mojom::MenuSourceType::kKeyboard);
+  }
 }
 
 MenuController::MenuController(bool for_drop,
