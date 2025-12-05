@@ -629,8 +629,6 @@ void MTPDeviceDelegateImpl::GetFileInfo(
   // cached.
   FileInfoCache::const_iterator it = file_info_cache_.find(file_path);
   if (it != file_info_cache_.end()) {
-    // TODO(thestig): This code is repeated in several places. Combine them.
-    // e.g. c/b/media_galleries/win/mtp_device_operations_util.cc
     const MTPDeviceTaskHelper::MTPEntry& cached_file_entry = it->second;
     std::move(success_callback).Run(cached_file_entry.file_info);
     return;

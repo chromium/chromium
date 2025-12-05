@@ -388,7 +388,6 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
     if (!display_name.empty())
       return display_name;
 
-#if BUILDFLAG(IS_CHROMEOS)
     // See chrome/browser/ash/fileapi/file_system_backend.cc
     base::FilePath download_path;
     if (base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
@@ -398,9 +397,6 @@ std::u16string MediaGalleryPrefInfo::GetGalleryDisplayName() const {
         return relative.LossyDisplayName();
     }
     return absolute_path.BaseName().LossyDisplayName();
-#else
-    return absolute_path.LossyDisplayName();
-#endif
   }
 
   StorageInfo info(device_id,

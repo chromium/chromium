@@ -12,7 +12,6 @@
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
-#include "chrome/browser/media_galleries/media_galleries_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "extensions/browser/extension_prefs.h"
@@ -147,9 +146,6 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
   std::vector<MediaGalleryPermission> extension2_expectation_;
   std::vector<MediaGalleryPermission> extension3_expectation_;
   std::vector<MediaGalleryPermission> extension4_expectation_;
-
-  // Needed for |gallery_prefs_| to initialize correctly.
-  EnsureMediaDirectoriesExists ensure_media_directories_exists_;
 
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<MediaGalleriesPreferences> gallery_prefs_;

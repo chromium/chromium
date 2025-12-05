@@ -277,13 +277,7 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
   MoveTest("a.txt", std::string(kValidImage, std::size(kValidImage)), false);
 }
 
-// TODO(crbug.com/40744004): Re-enable. Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ValidImage DISABLED_ValidImage
-#else
-#define MAYBE_ValidImage ValidImage
-#endif
-IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, MAYBE_ValidImage) {
+IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, ValidImage) {
   MoveTest("a.webp", std::string(kValidImage, std::size(kValidImage)), true);
 }
 

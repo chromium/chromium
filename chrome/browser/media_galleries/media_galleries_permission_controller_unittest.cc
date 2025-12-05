@@ -15,26 +15,23 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_test_util.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
 #include "chrome/common/apps/platform_apps/media_galleries_permission.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/storage_monitor/test_storage_monitor.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/selected_file_info.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
-#endif
 
 using storage_monitor::StorageInfo;
 using storage_monitor::TestStorageMonitor;
@@ -127,9 +124,6 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
   void TestForgottenType(MediaGalleryPrefInfo::Type type,
                          bool forget_preserves_pref_id);
 
- protected:
-  EnsureMediaDirectoriesExists mock_gallery_locations_;
-
  private:
   MediaGalleriesDialog* CreateMockDialog(
       MediaGalleriesDialogController* controller) {
@@ -162,14 +156,12 @@ class MediaGalleriesPermissionControllerTest : public ::testing::Test {
 
   scoped_refptr<extensions::Extension> extension_;
 
-#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
           g_browser_process->local_state(),
           ash::CrosSettings::Get())};
-#endif
 
   TestStorageMonitor monitor_;
   std::unique_ptr<TestingProfile> profile_;
@@ -196,8 +188,7 @@ void MediaGalleriesPermissionControllerTest::TestForgottenType(
   // Show dialog and accept to verify 2 entries
   StartDialog();
   EXPECT_EQ(0U, controller()->GetSectionEntries(0).size());
-  EXPECT_EQ(mock_gallery_locations_.num_galleries() + 2U,
-            controller()->GetSectionEntries(1).size());
+  EXPECT_EQ(2U, controller()->GetSectionEntries(1).size());
   controller()->DidToggleEntry(GetDialogIdFromPrefId(forgotten1), true);
   controller()->DidToggleEntry(GetDialogIdFromPrefId(forgotten2), true);
   controller()->DialogFinished(true);
@@ -236,13 +227,11 @@ void MediaGalleriesPermissionControllerTest::TestForgottenType(
       MakeMediaGalleriesTestingPath("forgotten3"), type);
   StartDialog();
   EXPECT_EQ(2U, controller()->GetSectionEntries(0).size());
-  EXPECT_EQ(mock_gallery_locations_.num_galleries() + 1U,
-            controller()->GetSectionEntries(1).size());
+  EXPECT_EQ(1U, controller()->GetSectionEntries(1).size());
   controller()->DidToggleEntry(GetDialogIdFromPrefId(forgotten3), true);
   controller()->DidForgetEntry(GetDialogIdFromPrefId(forgotten3));
   EXPECT_EQ(2U, controller()->GetSectionEntries(0).size());
-  EXPECT_EQ(static_cast<unsigned long>(mock_gallery_locations_.num_galleries()),
-            controller()->GetSectionEntries(1).size());
+  EXPECT_EQ(0U, controller()->GetSectionEntries(1).size());
   controller()->DialogFinished(true);
   EXPECT_EQ(2U, gallery_prefs()->GalleriesForExtension(*extension()).size());
 }
@@ -268,29 +257,17 @@ TEST_F(MediaGalleriesPermissionControllerTest, TestNameGeneration) {
   gallery.device_id = StorageInfo::MakeDeviceId(
       StorageInfo::FIXED_MASS_STORAGE, "/path/to/gallery");
   gallery.type = MediaGalleryPrefInfo::kAutoDetected;
-  std::string galleryName("/path/to/gallery");
-#if BUILDFLAG(IS_CHROMEOS)
-  galleryName = "gallery";
-#endif
-  EXPECT_EQ(galleryName, GalleryName(gallery));
+  EXPECT_EQ("gallery", GalleryName(gallery));
 
   gallery.display_name = u"override";
   EXPECT_EQ("override", GalleryName(gallery));
 
   gallery.display_name = std::u16string();
   gallery.volume_label = u"label";
-  EXPECT_EQ(galleryName, GalleryName(gallery));
+  EXPECT_EQ("gallery", GalleryName(gallery));
 
   gallery.path = base::FilePath(FILE_PATH_LITERAL("sub/gallery2"));
-  galleryName = "/path/to/gallery/sub/gallery2";
-#if BUILDFLAG(IS_CHROMEOS)
-  galleryName = "gallery2";
-#endif
-#if BUILDFLAG(IS_WIN)
-  galleryName = base::FilePath(FILE_PATH_LITERAL("/path/to/gallery"))
-                    .Append(gallery.path).MaybeAsASCII();
-#endif
-  EXPECT_EQ(galleryName, GalleryName(gallery));
+  EXPECT_EQ("gallery2", GalleryName(gallery));
 
   gallery.path = base::FilePath();
   gallery.device_id = StorageInfo::MakeDeviceId(

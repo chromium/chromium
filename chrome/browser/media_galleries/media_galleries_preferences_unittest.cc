@@ -21,6 +21,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
@@ -29,26 +32,20 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
 #include "components/sync/model/string_ordinal.h"
+#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
-#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/browser_process.h"
-#include "chromeos/ash/components/settings/cros_settings.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
-#endif
 
 using base::ASCIIToUTF16;
 using storage_monitor::MediaStorageUtil;
@@ -163,10 +160,6 @@ class MediaGalleriesPreferencesTest : public testing::Test {
   void TearDown() override {
     Verify();
     TestStorageMonitor::Destroy();
-  }
-
-  void ChangeMediaPathOverrides() {
-    mock_gallery_locations_.ChangeMediaPathOverrides();
   }
 
   void ReinitPrefsAndExpectations() {
@@ -370,16 +363,12 @@ class MediaGalleriesPreferencesTest : public testing::Test {
   // Needed for extension service & friends to work.
   content::BrowserTaskEnvironment task_environment_;
 
-  EnsureMediaDirectoriesExists mock_gallery_locations_;
-
-#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<ash::UserManagerDelegateImpl>(),
           g_browser_process->local_state(),
           ash::CrosSettings::Get())};
-#endif
 
   TestStorageMonitor monitor_;
   std::unique_ptr<TestingProfile> profile_;
@@ -1216,231 +1205,4 @@ TEST(MediaGalleriesPrefInfoTest, NameGeneration) {
             base::UTF16ToUTF8(info.GetGalleryTooltip()));
 
   TestStorageMonitor::Destroy();
-}
-
-TEST_F(MediaGalleriesPreferencesTest, SetsDefaultGalleryTypeField) {
-  // Tests that default galleries (Music, Pictures, Video) have the correct
-  // default_gallery field set.
-
-  // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS)
-  base::FilePath music_path;
-  base::FilePath pictures_path;
-  base::FilePath videos_path;
-  bool got_music_path =
-      base::PathService::Get(chrome::DIR_USER_MUSIC, &music_path);
-  bool got_pictures_path =
-      base::PathService::Get(chrome::DIR_USER_PICTURES, &pictures_path);
-  bool got_videos_path =
-      base::PathService::Get(chrome::DIR_USER_VIDEOS, &videos_path);
-
-  int num_default_galleries = 0;
-
-  const MediaGalleriesPrefInfoMap& known_galleries =
-      gallery_prefs()->known_galleries();
-  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
-    if (it->second.type != MediaGalleryPrefInfo::kAutoDetected)
-      continue;
-
-    std::string unique_id;
-    if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
-      continue;
-
-    if (got_music_path && unique_id == music_path.AsUTF8Unsafe()) {
-      EXPECT_EQ(MediaGalleryPrefInfo::DefaultGalleryType::kMusicDefault,
-                it->second.default_gallery_type);
-      num_default_galleries++;
-    } else if (got_pictures_path && unique_id == pictures_path.AsUTF8Unsafe()) {
-      EXPECT_EQ(MediaGalleryPrefInfo::DefaultGalleryType::kPicturesDefault,
-                it->second.default_gallery_type);
-      num_default_galleries++;
-    } else if (got_videos_path && unique_id == videos_path.AsUTF8Unsafe()) {
-      EXPECT_EQ(MediaGalleryPrefInfo::DefaultGalleryType::kVideosDefault,
-                it->second.default_gallery_type);
-      num_default_galleries++;
-    } else {
-      EXPECT_EQ(MediaGalleryPrefInfo::DefaultGalleryType::kNotDefault,
-                it->second.default_gallery_type);
-    }
-  }
-
-  EXPECT_EQ(3, num_default_galleries);
-#endif
-}
-
-TEST_F(MediaGalleriesPreferencesTest, UpdatesDefaultGalleryType) {
-  // Tests that if the path of a default gallery changed since last init,
-  // then when the MediaGalleriesPreferences is initialized, it will
-  // rewrite the device ID in prefs to include the new path.
-
-  // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS)
-  base::FilePath old_music_path;
-  base::FilePath old_pictures_path;
-  base::FilePath old_videos_path;
-  bool got_old_music_path =
-      base::PathService::Get(chrome::DIR_USER_MUSIC, &old_music_path);
-  bool got_old_pictures_path =
-      base::PathService::Get(chrome::DIR_USER_PICTURES, &old_pictures_path);
-  bool got_old_videos_path =
-      base::PathService::Get(chrome::DIR_USER_VIDEOS, &old_videos_path);
-
-  bool found_music = false;
-  bool found_pictures = false;
-  bool found_videos = false;
-
-  const MediaGalleriesPrefInfoMap& old_known_galleries =
-      gallery_prefs()->known_galleries();
-  for (auto it = old_known_galleries.begin(); it != old_known_galleries.end();
-       ++it) {
-    if (it->second.type == MediaGalleryPrefInfo::kAutoDetected) {
-      std::string unique_id;
-      if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
-        continue;
-
-      if (got_old_music_path &&
-          it->second.default_gallery_type ==
-          MediaGalleryPrefInfo::DefaultGalleryType::kMusicDefault) {
-        EXPECT_EQ(old_music_path.AsUTF8Unsafe(), unique_id);
-        found_music = true;
-      } else if (got_old_pictures_path &&
-                 it->second.default_gallery_type ==
-                 MediaGalleryPrefInfo::DefaultGalleryType::kPicturesDefault) {
-        EXPECT_EQ(old_pictures_path.AsUTF8Unsafe(), unique_id);
-        found_pictures = true;
-      } else if (got_old_videos_path &&
-                 it->second.default_gallery_type ==
-                 MediaGalleryPrefInfo::DefaultGalleryType::kVideosDefault) {
-        EXPECT_EQ(old_videos_path.AsUTF8Unsafe(), unique_id);
-        found_videos = true;
-      }
-    }
-  }
-
-  EXPECT_TRUE(found_music);
-  EXPECT_TRUE(found_pictures);
-  EXPECT_TRUE(found_videos);
-
-  ChangeMediaPathOverrides();
-  ReinitPrefsAndExpectations();
-
-  base::FilePath new_music_path;
-  base::FilePath new_pictures_path;
-  base::FilePath new_videos_path;
-  bool got_new_music_path =
-      base::PathService::Get(chrome::DIR_USER_MUSIC, &new_music_path);
-  bool got_new_pictures_path =
-      base::PathService::Get(chrome::DIR_USER_PICTURES, &new_pictures_path);
-  bool got_new_videos_path =
-      base::PathService::Get(chrome::DIR_USER_VIDEOS, &new_videos_path);
-
-  EXPECT_NE(new_music_path, old_music_path);
-  EXPECT_NE(new_pictures_path, old_pictures_path);
-  EXPECT_NE(new_videos_path, old_videos_path);
-
-  found_music = false;
-  found_pictures = false;
-  found_videos = false;
-
-  const MediaGalleriesPrefInfoMap& known_galleries =
-      gallery_prefs()->known_galleries();
-  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
-    if (it->second.type == MediaGalleryPrefInfo::kAutoDetected) {
-      std::string unique_id;
-      if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
-        continue;
-
-      if (got_new_music_path &&
-          it->second.default_gallery_type ==
-          MediaGalleryPrefInfo::DefaultGalleryType::kMusicDefault) {
-        EXPECT_EQ(new_music_path.AsUTF8Unsafe(), unique_id);
-        found_music = true;
-      } else if (got_new_pictures_path &&
-                 it->second.default_gallery_type ==
-                 MediaGalleryPrefInfo::DefaultGalleryType::kPicturesDefault) {
-        EXPECT_EQ(new_pictures_path.AsUTF8Unsafe(), unique_id);
-        found_pictures = true;
-      } else if (got_new_videos_path &&
-                 it->second.default_gallery_type ==
-                 MediaGalleryPrefInfo::DefaultGalleryType::kVideosDefault) {
-        EXPECT_EQ(new_videos_path.AsUTF8Unsafe(), unique_id);
-        found_videos = true;
-      }
-    }
-  }
-
-  EXPECT_TRUE(found_music);
-  EXPECT_TRUE(found_pictures);
-  EXPECT_TRUE(found_videos);
-#endif
-}
-
-TEST_F(MediaGalleriesPreferencesTest, UpdateAddsDefaultGalleryTypeIfMissing) {
-  // Tests that if no default_gallery_type was specified for an existing prefs
-  // info object corresponding to a particular gallery, then when the
-  // MediaGalleriesPreferences is initialized, it assigns the proper one.
-
-  // No default galleries exist on CrOS so this test isn't relevant there.
-#if !BUILDFLAG(IS_CHROMEOS)
-  // Add a new user added gallery.
-  AddFixedGalleryWithExpectation("user_added", "UserAdded",
-                                 MediaGalleryPrefInfo::kUserAdded);
-
-  // Remove the "default_gallery_type" field completely from the persisted data
-  // for the prefs info object. This simulates the case where a user updated
-  // Chrome from a version without that field to one with it.
-  RemovePersistedDefaultGalleryValues();
-
-  // Reinitializing the MediaGalleriesPreferences should populate the
-  // default_gallery_type field with the correct value for each gallery.
-  ReinitPrefsAndExpectations();
-
-  base::FilePath music_path;
-  base::FilePath pictures_path;
-  base::FilePath videos_path;
-  bool got_music_path =
-      base::PathService::Get(chrome::DIR_USER_MUSIC, &music_path);
-  bool got_pictures_path =
-      base::PathService::Get(chrome::DIR_USER_PICTURES, &pictures_path);
-  bool got_videos_path =
-      base::PathService::Get(chrome::DIR_USER_VIDEOS, &videos_path);
-
-  bool found_music = false;
-  bool found_pictures = false;
-  bool found_videos = false;
-  bool found_user_added = false;
-
-  const MediaGalleriesPrefInfoMap& known_galleries =
-      gallery_prefs()->known_galleries();
-  for (auto it = known_galleries.begin(); it != known_galleries.end(); ++it) {
-    std::string unique_id;
-    if (!StorageInfo::CrackDeviceId(it->second.device_id, NULL, &unique_id))
-      continue;
-
-    if (got_music_path &&
-        it->second.default_gallery_type ==
-        MediaGalleryPrefInfo::DefaultGalleryType::kMusicDefault) {
-      EXPECT_EQ(music_path.AsUTF8Unsafe(), unique_id);
-      found_music = true;
-    } else if (got_pictures_path &&
-               it->second.default_gallery_type ==
-               MediaGalleryPrefInfo::DefaultGalleryType::kPicturesDefault) {
-      EXPECT_EQ(pictures_path.AsUTF8Unsafe(), unique_id);
-      found_pictures = true;
-    } else if (got_videos_path &&
-               it->second.default_gallery_type ==
-               MediaGalleryPrefInfo::DefaultGalleryType::kVideosDefault) {
-      EXPECT_EQ(videos_path.AsUTF8Unsafe(), unique_id);
-      found_videos = true;
-    } else if (it->second.default_gallery_type ==
-               MediaGalleryPrefInfo::DefaultGalleryType::kNotDefault) {
-      found_user_added = true;
-    }
-  }
-
-  EXPECT_TRUE(found_music);
-  EXPECT_TRUE(found_pictures);
-  EXPECT_TRUE(found_videos);
-  EXPECT_TRUE(found_user_added);
-#endif
 }
