@@ -324,7 +324,10 @@ class MockIntelligentScanDelegate
               StartIntelligentScan,
               (std::string, IntelligentScanDoneCallback),
               (override));
-  MOCK_METHOD(bool, CancelSession, (const base::UnguessableToken&), (override));
+  MOCK_METHOD(bool,
+              CancelIntelligentScan,
+              (const base::UnguessableToken&),
+              (override));
   MOCK_METHOD(bool,
               ShouldShowScamWarning,
               (std::optional<IntelligentScanVerdict>),
@@ -1135,8 +1138,8 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
       "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification", false,
       1);
   histogram_tester.ExpectBucketCount(
-      "SBClientPhishing.IntelligentScanSessionAliveOnNewPreclassification",
-      false, 1);
+      "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification", false,
+      1);
 }
 
 TEST_F(ClientSideDetectionHostTest,

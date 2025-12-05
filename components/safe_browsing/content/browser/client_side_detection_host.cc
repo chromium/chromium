@@ -833,8 +833,8 @@ ClientSideDetectionHost::~ClientSideDetectionHost() {
   if (classification_request_.get()) {
     classification_request_->Cancel();
   }
-  if (intelligent_scan_session_id_.has_value()) {
-    intelligent_scan_delegate_->CancelSession(*intelligent_scan_session_id_);
+  if (intelligent_scan_id_.has_value()) {
+    intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
   }
 }
 
@@ -1261,19 +1261,18 @@ void ClientSideDetectionHost::OnPhishingPreClassificationDone(
   }
 
   if (should_classify) {
-    bool intelligent_scan_session_ongoing =
-        intelligent_scan_session_id_.has_value();
+    bool intelligent_scan_ongoing = intelligent_scan_id_.has_value();
     // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
     // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
     // new histograms.
     base::UmaHistogramBoolean(
         "SBClientPhishing.OnDeviceModelSessionAliveOnNewPreclassification",
-        intelligent_scan_session_ongoing);
+        intelligent_scan_ongoing);
     base::UmaHistogramBoolean(
-        "SBClientPhishing.IntelligentScanSessionAliveOnNewPreclassification",
-        intelligent_scan_session_ongoing);
-    if (intelligent_scan_session_ongoing) {
-      intelligent_scan_delegate_->CancelSession(*intelligent_scan_session_id_);
+        "SBClientPhishing.IntelligentScanOngoingOnNewPreclassification",
+        intelligent_scan_ongoing);
+    if (intelligent_scan_ongoing) {
+      intelligent_scan_delegate_->CancelIntelligentScan(*intelligent_scan_id_);
     }
 
     content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
@@ -1785,19 +1784,18 @@ void ClientSideDetectionHost::OnInnerTextComplete(
     return;
   }
 
-  intelligent_scan_session_id_ =
-      intelligent_scan_delegate_->StartIntelligentScan(
-          inner_text,
-          base::BindOnce(&ClientSideDetectionHost::OnIntelligentScanDone,
-                         weak_factory_.GetWeakPtr(), std::move(verdict),
-                         did_match_high_confidence_allowlist));
+  intelligent_scan_id_ = intelligent_scan_delegate_->StartIntelligentScan(
+      inner_text,
+      base::BindOnce(&ClientSideDetectionHost::OnIntelligentScanDone,
+                     weak_factory_.GetWeakPtr(), std::move(verdict),
+                     did_match_high_confidence_allowlist));
 }
 
 void ClientSideDetectionHost::OnIntelligentScanDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
     IntelligentScanDelegate::IntelligentScanResult response) {
-  intelligent_scan_session_id_.reset();
+  intelligent_scan_id_.reset();
   // TODO(crbug.com/462643935): Remove the OnDevice* histograms once the new
   // IntelligentScan* histograms is in Stable. Update chirp alerts to use the
   // new histograms.

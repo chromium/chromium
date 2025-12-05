@@ -28,7 +28,7 @@ using optimization_guide::mojom::OnDeviceFeature::kScamDetection;
 class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
  public:
   Inquiry(ClientSideDetectionIntelligentScanDelegateAndroid* parent,
-          const base::UnguessableToken& session_id,
+          const base::UnguessableToken& scan_id,
           IntelligentScanDoneCallback callback);
   ~Inquiry();
 
@@ -37,9 +37,11 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
  private:
   using ModelExecutorSession = optimization_guide::OnDeviceSession;
 
-  void OnSessionCreated(std::unique_ptr<ModelExecutorSession> session);
+  void OnSessionCreated(base::TimeTicks session_creation_start_time,
+                        std::unique_ptr<ModelExecutorSession> session);
 
   void ModelExecutionCallback(
+      base::TimeTicks session_execution_start_time,
       optimization_guide::OptimizationGuideModelStreamingExecutionResult
           result);
 
@@ -47,22 +49,18 @@ class ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry {
   // owns this object.
   const raw_ptr<ClientSideDetectionIntelligentScanDelegateAndroid> parent_;
   std::unique_ptr<ModelExecutorSession> session_;
-  base::UnguessableToken session_id_;
+  base::UnguessableToken scan_id_;
   IntelligentScanDoneCallback callback_;
   std::string rendered_texts_;
-  base::TimeTicks session_creation_start_time_;
-  base::TimeTicks session_execution_start_time_;
 
   base::WeakPtrFactory<Inquiry> weak_factory_{this};
 };
 
 ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Inquiry(
     ClientSideDetectionIntelligentScanDelegateAndroid* parent,
-    const base::UnguessableToken& session_id,
+    const base::UnguessableToken& scan_id,
     IntelligentScanDoneCallback callback)
-    : parent_(parent),
-      session_id_(session_id),
-      callback_(std::move(callback)) {}
+    : parent_(parent), scan_id_(scan_id), callback_(std::move(callback)) {}
 
 ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::~Inquiry() =
     default;
@@ -72,22 +70,22 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::Start(
   CHECK(!session_) << "Start() should only be called once per inquiry.";
 
   rendered_texts_ = rendered_texts;
-  session_creation_start_time_ = base::TimeTicks::Now();
   parent_->model_broker_client_->CreateSession(
       kScamDetection, ::optimization_guide::SessionConfigParams{},
       base::BindOnce(&ClientSideDetectionIntelligentScanDelegateAndroid::
                          Inquiry::OnSessionCreated,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
-    OnSessionCreated(std::unique_ptr<ModelExecutorSession> session) {
+    OnSessionCreated(base::TimeTicks session_creation_start_time,
+                     std::unique_ptr<ModelExecutorSession> session) {
   CHECK(session) << "model broker client should not create a null session.";
   client_side_detection::LogOnDeviceModelSessionCreationTime(
-      session_creation_start_time_);
+      session_creation_start_time);
   session_ = std::move(session);
 
-  if (parent_->pause_session_execution_for_testing_) {
+  if (parent_->pause_inquiry_for_testing_) {
     return;
   }
 
@@ -95,16 +93,16 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   ScamDetectionRequest request;
   request.set_rendered_text(rendered_texts_);
 
-  session_execution_start_time_ = base::TimeTicks::Now();
   session_->ExecuteModel(
       *std::make_unique<ScamDetectionRequest>(request),
       base::BindRepeating(&ClientSideDetectionIntelligentScanDelegateAndroid::
                               Inquiry::ModelExecutionCallback,
-                          weak_factory_.GetWeakPtr()));
+                          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
     ModelExecutionCallback(
+        base::TimeTicks session_execution_start_time,
         optimization_guide::OptimizationGuideModelStreamingExecutionResult
             result) {
   CHECK(callback_);
@@ -118,7 +116,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
 
   if (!result.response.has_value()) {
     client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
-        /*success=*/false, session_execution_start_time_);
+        /*success=*/false, session_execution_start_time);
     std::move(callback_).Run(IntelligentScanResult::Failure(model_version));
     return;
   }
@@ -130,7 +128,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
   }
 
   client_side_detection::LogOnDeviceModelExecutionSuccessAndTime(
-      /*success=*/true, session_execution_start_time_);
+      /*success=*/true, session_execution_start_time);
 
   auto scam_detection_response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::ScamDetectionResponse>(
@@ -147,9 +145,9 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::Inquiry::
                             .model_version = model_version,
                             .execution_success = true});
 
-  // Reset session immediately so that future inference is not affected by the
-  // old context.
-  parent_->CancelSession(session_id_);
+  // Reset this inquiry immediately so that future inference is not affected by
+  // the old context.
+  parent_->CancelIntelligentScan(scan_id_);
 }
 
 ClientSideDetectionIntelligentScanDelegateAndroid::
@@ -227,27 +225,27 @@ ClientSideDetectionIntelligentScanDelegateAndroid::StartIntelligentScan(
     return std::nullopt;
   }
 
-  base::UnguessableToken session_id = base::UnguessableToken::Create();
+  base::UnguessableToken scan_id = base::UnguessableToken::Create();
   std::unique_ptr<Inquiry> new_inquiry =
-      std::make_unique<Inquiry>(this, session_id, std::move(callback));
-  inquiries_[session_id] = std::move(new_inquiry);
-  inquiries_[session_id]->Start(rendered_texts);
-  return session_id;
+      std::make_unique<Inquiry>(this, scan_id, std::move(callback));
+  inquiries_[scan_id] = std::move(new_inquiry);
+  inquiries_[scan_id]->Start(rendered_texts);
+  return scan_id;
 }
 
-bool ClientSideDetectionIntelligentScanDelegateAndroid::CancelSession(
-    const base::UnguessableToken& session_id) {
-  if (!inquiries_.contains(session_id)) {
+bool ClientSideDetectionIntelligentScanDelegateAndroid::CancelIntelligentScan(
+    const base::UnguessableToken& scan_id) {
+  if (!inquiries_.contains(scan_id)) {
     return false;
   }
-  inquiries_.erase(session_id);
+  inquiries_.erase(scan_id);
   return true;
 }
 
-bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetAllSessions() {
-  bool did_reset_session = !inquiries_.empty();
+bool ClientSideDetectionIntelligentScanDelegateAndroid::ResetAllInquiries() {
+  bool did_reset_inquiry = !inquiries_.empty();
   inquiries_.clear();
-  return did_reset_session;
+  return did_reset_inquiry;
 }
 
 bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
@@ -273,7 +271,7 @@ bool ClientSideDetectionIntelligentScanDelegateAndroid::ShouldShowScamWarning(
 void ClientSideDetectionIntelligentScanDelegateAndroid::Shutdown() {
   client_side_detection::LogOnDeviceModelSessionAliveOnDelegateShutdown(
       !inquiries_.empty());
-  ResetAllSessions();
+  ResetAllInquiries();
   model_broker_client_.reset();
   pref_change_registrar_.RemoveAll();
 }
@@ -287,7 +285,7 @@ void ClientSideDetectionIntelligentScanDelegateAndroid::OnPrefsUpdated() {
   if (IsEnhancedProtectionEnabled(*pref_) && is_feature_enabled) {
     StartModelDownload();
   } else {
-    ResetAllSessions();
+    ResetAllInquiries();
   }
 }
 

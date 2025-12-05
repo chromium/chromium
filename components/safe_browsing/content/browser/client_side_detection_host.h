@@ -149,9 +149,10 @@ class ClientSideDetectionHost
     virtual std::optional<base::UnguessableToken> StartIntelligentScan(
         std::string rendered_texts,
         IntelligentScanDoneCallback callback) = 0;
-    // Cancels a specific intelligent scan session. If the |session_id| is
+    // Cancels a specific intelligent scan request. If the |scan_id| is
     // ongoing, it will return true, and false otherwise.
-    virtual bool CancelSession(const base::UnguessableToken& session_id) = 0;
+    virtual bool CancelIntelligentScan(
+        const base::UnguessableToken& scan_id) = 0;
     // Determines if a scam warning should be shown based on the intelligent
     // scan verdict.
     virtual bool ShouldShowScamWarning(
@@ -657,8 +658,8 @@ class ClientSideDetectionHost
   // OnPhishingPreClassificationDone was called at the end of preclassification.
   PreclassificationDone preclassification_done_cb_for_testing_;
 
-  // The session ID for the current intelligent scan request.
-  std::optional<base::UnguessableToken> intelligent_scan_session_id_;
+  // The intelligent scan ID for the current intelligent scan request.
+  std::optional<base::UnguessableToken> intelligent_scan_id_;
 
   // The last text that was copied to the clipboard.
   std::u16string last_copied_text_;

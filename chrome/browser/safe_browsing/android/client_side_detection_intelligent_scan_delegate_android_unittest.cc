@@ -70,13 +70,14 @@ class ClientSideDetectionIntelligentScanDelegateAndroidTestBase
  protected:
   void CreateDelegate(bool is_enhanced_protection_enabled,
                       ModelExecutionFeature asset_feature) {
-    CreateDelegateWithSessionResponse(is_enhanced_protection_enabled,
-                                      asset_feature, "");
+    CreateDelegateWithOnDeviceModelResponse(is_enhanced_protection_enabled,
+                                            asset_feature, "");
   }
 
-  void CreateDelegateWithSessionResponse(bool is_enhanced_protection_enabled,
-                                         ModelExecutionFeature asset_feature,
-                                         std::string response) {
+  void CreateDelegateWithOnDeviceModelResponse(
+      bool is_enhanced_protection_enabled,
+      ModelExecutionFeature asset_feature,
+      std::string response) {
     SetEnhancedProtectionPrefForTests(&pref_service_,
                                       is_enhanced_protection_enabled);
     fake_broker_ =
@@ -279,8 +280,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       StartIntelligentScan_ResponseSuccessful) {
-  CreateDelegateWithSessionResponse(
+       StartIntelligentScan_OnDeviceModelResponseSuccessful) {
+  CreateDelegateWithOnDeviceModelResponse(
       /*is_enhanced_protection_enabled=*/true,
       ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
       "{\"brand\": \"test_brand\", \"intent\": \"test_intent\"}");
@@ -293,8 +294,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
   EXPECT_EQ(future.Get().model_version, fake_asset_.version());
   EXPECT_EQ(future.Get().brand, "test_brand");
   EXPECT_EQ(future.Get().intent, "test_intent");
-  // Session should be reset after a successful response.
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
+  // Inquiry should be reset after a successful response.
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
   histogram_tester_.ExpectTotalCount(
       "SBClientPhishing.OnDeviceModelSessionCreationTime", 1);
   histogram_tester_.ExpectUniqueSample(
@@ -304,8 +305,8 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       StartIntelligentScan_ResponseUnsuccessful) {
-  CreateDelegateWithSessionResponse(
+       StartIntelligentScan_OnDeviceModelResponseUnsuccessful) {
+  CreateDelegateWithOnDeviceModelResponse(
       /*is_enhanced_protection_enabled=*/true,
       ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION, "");
   // Wait for the model to be available.
@@ -339,20 +340,20 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
        StartIntelligentScan_SecondInquiryBeforeFirstResponse) {
-  CreateDelegateWithSessionResponse(
+  CreateDelegateWithOnDeviceModelResponse(
       /*is_enhanced_protection_enabled=*/true,
       ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION,
       "{\"brand\": \"test_brand\", \"intent\": \"test_intent\"}");
   task_environment_.RunUntilIdle();
 
-  delegate_->SetPauseSessionExecutionForTesting(true);
+  delegate_->SetPauseInquiryForTesting(true);
   base::test::TestFuture<IntelligentScanResult> future1;
   delegate_->StartIntelligentScan("test rendered text", future1.GetCallback());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
 
   // The second inquire is sent before the first one completes.
-  delegate_->SetPauseSessionExecutionForTesting(false);
+  delegate_->SetPauseInquiryForTesting(false);
   base::test::TestFuture<IntelligentScanResult> future2;
   delegate_->StartIntelligentScan("test rendered text", future2.GetCallback());
   task_environment_.RunUntilIdle();
@@ -363,34 +364,34 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       CancelOnDeviceSession_AfterSessionCreation) {
+       CancelIntelligentScan_AfterInquiryCreation) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
   task_environment_.RunUntilIdle();
-  delegate_->SetPauseSessionExecutionForTesting(true);
-  std::optional<base::UnguessableToken> session_id =
+  delegate_->SetPauseInquiryForTesting(true);
+  std::optional<base::UnguessableToken> scan_id =
       delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
 
-  // Reset the session after session is created.
-  EXPECT_TRUE(delegate_->CancelSession(*session_id));
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
+  // Reset the inquiry after inquiry is created.
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id));
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateAndroidTest,
-       ResetOnDeviceSession_EnhancedProtectionDisabled) {
+       ResetOnDeviceInquiry_EnhancedProtectionDisabled) {
   CreateDelegate(/*is_enhanced_protection_enabled=*/true,
                  ModelExecutionFeature::MODEL_EXECUTION_FEATURE_SCAM_DETECTION);
   task_environment_.RunUntilIdle();
-  delegate_->SetPauseSessionExecutionForTesting(true);
+  delegate_->SetPauseInquiryForTesting(true);
   delegate_->StartIntelligentScan("test rendered text", base::DoNothing());
   task_environment_.RunUntilIdle();
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 1);
   SetEnhancedProtectionPrefForTests(&pref_service_, false);
   task_environment_.RunUntilIdle();
-  // Session should be reset after the enhanced protection is disabled.
-  EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
+  // Inquiry should be reset after the enhanced protection is disabled.
+  EXPECT_EQ(delegate_->GetAliveInquiryCountForTesting(), 0);
 }
 
 class ClientSideDetectionIntelligentScanDelegateAndroidTestWithFeatureDisabled

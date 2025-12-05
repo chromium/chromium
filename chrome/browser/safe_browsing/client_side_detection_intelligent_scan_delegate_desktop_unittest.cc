@@ -573,9 +573,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           });
 
   base::test::TestFuture<IntelligentScanResult> future1;
-  std::optional<base::UnguessableToken> session_id1 =
+  std::optional<base::UnguessableToken> scan_id1 =
       delegate_->StartIntelligentScan("", future1.GetCallback());
-  EXPECT_FALSE(session_id1->is_empty());
+  EXPECT_FALSE(scan_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
@@ -587,26 +587,26 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           });
 
   base::test::TestFuture<IntelligentScanResult> future2;
-  std::optional<base::UnguessableToken> session_id2 =
+  std::optional<base::UnguessableToken> scan_id2 =
       delegate_->StartIntelligentScan("", future2.GetCallback());
 
-  // Both session IDs should still be alive.
-  EXPECT_FALSE(session_id1->is_empty());
-  EXPECT_FALSE(session_id2->is_empty());
+  // Both scan IDs should still be alive.
+  EXPECT_FALSE(scan_id1->is_empty());
+  EXPECT_FALSE(scan_id2->is_empty());
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 2);
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
-       TestCancelSession) {
+       TestCancelIntelligentScan) {
   EnableOnDeviceModelWithSession();
 
   base::test::TestFuture<IntelligentScanResult> future;
-  std::optional<base::UnguessableToken> session_id =
+  std::optional<base::UnguessableToken> scan_id =
       delegate_->StartIntelligentScan("", future.GetCallback());
-  EXPECT_FALSE(session_id->is_empty());
+  EXPECT_FALSE(scan_id->is_empty());
 
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
-  EXPECT_TRUE(delegate_->CancelSession(*session_id));
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id));
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 
   // The callback should not be called.
@@ -614,7 +614,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
 }
 
 TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
-       TestMultipleSessionsCancellation) {
+       TestMultipleScansCancellation) {
   EnableOnDeviceModel();
 
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
@@ -626,9 +626,9 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           });
 
   base::test::TestFuture<IntelligentScanResult> future1;
-  std::optional<base::UnguessableToken> session_id1 =
+  std::optional<base::UnguessableToken> scan_id1 =
       delegate_->StartIntelligentScan("", future1.GetCallback());
-  EXPECT_FALSE(session_id1->is_empty());
+  EXPECT_FALSE(scan_id1->is_empty());
 
   testing::NiceMock<MockSession> session2;
   EXPECT_CALL(mock_opt_guide_, StartSession(_, _, _))
@@ -640,17 +640,17 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
           });
 
   base::test::TestFuture<IntelligentScanResult> future2;
-  std::optional<base::UnguessableToken> session_id2 =
+  std::optional<base::UnguessableToken> scan_id2 =
       delegate_->StartIntelligentScan("", future2.GetCallback());
 
-  // Both session IDs should still be alive.
-  EXPECT_FALSE(session_id1->is_empty());
-  EXPECT_FALSE(session_id2->is_empty());
+  // Both scan IDs should still be alive.
+  EXPECT_FALSE(scan_id1->is_empty());
+  EXPECT_FALSE(scan_id2->is_empty());
 
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 2);
-  EXPECT_TRUE(delegate_->CancelSession(*session_id1));
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id1));
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 1);
-  EXPECT_TRUE(delegate_->CancelSession(*session_id2));
+  EXPECT_TRUE(delegate_->CancelIntelligentScan(*scan_id2));
   EXPECT_EQ(delegate_->GetAliveSessionCountForTesting(), 0);
 }
 

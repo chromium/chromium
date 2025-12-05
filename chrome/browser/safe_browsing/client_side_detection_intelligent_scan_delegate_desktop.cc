@@ -169,7 +169,7 @@ void ClientSideDetectionIntelligentScanDelegateDesktop::Inquiry::
 
   // Reset session immediately so that future inference is not affected by the
   // old context.
-  parent_->CancelSession(session_id_);
+  parent_->CancelIntelligentScan(session_id_);
 }
 
 ClientSideDetectionIntelligentScanDelegateDesktop::
@@ -266,13 +266,13 @@ ClientSideDetectionIntelligentScanDelegateDesktop::StartIntelligentScan(
   return session_id;
 }
 
-bool ClientSideDetectionIntelligentScanDelegateDesktop::CancelSession(
-    const base::UnguessableToken& session_id) {
-  if (!inquiries_.contains(session_id)) {
+bool ClientSideDetectionIntelligentScanDelegateDesktop::CancelIntelligentScan(
+    const base::UnguessableToken& scan_id) {
+  if (!inquiries_.contains(scan_id)) {
     return false;
   }
 
-  inquiries_.erase(session_id);
+  inquiries_.erase(scan_id);
   return true;
 }
 

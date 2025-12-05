@@ -22,7 +22,7 @@ class ModelBrokerClient;
 namespace safe_browsing {
 
 // Android implementation of IntelligentScanDelegate. This class is responsible
-// for managing sessions and executing the model.
+// for managing intelligent scan inquiries and executing the model.
 class ClientSideDetectionIntelligentScanDelegateAndroid
     : public ClientSideDetectionHost::IntelligentScanDelegate {
  public:
@@ -43,21 +43,21 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
       IntelligentScanDoneCallback callback) override;
-  bool CancelSession(const base::UnguessableToken& session_id) override;
+  bool CancelIntelligentScan(const base::UnguessableToken& scan_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
 
   // KeyedService implementation.
   void Shutdown() override;
 
-  int GetAliveSessionCountForTesting() { return inquiries_.size(); }
-  void SetPauseSessionExecutionForTesting(bool pause) {
-    pause_session_execution_for_testing_ = pause;
+  int GetAliveInquiryCountForTesting() { return inquiries_.size(); }
+  void SetPauseInquiryForTesting(bool pause) {
+    pause_inquiry_for_testing_ = pause;
   }
 
  private:
   class Inquiry;
-  bool ResetAllSessions();
+  bool ResetAllInquiries();
 
   void OnPrefsUpdated();
 
@@ -65,19 +65,19 @@ class ClientSideDetectionIntelligentScanDelegateAndroid
   void StartModelDownload();
 
   const raw_ref<PrefService> pref_;
-  // This object is used to download the model and create sessions.
-  // It may be null after shutdown.
+  // This object is used to download the model and create sessions for on-device
+  // model execution. It may be null after shutdown.
   std::unique_ptr<optimization_guide::ModelBrokerClient> model_broker_client_;
 
-  // A wrapper of the current on-device model session. This is null if there is
-  // no active inquiry.
+  // A wrapper of the current intelligent scan inquiries. This is null if there
+  // is no active inquiry.
   base::flat_map<base::UnguessableToken, std::unique_ptr<Inquiry>> inquiries_;
 
   // PrefChangeRegistrar used to track when the enhanced protection state
   // changes.
   PrefChangeRegistrar pref_change_registrar_;
 
-  bool pause_session_execution_for_testing_ = false;
+  bool pause_inquiry_for_testing_ = false;
 };
 
 }  // namespace safe_browsing

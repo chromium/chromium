@@ -43,7 +43,7 @@ class ClientSideDetectionIntelligentScanDelegateDesktop
   std::optional<base::UnguessableToken> StartIntelligentScan(
       std::string rendered_texts,
       IntelligentScanDoneCallback callback) override;
-  bool CancelSession(const base::UnguessableToken& session_id) override;
+  bool CancelIntelligentScan(const base::UnguessableToken& scan_id) override;
   bool ShouldShowScamWarning(
       std::optional<IntelligentScanVerdict> verdict) override;
 
