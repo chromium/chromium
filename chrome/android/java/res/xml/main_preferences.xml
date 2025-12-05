@@ -8,8 +8,9 @@ found in the LICENSE file.
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
-<!-- `order=0` is reserved and it will be added in code.  -->
-<!-- TODO(crbug.com/364906215): Move SettingsPromoCardPreference here once SyncPromoPreference is removed -->
+    <org.chromium.chrome.browser.ui.settings_promo_card.SettingsPromoCardPreference
+        android:key="settings_promo_card"
+        android:order="0" />
     <PreferenceCategory
         android:key="account_and_google_services_section"
         android:order="1"

@@ -266,14 +266,10 @@ public class MainSettings extends ChromeBaseSettingsFragment
         AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DEFAULT_BROWSER_PROMO_ANDROID2)) {
-            // TODO(crbug.com/364906215): Define SettingsPromoCardPreference in the xml once
-            // SyncPromoPreference is removed.
             SettingsPromoCardPreference settingsPromoCardPreference =
-                    new SettingsPromoCardPreference(
-                            getContext(), null, TrackerFactory.getTrackerForProfile(getProfile()));
-            settingsPromoCardPreference.setKey(PREF_SETTINGS_PROMO_CARD);
-            settingsPromoCardPreference.setOrder(0);
-            getPreferenceScreen().addPreference(settingsPromoCardPreference);
+                    findPreference(PREF_SETTINGS_PROMO_CARD);
+            settingsPromoCardPreference.initialize(
+                    TrackerFactory.getTrackerForProfile(getProfile()));
         }
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
