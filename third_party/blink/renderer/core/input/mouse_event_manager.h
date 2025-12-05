@@ -49,9 +49,6 @@ class CORE_EXPORT MouseEventManager final
   void Trace(Visitor*) const;
 
   // Returns the DOM event that was dispatched plus the result of dispatch.
-  // `pointer_down_target` and `pointer_up_target` are passed to the popover
-  // light dismiss and dialog light dismiss algorithms if the event is a click
-  // event.
   std::pair<MouseEvent*, WebInputEventResult> DispatchMouseEvent(
       EventTarget*,
       const AtomicString&,
@@ -60,25 +57,19 @@ class CORE_EXPORT MouseEventManager final
       EventTarget* related_target,
       bool check_for_listener = false,
       const PointerId& pointer_id = PointerEventFactory::kInvalidId,
-      const String& pointer_type = g_empty_string,
-      PointerEventFactory::PointerTarget* pointer_down_target = nullptr,
-      PointerEventFactory::PointerTarget* pointer_up_target = nullptr);
+      const String& pointer_type = g_empty_string);
 
   WebInputEventResult SetElementUnderMouseAndDispatchMouseEvent(
       Element* target_element,
       const AtomicString& event_type,
-      const WebMouseEvent&,
-      PointerEventFactory::PointerTarget* pointer_down_target = nullptr,
-      PointerEventFactory::PointerTarget* pointer_up_target = nullptr);
+      const WebMouseEvent&);
 
   WebInputEventResult DispatchMouseClickIfNeeded(
       Element* mouse_release_target,
       Element* captured_click_target,
       const WebMouseEvent& mouse_event,
       const PointerId& pointer_id,
-      const String& pointer_type,
-      PointerEventFactory::PointerTarget* pointer_down_target,
-      PointerEventFactory::PointerTarget* pointer_up_target);
+      const String& pointer_type);
 
   WebInputEventResult DispatchDragSrcEvent(const AtomicString& event_type,
                                            const WebMouseEvent&);

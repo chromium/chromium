@@ -442,27 +442,14 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
     return false;
   }
 
+  // We shouldn't run this code when the base appearance picker is open,
+  // otherwise interactive elements inside it will be unusable.
+  bool base_picker_open = PickerIsPopover() && PopupIsVisible();
   const auto* mouse_event = DynamicTo<MouseEvent>(event);
   if (event.type() == event_type_names::kMousedown && mouse_event &&
       mouse_event->button() ==
-          static_cast<int16_t>(WebPointerProperties::Button::kLeft)) {
-    if (RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
-      // In order to make mousedown open the picker when it is closed and close
-      // the picker when it is open, we have to look at the event path to figure
-      // out if the click was on the button or the picker. This is needed when
-      // LightDismissFromClick is enabled because we don't have any way to
-      // prevent light dismiss from closing the picker.
-      if (event.target()->ToNode() == popover_ ||
-          FlatTreeTraversal::IsDescendantOf(*event.target()->ToNode(),
-                                            *popover_)) {
-        return false;
-      }
-    } else if (PickerIsPopover() && PopupIsVisible()) {
-      // We shouldn't run this code when the base appearance picker is open,
-      // otherwise interactive elements inside it will be unusable.
-      return false;
-    }
-
+          static_cast<int16_t>(WebPointerProperties::Button::kLeft) &&
+      !base_picker_open) {
     InputDeviceCapabilities* source_capabilities =
         select_->GetDocument()
             .domWindow()
@@ -481,7 +468,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
                                  FocusTrigger::kUserGesture));
     }
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
-        !select_->IsDisabledFormControl()) {
+        !select_->IsDisabledFormControl() && !base_picker_open) {
       if (PopupIsVisible()) {
         HidePopup(SelectPopupHideBehavior::kNormal);
       } else {
@@ -500,9 +487,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
             // pointer unless we change the pointerdown target like this.
             // pointerup is fired before mousedown on touch, so this is only
             // needed when the event is not from touch.
-            if (!RuntimeEnabledFeatures::LightDismissFromClickEnabled()) {
-              select_->GetDocument().SetPopoverPointerdownTarget(popover_);
-            }
+            select_->GetDocument().SetPopoverPointerdownTarget(popover_);
           }
 
           // Keep track of the mouse pixel location, so that when the mouseup

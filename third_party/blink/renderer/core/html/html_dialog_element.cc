@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
-#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -270,15 +269,15 @@ void HTMLDialogElement::setClosedBy(const String& new_value) {
 namespace {
 
 const HTMLDialogElement* FindNearestDialog(const Node& target_node,
-                                           double client_x,
-                                           double client_y) {
+                                           const PointerEvent& pointer_event) {
   // First check if this is a click on a dialog's backdrop, which will show up
   // as a click on the dialog directly.
   if (auto* dialog = DynamicTo<HTMLDialogElement>(target_node);
       dialog && dialog->IsOpenAndActive() && dialog->IsModal()) {
     DOMRect* dialog_rect =
         const_cast<HTMLDialogElement*>(dialog)->GetBoundingClientRect();
-    if (!dialog_rect->IsPointInside(client_x, client_y)) {
+    if (!dialog_rect->IsPointInside(pointer_event.clientX(),
+                                    pointer_event.clientY())) {
       return nullptr;  // Return nullptr for a backdrop click.
     }
   }
@@ -300,7 +299,6 @@ const HTMLDialogElement* FindNearestDialog(const Node& target_node,
 void HTMLDialogElement::HandleDialogLightDismiss(
     const PointerEvent& pointer_event,
     const Node& target_node) {
-  CHECK(!RuntimeEnabledFeatures::LightDismissFromClickEnabled());
   CHECK(pointer_event.isTrusted());
   // PointerEventManager will call this function before actually dispatching
   // the event.
@@ -314,8 +312,8 @@ void HTMLDialogElement::HandleDialogLightDismiss(
   }
 
   const AtomicString& event_type = pointer_event.type();
-  const HTMLDialogElement* ancestor_dialog = FindNearestDialog(
-      target_node, pointer_event.clientX(), pointer_event.clientY());
+  const HTMLDialogElement* ancestor_dialog =
+      FindNearestDialog(target_node, pointer_event);
   if (event_type == event_type_names::kPointerdown) {
     document.SetDialogPointerdownTarget(ancestor_dialog);
   } else if (event_type == event_type_names::kPointerup) {
@@ -328,36 +326,6 @@ void HTMLDialogElement::HandleDialogLightDismiss(
     }
     HTMLDialogElement* topmost_dialog = document.AllOpenDialogs().back();
     if (ancestor_dialog == topmost_dialog) {
-      return;
-    }
-    if (topmost_dialog->ClosedBy() == ClosedByState::kAny) {
-      topmost_dialog->requestClose(String(), ASSERT_NO_EXCEPTION);
-    }
-  }
-}
-
-// static
-// https://html.spec.whatwg.org/interactive-elements.html#light-dismiss-open-dialogs
-void HTMLDialogElement::HandleDialogLightDismissForClick(
-    const PointerEventFactory::PointerTarget& pointer_down_target,
-    const PointerEventFactory::PointerTarget& pointer_up_target) {
-  CHECK(RuntimeEnabledFeatures::LightDismissFromClickEnabled());
-
-  // If there aren't any open dialogs, there's nothing to light dismiss.
-  auto& document = pointer_down_target.node->GetDocument();
-  if (document.AllOpenDialogs().empty()) {
-    return;
-  }
-
-  const HTMLDialogElement* pointer_down_dialog =
-      FindNearestDialog(*pointer_down_target.node, pointer_down_target.client_x,
-                        pointer_down_target.client_y);
-  const HTMLDialogElement* pointer_up_dialog =
-      FindNearestDialog(*pointer_up_target.node, pointer_up_target.client_x,
-                        pointer_up_target.client_y);
-  if (pointer_down_dialog == pointer_up_dialog) {
-    HTMLDialogElement* topmost_dialog = document.AllOpenDialogs().back();
-    if (pointer_down_dialog == topmost_dialog) {
       return;
     }
     if (topmost_dialog->ClosedBy() == ClosedByState::kAny) {

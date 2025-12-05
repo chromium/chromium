@@ -2396,7 +2396,6 @@ const HTMLElement* FindTopmostRelatedPopover(
 // static
 void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
                                             const Node& target_node) {
-  CHECK(!RuntimeEnabledFeatures::LightDismissFromClickEnabled());
   CHECK(event.isTrusted());
   auto& document = target_node.GetDocument();
   if (!document.TopmostPopoverOrHint()) {
@@ -2431,31 +2430,6 @@ void HTMLElement::HandlePopoverLightDismiss(const PointerEvent& event,
           ancestor_popover, document, HidePopoverFocusBehavior::kNone,
           HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
     }
-  }
-}
-
-// static
-void HTMLElement::HandlePopoverLightDismissForClick(
-    const Node& pointer_down_target,
-    const Node& pointer_up_target) {
-  CHECK(RuntimeEnabledFeatures::LightDismissFromClickEnabled());
-  auto* pointer_down_popover = FindTopmostRelatedPopover(pointer_down_target);
-  auto* pointer_up_popover = FindTopmostRelatedPopover(pointer_up_target);
-  if (pointer_down_popover == pointer_up_popover) {
-    for (Node& ancestor :
-         FlatTreeTraversal::InclusiveAncestorsOf(pointer_down_target)) {
-      if (IsA<HTMLSelectElement>(ancestor)) {
-        // The customizable select popover is opened on mousedown instead of
-        // click. In order to prevent it from being opened and then light
-        // dismissed from one click, this is necessary.
-        return;
-      }
-    }
-
-    HideAllPopoversUntil(
-        pointer_up_popover, pointer_down_target.GetDocument(),
-        HidePopoverFocusBehavior::kNone,
-        HidePopoverTransitionBehavior::kFireEventsAndWaitForTransitions);
   }
 }
 
