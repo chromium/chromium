@@ -9680,6 +9680,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL" desc="Accessibility label for the button that enables all links in reading mode content.">
         Enable links
       </message>
+      <message name="IDS_READING_MODE_IMAGES_LABEL" desc="Accessibility label for the enable images menu item in reading mode.">
+        Images
+      </message>
       <message name="IDS_READING_MODE_DISABLE_IMAGES_BUTTON_LABEL" desc="Accessibility label for the button that disables showing images in reading mode content.">
         Disable images
       </message>
@@ -9899,6 +9902,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
      <message name="IDS_READING_MODE_FONT_LOADING_STRING" desc="Text added to a font name in the Reading Mode font dropdown when the font style hasn't loaded yet.">
          (loading)
+      </message>
+      <message name="IDS_READING_MODE_LINE_FOCUS_LABEL" desc="Accessibility label for the line focus menu item in reading mode.">
+        Line focus
+      </message>
+      <message name="IDS_READING_MODE_VIEW_IN_SIDE_PANEL_LABEL" desc="Accessibility label for the view in side panel menu item in reading mode.">
+        View in side panel
+      </message>
+      <message name="IDS_READING_MODE_VIEW_IN_FULL_SCREEN_LABEL" desc="Accessibility label for the view in full screen menu item in reading mode.">
+        View in full screen
       </message>
 
       <!-- Google Lens side panel -->

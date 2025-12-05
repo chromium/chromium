@@ -103,6 +103,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_DECREASE_FONT_SIZE_ANNOUNCEMENT},
       {"disableLinksLabel", IDS_READING_MODE_DISABLE_LINKS_BUTTON_LABEL},
       {"enableLinksLabel", IDS_READING_MODE_ENABLE_LINKS_BUTTON_LABEL},
+      {"imagesLabel", IDS_READING_MODE_IMAGES_LABEL},
       {"disableImagesLabel", IDS_READING_MODE_DISABLE_IMAGES_BUTTON_LABEL},
       {"enableImagesLabel", IDS_READING_MODE_ENABLE_IMAGES_BUTTON_LABEL},
       {"readingModeToolbarLabel", IDS_READING_MODE_TOOLBAR_LABEL},
@@ -150,6 +151,9 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"languageMenuDownloadFailed",
        IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
       {"cantUseReadAloud", IDS_READING_MODE_CANT_USE_READ_ALOUD},
+      {"lineFocusLabel", IDS_READING_MODE_LINE_FOCUS_LABEL},
+      {"viewInSidePanelLabel", IDS_READING_MODE_VIEW_IN_SIDE_PANEL_LABEL},
+      {"viewInFullScreenLabel", IDS_READING_MODE_VIEW_IN_FULL_SCREEN_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
