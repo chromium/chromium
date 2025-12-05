@@ -7086,7 +7086,7 @@
     {
     "name": "mobile-promo-on-desktop",
     "owners": ["hiramahmood@google.com", "scottyoder@google.com", "bling-get-set-up@google.com"],
-    "expiry_milestone": 145
+    "expiry_milestone": 148
   },
   {
     "name": "mojo-use-eventfd",
