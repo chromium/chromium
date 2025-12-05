@@ -41,6 +41,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/browser_view/public",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled:eg_test_support+eg2",
+    "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
     "//ios/chrome/browser/settings/ui_bundled/password:eg_test_support+eg2",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

@@ -30,6 +30,7 @@ source_set("buttons") {
     "//ios/chrome/browser/bubble/model",
     "//ios/chrome/browser/content_suggestions/ui_bundled:content_suggestions_constant",
     "//ios/chrome/browser/intents/model:model_donation_helper",
+    "//ios/chrome/browser/omnibox/public:constants",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",

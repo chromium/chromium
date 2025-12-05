@@ -314,7 +314,7 @@ void CheckCurrentURLContainsString(std::string string) {
   } else {
     id<GREYMatcher> cancelButton = grey_anyOf(
         grey_accessibilityID(kOmniboxPopupCloseButtonAccessibilityIdentifier),
-        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier), nil);
+        grey_accessibilityID(kOmniboxCancelButtonAccessibilityIdentifier), nil);
     [[EarlGrey
         selectElementWithMatcher:grey_allOf(cancelButton,
                                             grey_sufficientlyVisible(), nil)]

@@ -6,6 +6,7 @@
 
 #import "base/ios/ios_util.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
@@ -416,7 +417,7 @@ const CGFloat kCloseButtonAlpha = 0.6f;
                    action:@selector(cancelOmniboxFocusAction)
          forControlEvents:UIControlEventTouchUpInside];
   cancelButton.accessibilityIdentifier =
-      kToolbarCancelOmniboxEditButtonIdentifier;
+      kOmniboxCancelButtonAccessibilityIdentifier;
   return cancelButton;
 }
 
