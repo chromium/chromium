@@ -52,12 +52,16 @@ class WebAppUninstallCommandTest : public WebAppTest {
   void SetUp() override {
     WebAppTest::SetUp();
 
-    file_utils_wrapper_ = base::MakeRefCounted<MockFileUtilsWrapper>();
+    file_utils_wrapper_ =
+        base::MakeRefCounted<testing::StrictMock<MockFileUtilsWrapper>>();
+    // The log directory may or may not be attempted to be deleted during the
+    // test run.
+    EXPECT_CALL(*file_utils_wrapper_,
+                DeleteFileRecursively(
+                    GetWebAppsRootDirectory(profile()).AppendASCII("Logs")))
+        .Times(testing::AnyNumber())
+        .WillRepeatedly(testing::Return(true));
     fake_provider().SetFileUtils(file_utils_wrapper_);
-    ON_CALL(*file_utils_wrapper_,
-            DeleteFileRecursively(
-                GetWebAppsRootDirectory(profile()).AppendASCII("Logs")))
-        .WillByDefault(testing::Return(true));
     test::AwaitStartWebAppProviderAndSubsystems(profile());
   }
 
