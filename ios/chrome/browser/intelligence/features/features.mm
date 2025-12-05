@@ -31,7 +31,8 @@ bool IsPageActionMenuEnabled() {
 BASE_FEATURE(kProactiveSuggestionsFramework, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsProactiveSuggestionsFrameworkEnabled() {
-  return base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
+  return IsPageActionMenuEnabled() &&
+         base::FeatureList::IsEnabled(kProactiveSuggestionsFramework);
 }
 
 const char kProactiveSuggestionsFrameworkPopupBlocker[] = "PopupBlocker";
