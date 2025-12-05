@@ -838,31 +838,6 @@ public class MultiWindowUtils implements ActivityStateListener {
         return ctaTasks;
     }
 
-    static String lastAccessedTimeKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
-                String.valueOf(index));
-    }
-
-    /**
-     * Read the time when an instance was last accessed.
-     * @param index Instance ID
-     * @return The time when the instance was last accessed.
-     */
-    static long readLastAccessedTime(int index) {
-        return ChromeSharedPreferences.getInstance().readLong(lastAccessedTimeKey(index));
-    }
-
-    /**
-     * Write the time this instance is accessed.
-     *
-     * @param index Instance ID
-     */
-    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-    public static void writeLastAccessedTime(int index) {
-        ChromeSharedPreferences.getInstance()
-                .writeLong(lastAccessedTimeKey(index), TimeUtils.currentTimeMillis());
-    }
-
     @VisibleForTesting
     public @Nullable Boolean getTabbedActivity2TaskRunning() {
         return mTabbedActivity2TaskRunning;
@@ -994,7 +969,7 @@ public class MultiWindowUtils implements ActivityStateListener {
                 if (windowIdsOfRunningTabbedActivities.indexOfValue(id) < 0) continue;
             }
 
-            long accessedTime = readLastAccessedTime(id);
+            long accessedTime = MultiInstancePersistentStore.readLastAccessedTime(id);
             if (accessedTime > maxAccessedTime) {
                 maxAccessedTime = accessedTime;
                 lastAccessedWindowId = id;

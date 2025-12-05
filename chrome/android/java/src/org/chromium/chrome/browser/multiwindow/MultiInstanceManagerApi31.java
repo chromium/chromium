@@ -102,8 +102,6 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @NullMarked
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
@@ -673,12 +671,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 }
             }
 
+            long lastAccessedTime = MultiInstancePersistentStore.readLastAccessedTime(i);
             // It is generally assumed and expected that the last-accessed time for the current
             // activity is already updated to a "current" time when this method is called. However,
             // we will avoid closing the current instance explicitly to avoid an unexpected outcome
             // if this is not the case.
             if (ChromeFeatureList.sDisableInstanceLimit.isEnabled()
-                    && isOlderThanSixMonths(readLastAccessedTime(i))
+                    && isOlderThanSixMonths(lastAccessedTime)
                     && type != InstanceInfo.Type.CURRENT) {
                 closeWindow(i, CloseWindowAppSource.RETENTION_PERIOD_EXPIRATION);
                 continue;
@@ -694,7 +693,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             MultiInstancePersistentStore.readNormalTabCount(i),
                             MultiInstancePersistentStore.readIncognitoTabCount(i),
                             readIncognitoSelected(i),
-                            readLastAccessedTime(i),
+                            lastAccessedTime,
                             readClosedByUser(i)));
         }
         // Move the current instance always to the top of the list for favorable display on the UI.
@@ -765,7 +764,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ACTIVE)
                     < mMaxInstances) {
                 for (int i = 0; i < TabWindowManager.MAX_SELECTORS; ++i) {
-                    if (!instanceEntryExists(i)) {
+                    if (!MultiInstancePersistentStore.hasInstance(i)) {
                         logNewInstanceId(i);
                         profileType = getProfileType(i, isIncognitoIntent);
                         return new AllocatedIdInfo(
@@ -795,7 +794,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (persistedTaskId != INVALID_TASK_ID) {
                 continue;
             }
-            if (id == INVALID_WINDOW_ID || readLastAccessedTime(i) > readLastAccessedTime(id)) {
+            if (id == INVALID_WINDOW_ID
+                    || MultiInstancePersistentStore.readLastAccessedTime(i)
+                            > MultiInstancePersistentStore.readLastAccessedTime(id)) {
                 // Last accessed time equals to 0 means the corresponding persistent state does not
                 // exist. The profile type check should only be enforced when restoring from
                 // persistent state.
@@ -805,7 +806,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 // TODO(crbug.com/458129266): Rely on profile exists check instead of feature flag 6
                 // months post launch.
                 if (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && readLastAccessedTime(i) != 0
+                        && MultiInstancePersistentStore.readLastAccessedTime(i) != 0
                         && readProfileType(i)
                                 != (isIncognitoIntent
                                         ? SupportedProfileType.OFF_THE_RECORD
@@ -813,7 +814,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                     continue;
                 }
                 id = i;
-                newInstanceIdAllocated = !instanceEntryExists(i);
+                newInstanceIdAllocated = !MultiInstancePersistentStore.hasInstance(i);
                 allocationType =
                         newInstanceIdAllocated
                                 ? InstanceAllocationType.NEW_INSTANCE_NEW_TASK
@@ -893,7 +894,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         TreeMap<Long, Integer> lruInstanceIds = new TreeMap<>();
         for (int i : activeInstanceIds) {
             if (MultiInstancePersistentStore.readTaskId(i) == INVALID_TASK_ID) continue;
-            long lastAccessedTime = readLastAccessedTime(i);
+            long lastAccessedTime = MultiInstancePersistentStore.readLastAccessedTime(i);
             lruInstanceIds.put(lastAccessedTime, i);
             if (lruInstanceIds.size() > numTasksToFinish) {
                 lruInstanceIds.remove(lruInstanceIds.lastKey());
@@ -1060,13 +1061,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         Context context = ContextUtils.getApplicationContext();
         Set<Integer> activeTaskIds = getAllAppTaskIds(context);
 
-        Set<Integer> ids = new HashSet<>();
-        Map<String, Long> lastAccessedTimeMap =
-                ChromeSharedPreferences.getInstance()
-                        .readLongsWithPrefix(
-                                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
-        Pattern pattern = Pattern.compile("(\\d+)$");
-        boolean includeAny = type == PersistedInstanceType.ANY;
+        Set<Integer> allIds = MultiInstancePersistentStore.readAllInstanceIds();
+        if (type == PersistedInstanceType.ANY) return allIds;
+
+        Set<Integer> filteredIds = new HashSet<>();
         boolean includeOtr = (type & PersistedInstanceType.OFF_THE_RECORD) != 0;
         boolean includeRegular = (type & PersistedInstanceType.REGULAR) != 0;
         boolean includeActive = (type & PersistedInstanceType.ACTIVE) != 0;
@@ -1074,17 +1072,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         assert !includeActive || !includeInactive
                 : "To filter both ACTIVE and INACTIVE instance types, use"
                         + " PersistedInstanceType.ANY.";
-        for (String prefKey : lastAccessedTimeMap.keySet()) {
-            Matcher matcher = pattern.matcher(prefKey);
-            boolean matchFound = matcher.find();
-            assert matchFound : "Key should be suffixed with the instance id.";
-            int id = Integer.parseInt(matcher.group(1));
-
-            if (includeAny) {
-                ids.add(id);
-                continue;
-            }
-
+        for (Integer id : allIds) {
             int persistedTaskId = MultiInstancePersistentStore.readTaskId(id);
 
             // Exclude ids not satisfying requirements.
@@ -1094,9 +1082,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             if (includeActive && !activeTaskIds.contains(persistedTaskId)) continue;
             if (includeInactive && activeTaskIds.contains(persistedTaskId)) continue;
 
-            ids.add(id);
+            filteredIds.add(id);
         }
-        return ids;
+        return filteredIds;
     }
 
     static Set<Integer> getAllPersistedInstanceIds() {
@@ -1222,7 +1210,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     private void recordInstanceCountHistogram() {
         // Ensure we have instance info entry for the current one.
-        writeLastAccessedTime(mInstanceId);
+        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
 
         RecordHistogram.recordExactLinearHistogram(
                 "Android.MultiInstance.NumInstances",
@@ -1266,25 +1254,6 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             MultiInstancePersistentStore.writeActiveTabUrl(index, EMPTY_DATA);
             MultiInstancePersistentStore.writeActiveTabTitle(index, EMPTY_DATA);
         }
-    }
-
-    static boolean instanceEntryExists(int index) {
-        return readLastAccessedTime(index) != 0;
-    }
-
-    @VisibleForTesting
-    static String lastAccessedTimeKey(int index) {
-        return MultiWindowUtils.lastAccessedTimeKey(index);
-    }
-
-    @VisibleForTesting
-    static long readLastAccessedTime(int index) {
-        return MultiWindowUtils.readLastAccessedTime(index);
-    }
-
-    @VisibleForTesting
-    static void writeLastAccessedTime(int index) {
-        MultiWindowUtils.writeLastAccessedTime(index);
     }
 
     @VisibleForTesting
@@ -1539,20 +1508,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             return MultiWindowUtils.getInstanceCountWithFallback(PersistedInstanceType.ANY);
         }
 
-        Map<String, Long> lastAccessedTimeMap =
-                ChromeSharedPreferences.getInstance()
-                        .readLongsWithPrefix(
-                                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME);
-        Pattern pattern = Pattern.compile("(\\d+)$");
-
+        Set<Integer> persistedIds = MultiInstancePersistentStore.readAllInstanceIds();
         int count = 0;
-
-        for (String prefKey : lastAccessedTimeMap.keySet()) {
-            Matcher matcher = pattern.matcher(prefKey);
-            boolean matchFound = matcher.find();
-            assert matchFound : "Key should be suffixed with the instance id.";
-            int id = Integer.parseInt(matcher.group(1));
-
+        for (Integer id : persistedIds) {
             // Exclude instances closed by the user.
             if (readClosedByUser(id)) continue;
             if (!isRestorableInstance(id)) continue;
@@ -1599,7 +1557,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         MultiInstancePersistentStore.removeTabCount(index);
         MultiInstancePersistentStore.removeTabCountForRelaunch(index);
         prefs.removeKey(incognitoSelectedKey(index));
-        prefs.removeKey(lastAccessedTimeKey(index));
+        MultiInstancePersistentStore.removeLastAccessedTime(index);
         prefs.removeKey(profileTypeKey(index));
         prefs.removeKey(closedByUserKey(index));
 
@@ -1610,7 +1568,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     @Override
     public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
         super.onTopResumedActivityChanged(isTopResumedActivity);
-        writeLastAccessedTime(mInstanceId);
+        MultiInstancePersistentStore.writeLastAccessedTime(mInstanceId);
     }
 
     @Override

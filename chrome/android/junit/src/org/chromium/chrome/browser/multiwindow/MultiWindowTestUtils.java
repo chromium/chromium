@@ -22,7 +22,7 @@ public class MultiWindowTestUtils {
      */
     public static void createInstance(int instanceId, String url, int tabCount, int taskId) {
         MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
-        MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
+        MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         MultiInstancePersistentStore.writeTabCount(
                 instanceId, tabCount, /* incognitoTabCount= */ 0);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);

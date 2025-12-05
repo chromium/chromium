@@ -1143,7 +1143,7 @@ public class MultiWindowUtilsUnitTest {
     private void writeInstanceInfo(
             int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
         MultiInstancePersistentStore.writeActiveTabUrl(instanceId, url);
-        MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
+        MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
         MultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
     }

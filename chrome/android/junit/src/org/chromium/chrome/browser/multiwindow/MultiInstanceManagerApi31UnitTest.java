@@ -288,7 +288,7 @@ public class MultiInstanceManagerApi31UnitTest {
         }
 
         private void addInstanceInfo(int instanceId, int taskId) {
-            MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
+            MultiInstancePersistentStore.writeLastAccessedTime(instanceId);
             ChromeSharedPreferences.getInstance()
                     .writeInt(
                             ChromePreferenceKeys.MULTI_INSTANCE_PROFILE_TYPE.createKey(
@@ -311,7 +311,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 /* tabCount= */ 0,
                                 /* incognitoTabCount= */ 0,
                                 /* isIncognitoSelected= */ false,
-                                MultiInstanceManagerApi31.readLastAccessedTime(instanceId),
+                                MultiInstancePersistentStore.readLastAccessedTime(instanceId),
                                 /* closedByUser= */ false));
             }
         }
@@ -760,16 +760,16 @@ public class MultiInstanceManagerApi31UnitTest {
         removeTaskOnRecentsScreen(mActivityTask58);
 
         // New instantiation picks up the most recently used one.
-        MultiInstanceManagerApi31.writeLastAccessedTime(1);
+        MultiInstancePersistentStore.writeLastAccessedTime(1);
         // These two writes can often use the same timestamp, and cause the result to be random.
         // Wait for the next millisecond to guarantee this doesn't happen.
         mFakeTimeTestRule.advanceMillis(1);
-        MultiInstanceManagerApi31.writeLastAccessedTime(2); // Accessed most recently.
+        MultiInstancePersistentStore.writeLastAccessedTime(2); // Accessed most recently.
 
         assertEquals(2, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask59));
         removeTaskOnRecentsScreen(mActivityTask59);
 
-        MultiInstanceManagerApi31.writeLastAccessedTime(1); // instance ID 1 is now the MRU.
+        MultiInstancePersistentStore.writeLastAccessedTime(1); // instance ID 1 is now the MRU.
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mActivityTask60));
     }
 
@@ -1296,8 +1296,7 @@ public class MultiInstanceManagerApi31UnitTest {
         MultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
         String incognitoSelectedKey = MultiInstanceManagerApi31.incognitoSelectedKey(index);
         ChromeSharedPreferences.getInstance().writeBoolean(incognitoSelectedKey, false);
-        String lastAccessedTimeKey = MultiInstanceManagerApi31.lastAccessedTimeKey(index);
-        ChromeSharedPreferences.getInstance().writeLong(lastAccessedTimeKey, 1);
+        MultiInstancePersistentStore.writeLastAccessedTime(index);
         String profileTypeKey = MultiInstanceManagerApi31.profileTypeKey(index);
         ChromeSharedPreferences.getInstance().writeInt(profileTypeKey, 1);
 
@@ -1334,9 +1333,10 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(incognitoSelectedKey));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(lastAccessedTimeKey));
+        assertEquals(
+                "Persistent store should be updated.",
+                0,
+                MultiInstancePersistentStore.readLastAccessedTime(index));
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(profileTypeKey));
@@ -2064,8 +2064,8 @@ public class MultiInstanceManagerApi31UnitTest {
         mFakeTimeTestRule.advanceMillis(1);
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));
 
-        long accessTime0 = MultiInstanceManagerApi31.readLastAccessedTime(0);
-        long accessTime1 = MultiInstanceManagerApi31.readLastAccessedTime(1);
+        long accessTime0 = MultiInstancePersistentStore.readLastAccessedTime(0);
+        long accessTime1 = MultiInstancePersistentStore.readLastAccessedTime(1);
 
         InstanceInfo info0 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask62);
         InstanceInfo info1 = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
@@ -2103,7 +2103,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         multiInstanceManager0.initialize(0, TASK_ID_62, SupportedProfileType.MIXED);
         multiInstanceManager0.onTopResumedActivityChanged(true);
-        long instance0CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(0);
+        long instance0CreationTime = MultiInstancePersistentStore.readLastAccessedTime(0);
 
         // Setup instance for |mTabbedActivityTask63| with index 1, make it the top resumed
         // activity.
@@ -2120,7 +2120,7 @@ public class MultiInstanceManagerApi31UnitTest {
         multiInstanceManager1.initialize(1, TASK_ID_63, SupportedProfileType.MIXED);
         multiInstanceManager0.onTopResumedActivityChanged(false);
         multiInstanceManager1.onTopResumedActivityChanged(true);
-        long instance1CreationTime = MultiInstanceManagerApi31.readLastAccessedTime(1);
+        long instance1CreationTime = MultiInstancePersistentStore.readLastAccessedTime(1);
         // Advance time by 1ms to record a different access time for the instances when the top
         // resumed activity changes.
         mFakeTimeTestRule.advanceMillis(1);
@@ -2129,8 +2129,8 @@ public class MultiInstanceManagerApi31UnitTest {
         multiInstanceManager1.onTopResumedActivityChanged(false);
 
         // Verify the lastAccessedTime for both instances.
-        long accessTime0 = MultiInstanceManagerApi31.readLastAccessedTime(0);
-        long accessTime1 = MultiInstanceManagerApi31.readLastAccessedTime(1);
+        long accessTime0 = MultiInstancePersistentStore.readLastAccessedTime(0);
+        long accessTime1 = MultiInstancePersistentStore.readLastAccessedTime(1);
 
         assertTrue(
                 "Access time for instance0 is not updated.", accessTime0 > instance0CreationTime);
