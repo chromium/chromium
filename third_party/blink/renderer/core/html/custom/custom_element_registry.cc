@@ -35,19 +35,26 @@ namespace blink {
 
 namespace {
 
-void CollectUpgradeCandidateInNode(Node& root,
+void CollectUpgradeCandidateInNode(CustomElementRegistry* registry,
+                                   Node& root,
                                    HeapVector<Member<Element>>& candidates) {
+  // 1-1. If candidate is not an Element node, then continue.
+  // 1-2. If candidate's custom element registry is not this, then continue.
   if (auto* root_element = DynamicTo<Element>(root)) {
-    if (root_element->GetCustomElementState() == CustomElementState::kUndefined)
+    if (root_element->GetCustomElementState() ==
+            CustomElementState::kUndefined &&
+        (!RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() ||
+         root_element->customElementRegistry() == registry)) {
       candidates.push_back(root_element);
+    }
     if (auto* shadow_root = root_element->GetShadowRoot()) {
       if (shadow_root->GetMode() != ShadowRootMode::kUserAgent) {
-        CollectUpgradeCandidateInNode(*shadow_root, candidates);
+        CollectUpgradeCandidateInNode(registry, *shadow_root, candidates);
       }
     }
   }
   for (auto& element : Traversal<HTMLElement>::ChildrenOf(root))
-    CollectUpgradeCandidateInNode(element, candidates);
+    CollectUpgradeCandidateInNode(registry, element, candidates);
 }
 
 // Returns true if |name| is invalid.
@@ -393,12 +400,12 @@ void CustomElementRegistry::CollectCandidates(
 void CustomElementRegistry::upgrade(Node* root) {
   DCHECK(root);
 
-  // 1. Let candidates be a list of all of root's shadow-including
-  // inclusive descendant elements, in tree order.
+  // 1. For each shadow-including inclusive descendant candidate of root
+  // in shadow-including tree order:
   HeapVector<Member<Element>> candidates;
-  CollectUpgradeCandidateInNode(*root, candidates);
+  CollectUpgradeCandidateInNode(this, *root, candidates);
 
-  // 2. For each candidate of candidates, try to upgrade candidate.
+  // 1-3. For each candidate of candidates, try to upgrade candidate.
   for (auto& candidate : candidates)
     CustomElement::TryToUpgrade(*candidate);
 }
@@ -439,20 +446,40 @@ void CustomElementRegistry::initialize(Node* root,
     shadow_root->SetCustomElementRegistry(this);
   }
 
-  // 4. For each inclusive descendant inclusiveDescendant of root: if
-  // inclusiveDescendant is an Element node whose custom element registry is
-  // null:
+  // 4. For each inclusive descendant inclusiveDescendant of root, in tree
+  // order.
   for (Node& descendant : NodeTraversal::InclusiveDescendantsOf(*root)) {
     Element* descendant_element = DynamicTo<Element>(descendant);
-    if (!descendant_element || descendant_element->customElementRegistry()) {
+
+    // 4-1. If inclusiveDescendant is an Element node, then continue.
+    if (!descendant_element) {
       continue;
     }
-    // 4-1. Set inclusiveDescendant's custom element registry to this.
-    descendant_element->SetCustomElementRegistry(this);
-    // 4-2. If this's "is scoped" is true, then append inclusiveDescendant's
-    // node document to this's scoped document set.
-    if (!this->IsGlobalRegistry()) {
-      this->AssociatedWith(descendant_element->GetDocument());
+
+    // 4-2. If inclusiveDescendant's custom element registry is null, then:
+    if (!descendant_element->customElementRegistry()) {
+      // 4-2-1. Set inclusiveDescendant's custom element registry to this.
+      descendant_element->SetCustomElementRegistry(this);
+      // 4-2-2. If this's "is scoped" is true, then append inclusiveDescendant's
+      // node document to this's scoped document set.
+      if (!this->IsGlobalRegistry()) {
+        this->AssociatedWith(descendant_element->GetDocument());
+      }
+    }
+
+    // 4-3. If inclusiveDescendant's custom element registry is not this, then
+    // continue.
+    if (descendant_element->customElementRegistry() != this) {
+      continue;
+    }
+
+    // 4-4. Try to upgrade inclusiveDescendant.
+    if (descendant_element->GetCustomElementState() ==
+        CustomElementState::kUndefined) {
+      if (CustomElementDefinition* definition =
+              this->DefinitionForName(descendant_element->localName())) {
+        definition->EnqueueUpgradeReaction(*descendant_element);
+      }
     }
   }
 }

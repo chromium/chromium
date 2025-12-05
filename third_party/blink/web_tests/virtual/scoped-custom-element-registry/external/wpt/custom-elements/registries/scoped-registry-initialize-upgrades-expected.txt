@@ -1,17 +1,4 @@
 This is a testharness.js-based test.
-[FAIL] Document: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
-  assert_true: expected true got false
-[FAIL] Document: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
-  assert_true: expected true got false
-[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
-  assert_true: expected true got false
-[FAIL] HTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
-  assert_true: expected true got false
-[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize should upgrade elements in tree order
-  assert_true: expected true got false
-[FAIL] XHTMLDocument: CustomElementRegistry.prototype.initialize only upgrades elements beloning to the registry
-  assert_true: expected true got false
-[FAIL] CustomElementRegistry.prototype.initialize upgrades already initialized elements
-  assert_equals: expected "ABElement" but got "HTMLElement"
+All subtests passed and are omitted for brevity.
+See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
 Harness: the test ran to completion.
-
