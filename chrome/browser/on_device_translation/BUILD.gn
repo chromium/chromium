@@ -50,6 +50,7 @@ source_set("on_device_translation") {
     "//components/language/core/browser",
     "//components/prefs",
     "//components/services/on_device_translation:on_device_translation_service",
+    "//components/on_device_translation/public/mojom",
     "//components/update_client",
     "//content/public/browser",
   ]
@@ -88,10 +89,10 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//components/component_updater:test_support",
     "//components/crx_file",
+    "//components/on_device_translation/public/mojom",
     "//components/prefs",
     "//components/services/on_device_translation/:test_support",
     "//components/services/on_device_translation/public/cpp",
-    "//components/services/on_device_translation/public/mojom",
     "//components/sync_preferences:test_support",
     "//content/test:test_support",
   ]

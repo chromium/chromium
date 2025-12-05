@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
-#include "components/services/on_device_translation/public/mojom/translator.mojom.h"
+#include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

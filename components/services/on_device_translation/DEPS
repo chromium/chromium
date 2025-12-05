@@ -6,3 +6,7 @@ specific_include_rules = {
     "+sandbox/policy/linux/sandbox_linux.h",
   ],
 }
+
+include_rules = [
+  "+components/on_device_translation",
+]

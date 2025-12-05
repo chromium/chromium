@@ -6,3 +6,6 @@ specific_include_rules = {
     "+components/services/on_device_translation/test/test_util.h",
   ],
 }
+include_rules = [
+  "+components/on_device_translation",
+]

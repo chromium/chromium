@@ -4,7 +4,7 @@
 
 module on_device_translation.mojom;
 
-import "components/services/on_device_translation/public/mojom/translator.mojom";
+import "components/on_device_translation/public/mojom/translator.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "sandbox/policy/mojom/context.mojom";

@@ -9,7 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/services/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
+#include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
