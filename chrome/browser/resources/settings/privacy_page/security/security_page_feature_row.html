@@ -9,30 +9,29 @@
     align-items: center;
     width: 100%;
   }
+
+  #toggleButton {
+    --cr-section-min-height: 16px;
+  }
 </style>
-<template is="dom-if" if="[[expanded]]" restamp>
-  <settings-toggle-button id="toggleButton" pref="{{pref}}" label="[[label]]"
-      sub-label="[[subLabel]]"
-      numeric-unchecked-values="[[numericUncheckedValues]]">
-    <div slot="more-actions-after">
-      <cr-expand-button id="expandButton" expanded="{{expanded}}">
-      </cr-expand-button>
+<cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
+  <div id="content-wrapper">
+    <div class="flex">
+      [[label]]
+      <div class="cr-secondary-text">[[subLabel]]</div>
     </div>
-  </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[!expanded]]" restamp>
-  <cr-expand-button class="cr-row" id="expandButton" expanded="{{expanded}}">
-    <div id="content-wrapper">
-      <div class="flex">
-        [[label]]
-        <div class="cr-secondary-text">[[subLabel]]</div>
-      </div>
+    <template is="dom-if" if="[[!expanded]]">
       <div class="cr-secondary-text" id="stateLabel">
         [[currentStateLabel_]]
       </div>
-    </div>
-  </cr-expand-button>
-</template>
+    </template>
+    <template is="dom-if" if="[[expanded]]">
+      <settings-toggle-button id="toggleButton" pref="{{pref}}"
+          numeric-unchecked-values="[[numericUncheckedValues]]">
+      </settings-toggle-button>
+    </template>
+  </div>
+</cr-expand-button>
 <cr-collapse opened="[[expanded]]">
   <slot name="collapse"></slot>
 </cr-collapse>
