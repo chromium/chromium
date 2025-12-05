@@ -1156,6 +1156,8 @@ CreateInputDataFromAnnotatedPageContent(
   switch (_modeHolder.mode) {
     case ComposeboxMode::kRegularSearch:
       [self.URLLoader loadURLParams:URLLoadParams];
+      [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
+                                AutocompleteRequestType::kSearch];
       break;
     case ComposeboxMode::kAIM:
       [self.metricsRecorder recordAutocompleteRequestTypeAtNavigation:
