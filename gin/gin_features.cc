@@ -14,11 +14,6 @@ BASE_FEATURE(kV8CompactCodeSpaceWithStack, kFeatureDefaultStateControlledByV8);
 // Enable compaction when finalizing a full GC with stack.
 BASE_FEATURE(kV8CompactWithStack, kFeatureDefaultStateControlledByV8);
 
-// Decommit (rather than discard) pooled pages.
-BASE_FEATURE(kV8DecommitPooledPages,
-             "DecommitPooledPages",
-             kFeatureDefaultStateControlledByV8);
-
 // Enables optimization of JavaScript in V8.
 BASE_FEATURE(kV8OptimizeJavascript, kFeatureDefaultStateControlledByV8);
 
