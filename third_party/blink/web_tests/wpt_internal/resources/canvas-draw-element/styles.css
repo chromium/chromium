@@ -11,6 +11,7 @@
   content: "CSS IS AWESOME";
 }
 .draw-element-wrapper {
+  width: max-content;
   box-sizing: border-box;
   background-color: white;
   will-change: transform;

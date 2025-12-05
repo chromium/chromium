@@ -8,16 +8,19 @@ function resizeToPixelGrid(canvas) {
   });
 }
 
-function computeScaledDestinationSize(cvs, target, scaleX, scaleY) {
+function computeScaledDestinationSize(cvs, target, scaleX, scaleY, outsetWidth, outsetHeight) {
   if (getComputedStyle(target).boxSizing != "border-box") {
     throw new TypeError("'box-sizing:border-box' is required to compute" +
                         " accurate destination size.");
   }
 
+  outsetWidth = outsetWidth || 0;
+  outsetHeight = outsetHeight || 0;
+
   // Destination size in CSS pixels
   const style = getComputedStyle(target);
-  const targetWidth = scaleX * Number.parseFloat(style.width);
-  const targetHeight = scaleY * Number.parseFloat(style.height);
+  const targetWidth = (scaleX * Number.parseFloat(style.width)) + outsetWidth;
+  const targetHeight = (scaleY * Number.parseFloat(style.height)) + outsetHeight;
 
   // Scale factor from CSS pixels to canvas grid.
   const canvasScaleX = cvs.width / cvs.clientWidth;

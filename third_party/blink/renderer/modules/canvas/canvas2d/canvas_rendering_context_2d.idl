@@ -54,29 +54,49 @@ interface CanvasRenderingContext2D {
     void drawFocusIfNeeded(Element element);
     void drawFocusIfNeeded(Path2D path, Element element);
 
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    DOMMatrix drawElement(Element element,
-                                  unrestricted double x,
-                                  unrestricted double y);
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElement(Element element,
+                        unrestricted double dx,
+                        unrestricted double dy);
 
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    DOMMatrix drawElement(Element element,
-                                  unrestricted double x,
-                                  unrestricted double y,
-                                  unrestricted double dwidth,
-                                  unrestricted double dheight);
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElement(Element element,
+                        unrestricted double dx,
+                        unrestricted double dy,
+                        unrestricted double dwidth,
+                        unrestricted double dheight);
 
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    DOMMatrix drawElementImage(Element element,
-                                       unrestricted double x,
-                                       unrestricted double y);
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage(Element element,
+                             unrestricted double dx,
+                             unrestricted double dy);
 
-    [RuntimeEnabled=CanvasDrawElement, RaisesException]
-    DOMMatrix drawElementImage(Element element,
-                                       unrestricted double x,
-                                       unrestricted double y,
-                                       unrestricted double dwidth,
-                                       unrestricted double dheight);
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage(Element element,
+                             unrestricted double dx,
+                             unrestricted double dy,
+                             unrestricted double dwidth,
+                             unrestricted double dheight);
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage(Element element,
+                             unrestricted double sx,
+                             unrestricted double sy,
+                             unrestricted double swidth,
+                             unrestricted double sheight,
+                             unrestricted double dx,
+                             unrestricted double dy);
+
+  [RuntimeEnabled=CanvasDrawElement, RaisesException]
+  DOMMatrix drawElementImage(Element element,
+                             unrestricted double sx,
+                             unrestricted double sy,
+                             unrestricted double swidth,
+                             unrestricted double sheight,
+                             unrestricted double dx,
+                             unrestricted double dy,
+                             unrestricted double dwidth,
+                             unrestricted double dheight);
 
     [MeasureAs=GetCanvas2DContextAttributes] CanvasRenderingContext2DSettings getContextAttributes();
 };

@@ -206,10 +206,9 @@ bool CanvasRenderingContext::IsDrawElementImageEligible(
 
 std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
     Element* element,
+    std::optional<CullRect> cull_rect,
     const String& func_name,
     ExceptionState& exception_state) {
-  element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kCanvasDrawElementImage);
   if (!IsDrawElementImageEligible(element, func_name, exception_state)) {
     return std::nullopt;
   }
@@ -221,12 +220,13 @@ std::optional<cc::PaintRecord> CanvasRenderingContext::GetElementPaintRecord(
   CHECK(layout_box->IsStacked());
   PaintLayer* layer = layout_box->EnclosingLayer();
 
-  auto box_rect =
-      gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
-  // TODO(https://issues.chromium.org/379143301): Figure out the actual painted
-  // rect of the element plus its descendants, and use that instead of the
-  // box's size.
-  OverriddenCullRectScope cull_rect_scope(*layer, CullRect(box_rect),
+  if (!cull_rect) {
+    auto box_rect =
+        gfx::Rect(ToCeiledSize(layer->GetLayoutBox()->StitchedSize()));
+    cull_rect.emplace(box_rect);
+  }
+
+  OverriddenCullRectScope cull_rect_scope(*layer, *cull_rect,
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
@@ -258,8 +258,10 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
     std::optional<uint32_t> height,
     const String& func_name,
     ExceptionState& exception_state) {
-  std::optional<cc::PaintRecord> paint_record =
-      GetElementPaintRecord(element, func_name, exception_state);
+  element->GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
+      DocumentUpdateReason::kCanvasDrawElementImage);
+  std::optional<cc::PaintRecord> paint_record = GetElementPaintRecord(
+      element, /*cull_rect*/ std::nullopt, func_name, exception_state);
   if (!paint_record) {
     return nullptr;
   }
