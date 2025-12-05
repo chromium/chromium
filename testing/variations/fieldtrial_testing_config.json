@@ -11415,8 +11415,7 @@
             "platforms": [
                 "mac",
                 "windows",
-                "linux",
-                "chromeos"
+                "linux"
             ],
             "experiments": [
                 {
@@ -11700,6 +11699,26 @@
                         "GlicMultiInstance",
                         "GlicMultiTab",
                         "GlicMultitabUnderlines"
+                    ]
+                }
+            ]
+        }
+    ],
+    "GlicTeamfoodAllowlistedChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ContextualCueing",
+                        "Glic",
+                        "GlicRollout",
+                        "GlicUseNonClient",
+                        "GlicUserStatusCheck",
+                        "GlicZeroStateSuggestions"
                     ]
                 }
             ]
