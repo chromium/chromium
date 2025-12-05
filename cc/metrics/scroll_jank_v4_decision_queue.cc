@@ -8,7 +8,6 @@
 #include <variant>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "cc/metrics/scroll_jank_v4_decider.h"
 #include "cc/metrics/scroll_jank_v4_frame.h"
 #include "cc/metrics/scroll_jank_v4_frame_stage.h"
@@ -52,11 +51,7 @@ bool ScrollJankV4DecisionQueue::ProcessFrameWithScrollUpdates(
   // If the frame contains only synthetic inputs, defer the decision until we
   // receive a frame with at least one real input.
   if (!updates.real().has_value()) {
-    // Set `earliest_event` to null to avoid a dangling pointer.
-    ScrollUpdates updates_without_earliest_event = ScrollUpdates(
-        /* earliest_event= */ nullptr, updates.real(), updates.synthetic());
-    deferred_synthetic_frames_.emplace_back(updates_without_earliest_event,
-                                            damage, args);
+    deferred_synthetic_frames_.emplace_back(*updates.synthetic(), damage, args);
     return true;
   }
 
@@ -71,7 +66,7 @@ bool ScrollJankV4DecisionQueue::ProcessFrameWithScrollUpdates(
       future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);
   auto result =
       decider_.DecideJankForFrameWithRealScrollUpdates(updates, damage, args);
-  result_consumer_->OnFrameResult(result, updates.earliest_event());
+  result_consumer_->OnFrameResult(updates, damage, args, result);
   return true;
 }
 
@@ -119,13 +114,15 @@ bool ScrollJankV4DecisionQueue::AcceptFrameIfValidAndChronological(
 
 void ScrollJankV4DecisionQueue::FlushDeferredSyntheticFrames(
     bool future_real_frame_is_fast_scroll_or_sufficiently_fast_fling) {
-  for (const auto& [updates, damage, args] : deferred_synthetic_frames_) {
-    DCHECK(!updates.real().has_value());
-    DCHECK_EQ(updates.earliest_event(), nullptr);
+  for (const auto& [synthetic_updates, damage, args] :
+       deferred_synthetic_frames_) {
+    ScrollUpdates updates =
+        ScrollUpdates(/* earliest_event= */ nullptr, /* real= */ std::nullopt,
+                      synthetic_updates);
     auto result = decider_.DecideJankForFrameWithSyntheticScrollUpdatesOnly(
         updates, damage, args,
         future_real_frame_is_fast_scroll_or_sufficiently_fast_fling);
-    result_consumer_->OnFrameResult(result, /* earliest_event= */ nullptr);
+    result_consumer_->OnFrameResult(updates, damage, args, result);
   }
   deferred_synthetic_frames_.clear();
 }

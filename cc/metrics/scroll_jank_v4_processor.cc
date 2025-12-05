@@ -25,14 +25,16 @@ namespace {
 class ProcessorResultConsumer
     : public ScrollJankV4DecisionQueue::ResultConsumer {
  public:
-  void OnFrameResult(ScrollJankV4Result result,
-                     ScrollUpdateEventMetrics* earliest_event) override {
+  void OnFrameResult(ScrollJankV4FrameStage::ScrollUpdates& updates,
+                     const ScrollJankV4Frame::ScrollDamage& damage,
+                     const ScrollJankV4Frame::BeginFrameArgsForScrollJank& args,
+                     const ScrollJankV4Result& result) override {
     bool counts_towards_histogram_frame_count =
-        result.is_damaging_frame ||
+        std::holds_alternative<ScrollJankV4Frame::DamagingFrame>(damage) ||
         features::kCountNonDamagingFramesTowardsHistogramFrameCount.Get();
     histogram_emitter_.OnFrameWithScrollUpdates(
         result.missed_vsyncs_per_reason, counts_towards_histogram_frame_count);
-    if (earliest_event) {
+    if (ScrollUpdateEventMetrics* earliest_event = updates.earliest_event()) {
       CHECK(!earliest_event->scroll_jank_v4().has_value());
       earliest_event->set_scroll_jank_v4(result);
     }
