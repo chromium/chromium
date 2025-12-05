@@ -8,10 +8,14 @@
 #include <concepts>
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -33,7 +37,7 @@ class VerticalTabsBrowserTestMixin : public T {
       delete;
 
   void SetUpOnMainThread() override {
-    InProcessBrowserTest::SetUpOnMainThread();
+    T::SetUpOnMainThread();
     EnterVerticalTabsMode();
   }
 
@@ -45,9 +49,21 @@ class VerticalTabsBrowserTestMixin : public T {
         ->vertical_tab_strip_state_controller();
   }
 
+  VerticalTabStripController* vertical_tab_strip_controller() {
+    return T::browser()
+        ->GetBrowserView()
+        .vertical_tab_strip_region_view()
+        ->GetVerticalTabStripController();
+  }
+
   void EnterVerticalTabsMode() {
     T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
                                                     true);
+  }
+
+  void ExitVerticalTabsMode() {
+    T::browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                                    false);
   }
 
   tabs_api::TabStripService* tab_strip_service() {

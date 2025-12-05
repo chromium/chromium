@@ -11,7 +11,7 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/system_menu_model_builder.h"
-#include "chrome/browser/ui/views/test/tab_strip_interactive_test_mixin.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -27,14 +27,11 @@
 namespace {
 
 class VerticalTabStripTopContainerInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  VerticalTabStripTopContainerInteractiveUiTest() = default;
-  ~VerticalTabStripTopContainerInteractiveUiTest() override = default;
-
   void SetUp() override {
     scoped_feature_list_.InitAndEnableFeature(tabs::kVerticalTabs);
-    InteractiveBrowserTest::SetUp();
+    VerticalTabsInteractiveTestMixin::SetUp();
   }
 
   auto SendTabSearchAccelerator() {
@@ -56,27 +53,13 @@ class VerticalTabStripTopContainerInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
                        VerifyTabSearchVerticalToHorizontal) {
   RunTestSequence(
-      // Display Vertical Tabs
-      Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(true);
-        RunScheduledLayouts();
-      }),
+      // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kTabSearchButtonElementId),
-      // Send Press to Vertical Tabs Tab Search Button
-      SendTabSearchAccelerator(),
-      // Display Horizontal Tabs
-      WaitForShow(kTabSearchBubbleElementId), Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(false);
-        RunScheduledLayouts();
-      }),
-      WaitForShow(kTabStripFrameGrabHandleElementId),
+      // Send Press to Vertical Tabs Tab Search Button.
+      SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
+      // Display Horizontal Tabs.
+      ExitVerticalTabsMode(), WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId));
@@ -88,21 +71,14 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
                        VerifyTabSearchHorizontalToVertical) {
   RunTestSequence(
       // Start with Horizontal Tabs Displayed
-      Do([this]() { RunScheduledLayouts(); }),
-      WaitForShow(kTabStripFrameGrabHandleElementId),
+      ExitVerticalTabsMode(), WaitForShow(kTabStripFrameGrabHandleElementId),
       EnsurePresent(kTabStripFrameGrabHandleElementId),
       // Send Press to Horizontal Tabs Tab Search Button
       SendTabSearchAccelerator(), WaitForShow(kTabSearchBubbleElementId),
       SendKeyPress(kTabSearchBubbleElementId, ui::VKEY_ESCAPE),
       WaitForHide(kTabSearchBubbleElementId),
       // Display Vertical Tabs
-      Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(true);
-        RunScheduledLayouts();
-      }),
+      EnterVerticalTabsMode(),
       WaitForShow(kVerticalTabStripTopContainerElementId),
       EnsurePresent(kTabSearchButtonElementId),
       // Send Press to Vertical Tabs Tab Search Button
@@ -114,21 +90,10 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
                        VerifyCollapseButton) {
   RunTestSequence(
-      // Display Vertical Tabs
-      Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(true);
-        RunScheduledLayouts();
-      }),
       // Verify not collapsed
       CheckResult(
           [this]() {
-            return browser()
-                ->GetFeatures()
-                .vertical_tab_strip_state_controller()
-                ->IsCollapsed();
+            return vertical_tab_strip_state_controller()->IsCollapsed();
           },
           false),
       WaitForShow(kVerticalTabStripTopContainerElementId),
@@ -138,10 +103,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripTopContainerInteractiveUiTest,
       // Verify collapsed
       CheckResult(
           [this]() {
-            return browser()
-                ->GetFeatures()
-                .vertical_tab_strip_state_controller()
-                ->IsCollapsed();
+            return vertical_tab_strip_state_controller()->IsCollapsed();
           },
           true));
 }

@@ -8,9 +8,9 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
-#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
+#include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -25,16 +25,10 @@ namespace {
 const char kNewTabName[] = "NewTab";
 
 class VerticalTabStripControllerInteractiveUiTest
-    : public InteractiveBrowserTest {
+    : public VerticalTabsInteractiveTestMixin<InteractiveBrowserTest> {
  public:
-  VerticalTabStripControllerInteractiveUiTest() = default;
-  ~VerticalTabStripControllerInteractiveUiTest() override = default;
-
   bool CheckMenuHasStringId(int message_id) {
-    ui::SimpleMenuModel* menu_model = browser()
-                                          ->GetBrowserView()
-                                          .vertical_tab_strip_region_view()
-                                          ->GetVerticalTabStripController()
+    ui::SimpleMenuModel* menu_model = vertical_tab_strip_controller()
                                           ->GetTabContextMenuController()
                                           ->GetMenuModel();
     for (size_t i = 0; i < menu_model->GetItemCount(); i++) {
@@ -52,14 +46,7 @@ class VerticalTabStripControllerInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                        VerifyTabContextMenu) {
   RunTestSequence(
-      // Display Vertical Tabs.
-      Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(true);
-        RunScheduledLayouts();
-      }),
+      // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       // Identify Tab by Type (VerticalTabView).
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
@@ -78,14 +65,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
                        VerifyTabContextMenuText) {
   RunTestSequence(
-      // Display Vertical Tabs.
-      Do([this]() {
-        browser()
-            ->browser_window_features()
-            ->vertical_tab_strip_state_controller()
-            ->SetVerticalTabsEnabled(true);
-        RunScheduledLayouts();
-      }),
+      // Verify Vertical Tabs is showing.
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       // Identify Tab by Type (VerticalTabView).
       NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
@@ -102,10 +82,7 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           }),
           // Close menu to avoid the test hanging.
           Do([this]() {
-            browser()
-                ->GetBrowserView()
-                .vertical_tab_strip_region_view()
-                ->GetVerticalTabStripController()
+            vertical_tab_strip_controller()
                 ->GetTabContextMenuController()
                 ->CloseMenu();
           })));
