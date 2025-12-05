@@ -119,12 +119,16 @@ class BoxDecorationData {
     //
     // See https://drafts.csswg.org/css-page-3/#painting
     //
+    // When not compositing a backdrop filter needs to have a display item for
+    // the background even if it is transparent or otherwise paints nothing.
+    //
     // TODO(crbug.com/40286153): This is a false positive. We should be able to
     // remove this once we have a better way to determine whether there is a
     // background.
     bool has_background =
         style_.HasBackground() ||
-        GetBoxFragmentType() == PhysicalFragment::kPageBorderBox;
+        GetBoxFragmentType() == PhysicalFragment::kPageBorderBox ||
+        (paint_info_.ShouldOmitCompositingInfo() && style_.HasBackdropFilter());
     return has_background && !layout_box_.BackgroundTransfersToView() &&
            !paint_info_.ShouldSkipBackground();
   }

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_2d_recorder_context.h"
 
+#include <array>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -1540,13 +1541,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
       DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
   sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests,
@@ -1573,13 +1574,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
       DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
   sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerAlphaOp>(0.5f), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, BlendingAndShadow) {
@@ -1604,12 +1605,12 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests, BlendingAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
   sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, CompositeAndShadow) {
@@ -1634,12 +1635,12 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests, CompositeAndShadow) {
       DropShadowPaintFilter::ShadowMode::kDrawShadowOnly, nullptr);
   sk_sp<cc::PaintFilter> foreground_filter = nullptr;
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, Filter) {
@@ -1889,13 +1890,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests,
@@ -1929,13 +1930,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterBlendingAndShadow) {
@@ -1966,13 +1967,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterBlendingAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterCompositeAndShadow) {
@@ -2003,13 +2004,13 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests, FilterCompositeAndShadow) {
   filter_flags.setImageFilter(
       sk_make_sp<BlurPaintFilter>(20.0f, 20.0f, SkTileMode::kDecal, nullptr));
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{shadow_filter, foreground_filter}, composite_flags),
-          PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{shadow_filter, foreground_filter}, nullptr,
+                      composite_flags),
+                  PaintOpEq<SaveLayerOp>(filter_flags), PaintOpEq<RestoreOp>(),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, ContextFilter) {
@@ -2085,12 +2086,12 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests, ContextFilterShadow) {
   sk_sp<cc::PaintFilter> background_filter =
       sk_make_sp<ComposePaintFilter>(shadow_filter, foreground_filter);
 
-  EXPECT_THAT(
-      context->FlushRecorder(),
-      RecordedOpsAre(DrawRecordOpEq(
-          PaintOpEq<SaveLayerFiltersOp>(
-              std::array{background_filter, foreground_filter}, layer_flags),
-          PaintOpEq<RestoreOp>())));
+  EXPECT_THAT(context->FlushRecorder(),
+              RecordedOpsAre(DrawRecordOpEq(
+                  PaintOpEq<SaveLayerFiltersOp>(
+                      std::array{background_filter, foreground_filter}, nullptr,
+                      layer_flags),
+                  PaintOpEq<RestoreOp>())));
 }
 
 TEST(Canvas2DRecorderContextLayerGlobalStateTests, TransformsAlone) {
@@ -2219,7 +2220,7 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
                                                       0, 0, 0, 1)),
                          PaintOpEq<SaveLayerFiltersOp>(
                              std::array{shadow_filter, foreground_filter},
-                             composite_flags),
+                             nullptr, composite_flags),
                          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
                                                       0, 1, 0, 5,  //
                                                       0, 0, 1, 0,  //
@@ -2265,7 +2266,7 @@ TEST(Canvas2DRecorderContextLayerGlobalStateTests,
                                                       0, 0, 0, 1)),
                          PaintOpEq<SaveLayerFiltersOp>(
                              std::array{background_filter, foreground_filter},
-                             layer_flags),
+                             nullptr, layer_flags),
                          PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
                                                       0, 1, 0, 5,  //
                                                       0, 0, 1, 0,  //
@@ -2624,7 +2625,7 @@ TEST(Canvas2DRecorderContextRestoreStackTests, UnclosedLayersAreNotFlushed) {
                                            0, 0, 1, 0,  //
                                            0, 0, 0, 1)),
               PaintOpEq<SaveLayerFiltersOp>(
-                  std::array{shadow_filter, foreground_filter},
+                  std::array{shadow_filter, foreground_filter}, nullptr,
                   composite_flags),
               PaintOpEq<SetMatrixOp>(SkM44(1, 0, 0, 4,  //
                                            0, 1, 0, 6,  //

@@ -1198,6 +1198,11 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
   static constexpr PaintOpType kType = PaintOpType::kSaveLayerFilters;
   static constexpr int kMaxFiltersPerLayer = SkCanvas::kMaxFiltersPerLayer;
   explicit SaveLayerFiltersOp(base::span<const sk_sp<PaintFilter>> filters,
+                              const sk_sp<PaintFilter> backdrop_filter,
+                              const PaintFlags& flags);
+  explicit SaveLayerFiltersOp(const SkRect& bounds,
+                              base::span<const sk_sp<PaintFilter>> filters,
+                              const sk_sp<PaintFilter> backdrop_filter,
                               const PaintFlags& flags);
   ~SaveLayerFiltersOp();
   static void RasterWithFlags(const SaveLayerFiltersOp* op,
@@ -1212,7 +1217,9 @@ class CC_PAINT_EXPORT SaveLayerFiltersOp final
   bool HasSaveLayerOps() const { return true; }
   HAS_SERIALIZATION_FUNCTIONS();
 
+  SkRect bounds;
   std::vector<sk_sp<PaintFilter>> filters;
+  sk_sp<PaintFilter> backdrop_filter;
 
  private:
   SaveLayerFiltersOp();

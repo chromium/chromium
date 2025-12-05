@@ -2000,9 +2000,7 @@ TEST_P(PaintChunksToCcLayerTest, NonCompositedBackdropFilter) {
 
   PaintRecord output =
       PaintChunksToCcLayer::Convert(chunks.Build(), PropertyTreeState::Root());
-  // TODO(crbug.com/1334293): For now non-composited backdrop filters are
-  // ignored.
-  EXPECT_THAT(output, ElementsAre(PaintOpIs<cc::SaveLayerAlphaOp>(),
+  EXPECT_THAT(output, ElementsAre(PaintOpIs<cc::SaveLayerFiltersOp>(),
                                   PaintOpIs<cc::DrawRecordOp>(),
                                   PaintOpIs<cc::RestoreOp>()));
 }

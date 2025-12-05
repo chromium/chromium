@@ -113,7 +113,7 @@ int RecordPaintCanvas::saveLayerAlphaf(const SkRect& bounds, float alpha) {
 int RecordPaintCanvas::saveLayerFilters(
     base::span<const sk_sp<PaintFilter>> filters,
     const PaintFlags& flags) {
-  push<SaveLayerFiltersOp>(filters, flags);
+  push<SaveLayerFiltersOp>(filters, /*backdrop_filter*/ nullptr, flags);
   return save_count_++;
 }
 

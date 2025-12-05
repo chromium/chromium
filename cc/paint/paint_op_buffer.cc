@@ -216,7 +216,9 @@ PaintRecord PaintOpBuffer::DeepCopyAsRecord() {
       case PaintOpType::kSaveLayerFilters: {
         const auto& o = static_cast<const SaveLayerFiltersOp&>(op);
         auto f = o.filters;
-        result->push<SaveLayerFiltersOp>(std::move(f), o.flags);
+        auto bf = o.backdrop_filter;
+        result->push<SaveLayerFiltersOp>(o.bounds, std::move(f), std::move(bf),
+                                         o.flags);
       } break;
       case PaintOpType::kScale: {
         const auto& o = static_cast<const ScaleOp&>(op);
@@ -578,6 +580,11 @@ void PaintOpBuffer::UpdateSaveLayerBounds(size_t offset, const SkRect& bounds) {
     case SaveLayerAlphaOp::kType:
       CHECK_LE(offset + sizeof(SaveLayerAlphaOp), used_);
       static_cast<SaveLayerAlphaOp*>(op)->bounds = bounds;
+      break;
+    case SaveLayerFiltersOp::kType:
+      CHECK_LE(offset + sizeof(SaveLayerFiltersOp), used_);
+      // Do not update the bounds. They are only used for backdrop filter
+      // as a clip for the filtered area, and must remain unchanged.
       break;
     default:
       NOTREACHED();

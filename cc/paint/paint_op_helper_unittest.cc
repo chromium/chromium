@@ -370,6 +370,8 @@ TEST(PaintOpHelper, SaveLayerFiltersToString) {
           sk_make_sp<BlurPaintFilter>(1.0f, 2.0f, SkTileMode::kRepeat,
                                       /*input=*/nullptr),
           nullptr},
+      sk_make_sp<BlurPaintFilter>(1.0f, 2.0f, SkTileMode::kRepeat,
+                                  /*input=*/nullptr),
       flags);
   EXPECT_EQ(PaintOpHelper::ToString(op),
             "SaveLayerFiltersOp(flags=[color=rgba(0, 0, 0, 255), "
@@ -381,7 +383,9 @@ TEST(PaintOpHelper, SaveLayerFiltersToString) {
             "drawLooper=(nil), supportsFoldingAlpha=true, isValid=true, "
             "hasDiscardableImages=false], "
             "filters={BlurPaintFilter(sigma_x=1.000, sigma_y=2.000, "
-            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)), (nil)})");
+            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)), (nil)}, "
+            "backdrop_filter=BlurPaintFilter(sigma_x=1.000, sigma_y=2.000, "
+            "tile_mode=kRepeat, input=(nil), crop_rect=(nil)))");
 }
 
 TEST(PaintOpHelper, ScaleToString) {

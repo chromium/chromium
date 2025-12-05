@@ -300,7 +300,7 @@ class ConversionContext {
   }
 
   // Starts an effect state by adjusting clip and transform state, applying
-  // the effect as a SaveLayer[Alpha]Op (whose bounds will be updated in
+  // the effect as a SaveLayer[Alpha,Filter]Op (whose bounds will be updated in
   // EndEffect()), and updating the current state.
   [[nodiscard]] ScrollTranslationAction StartEffect(
       const EffectPaintPropertyNode&);
@@ -674,15 +674,13 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
   }
 
   bool has_filter = !!effect.Filter();
+  bool has_backdrop_filter = !!effect.BackdropFilter();
   bool has_opacity = effect.Opacity() != 1.f;
-  // TODO(crbug.com/1334293): Normally backdrop filters should be composited and
-  // effect.BackdropFilter() should be null, but compositing can be disabled in
-  // rare cases such as PaintPreview. For now non-composited backdrop filters
-  // are not supported and are ignored.
   bool has_other_effects = effect.BlendMode() != SkBlendMode::kSrcOver;
   // We always create separate effect nodes for normal effects and filter
   // effects, so we can handle them separately.
-  DCHECK(!has_filter || !(has_opacity || has_other_effects));
+  DCHECK(!has_filter ||
+         !(has_opacity || has_other_effects || has_backdrop_filter));
 
   // Apply effects.
   size_t save_layer_id = kNotFound;
@@ -692,7 +690,25 @@ ScrollTranslationAction ConversionContext<Result>::StartEffect(
       cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlphaf(effect.Opacity());
-      save_layer_id = push<cc::SaveLayerOp>(flags);
+      if (has_backdrop_filter) {
+        save_layer_id = push<cc::SaveLayerFiltersOp>(
+            effect.BackdropFilterBounds().getBounds(),
+            std::array<sk_sp<cc::PaintFilter>, 0>{},
+            cc::RenderSurfaceFilters::BuildImageFilter(
+                effect.BackdropFilter()->AsCcFilterOperations()),
+            flags);
+      } else {
+        save_layer_id = push<cc::SaveLayerOp>(flags);
+      }
+    } else if (has_backdrop_filter) {
+      cc::PaintFlags flags;
+      flags.setAlphaf(effect.Opacity());
+      save_layer_id = push<cc::SaveLayerFiltersOp>(
+          effect.BackdropFilterBounds().getBounds(),
+          std::array<sk_sp<cc::PaintFilter>, 0>{},
+          cc::RenderSurfaceFilters::BuildImageFilter(
+              effect.BackdropFilter()->AsCcFilterOperations()),
+          flags);
     } else {
       save_layer_id = push<cc::SaveLayerAlphaOp>(effect.Opacity());
     }

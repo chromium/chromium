@@ -328,7 +328,7 @@ TEST(PaintOpBufferTest, SaveSaveLayerFiltersRestore) {
 
   PaintFlags paint_flags;
   EXPECT_TRUE(paint_flags.SupportsFoldingAlpha());
-  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{},
+  buffer.push<SaveLayerFiltersOp>(std::vector<sk_sp<PaintFilter>>{}, nullptr,
                                   paint_flags);
   buffer.push<RestoreOp>();
   buffer.push<RestoreOp>();
@@ -1882,7 +1882,10 @@ void PushSaveLayerFiltersOps(PaintOpBuffer* buffer) {
   for (size_t i = 0; i < len; ++i) {
     sk_sp<PaintFilter> filter =
         sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
-    buffer->push<SaveLayerFiltersOp>(std::array{filter}, test_flags[i]);
+    sk_sp<PaintFilter> backdrop_filter =
+        sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
+    buffer->push<SaveLayerFiltersOp>(std::array{filter}, backdrop_filter,
+                                     test_flags[i]);
   }
 
   EXPECT_THAT(*buffer, Each(PaintOpIs<SaveLayerFiltersOp>()));
@@ -2693,13 +2696,20 @@ TEST(PaintOpBufferTest, SaveLayerFiltersOpIsValid) {
   for (int i = 0; i < SaveLayerFiltersOp::kMaxFiltersPerLayer; ++i) {
     filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
   }
+  sk_sp<PaintFilter> backdrop_filter =
+      sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr);
 
   PaintFlags flags;
-  SaveLayerFiltersOp op_at_limit(filters, flags);
+  SaveLayerFiltersOp op_at_limit(filters, nullptr, flags);
+  EXPECT_TRUE(op_at_limit.IsValid());
+  SaveLayerFiltersOp op_at_limit_with_backdrop(filters, backdrop_filter, flags);
   EXPECT_TRUE(op_at_limit.IsValid());
 
   filters.push_back(sk_make_sp<OffsetPaintFilter>(-1.f, -2.f, nullptr));
-  SaveLayerFiltersOp op_over_limit(filters, flags);
+  SaveLayerFiltersOp op_over_limit(filters, nullptr, flags);
+  EXPECT_FALSE(op_over_limit.IsValid());
+  SaveLayerFiltersOp op_over_limit_with_backdrop(filters, backdrop_filter,
+                                                 flags);
   EXPECT_FALSE(op_over_limit.IsValid());
 }
 
