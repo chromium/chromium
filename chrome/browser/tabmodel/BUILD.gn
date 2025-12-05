@@ -120,6 +120,7 @@ robolectric_library("junit") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/AccumulatingTabCreatorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ArchivedTabCountSupplierUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabGroupModelFilterImplUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/IncognitoTabModelImplUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/MultiTabMetadataUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/ReadOnlyIteratorUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabClosureParamsUnitTest.java",

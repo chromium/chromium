@@ -128,6 +128,9 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
             delegateModelObserver.onResult(mDelegateModel);
         }
+        for (IncognitoTabModelObserver observer : mIncognitoObservers) {
+            observer.onIncognitoModelCreated();
+        }
     }
 
     /**
