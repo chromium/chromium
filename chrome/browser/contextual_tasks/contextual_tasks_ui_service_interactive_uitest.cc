@@ -217,4 +217,34 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
   EXPECT_EQ(empty_task->GetTabIds()[0], tab1_id);
 }
 
+IN_PROC_BROWSER_TEST_F(ContextualTasksUiServiceInteractiveUiTest,
+                       StartTaskUiInSidePanel) {
+  // Add a new tab.
+  chrome::AddTabAt(browser(), GURL(chrome::kChromeUISettingsURL), -1, false);
+
+  ContextualTasksContextController* contextual_tasks_controller =
+      ContextualTasksContextControllerFactory::GetForProfile(
+          browser()->profile());
+  ContextualTasksUiService* service =
+      ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->profile());
+  ASSERT_TRUE(service);
+
+  // Call StartTaskUiInSidePanel and verify that the side panel is shown and the
+  // task is associated with the active tab.
+  const GURL search_url("https://google.com/search");
+  service->StartTaskUiInSidePanel(browser(), browser()->GetActiveTabInterface(),
+                                  search_url);
+
+  ContextualTasksSidePanelCoordinator* coordinator =
+      ContextualTasksSidePanelCoordinator::From(browser());
+  EXPECT_TRUE(coordinator->IsSidePanelOpenForContextualTask());
+
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  std::optional<ContextualTask> task =
+      contextual_tasks_controller->GetContextualTaskForTab(tab_id);
+  EXPECT_TRUE(task.has_value());
+}
+
 }  // namespace contextual_tasks

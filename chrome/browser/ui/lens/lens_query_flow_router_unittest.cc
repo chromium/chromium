@@ -5,18 +5,23 @@
 #include "chrome/browser/ui/lens/lens_query_flow_router.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/lens/test_lens_overlay_query_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/test_lens_search_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
+#include "content/public/test/web_contents_tester.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/lens_server_proto/lens_overlay_image_crop.pb.h"
@@ -121,6 +126,27 @@ class TestLensQueryFlowRouter : public LensQueryFlowRouter {
       mock_session_handle_ = nullptr;
 };
 
+class MockContextualTasksUiService
+    : public contextual_tasks::ContextualTasksUiService {
+ public:
+  explicit MockContextualTasksUiService(Profile* profile)
+      : ContextualTasksUiService(profile, nullptr) {}
+  ~MockContextualTasksUiService() override = default;
+
+  MOCK_METHOD(void,
+              StartTaskUiInSidePanel,
+              (BrowserWindowInterface * browser_window_interface,
+               tabs::TabInterface* tab_interface,
+               const GURL& url),
+              (override));
+};
+
+std::unique_ptr<KeyedService> CreateMockContextualTasksUiService(
+    content::BrowserContext* context) {
+  return std::make_unique<MockContextualTasksUiService>(
+      Profile::FromBrowserContext(context));
+}
+
 }  // namespace
 
 class LensQueryFlowRouterTest : public testing::Test {
@@ -130,6 +156,10 @@ class LensQueryFlowRouterTest : public testing::Test {
 
   void SetUp() override {
     InitFeatureList();
+
+    profile_ = std::make_unique<TestingProfile>();
+    web_contents_ = content::WebContentsTester::CreateTestWebContents(
+        profile_.get(), content::SiteInstance::Create(profile_.get()));
 
     // The Lens search controller calls `GetUnownedUserDataHost` on the tab
     // interface in its constructor, so set up the mock responses before it is
@@ -142,6 +172,8 @@ class LensQueryFlowRouterTest : public testing::Test {
         .WillByDefault(ReturnRef(user_data_host_));
     ON_CALL(mock_tab_interface_, GetBrowserWindowInterface())
         .WillByDefault(Return(mock_browser_window_interface_.get()));
+    ON_CALL(mock_tab_interface_, GetContents())
+        .WillByDefault(Return(web_contents_.get()));
 
     // Create a mock Lens search controller that returns a mock Lens overlay
     // query controller.
@@ -172,6 +204,7 @@ class LensQueryFlowRouterTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   base::test::ScopedFeatureList feature_list_;
   ui::UnownedUserDataHost user_data_host_;
   tabs::MockTabInterface mock_tab_interface_;
@@ -181,6 +214,8 @@ class LensQueryFlowRouterTest : public testing::Test {
   std::unique_ptr<MockLensOverlayQueryController> mock_query_controller_;
   std::unique_ptr<LensOverlayGen204Controller> gen204_controller_;
   std::unique_ptr<MockLensSearchController> mock_lens_search_controller_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
 };
 
 TEST_F(LensQueryFlowRouterTest, StartQueryFlow_RoutesToLensQueryController) {
@@ -324,6 +359,14 @@ class LensQueryFlowRouterContextualTaskEnabledTest
         },
         {});
   }
+
+  void SetUp() override {
+    LensQueryFlowRouterTest::SetUp();
+    contextual_tasks::ContextualTasksUiServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            profile_.get(),
+            base::BindRepeating(&CreateMockContextualTasksUiService));
+  }
 };
 
 TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
@@ -420,7 +463,15 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
-      .WillOnce(Return(GURL("https://new-url.com")));
+      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              StartTaskUiInSidePanel(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  GURL("https://www.google.com/search?q=test")))
+      .Times(1);
 
   // Act: Call the method.
   router.SendRegionSearch(query_start_time, std::move(region), selection_type,
@@ -457,7 +508,15 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
-      .WillOnce(Return(GURL("https://new-url.com")));
+      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              StartTaskUiInSidePanel(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  GURL("https://www.google.com/search?q=test")))
+      .Times(1);
 
   // Act: Call the method.
   router.SendTextOnlyQuery(query_start_time, query_text, selection_type,
@@ -494,7 +553,15 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
-      .WillOnce(Return(GURL("https://new-url.com")));
+      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              StartTaskUiInSidePanel(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  GURL("https://www.google.com/search?q=test")))
+      .Times(1);
 
   // Act: Call the method.
   router.SendContextualTextQuery(query_start_time, query_text, selection_type,
@@ -542,7 +609,15 @@ TEST_F(LensQueryFlowRouterContextualTaskEnabledTest,
   EXPECT_CALL(*router.mock_session_handle(),
               CreateSearchUrl(CreateSearchUrlRequestInfoMatches(
                   expected_request_info.get())))
-      .WillOnce(Return(GURL("https://new-url.com")));
+      .WillOnce(Return(GURL("https://www.google.com/search?q=test")));
+  auto* service = static_cast<MockContextualTasksUiService*>(
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          profile_.get()));
+  EXPECT_CALL(*service,
+              StartTaskUiInSidePanel(
+                  mock_browser_window_interface_.get(), &mock_tab_interface_,
+                  GURL("https://www.google.com/search?q=test")))
+      .Times(1);
 
   // Act: Call the method.
   router.SendMultimodalRequest(query_start_time, std::move(region), query_text,

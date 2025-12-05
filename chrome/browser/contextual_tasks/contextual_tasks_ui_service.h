@@ -114,6 +114,13 @@ class ContextualTasksUiService : public KeyedService {
       content::WebContents* web_contents,
       const base::Uuid& task_id);
 
+  // Opens the contextual tasks side panel and creates a new task with the given
+  // URL as its initial thread URL.
+  virtual void StartTaskUiInSidePanel(
+      BrowserWindowInterface* browser_window_interface,
+      tabs::TabInterface* tab_interface,
+      const GURL& url);
+
   // Returns whether the provided URL is to an AI page.
   bool IsAiUrl(const GURL& url);
 
