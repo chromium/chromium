@@ -53,13 +53,15 @@ bool AreSchemesEqual(std::string_view base, std::basic_string_view<CHAR> cmp) {
 // consistent about URL paths beginning with slashes. This function is like
 // DoesBeginWindowsDrivePath except that it also requires a slash at the
 // beginning.
-template<typename CHAR>
-bool DoesBeginSlashWindowsDriveSpec(const CHAR* spec, int start_offset,
-                                    int spec_len) {
-  if (start_offset >= spec_len)
+template <typename CHAR>
+bool DoesBeginSlashWindowsDriveSpec(std::basic_string_view<CHAR> spec,
+                                    size_t start_offset) {
+  if (start_offset >= spec.length()) {
     return false;
-  return IsSlashOrBackslash(UNSAFE_TODO(spec[start_offset])) &&
-         DoesBeginWindowsDriveSpec(spec, start_offset + 1, spec_len);
+  }
+  return IsSlashOrBackslash(spec[start_offset]) &&
+         DoesBeginWindowsDriveSpec(spec.data(), start_offset + 1,
+                                   spec.length());
 }
 
 #endif  // WIN32
@@ -297,8 +299,8 @@ int CopyBaseDriveSpecIfNecessary(std::string_view base_url,
 
   // The path should begin with a slash (as all canonical paths do). We check
   // if it is followed by a drive letter and copy it.
-  if (DoesBeginSlashWindowsDriveSpec(base_url.data(), base_path_begin,
-                                     base_path_end)) {
+  if (DoesBeginSlashWindowsDriveSpec(base_url.substr(0, base_path_end),
+                                     base_path_begin)) {
     // Copy the two-character drive spec to the output. It will now look like
     // "file:///C:" so the rest of it can be treated like a standard path.
     output->push_back('/');
