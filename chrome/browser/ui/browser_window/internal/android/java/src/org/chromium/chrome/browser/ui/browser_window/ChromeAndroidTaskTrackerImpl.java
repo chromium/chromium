@@ -367,10 +367,10 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
                     intent.putExtra(
                             "org.chromium.chrome.browser.customtabs.EXTRA_UI_TYPE",
                             9 /* CustomTabsUiType.POPUP */);
-                    // TODO: Use AndroidBrowserWindowCreateParams#getInitialBounds() create a
+                    // TODO(crbug.com/466146557): Use
+                    // AndroidBrowserWindowCreateParams#getInitialBounds() create a
                     // WindowFeatures and set this extra.
                     // intent.putExtra(
-                    //
                     // "chrome.browser.app.tab_activity_glue.PopupCreator.EXTRA_REQUESTED_WINDOW_FEATURES",
                     //      new WindowFeatures().toBundle()
                     // );
