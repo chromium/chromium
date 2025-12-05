@@ -83,7 +83,7 @@ class ShapeResultTest : public FontTestBase {
   }
 
   const Font* GetFont(FontType type) const {
-    return UNSAFE_TODO(fonts_holder->fonts[static_cast<size_t>(type)]);
+    return fonts_holder->fonts.at(static_cast<size_t>(type));
   }
 
   FontCachePurgePreventer font_cache_purge_preventer;
@@ -99,7 +99,7 @@ void ShapeResultTest::TestCopyRangesLatin(const ShapeResult* result) const {
       {20, 30, CreateShapeResult(TextDirection::kLtr)},
       {30, 38, CreateShapeResult(TextDirection::kLtr)},
   }};
-  result->CopyRanges(&ranges[0], num_ranges);
+  result->CopyRanges(ranges.data(), num_ranges);
 
   std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
@@ -136,7 +136,7 @@ void ShapeResultTest::TestCopyRangesArabic(const ShapeResult* result) const {
       {7, 10, CreateShapeResult(TextDirection::kRtl)},
       {10, 15, CreateShapeResult(TextDirection::kRtl)},
   }};
-  result->CopyRanges(&ranges[0], num_ranges);
+  result->CopyRanges(ranges.data(), num_ranges);
 
   std::array<Vector<ShapeResultTestGlyphInfo>, num_ranges> glyphs;
   for (unsigned i = 0; i < num_ranges; i++)
@@ -214,7 +214,7 @@ TEST_F(ShapeResultTest, CopyRangeLatinMultiRunWithHoles) {
       {20, 23, CreateShapeResult(TextDirection::kLtr)},
       {25, 31, CreateShapeResult(TextDirection::kLtr)},
   });
-  result->CopyRanges(&ranges[0], 3);
+  result->CopyRanges(ranges.data(), 3);
   std::array<Vector<ShapeResultTestGlyphInfo>, 3> glyphs;
   ComputeGlyphResults(*ranges[0].target, &glyphs[0]);
   ComputeGlyphResults(*ranges[1].target, &glyphs[1]);
