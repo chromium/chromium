@@ -319,4 +319,11 @@ NSString* const kPageContentSharingAction = @"PageContentSharingAction";
   }
 }
 
+#pragma mark - Dynamic Settings
+
+- (void)addRowWithTitle:(NSString*)title subtitle:(NSString*)subtitle {
+  NSLog(@"Added row - Title: %@, Subtitle: %@", title, subtitle);
+  // TODO(crbug.com/462382316): Actually add rows
+}
+
 @end

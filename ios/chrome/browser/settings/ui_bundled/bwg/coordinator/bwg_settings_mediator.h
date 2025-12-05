@@ -11,6 +11,7 @@
 
 @protocol ApplicationCommands;
 @protocol BWGSettingsConsumer;
+class AuthenticationService;
 class PrefService;
 
 // BWG Mediator.
@@ -23,14 +24,19 @@ class PrefService;
 @property(nonatomic, weak) id<BWGSettingsConsumer> consumer;
 
 // Designated initializer. All the parameters should not be null.
+// 'authService': authentication service for the profile.
 // `prefService`: preference service from the profile.
-- (instancetype)initWithPrefService:(PrefService*)prefService
+- (instancetype)initWithAuthService:(AuthenticationService*)authService
+                        prefService:(PrefService*)prefService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 
 // Stops observing objects.
 - (void)disconnect;
+
+// Updates rows for Gemini dynamic settings.
+- (void)updateDynamicSettingsRows;
 
 @end
 

@@ -16,6 +16,9 @@
 // Sets the Page Content Sharing boolean.
 - (void)setPageContentSharingEnabled:(BOOL)enabled;
 
+// Adds a new row with a given title & subtitle.
+- (void)addRowWithTitle:(NSString*)title subtitle:(NSString*)subtitle;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_BWG_UI_BWG_SETTINGS_CONSUMER_H_

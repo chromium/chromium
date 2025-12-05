@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, GeminiSettingsContext) {
   GeminiSettingsContextPersonalization,
   // Settings for managing plugins and extensions.
   GeminiSettingsContextExtensions,
+  // Unknown settings context.
+  GeminiSettingsContextUnknown,
 };
 
 // Metadata about a Gemini setting item.

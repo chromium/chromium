@@ -15,6 +15,7 @@
 class AuthenticationService;
 @class BWGConfiguration;
 @class GeminiPageContext;
+@class GeminiSettingsMetadata;
 @protocol BWGGatewayProtocol;
 
 using BWGEligibilityCallback = void (^)(BOOL eligible);
@@ -105,6 +106,9 @@ bool IsProtectedUrl(std::string url);
 // Updates the page context of the floaty.
 void UpdatePageContext(GeminiPageContext* gemini_page_context);
 
+// Returns the Gemini settings that the user is eligible for.
+NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
+    AuthenticationService* auth_service);
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_

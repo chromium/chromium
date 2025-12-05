@@ -40,4 +40,9 @@ bool IsProtectedUrl(std::string url) {
 
 void UpdatePageContext(GeminiPageContext* gemini_page_context) {}
 
+NSArray<GeminiSettingsMetadata*>* GetEligibleSettings(
+    AuthenticationService* auth_service) {
+  return nil;
+}
+
 }  // namespace ios::provider
