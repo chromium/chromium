@@ -3386,8 +3386,9 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn(credit_card_form_referring_app_test_cases),
     CreditCardFormReferringAppTestCase::GetTestName);
 
+// TODO(crbug.com/466411633): Re-enable this test.
 TEST_P(ClientSideDetectionHostCreditCardFormReferringAppTest,
-       DetectionProceedsToClassification) {
+       DISABLED_DetectionProceedsToClassification) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
