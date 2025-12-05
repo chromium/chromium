@@ -106,7 +106,7 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
     Node* cur_node = cur_box->GetNode();
 
     if (cur_node) {
-      if (CanScroll(*cur_node, /* for_autoscroll */ false)) {
+      if (CanScroll(*cur_node)) {
         result.chain.push_front(cur_node->GetDomNodeId());
         // If `cur_node` is scrollable, respect its overscroll-behavior to
         // determine whether the scroll should bubble to parent elements.
@@ -139,7 +139,7 @@ ScrollManager::ScrollChainResult ScrollManager::RecomputeScrollChain(
   return result;
 }
 
-bool ScrollManager::CanScroll(const Node& current_node, bool for_autoscroll) {
+bool ScrollManager::CanScroll(const Node& current_node) {
   LayoutBox* scrolling_box = current_node.GetLayoutBox();
   if (auto* element = DynamicTo<Element>(current_node))
     scrolling_box = element->GetLayoutBoxForScrolling();
@@ -148,23 +148,20 @@ bool ScrollManager::CanScroll(const Node& current_node, bool for_autoscroll) {
 
   // We need to always add the global root scroller even if it isn't scrollable
   // since we can always pinch-zoom and scroll as well as for overscroll
-  // effects. If autoscrolling, ignore this condition because we latch on
-  // to the deepest autoscrollable node.
-  if (scrolling_box->IsGlobalRootScroller() && !for_autoscroll)
+  // effects.
+  if (scrolling_box->IsGlobalRootScroller()) {
     return true;
+  }
 
   // If this is the main LayoutView of an active viewport (outermost main
   // frame), and it's not the root scroller, that means we have a non-default
   // root scroller on the page.  In this case, attempts to scroll the LayoutView
   // should cause panning of the visual viewport as well so ensure it gets added
   // to the scroll chain.  See LTHI::ApplyScroll for the equivalent behavior in
-  // CC. Node::NativeApplyScroll contains a special handler for this case. If
-  // autoscrolling, ignore this condition because we latch on to the deepest
-  // autoscrollable node.
+  // CC. Node::NativeApplyScroll contains a special handler for this case.
   if (IsA<LayoutView>(scrolling_box) &&
       current_node.GetDocument().IsInMainFrame() &&
-      frame_->GetPage()->GetVisualViewport().IsActiveViewport() &&
-      !for_autoscroll) {
+      frame_->GetPage()->GetVisualViewport().IsActiveViewport()) {
     return true;
   }
 
