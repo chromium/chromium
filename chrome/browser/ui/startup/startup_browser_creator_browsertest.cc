@@ -1288,7 +1288,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   const auto wait_for_load_stop_for_browser =
       [](BrowserWindowInterface* browser) {
         TabStripModel* const tab_strip_model = browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); ++i) {
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
           content::WebContents* const contents =
               tab_strip_model->GetWebContentsAt(i);
           EXPECT_TRUE(content::WaitForLoadStop(contents));
@@ -1314,7 +1314,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
   EXPECT_NO_FATAL_FAILURE(
       wait_for_load_stop_for_browser(pref_urls_opened_browser));
   tab_strip_model = pref_urls_opened_browser->GetTabStripModel();
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+  EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(t1_url, tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
   EXPECT_EQ(t2_url, tab_strip_model->GetWebContentsAt(1)->GetVisibleURL());
   EXPECT_EQ(0, tab_strip_model->active_index());

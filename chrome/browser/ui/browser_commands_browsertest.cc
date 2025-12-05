@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
                                        ui::PAGE_TRANSITION_LINK, false));
   }
 
-  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->GetTabCount());
+  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->count());
 
   // Add second last tab to split view with the last tab.
   GetTabStripModel(browser())->AddToNewSplit(
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
   EXPECT_TRUE(chrome::ExecuteCommand(browser(), IDC_CLOSE_TAB));
 
   EXPECT_FALSE(GetTabStripModel(browser())->IsActiveTabSplit());
-  EXPECT_EQ(2, GetTabStripModel(browser())->GetTabCount());
+  EXPECT_EQ(2, GetTabStripModel(browser())->count());
 }
 
 // All tabs in the selection model get closed.
@@ -342,7 +342,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
                                        ui::PAGE_TRANSITION_LINK, false));
   }
 
-  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->GetTabCount());
+  EXPECT_EQ(kTabCount, GetTabStripModel(browser())->count());
 
   // Add second last tab to split view with the last tab.
   GetTabStripModel(browser())->AddToNewSplit(
@@ -360,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsWithCloseHotkeySplitViewTest,
 
   // Only one, non-split tab should remain.
   EXPECT_FALSE(GetTabStripModel(browser())->IsActiveTabSplit());
-  EXPECT_EQ(1, GetTabStripModel(browser())->GetTabCount());
+  EXPECT_EQ(1, GetTabStripModel(browser())->count());
 }
 
 // Check that the ThirdPartyCookieBreakageIndicator UKM is sent on Reload.

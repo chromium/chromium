@@ -163,7 +163,7 @@ TEST_F(MemorySaverBubbleViewTest,
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+  EXPECT_EQ(2, tab_strip_model->count());
 
   SetTabDiscardState(0, true);
   SetTabDiscardState(1, true);

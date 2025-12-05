@@ -138,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
         browser(), GURL(chrome::kChromeUINewTabPageURL),
         WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -152,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnNTP,
         browser(), GURL(chrome::kChromeUINewTabPageURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -189,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnSRP,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(srp_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(1, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -264,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::NEW_BACKGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }
@@ -277,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(ZeroSuggestPrefetchTabHelperBrowserTestOnWeb,
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(web_url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    ASSERT_EQ(3, browser()->tab_strip_model()->GetTabCount());
+    ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
     testing::Mock::VerifyAndClearExpectations(controller_);
   }

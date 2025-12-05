@@ -58,8 +58,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
           WaitForShow(TabMenuModel::kAddNewTabAdjacentMenuItem),
           SelectMenuItem(TabMenuModel::kAddNewTabAdjacentMenuItem)),
       // Verify functionality of command in the Tab Context Menu.
-      CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 2));
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,

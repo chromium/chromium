@@ -344,12 +344,12 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest, TestDeclutterTabs) {
   std::vector<tabs::TabInterface*> stale_tabs =
       tab_declutter_controller()->GetStaleTabs();
 
-  int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int initial_tab_count = browser()->tab_strip_model()->count();
   int stale_tab_count = stale_tabs.size();
   tab_declutter_controller()->DeclutterTabs(stale_tabs, {});
 
   // Verify that the number of tabs has decreased by the number of stale tabs.
-  int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int remaining_tab_count = browser()->tab_strip_model()->count();
   EXPECT_EQ(remaining_tab_count, initial_tab_count - stale_tab_count);
 }
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
@@ -368,13 +368,13 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
   std::vector<tabs::TabInterface*> stale_tabs =
       tab_declutter_controller()->GetStaleTabs();
 
-  EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
+  EXPECT_EQ(browser_two->tab_strip_model()->count(), 1);
   browser_two->browser_window_features()
       ->tab_declutter_controller()
       ->DeclutterTabs(stale_tabs, {});
 
   // Verify that the number of tabs has not decreased in second browser.
-  EXPECT_EQ(browser_two->tab_strip_model()->GetTabCount(), 1);
+  EXPECT_EQ(browser_two->tab_strip_model()->count(), 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabDeclutterControllerBrowserTest,
@@ -474,8 +474,7 @@ class TabDeclutterControllerDuplicateTabsTest
       content::WebContents* content =
           browser()
               ->tab_strip_model()
-              ->GetTabAtIndex(browser()->tab_strip_model()->GetTabCount() - 1 -
-                              i)
+              ->GetTabAtIndex(browser()->tab_strip_model()->count() - 1 - i)
               ->GetContents();
       content::TestNavigationObserver observer(content);
       content->GetController().LoadURLWithParams(
@@ -594,11 +593,11 @@ IN_PROC_BROWSER_TEST_F(TabDeclutterControllerDuplicateTabsTest,
   std::vector<tabs::TabInterface*> stale_tabs =
       tab_declutter_controller()->GetStaleTabs();
 
-  int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int initial_tab_count = browser()->tab_strip_model()->count();
   int stale_tab_count = stale_tabs.size();
   tab_declutter_controller()->DeclutterTabs(stale_tabs, {duplicate_url_1});
 
   // Verify that the number of tabs has decreased by the number of stale tabs.
-  int remaining_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int remaining_tab_count = browser()->tab_strip_model()->count();
   EXPECT_EQ(remaining_tab_count, initial_tab_count - (stale_tab_count + 2));
 }

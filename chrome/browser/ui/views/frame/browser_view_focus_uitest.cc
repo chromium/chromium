@@ -310,7 +310,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewFocusSideBySideTest,
   // Close the right tab, then create another split.
   browser()->tab_strip_model()->CloseWebContentsAt(1,
                                                    TabCloseTypes::CLOSE_NONE);
-  ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   ASSERT_TRUE(AddTabAtIndex(1, url, ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->AddToNewSplit(

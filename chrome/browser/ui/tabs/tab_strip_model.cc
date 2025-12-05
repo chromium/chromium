@@ -728,7 +728,7 @@ TabStripModelChange::Remove TabStripModel::ProcessTabsForDetach(
 void TabStripModel::UpdateSelectionModelForDetach(
     gfx::Range tab_indices,
     std::optional<int> next_selected_index) {
-  const bool closed_all_tabs = (GetTabCount() == 0);
+  const bool closed_all_tabs = (count() == 0);
   bool active_tab_removed = tab_indices.Contains(gfx::Range(active_index()));
 
   if (closed_all_tabs) {
@@ -2349,10 +2349,6 @@ void TabStripModel::NotifySplitTabAttached(
       split_id, tabs_in_split,
       SplitTabChange::SplitTabAddReason::kInsertedFromAnotherTabstrip,
       *GetSplitData(split_id)->visual_data());
-}
-
-int TabStripModel::GetTabCount() const {
-  return contents_data_->TabCountRecursive();
 }
 
 TabStripModel::TabIterator TabStripModel::begin() const {

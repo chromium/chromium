@@ -81,9 +81,8 @@ class GlicSettingsUtilUiTest
         Do([this, f] { f(browser()->profile()); }), InstrumentTab(kSettingsTab),
         WaitForWebContentsReady(
             kSettingsTab, chrome::GetSettingsUrl(chrome::kGlicSettingsSubpage)),
-        CheckResult(
-            [this] { return browser()->tab_strip_model()->GetTabCount(); }, 3,
-            "CheckTabCount"));
+        CheckResult([this] { return browser()->tab_strip_model()->count(); }, 3,
+                    "CheckTabCount"));
   }
 
   auto SetFRECompletion(glic::prefs::FreStatus status) {

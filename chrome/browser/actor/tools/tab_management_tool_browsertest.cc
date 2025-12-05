@@ -43,7 +43,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
       embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
-  const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  const int initial_tab_count = browser()->tab_strip_model()->count();
 
   std::unique_ptr<ToolRequest> action =
       MakeCreateTabRequest(browser()->session_id(), /*foreground=*/true);
@@ -51,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(GURL("about:blank"),
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
       embedded_test_server()->GetURL("/actor/blank.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), start_tab_url));
 
-  const int initial_tab_count = browser()->tab_strip_model()->GetTabCount();
+  const int initial_tab_count = browser()->tab_strip_model()->count();
 
   std::unique_ptr<ToolRequest> action =
       MakeCreateTabRequest(browser()->session_id(), /*foreground=*/false);
@@ -71,7 +71,7 @@ IN_PROC_BROWSER_TEST_F(ActorTabManagementToolBrowserTest,
   actor_task().Act(ToRequestList(action), result.GetCallback());
   ExpectOkResult(result);
 
-  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(initial_tab_count + 1, browser()->tab_strip_model()->count());
   EXPECT_EQ(start_tab_url,
             browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }

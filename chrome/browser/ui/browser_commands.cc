@@ -1517,7 +1517,7 @@ void FocusNextTabGroup(Browser* browser) {
       tab_strip_model->GetTabGroupForTab(current_index);
 
   // Find the next tab group and focus its first tab.
-  int count = tab_strip_model->GetTabCount();
+  int count = tab_strip_model->count();
   for (int i = 1; i < count; ++i) {
     int new_index = (current_index + i) % count;
     std::optional<tab_groups::TabGroupId> new_group_id =
@@ -1542,7 +1542,7 @@ void FocusPreviousTabGroup(Browser* browser) {
       tab_strip_model->GetTabGroupForTab(current_index);
 
   // Find the next tab group and focus its first tab.
-  int count = tab_strip_model->GetTabCount();
+  int count = tab_strip_model->count();
   for (int i = 1; i < count; ++i) {
     int offset = count - i;
     int new_index = (current_index + offset) % count;

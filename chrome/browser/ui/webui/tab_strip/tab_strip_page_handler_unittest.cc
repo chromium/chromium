@@ -462,8 +462,8 @@ TEST_F(TabStripPageHandlerTest, NoopMoveGroupAcrossWindowsBreaksContiguity) {
   int new_index = 1;
   handler()->MoveGroup(group_id.ToString(), new_index);
 
-  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->GetTabCount());
-  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, new_browser.get()->tab_strip_model()->count());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   // Close all tabs before destructing.
   new_browser.get()->tab_strip_model()->CloseAllTabs();
@@ -697,7 +697,7 @@ TEST_F(TabStripPageHandlerTest, CloseTab) {
                           browser()->tab_strip_model()->GetWebContentsAt(0)),
                       false /* closed_by_swiped */);
 
-  ASSERT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(1, browser()->tab_strip_model()->count());
 }
 
 TEST_F(TabStripPageHandlerTest, RemoveTabIfInvalidContextMenu) {

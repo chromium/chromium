@@ -599,7 +599,7 @@ void BrowserRootView::NavigateToDroppedUrls(
 
   // If the insertion point is off the end of the actual tab count, something
   // went wrong between when the drop was calculated and now. Bail.
-  if (drop_info->index->index > model->GetTabCount()) {
+  if (drop_info->index->index > model->count()) {
     return;
   }
 

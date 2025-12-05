@@ -35,14 +35,14 @@ class VerticalTabStripBottomContainerInteractiveUiTest
 IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
                        VerifyNewTabButton) {
   RunTestSequence(
-      CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 1),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       EnsurePresent(kNewTabButtonElementId),
       PressButton(kNewTabButtonElementId,
                   ui::test::InteractionTestUtil::InputType::kDontCare),
-      CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 2));
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
 }
 
 // This test checks that we can click the tab group button in the bottom
@@ -50,8 +50,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
                        VerifyTabGroupButton) {
   RunTestSequence(
-      CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 1),
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  1),
       WaitForShow(kVerticalTabStripBottomContainerElementId),
       EnsurePresent(kSavedTabGroupButtonElementId),
       PressButton(kSavedTabGroupButtonElementId,
@@ -59,8 +59,8 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
       EnsurePresent(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
       SelectMenuItem(tab_groups::STGEverythingMenu::kCreateNewTabGroup),
       WaitForShow(kTabGroupEditorBubbleId),
-      CheckResult(
-          [this]() { return browser()->tab_strip_model()->GetTabCount(); }, 2));
+      CheckResult([this]() { return browser()->tab_strip_model()->count(); },
+                  2));
 }
 
 }  // namespace base::test

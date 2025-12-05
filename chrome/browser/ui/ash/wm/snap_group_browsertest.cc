@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, RotatedSnapGroup) {
 IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
   aura::Window* window1 = browser()->window()->GetNativeWindow();
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
-  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   aura::Window* window2 =
       CreateBrowser(browser()->profile())->window()->GetNativeWindow();
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDragging) {
 IN_PROC_BROWSER_TEST_F(SnapGroupBrowserTest, DoNotBreakGroupOnTabDetaching) {
   aura::Window* window1 = browser()->window()->GetNativeWindow();
   chrome::AddTabAt(browser(), GURL(chrome::kChromeUITabSearchURL), -1, true);
-  ASSERT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(2, browser()->tab_strip_model()->count());
 
   aura::Window* window2 =
       CreateBrowser(browser()->profile())->window()->GetNativeWindow();

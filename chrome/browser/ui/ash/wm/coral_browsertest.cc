@@ -595,7 +595,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, CloseWindowRemoveTwoChips) {
   ASSERT_EQ(GetBirchChipsNum(), 2u);
 
   // Closing the first browser with all items in groups.
-  EXPECT_EQ(8, browser->GetTabStripModel()->GetTabCount());
+  EXPECT_EQ(8, browser->GetTabStripModel()->count());
   CloseBrowserAndNativeWindowSynchronously(browser);
 
   // Two chips are removed.
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(CoralBrowserTest, MoveWindowToOtherDeskUpdateChip) {
   auto* new_desk = desks_controller->GetDeskAtIndex(1);
 
   // Move the browser window to another desk.
-  ASSERT_EQ(8, regular_browser->GetTabStripModel()->GetTabCount());
+  ASSERT_EQ(8, regular_browser->GetTabStripModel()->count());
   auto* browser_window = regular_browser->GetWindow()->GetNativeWindow();
   desks_controller->MoveWindowFromActiveDeskTo(
       browser_window, new_desk, browser_window->GetRootWindow(),

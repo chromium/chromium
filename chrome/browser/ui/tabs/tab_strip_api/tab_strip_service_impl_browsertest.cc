@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   mojo::Remote<TabStripService> remote;
   tab_strip_service_mojo_handler_->Accept(remote.BindNewPipeAndPassReceiver());
 
-  const int starting_num_tabs = GetTabStripModel()->GetTabCount();
+  const int starting_num_tabs = GetTabStripModel()->count();
 
   base::RunLoop create_loop;
   remote->CreateTabAt(tabs_api::Position(0),
@@ -479,7 +479,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   create_loop.Run();
 
   // We should now have one more tab than when we first started.
-  ASSERT_EQ(starting_num_tabs + 1, GetTabStripModel()->GetTabCount());
+  ASSERT_EQ(starting_num_tabs + 1, GetTabStripModel()->count());
   const auto* interface = GetTabStripModel()->GetTabAtIndex(0);
 
   base::RunLoop close_loop;
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, CloseTabs) {
   close_loop.Run();
 
   // We should be back to where we started.
-  ASSERT_EQ(starting_num_tabs, GetTabStripModel()->GetTabCount());
+  ASSERT_EQ(starting_num_tabs, GetTabStripModel()->count());
 }
 
 IN_PROC_BROWSER_TEST_F(TabStripServiceImplBrowserTest, ActivateTab) {

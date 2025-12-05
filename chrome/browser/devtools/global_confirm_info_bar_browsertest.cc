@@ -85,7 +85,7 @@ class GlobalConfirmInfoBarTest : public PlatformBrowserTest {
   }
 
   // Returns the number of tabs in the current window.
-  int GetTabCount() { return browser()->tab_strip_model()->GetTabCount(); }
+  int GetTabCount() { return browser()->tab_strip_model()->count(); }
 #endif  // BUILDFLAG(IS_ANDROID)
 };
 

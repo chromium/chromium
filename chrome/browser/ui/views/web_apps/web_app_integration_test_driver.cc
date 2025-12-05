@@ -587,7 +587,7 @@ content::WebContents* GetAnyWebContentsForAppId(const webapps::AppId& app_id) {
       [&app_id, &result](BrowserWindowInterface* browser) {
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+        for (int i = 0; i < tab_strip_model->count(); i++) {
           content::WebContents* const web_contents =
               tab_strip_model->GetWebContentsAt(i);
           const webapps::AppId* const web_contents_id =
@@ -3283,7 +3283,7 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
        site](BrowserWindowInterface* browser) {
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+        for (int i = 0; i < tab_strip_model->count(); i++) {
           auto site_config = GetSiteConfiguration(site);
           content::WebContents* const web_contents =
               tab_strip_model->GetWebContentsAt(i);
@@ -3939,7 +3939,7 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
 
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+        for (int i = 0; i < tab_strip_model->count(); i++) {
           const webapps::AppId* app_id =
               WebAppTabHelper::GetAppId(tab_strip_model->GetWebContentsAt(i));
           if (app_id && *app_id == GetAppIdBySiteMode(site)) {
@@ -3969,7 +3969,7 @@ void WebAppIntegrationTestDriver::CheckSiteLoadedInTab(Site site) {
 
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); i++) {
+        for (int i = 0; i < tab_strip_model->count(); i++) {
           const GURL committed_url =
               tab_strip_model->GetWebContentsAt(i)->GetLastCommittedURL();
           found_urls.push_back(committed_url.possibly_invalid_spec());

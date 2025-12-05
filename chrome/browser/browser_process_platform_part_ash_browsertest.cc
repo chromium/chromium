@@ -125,7 +125,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   auto* const tab_strip_model = new_browser->GetTabStripModel();
-  EXPECT_EQ(1, tab_strip_model->GetTabCount());
+  EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 }
@@ -177,7 +177,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(pref_urls_opened_browser));
   tab_strip_model = pref_urls_opened_browser->GetTabStripModel();
-  EXPECT_EQ(3, tab_strip_model->GetTabCount());
+  EXPECT_EQ(3, tab_strip_model->count());
   EXPECT_EQ(restore_url_1,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
   EXPECT_EQ(restore_url_2,
@@ -194,7 +194,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();
-  EXPECT_EQ(1, tab_strip_model->GetTabCount());
+  EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 }
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(pref_urls_opened_browser));
   tab_strip_model = pref_urls_opened_browser->GetTabStripModel();
-  EXPECT_EQ(3, tab_strip_model->GetTabCount());
+  EXPECT_EQ(3, tab_strip_model->count());
   EXPECT_EQ(restore_url_1,
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
   EXPECT_EQ(restore_url_2,
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(BrowserProcessPlatformPartAshBrowsertest,
   EXPECT_NO_FATAL_FAILURE(
       WaitForLoadStopForBrowserWindowInterface(new_browser));
   tab_strip_model = new_browser->GetTabStripModel();
-  EXPECT_EQ(1, tab_strip_model->GetTabCount());
+  EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
             tab_strip_model->GetWebContentsAt(0)->GetVisibleURL());
 }

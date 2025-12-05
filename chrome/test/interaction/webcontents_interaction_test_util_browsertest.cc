@@ -1662,10 +1662,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto* const model = browser()->tab_strip_model();
-  const int count = model->GetTabCount();
+  const int count = model->count();
   const int index = model->active_index();
   util->LoadPageInNewTab(url, false);
-  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(count + 1, model->count());
   EXPECT_EQ(index, model->active_index());
 }
 
@@ -1676,10 +1676,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
   auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
       browser(), kWebContentsElementId);
   auto* const model = browser()->tab_strip_model();
-  const int count = model->GetTabCount();
+  const int count = model->count();
   const int index = model->active_index();
   util->LoadPageInNewTab(url, true);
-  EXPECT_EQ(count + 1, model->GetTabCount());
+  EXPECT_EQ(count + 1, model->count());
   EXPECT_EQ(index + 1, model->active_index());
 }
 

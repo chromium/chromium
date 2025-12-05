@@ -189,7 +189,7 @@ void TabDeclutterController::LogExcludedDuplicateTabMetrics() {
   int excluded_tab_count = 0;
 
   if (!excluded_urls_.empty()) {
-    for (int index = 0; index < tab_strip_model_->GetTabCount(); index++) {
+    for (int index = 0; index < tab_strip_model_->count(); index++) {
       if (excluded_urls_.contains(tab_strip_model_->GetTabAtIndex(index)
                                       ->GetContents()
                                       ->GetLastCommittedURL()
@@ -369,7 +369,7 @@ bool TabDeclutterController::DeclutterStaleTabsNudgeCriteriaMet(
     return false;
   }
 
-  const int total_tab_count = tab_strip_model_->GetTabCount();
+  const int total_tab_count = tab_strip_model_->count();
 
   if (total_tab_count < kMinTabCountForInactiveTabNudge) {
     return false;

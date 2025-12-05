@@ -560,7 +560,7 @@ void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
 DeclutterTriggerCTRBucket TabSearchContainer::GetDeclutterTriggerBucket(
     bool clicked) {
   const auto total_tab_count =
-      tab_declutter_controller_->tab_strip_model()->GetTabCount();
+      tab_declutter_controller_->tab_strip_model()->count();
   const auto stale_tab_count = tab_declutter_controller_->GetStaleTabs().size();
 
   if (total_tab_count < 15) {

@@ -750,7 +750,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
 
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
@@ -782,7 +782,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
   // There should still be two browser windows.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
   EXPECT_EQ(browser(), chrome::FindLastActive());
@@ -802,7 +802,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   WaitForTestSystemAppInstall();
   content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
@@ -836,7 +836,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // There should still be two browser windows.
   EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 2 tabs.
-  EXPECT_EQ(2, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
   // After opening the URL, the regular browser should be the most recently
   // active browser.
   EXPECT_EQ(browser(), chrome::FindLastActive());
@@ -855,7 +855,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 1 tab.
-  EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
   // The tab should be the default "about:blank" URL.
   EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
 
@@ -906,7 +906,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
     // There should only be 1 regular browser.
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
     // The regular browser should still only have 1 tab.
-    EXPECT_EQ(1, browser()->tab_strip_model()->GetTabCount());
+    EXPECT_EQ(1, browser()->tab_strip_model()->count());
     // The tab should still be the default "about:blank" URL.
     EXPECT_TRUE(GetActiveWebContents()->GetVisibleURL().IsAboutBlank());
   }

@@ -187,7 +187,7 @@ TEST_P(MemorySaverChipViewTest, ShouldCollapseChipAfterNavigatingTabs) {
       browser()->tab_strip_model()->GetWebContentsAt(0);
   content::WebContents* web_contents_1 =
       browser()->tab_strip_model()->GetWebContentsAt(1);
-  EXPECT_EQ(2, tab_strip_model->GetTabCount());
+  EXPECT_EQ(2, tab_strip_model->count());
 
   SetTabDiscardState(0, true);
   EXPECT_TRUE(GetPageActionView()->ShouldShowLabel());

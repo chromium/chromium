@@ -309,7 +309,7 @@ class ReloadPagesAction : public Action {
           if (model->profile() != profile) {
             return true;
           }
-          for (int i = 0; i < model->GetTabCount(); i++) {
+          for (int i = 0; i < model->count(); i++) {
             model->GetWebContentsAt(i)->GetController().Reload(
                 content::ReloadType::NORMAL,
                 /*check_for_repost=*/true);

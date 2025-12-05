@@ -1285,17 +1285,16 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDeclutterUnusedTabChanges) {
   CloseTab(4);
   EXPECT_EQ(handler()->stale_tabs_for_testing().size(), 6u);
 
-  fake_tab_strip_model()->AddToNewGroup(
-      {fake_tab_strip_model()->GetTabCount() - 1});
+  fake_tab_strip_model()->AddToNewGroup({fake_tab_strip_model()->count() - 1});
   EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
             4u);
 
-  fake_tab_strip_model()->SetTabPinned(
-      fake_tab_strip_model()->GetTabCount() - 2, true);
+  fake_tab_strip_model()->SetTabPinned(fake_tab_strip_model()->count() - 2,
+                                       true);
   EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
             3u);
 
-  CloseTab(fake_tab_strip_model()->GetTabCount() - 2);
+  CloseTab(fake_tab_strip_model()->count() - 2);
   EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
             2u);
 }
@@ -1347,17 +1346,16 @@ TEST_F(TabSearchPageHandlerDeclutterTest, TabDuplicateURLChanges) {
 
   auto navigation_simulator =
       content::NavigationSimulator::CreateBrowserInitiated(
-          new_url,
-          fake_tab_strip_model()
-              ->GetTabAtIndex(fake_tab_strip_model()->GetTabCount() - 1)
-              ->GetContents());
+          new_url, fake_tab_strip_model()
+                       ->GetTabAtIndex(fake_tab_strip_model()->count() - 1)
+                       ->GetContents());
   navigation_simulator->Commit();
 
   EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),
             4u);
 
   fake_tab_strip_model()->DiscardWebContentsAt(
-      fake_tab_strip_model()->GetTabCount() - 2,
+      fake_tab_strip_model()->count() - 2,
       content::WebContents::Create(
           content::WebContents::CreateParams(testing_profile())));
   EXPECT_EQ(handler()->duplicate_tabs_for_testing()[duplicate_tabs_url].size(),

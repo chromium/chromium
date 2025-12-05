@@ -763,7 +763,7 @@ class InteractiveGlicTestMixin : public T {
 
   auto CheckTabCount(int expected_count) {
     return Api::CheckResult(
-        [this] { return browser()->tab_strip_model()->GetTabCount(); },
+        [this] { return browser()->tab_strip_model()->count(); },
         expected_count, "CheckTabCount");
   }
 

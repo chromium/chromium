@@ -120,7 +120,7 @@ std::vector<TabFetcher::TabEntry> FetchTabs(const Profile* profile) {
         }
         const TabStripModel* const tab_strip_model =
             browser->GetTabStripModel();
-        for (int i = 0; i < tab_strip_model->GetTabCount(); ++i) {
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
           content::WebContents* const web_contents =
               tab_strip_model->GetWebContentsAt(i);
           auto* const tab_delegate =

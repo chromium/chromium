@@ -92,7 +92,7 @@ class HistoryClustersHandlerBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        OpenVisitUrlsInTabGroup) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   std::vector<mojom::URLVisitPtr> visits;
   auto visit1 = mojom::URLVisit::New();
@@ -103,7 +103,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
   visits.push_back(std::move(visit2));
 
   handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
-  ASSERT_EQ(3, tab_strip_model->GetTabCount());
+  ASSERT_EQ(3, tab_strip_model->count());
 
   ASSERT_EQ(tab_strip_model->GetTabGroupForTab(1).value(),
             tab_strip_model->GetTabGroupForTab(2).value());
@@ -118,7 +118,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        DISABLED_OpenVisitUrlsInTabGroupHardCap) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   std::vector<mojom::URLVisitPtr> visits;
   for (size_t i = 0; i < 50; ++i) {
@@ -129,13 +129,13 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 
   // Verify that we open 32 at maximum. Including the NTP, that's 33 total.
   handler_->OpenVisitUrlsInTabGroup(std::move(visits), std::nullopt);
-  ASSERT_EQ(33, tab_strip_model->GetTabCount());
+  ASSERT_EQ(33, tab_strip_model->count());
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIVisitActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIClusterActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUIRelatedSearchActions) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 
@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
 IN_PROC_BROWSER_TEST_F(HistoryClustersHandlerBrowserTest,
                        RecordUnsuccessfulOutcome) {
   auto* tab_strip_model = browser()->tab_strip_model();
-  ASSERT_EQ(1, tab_strip_model->GetTabCount());
+  ASSERT_EQ(1, tab_strip_model->count());
 
   base::HistogramTester histogram_tester;
 

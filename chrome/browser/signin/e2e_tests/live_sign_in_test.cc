@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
                        MANUAL_WebSignInFromExistingChromeSignInTab) {
   base::HistogramTester histogram_tester;
   sign_in_functions.StartSignInFromSettings();
-  int current_tab_count = browser()->tab_strip_model()->GetTabCount();
+  int current_tab_count = browser()->tab_strip_model()->count();
 
   std::optional<TestAccountSigninCredentials> test_account =
       GetTestAccounts()->GetAccount("TEST_ACCOUNT_1");
@@ -693,11 +693,11 @@ IN_PROC_BROWSER_TEST_F(LiveSignInGaiaIntegrationTest,
       WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED, false);
   browser()->tab_strip_model()->GetActiveWebContents()->OpenURL(
       params, /*navigation_handle_callback=*/{});
-  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
 
   sign_in_functions.SignInFromCurrentPage(
       browser()->tab_strip_model()->GetActiveWebContents(), *test_account, 0);
-  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->GetTabCount());
+  ASSERT_EQ(current_tab_count, browser()->tab_strip_model()->count());
 
   // The user should not be signed-in in the browser.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));

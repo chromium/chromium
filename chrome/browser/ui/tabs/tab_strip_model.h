@@ -227,10 +227,6 @@ class TabStripModel {
   // Retrieve the number of WebContentses/emptiness of the TabStripModel.
   int count() const;
 
-  // TODO(crbug.com/417291958) remove this function since its the same as
-  // count().
-  int GetTabCount() const;
-
   bool empty() const;
 
   // Retrieve the Profile associated with this TabStripModel.

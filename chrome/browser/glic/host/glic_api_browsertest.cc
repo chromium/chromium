@@ -957,10 +957,9 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest, testCreateTabByClickingOnLink) {
   ASSERT_TRUE(guest_frame);
   ExecuteJsTest();
   ASSERT_TRUE(base::test::RunUntil([&]() {
-    return InProcessBrowserTest::browser()->tab_strip_model()->GetTabCount() ==
-           2;
+    return InProcessBrowserTest::browser()->tab_strip_model()->count() == 2;
   })) << "Timed out waiting for tab count to increase. Tab count = "
-      << InProcessBrowserTest::browser()->tab_strip_model()->GetTabCount();
+      << InProcessBrowserTest::browser()->tab_strip_model()->count();
   // The guest frame shouldn't change.
   ASSERT_EQ(guest_frame, FindGlicGuestMainFrame());
 

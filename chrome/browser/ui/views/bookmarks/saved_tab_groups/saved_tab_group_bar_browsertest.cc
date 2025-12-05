@@ -82,7 +82,7 @@ IN_PROC_BROWSER_TEST_P(SavedTabGroupBarBrowserTest,
   ASSERT_TRUE(saved_group);
   EXPECT_EQ(group_id, saved_group->local_group_id());
 
-  const int original_model_count = model->GetTabCount();
+  const int original_model_count = model->count();
   const base::Uuid guid = saved_group->saved_guid();
   std::optional<LocalTabGroupID> opened_group_id = service->OpenTabGroup(
       guid, std::make_unique<TabGroupActionContextDesktop>(
