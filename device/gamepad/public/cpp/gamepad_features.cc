@@ -32,6 +32,12 @@ BASE_FEATURE(kEnableSimulatedGamepadDataFetcher,
 // Enables gamepad raw input change events.
 BASE_FEATURE(kGamepadRawInputChangeEvent, base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Ignores PlayStation 5 gamepads (DualSense, DualSense Edge) in
+// WgiDataFetcherWin to avoid double enumeration.
+BASE_FEATURE(kIgnorePS5GamepadsInWgi, base::FEATURE_ENABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_WIN)
+
 bool IsGamepadMultitouchEnabled() {
   if (base::FeatureList::IsEnabled(kEnableGamepadMultitouch)) {
     return true;
