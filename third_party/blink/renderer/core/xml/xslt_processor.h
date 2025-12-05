@@ -58,6 +58,10 @@ class XSLTProcessor final : public ScriptWrappable {
   XSLTProcessor(PassKey, Document&, WebFeature, ExceptionState&);
   ~XSLTProcessor() override;
 
+  // This returns the current enabled state for XSLT, taking all feature flag
+  // inputs into account.
+  static bool XSLTEnabled();
+
   static void ReportXSLTDisabled(Document& document,
                                  ExceptionState* exception_state);
 

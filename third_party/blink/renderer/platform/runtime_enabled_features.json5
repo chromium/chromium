@@ -6138,17 +6138,21 @@
     },
     {
       // A feature flag that controls whether XSLT is supported by the browser.
+      // The current default state is XSLT-enabled. Note that there is a Finch
+      // trial underway that sets this flag to false for pre-stable channels.
+      // See XSLTSpecialTrial below.
       // crbug.com/435623334.
       name: "XSLT",
       status: "stable",
     },
     {
       // A feature flag that will be used for a "special trial" of disabling
-      // XSLT on pre-stable channels only. If *either* this flag is disabled,
-      // *or* the main "XSLT" flag is disabled, then XSLT will be disabled.
+      // XSLT on pre-stable channels only. This flag does *not* control the
+      // actual enabled state of XSLT. It merely changes the console error that
+      // gets emitted if XSLT is disabled. When this flag is true, a "special
+      // trial run" message is used.
       // crbug.com/435623334.
       name: "XSLTSpecialTrial",
-      status: "stable",
     },
     {
       // If enabled, the `getDisplayMedia()` family of APIs will ask for NV12

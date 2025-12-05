@@ -13048,17 +13048,6 @@ interface XRWebGLSubImage : XRSubImage
     getter motionVectorTextureHeight
     getter motionVectorTextureWidth
     method constructor
-interface XSLTProcessor
-    attribute @@toStringTag
-    method clearParameters
-    method constructor
-    method getParameter
-    method importStylesheet
-    method removeParameter
-    method reset
-    method setParameter
-    method transformToDocument
-    method transformToFragment
 interface webkitMediaStream : EventTarget
     attribute @@toStringTag
     getter active

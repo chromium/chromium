@@ -47,7 +47,6 @@ PASS URL.length is 1
 PASS XMLHttpRequest.length is 0
 PASS XMLSerializer.length is 0
 PASS XPathEvaluator.length is 0
-PASS XSLTProcessor.length is 0
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -5953,11 +5953,12 @@
     "expires": "Oct 24, 2026"
   },
   "Currently, XSLT is disabled on ToT for tests, via the",
-  "fieldtrial_testing_config.json file which disables the XSLTSpecialTrial",
-  "flag. The `xslt-enabled` virtual suite re-enables the XSLTSpecialTrial",
-  "flag, which should re-enable XSLT. The `xslt-disabled` virtual suite",
-  "re-enables the XSLTSpecialTrial flag and disables the main XSLT flag,",
-  "which should keep XSLT disabled.",
+  "fieldtrial_testing_config.json file which enables the XSLTSpecialTrial",
+  "flag and disables the XSLT flag. The `xslt-enabled` virtual suite just",
+  "enables the XSLT flag, via the base::Feature, which should re-enable",
+  "XSLT. The `xslt-disabled` virtual suite just disables the XSLTSpecialTrial",
+  "flag, and leaves the main XSLT flag disabled, which should just change the",
+  "console messages, keeping XSLT disabled.",
   {
     "prefix": "xslt-enabled",
     "platforms": ["Linux", "Mac", "Win"],
@@ -5988,7 +5989,7 @@
       "http/tests/loading/css-no-cache-revalidation.html",
       "http/tests/permissions-policy/permissions-policy-frame-policy-in-xsl.html"
     ],
-    "args": [ "--enable-blink-features=XSLTSpecialTrial" ],
+    "args": ["--enable-features=XSLT"],
     "owners": [
       "masonf@chromium.org"
     ],
@@ -5996,7 +5997,7 @@
   },
   "This suite just verifies that both XSLT-disabled flags work. The main ToT",
   "code verifies XSLTSpecialTrial, since it is enabled via fieldtrial testing",
-  "config. This virtual suite verifies the XSLT flag.",
+  "config. This virtual suite checks XSLTSpecialTrial=false.",
   {
     "prefix": "xslt-disabled",
     "platforms": ["Linux", "Mac", "Win"],
@@ -6012,10 +6013,7 @@
       "svg/custom/invalid-xslt-crash.svg",
       "external/wpt/fetch/metadata/xslt.https.sub.html"
     ],
-    "args": [
-      "--disable-blink-features=XSLT",
-      "--enable-blink-features=XSLTSpecialTrial"
-    ],
+    "args": ["--disable-blink-features=XSLTSpecialTrial"],
     "owners": [
       "masonf@chromium.org"
     ],

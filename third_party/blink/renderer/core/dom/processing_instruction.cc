@@ -65,6 +65,11 @@ ProcessingInstruction::ProcessingInstruction(Document& document,
 
 ProcessingInstruction::~ProcessingInstruction() = default;
 
+bool ProcessingInstruction::IsXSL() const {
+  CHECK(!is_xsl_ || XSLTProcessor::XSLTEnabled());
+  return is_xsl_;
+}
+
 EventListener* ProcessingInstruction::EventListenerForXSLT() {
   if (!listener_for_xslt_)
     return nullptr;
@@ -133,8 +138,7 @@ bool ProcessingInstruction::CheckStyleSheet(String& href, String& charset) {
   if (!is_css_ && !is_xsl_)
     return false;
 
-  if (is_xsl_ && (!RuntimeEnabledFeatures::XSLTEnabled() ||
-                  !RuntimeEnabledFeatures::XSLTSpecialTrialEnabled())) {
+  if (is_xsl_ && !XSLTProcessor::XSLTEnabled()) {
     XSLTProcessor::ReportXSLTDisabled(GetDocument(),
                                       /*exception_state*/ nullptr);
     is_xsl_ = false;

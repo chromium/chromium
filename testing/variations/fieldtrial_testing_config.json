@@ -28690,8 +28690,11 @@
             "experiments": [
                 {
                     "name": "Disabled",
-                    "disable_features": [
+                    "enable_features": [
                         "XSLTSpecialTrial"
+                    ],
+                    "disable_features": [
+                        "XSLT"
                     ]
                 }
             ]

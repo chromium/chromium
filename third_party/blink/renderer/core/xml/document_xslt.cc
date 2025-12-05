@@ -70,8 +70,7 @@ class DOMContentLoadedListener final
 void DocumentXSLT::ApplyXSLTransform(Document& document,
                                      ProcessingInstruction* pi) {
   DCHECK(!pi->IsLoading());
-  CHECK(RuntimeEnabledFeatures::XSLTEnabled() &&
-        RuntimeEnabledFeatures::XSLTSpecialTrialEnabled());
+  CHECK(XSLTProcessor::XSLTEnabled());
   XSLTProcessor* processor = XSLTProcessor::Create(
       document, ASSERT_NO_EXCEPTION, WebFeature::kXSLProcessingInstruction);
   processor->SetXSLStyleSheet(To<XSLStyleSheet>(pi->sheet()));
