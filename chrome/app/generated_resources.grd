@@ -9906,11 +9906,17 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_READING_MODE_LINE_FOCUS_LABEL" desc="Accessibility label for the line focus menu item in reading mode.">
         Line focus
       </message>
-      <message name="IDS_READING_MODE_VIEW_IN_SIDE_PANEL_LABEL" desc="Accessibility label for the view in side panel menu item in reading mode.">
-        View in side panel
+      <message name="IDS_READING_MODE_SIDE_PANEL_LABEL" desc="Accessibility label for the Side panel option in view menu for reading mode.">
+        Side panel
       </message>
-      <message name="IDS_READING_MODE_VIEW_IN_FULL_SCREEN_LABEL" desc="Accessibility label for the view in full screen menu item in reading mode.">
-        View in full screen
+      <message name="IDS_READING_MODE_VIEW_FULL_PAGE_LABEL" desc="Accessibility label for the Full page option in view menu for reading mode.">
+        Full page
+      </message>
+      <message name="IDS_READING_MODE_FULL_SCREEN_LABEL" desc="Accessibility label for the Full screen option in view menu for reading mode.">
+        Full screen
+      </message>
+      <message name="IDS_READING_MODE_VIEW_LABEL" desc="Accessibility label for the view menu item in reading mode.">
+        View
       </message>
 
       <!-- Google Lens side panel -->

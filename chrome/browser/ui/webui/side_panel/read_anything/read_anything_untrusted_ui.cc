@@ -152,8 +152,10 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
       {"cantUseReadAloud", IDS_READING_MODE_CANT_USE_READ_ALOUD},
       {"lineFocusLabel", IDS_READING_MODE_LINE_FOCUS_LABEL},
-      {"viewInSidePanelLabel", IDS_READING_MODE_VIEW_IN_SIDE_PANEL_LABEL},
-      {"viewInFullScreenLabel", IDS_READING_MODE_VIEW_IN_FULL_SCREEN_LABEL},
+      {"sidePanelLabel", IDS_READING_MODE_SIDE_PANEL_LABEL},
+      {"fullScreenLabel", IDS_READING_MODE_FULL_SCREEN_LABEL},
+      {"fullPageLabel", IDS_READING_MODE_VIEW_FULL_PAGE_LABEL},
+      {"viewLabel", IDS_READING_MODE_VIEW_LABEL},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
