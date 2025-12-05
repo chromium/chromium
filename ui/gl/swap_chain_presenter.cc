@@ -17,8 +17,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/color_space_win.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_conversions.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "ui/gl/dc_layer_overlay_image.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/debug_utils.h"
@@ -43,6 +46,14 @@ constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 // `PresentDCOMPSurface`. These optimizations require `dest_size` to match the
 // monitor size in order for MF to handle fullscreen letterboxing of videos.
 BASE_FEATURE(kDisableVPBLTUpscale, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Limit the video swap chain size that we request from Media Foundation, opting
+// to do upscaling via DWM, rather than VPBLT.
+//
+// This is necessary in the case of very large onscreen size (particularly with
+// scaled up videos that are clipped), where large MF swap chain sizes can
+// negatively affect performance and memory usage.
+BASE_FEATURE(kLimitMFSwapChainSize, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // This flag attempts to enable MPO for P010 SDR video content. The feature
 // should only be enabled when P010 MPO is detected as supported.
@@ -2032,6 +2043,60 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
   // Note: do not intersect clip rect w/ mapped_rect. This will result
   // in Media Foundation scaling the full video to the clipped region,
   // instead of allowing clipping to a portion of the video.
+
+  if (base::FeatureList::IsEnabled(kLimitMFSwapChainSize)) {
+    // We somewhat arbitrarily choose a combination of the monitor size and
+    // video natural size as the upper limit.
+    // - The monitor size upper limit ensures that if the video is a lower
+    //   resolution than the screen and Media Foundation can do better scaling
+    //   than DWM, full screen videos will continue to be upscaled nicely.
+    // - The video natural size upper limit ensures that if a video is a higher
+    //   resolution than the screen size, we will not limit the max scale factor
+    //   to less than 1x.
+    const gfx::SizeF monitor_size = gfx::SizeF(GetMonitorSize());
+    // Note: we assume that the video has an unclipped UV rect, so the
+    // `content_rect` represents the resource size in pixels.
+    const gfx::SizeF video_natural_size =
+        gfx::SizeF(params.content_rect.size());
+    const gfx::SizeF max_swap_chain_size = gfx::SizeF(
+        std::max(monitor_size.width(), video_natural_size.width()),
+        std::max(monitor_size.height(), video_natural_size.height()));
+
+    // Since Chromium's MF renderer assumes that a MF video will be centered and
+    // scaled (maintaining aspect ratio) to fit its quad rect, we must expand
+    // one dimension of our chosen max size to match the onscreen aspect ratio.
+    // The resulting size is the smallest size that encloses
+    // `max_swap_chain_size` while maintaining the aspect ratio of
+    // `overlay_onscreen_rect`.
+    const double onscreen_to_max_size_scale =
+        std::max(max_swap_chain_size.width() / overlay_onscreen_rect.width(),
+                 max_swap_chain_size.height() / overlay_onscreen_rect.height());
+    const gfx::SizeF adjusted_max_swap_chain_size = gfx::ScaleSize(
+        overlay_onscreen_rect.size(), onscreen_to_max_size_scale);
+
+    if (overlay_onscreen_rect.width() > adjusted_max_swap_chain_size.width() ||
+        overlay_onscreen_rect.height() >
+            adjusted_max_swap_chain_size.height()) {
+      TRACE_EVENT("gpu", "PresentDCOMPSurface LimitMFSwapChainSize",
+                  "overlay_onscreen_rect", overlay_onscreen_rect.ToString(),
+                  "adjusted_max_swap_chain_size",
+                  adjusted_max_swap_chain_size.ToString());
+      mapped_rect.set_size(gfx::ToCeiledSize(adjusted_max_swap_chain_size));
+
+      if (!base::FeatureList::IsEnabled(
+              features::kEarlyFullScreenVideoOptimization)) {
+        *visual_transform = gfx::Transform(
+            gfx::AxisTransform2d(1.0f / onscreen_to_max_size_scale,
+                                 visual_transform->To2dTranslation()));
+
+        // Adjust for the difference in the floating point "ideal" size and
+        // integer swap chain size that we request to Media Foundatation.
+        visual_transform->Scale(
+            adjusted_max_swap_chain_size.width() /
+            std::ceil(adjusted_max_swap_chain_size.width()));
+      }
+    }
+  }
 
   pending_dcomp_surface_rect_in_window_ = mapped_rect;
   content_size_ = mapped_rect.size();
