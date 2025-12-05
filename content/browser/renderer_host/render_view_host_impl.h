@@ -242,7 +242,10 @@ class CONTENT_EXPORT RenderViewHostImpl
 
   // Called when the RenderFrameHostImpls/RenderFrameProxyHosts that own this
   // RenderViewHost enter the BackForwardCache.
-  void EnterBackForwardCache();
+  // `new_navigation_request_url` is a URL for the next new page's
+  // navigation_request_url, not the bfcached page's URL.
+  void EnterBackForwardCache(
+      const base::optional_ref<const GURL> new_navigation_request_url);
 
   // Indicates whether or not |this| has received an acknowledgement from
   // renderer that it has enered BackForwardCache.

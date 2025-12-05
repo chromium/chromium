@@ -401,7 +401,8 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool clear_proxies_on_commit,
       const blink::FramePolicy& frame_policy,
       bool allow_paint_holding,
-      const ViewTransitionCommitInfo& view_transition_commit_info);
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Called when this frame's opener is changed to the frame specified by
   // |opener_frame_token| in |source_site_instance_group|'s process.  This
@@ -1109,12 +1110,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |allow_paint_holding| Indicates whether paint holding is allowed.
   // |view_transition_commit_info| Information about the ViewTransition state
   // for the navigation commit.
+  // `navigation_request_url` is a URL for the next new page's
+  // NavigationRequest's url.
   void CommitPending(
       std::unique_ptr<RenderFrameHostImpl> pending_rfh,
       std::unique_ptr<StoredPage> pending_stored_page,
       bool clear_proxies_on_commit,
       bool allow_paint_holding,
-      const ViewTransitionCommitInfo& view_transition_commit_info);
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Helper to call CommitPending() in all necessary cases.
   void CommitPendingIfNecessary(
@@ -1123,14 +1127,16 @@ class CONTENT_EXPORT RenderFrameHostManager {
       bool is_same_document_navigation,
       bool clear_proxies_on_commit,
       bool allow_paint_holding,
-      const ViewTransitionCommitInfo& view_transition_commit_info);
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Runs the unload handler in the old RenderFrameHost, after the new
   // RenderFrameHost has committed.  |old_render_frame_host| will either be
   // deleted or put on the pending delete list during this call.
   void UnloadOldFrame(
       std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
-      const ViewTransitionCommitInfo& view_transition_commit_info);
+      const ViewTransitionCommitInfo& view_transition_commit_info,
+      const base::optional_ref<const GURL> navigation_request_url);
 
   // Discards a RenderFrameHost that was never made active (for active ones
   // UnloadOldFrame is used instead).

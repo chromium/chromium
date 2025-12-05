@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "base/types/optional_ref.h"
 #include "content/common/content_export.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
@@ -45,7 +46,8 @@ class CONTENT_EXPORT PageLifecycleStateManager {
       blink::mojom::PageVisibilityState visibility_state);
   void SetIsInBackForwardCache(
       bool is_in_back_forward_cache,
-      blink::mojom::PageRestoreParamsPtr page_restore_params);
+      blink::mojom::PageRestoreParamsPtr page_restore_params,
+      const base::optional_ref<const GURL> navigation_request_url);
   // Returns true if the page is entering or has fully entered
   // back/forward-cache.
   bool IsInBackForwardCache() const {

@@ -24135,6 +24135,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "delay": "100ms"
+                    },
                     "enable_features": [
                         "SkipPagehideInCommitForDSENavigation"
                     ]

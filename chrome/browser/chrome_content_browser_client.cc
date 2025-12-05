@@ -768,9 +768,6 @@ constexpr char kSecurePaymentConfirmationKeychainAccessGroup[] =
 // ShouldEnableStrictSiteIsolation().
 bool g_disable_advanced_protection_caching_for_tests = false;
 
-BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Warm up the ServiceWorker registration for DSE.
 BASE_FEATURE(kPrewarmServiceWorkerRegistrationForDSE,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -8684,7 +8681,8 @@ void ChromeContentBrowserClient::AddExtraPartForTesting(
 bool ChromeContentBrowserClient::ShouldDispatchPagehideDuringCommit(
     content::BrowserContext* browser_context,
     const GURL& destination_url) {
-  if (!base::FeatureList::IsEnabled(kSkipPagehideInCommitForDSENavigation)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kSkipPagehideInCommitForDSENavigation)) {
     return true;
   }
   auto* template_url_service = TemplateURLServiceFactory::GetForProfile(

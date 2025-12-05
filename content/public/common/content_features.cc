@@ -820,6 +820,18 @@ BASE_FEATURE(kRetryGetVideoCaptureDeviceInfos,
 #endif
 );
 
+// When enabled, skip pagehide-in-commit when navigating to DSE.
+// (See: https://crbug.com/375385416)
+BASE_FEATURE(kSkipPagehideInCommitForDSENavigation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// A parameter to delay pagehide-in-commit.
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kSkipPagehideInCommitForDSENavigationDelay,
+                   &kSkipPagehideInCommitForDSENavigation,
+                   "delay",
+                   base::Milliseconds(0));
+
 // Reuses RenderProcessHost up to a certain threshold. This mode ignores the
 // soft process limit and behaves just like a process-per-site policy for all
 // sites, with an additional restriction that a process may only be reused while

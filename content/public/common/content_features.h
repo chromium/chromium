@@ -238,6 +238,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kRestrictThreadPoolInBackground);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSetHistoryInfoOnViewCreation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kSpareRendererProcessPriority);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRetryGetVideoCaptureDeviceInfos);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kSkipPagehideInCommitForDSENavigation);
+CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(
+    base::TimeDelta,
+    kSkipPagehideInCommitForDSENavigationDelay);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kProcessPerSiteUpToMainFrameThreshold);
 CONTENT_EXPORT extern const base::FeatureParam<int>
     kProcessPerSiteMainFrameThreshold;

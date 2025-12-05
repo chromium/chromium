@@ -600,7 +600,7 @@ void Navigator::DidNavigate(
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
       navigation_request->commit_params().frame_policy, allow_paint_holding,
-      view_transition_commit_info);
+      view_transition_commit_info, navigation_request->GetURL());
 
   // Reset the old frame host's weak pointer to auction initiator page when it
   // is a cross-document navigation and the frame does not go into bfcache.
