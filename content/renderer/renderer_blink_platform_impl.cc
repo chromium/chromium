@@ -41,7 +41,6 @@
 #include "components/viz/common/features.h"
 #include "content/child/child_process.h"
 #include "content/common/features.h"
-#include "content/common/user_level_memory_pressure_signal_features.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
@@ -1150,33 +1149,7 @@ void RendererBlinkPlatformImpl::SetPrivateMemoryFootprint(
 }
 
 bool RendererBlinkPlatformImpl::IsUserLevelMemoryPressureSignalEnabled() {
-  return features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices() ||
-         features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices() ||
-         features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices();
-}
-
-std::pair<base::TimeDelta, base::TimeDelta> RendererBlinkPlatformImpl::
-    InertAndMinimumIntervalOfUserLevelMemoryPressureSignal() {
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
-    return std::make_pair(
-        features::InertIntervalFor3GbDevices(),
-        features::MinUserMemoryPressureIntervalOn3GbDevices());
-  }
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
-    return std::make_pair(
-        features::InertIntervalFor4GbDevices(),
-        features::MinUserMemoryPressureIntervalOn4GbDevices());
-  }
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
-    return std::make_pair(
-        features::InertIntervalFor6GbDevices(),
-        features::MinUserMemoryPressureIntervalOn6GbDevices());
-  }
-
-  constexpr std::pair<base::TimeDelta, base::TimeDelta>
-      kDefaultInertAndMinInterval =
-          std::make_pair(base::TimeDelta::Min(), base::Minutes(10));
-  return kDefaultInertAndMinInterval;
+  return base::SysInfo::Is4GbDevice() || base::SysInfo::Is6GbDevice();
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

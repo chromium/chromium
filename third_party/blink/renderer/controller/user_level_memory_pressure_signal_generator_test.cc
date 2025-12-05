@@ -153,36 +153,6 @@ class UserLevelMemoryPressureSignalGeneratorTest
 };
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
-       GenerateImmediatelyIfInertIntervalIsNegative) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
-      CreateUserLevelMemoryPressureSignalGenerator(base::TimeDelta::Min()));
-
-  // Doesn't see whether loading is finished or not.
-  generator->OnRAILModeChanged(RAILMode::kLoad);
-
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  generator->RequestMemoryPressureSignal();
-  EXPECT_EQ(1u, memory_pressure_count_);
-
-  AdvanceClock(base::Minutes(1));
-
-  // Since |minimum_interval_| has not passed yet, no more memory pressure
-  // signals is generated.
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  generator->RequestMemoryPressureSignal();
-  EXPECT_EQ(1u, memory_pressure_count_);
-
-  AdvanceClock(kMinimumInterval - base::Minutes(1));
-  generator->OnRAILModeChanged(RAILMode::kDefault);
-
-  // |minimum_interval_| has passed. Another memory pressure signal is
-  // generated.
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  generator->RequestMemoryPressureSignal();
-  EXPECT_EQ(2u, memory_pressure_count_);
-}
-
-TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateImmediatelyNotLoading) {
   std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));

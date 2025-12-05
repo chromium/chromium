@@ -20,12 +20,24 @@
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
-#if BUILDFLAG(IS_ANDROID)
-
 namespace blink {
 
 namespace {
+
+// Each renderer does not generate memory pressure signals until the interval
+// has passed after page loading is finished. This parameter must be larger
+// than or equal to the time from navigation start to the time the
+// DOMContentLoaded event is finished. 5min is much larger than
+// the 99p of PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired
+// (14sec) and we expect the DOMContentLoaded events will finish in 5min.
+// Negative inert interval disables delayed memory pressure signals
+// This is intended to keep the old behavior.
+constexpr base::TimeDelta kDefaultInertInterval = base::Minutes(5);
+
+constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
+
 UserLevelMemoryPressureSignalGenerator* g_instance = nullptr;
+
 }  // namespace
 
 // static
@@ -37,22 +49,18 @@ UserLevelMemoryPressureSignalGenerator::Instance() {
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize(
-    Platform* platform,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  DEFINE_STATIC_LOCAL(
-      UserLevelMemoryPressureSignalGenerator, generator,
-      (std::move(task_runner),
-       platform->InertAndMinimumIntervalOfUserLevelMemoryPressureSignal()));
+  DEFINE_STATIC_LOCAL(UserLevelMemoryPressureSignalGenerator, generator,
+                      (std::move(task_runner)));
   (void)generator;
 }
 
 UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    std::pair<base::TimeDelta, base::TimeDelta> inert_and_minimum_interval)
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : UserLevelMemoryPressureSignalGenerator(
           std::move(task_runner),
-          inert_and_minimum_interval.first,
-          inert_and_minimum_interval.second,
+          kDefaultInertInterval,
+          kDefaultMinimumInterval,
           base::DefaultTickClock::GetInstance(),
           ThreadScheduler::Current()->ToMainThreadScheduler()) {}
 
@@ -67,6 +75,8 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
       minimum_interval_(minimum_interval),
       clock_(clock),
       main_thread_scheduler_(main_thread_scheduler) {
+  CHECK(!inert_interval_.is_negative());
+  CHECK(minimum_interval_.is_positive());
   main_thread_scheduler->AddRAILModeObserver(this);
   DCHECK(!g_instance);
   g_instance = this;
@@ -106,41 +116,39 @@ void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal() {
 
   last_requested_ = now;
 
-  // If |inert_interval_| >= 0, wait |inert_interval_| after loading is
-  // finished.
-  if (!inert_interval_.is_negative()) {
-    // If still loading, make |has_pending_request_| true and do not dispatch
-    // any pressure signals now.
-    if (is_loading_) {
-      has_pending_request_ = true;
-      return;
+  // Wait |inert_interval_| after loading is finished.
+
+  // If still loading, make |has_pending_request_| true and do not dispatch
+  // any pressure signals now.
+  if (is_loading_) {
+    has_pending_request_ = true;
+    return;
+  }
+
+  // Since loading is finished, we will see if |inert_interval_| has passed.
+  base::TimeDelta elapsed = !last_loaded_.has_value()
+                                ? inert_interval_
+                                : (now - last_loaded_.value());
+
+  // If |inert_interval_| has not passed yet, do not dispatch any memory
+  // pressure signals now.
+  if (elapsed < inert_interval_) {
+    // If |has_pending_request_| = true, we will dispatch memory pressure
+    // signal when |inert_interval_ - elapsed| passes.
+
+    // Since we may have already started the timer, i.e.
+    // - start at OnRAILModeChanged(),
+    // - RequestMemoryPressureSignal() was invoked but still waiting
+    // |inert_interval_|. in the case, |has_pending_request_| is true.
+    if (!has_pending_request_) {
+      task_runner_->PostDelayedTask(
+          FROM_HERE,
+          BindOnce(&UserLevelMemoryPressureSignalGenerator::OnTimerFired,
+                   UnretainedWrapper(this)),
+          inert_interval_ - elapsed);
     }
-
-    // Since loading is finished, we will see if |inert_interval_| has passed.
-    base::TimeDelta elapsed = !last_loaded_.has_value()
-                                  ? inert_interval_
-                                  : (now - last_loaded_.value());
-
-    // If |inert_interval_| has not passed yet, do not dispatch any memory
-    // pressure signals now.
-    if (elapsed < inert_interval_) {
-      // If |has_pending_request_| = true, we will dispatch memory pressure
-      // signal when |inert_interval_ - elapsed| passes.
-
-      // Since we may have already started the timer, i.e.
-      // - start at OnRAILModeChanged(),
-      // - RequestMemoryPressureSignal() was invoked but still waiting
-      // |inert_interval_|. in the case, |has_pending_request_| is true.
-      if (!has_pending_request_) {
-        task_runner_->PostDelayedTask(
-            FROM_HERE,
-            BindOnce(&UserLevelMemoryPressureSignalGenerator::OnTimerFired,
-                     UnretainedWrapper(this)),
-            inert_interval_ - elapsed);
-      }
-      has_pending_request_ = true;
-      return;
-    }
+    has_pending_request_ = true;
+    return;
   }
 
   // - if inert_interval_ < 0, dispatch memory pressure signal now.
@@ -210,5 +218,3 @@ void RequestUserLevelMemoryPressureSignal() {
 }
 
 }  // namespace blink
-
-#endif  // BUILDFLAG(IS_ANDROID)

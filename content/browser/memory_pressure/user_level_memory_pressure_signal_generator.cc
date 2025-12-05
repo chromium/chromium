@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "content/browser/child_process_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/common/user_level_memory_pressure_signal_features.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "content/public/browser/child_process_data.h"
 
@@ -39,87 +38,29 @@ namespace {
 constexpr base::TimeDelta kFirstMeasurementInterval = base::Minutes(1);
 constexpr base::TimeDelta kDefaultMeasurementInterval = base::Seconds(4);
 
-// Time interval between measuring total private memory footprint.
-base::TimeDelta MeasurementIntervalFor3GbDevices() {
-  static const base::FeatureParam<base::TimeDelta> kMeasurementInterval{
-      &features::kUserLevelMemoryPressureSignalOn3GbDevices,
-      "measurement_interval", kDefaultMeasurementInterval};
-  return kMeasurementInterval.Get();
-}
-
-base::TimeDelta MeasurementIntervalFor4GbDevices() {
-  return kDefaultMeasurementInterval;
-}
-
-base::TimeDelta MeasurementIntervalFor6GbDevices() {
-  return kDefaultMeasurementInterval;
-}
-
-// The memory threshold: 738 was selected at around the 99th percentile of
-// the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
-// system memory were 3GB.
-constexpr base::ByteCount kMemoryThresholdOf3GbDevices = base::MiB(738);
-
-base::ByteCount MemoryThresholdParamFor3GbDevices() {
-  static const base::FeatureParam<int> kMemoryThresholdParam{
-      &features::kUserLevelMemoryPressureSignalOn3GbDevices,
-      "memory_threshold_mb", kMemoryThresholdOf3GbDevices.InMiB()};
-  return base::MiB(kMemoryThresholdParam.Get());
-}
+constexpr base::TimeDelta kDefaultMinimumInterval = base::Minutes(10);
 
 // The memory threshold: 458 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 4GB.
 constexpr base::ByteCount kMemoryThresholdOf4GbDevices = base::MiB(458);
 
-base::ByteCount MemoryThresholdParamFor4GbDevices() {
-  return kMemoryThresholdOf4GbDevices;
-}
-
 // The memory threshold: 494 was selected at around the 99th percentile of
 // the Memory.Total.PrivateMemoryFootprint reported by Android devices whose
 // system memory were 6GB.
 constexpr base::ByteCount kMemoryThresholdOf6GbDevices = base::MiB(494);
 
-base::ByteCount MemoryThresholdParamFor6GbDevices() {
-  return kMemoryThresholdOf6GbDevices;
-}
-
 }  // namespace
 
 // static
 void UserLevelMemoryPressureSignalGenerator::Initialize() {
-  // The metrics only feature will override the memory pressure signal features
-  // on all devices to determine the most suitable memory heuristics. Memory
-  // pressure signals will not be sent in the experiment group.
-  if (base::FeatureList::IsEnabled(
-          features::kUserLevelMemoryPressureSignalMetricsOnly)) {
-    UserLevelMemoryPressureSignalGenerator::Get().StartMetricsCollection();
-    return;
-  }
-
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn3GbDevices()) {
+  if (base::SysInfo::Is4GbDevice() || base::SysInfo::Is6GbDevice()) {
+    auto memory_threshold = base::SysInfo::Is4GbDevice()
+                                ? kMemoryThresholdOf4GbDevices
+                                : kMemoryThresholdOf6GbDevices;
     UserLevelMemoryPressureSignalGenerator::Get().Start(
-        MemoryThresholdParamFor3GbDevices(), MeasurementIntervalFor3GbDevices(),
-        features::MinUserMemoryPressureIntervalOn3GbDevices());
-    return;
+        memory_threshold, kDefaultMeasurementInterval, kDefaultMinimumInterval);
   }
-
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn4GbDevices()) {
-    UserLevelMemoryPressureSignalGenerator::Get().Start(
-        MemoryThresholdParamFor4GbDevices(), MeasurementIntervalFor4GbDevices(),
-        features::MinUserMemoryPressureIntervalOn4GbDevices());
-    return;
-  }
-
-  if (features::IsUserLevelMemoryPressureSignalEnabledOn6GbDevices()) {
-    UserLevelMemoryPressureSignalGenerator::Get().Start(
-        MemoryThresholdParamFor6GbDevices(), MeasurementIntervalFor6GbDevices(),
-        features::MinUserMemoryPressureIntervalOn6GbDevices());
-    return;
-  }
-
-  // No group defined for >6 GB devices.
 }
 
 // static
