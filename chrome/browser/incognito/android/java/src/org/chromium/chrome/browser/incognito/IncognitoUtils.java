@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -19,7 +18,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileKeyUtil;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.ui.base.DeviceFormFactor;
 
 /** Utilities for working with incognito tabs spread across multiple activities. */
 @NullMarked
@@ -74,9 +72,8 @@ public class IncognitoUtils {
      * @return Whether incognito tabs should open in a separate window.
      */
     public static boolean shouldOpenIncognitoAsWindow() {
-        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext());
+        // TODO(crbug.com/435211685): Enable this feature only for eligible devices.
+        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled();
     }
 
     /**

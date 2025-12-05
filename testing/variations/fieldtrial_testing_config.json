@@ -942,22 +942,6 @@
             ]
         }
     ],
-    "AndroidOpenIncognitoAsWindow": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20251204",
-                    "enable_features": [
-                        "AndroidOpenIncognitoAsWindow",
-                        "TabStripIncognitoMigration"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidPinnedTabs": [
         {
             "platforms": [

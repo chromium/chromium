@@ -24,7 +24,6 @@ import androidx.annotation.VisibleForTesting;
 import com.google.android.material.textfield.TextInputEditText;
 
 import org.chromium.base.Callback;
-import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -32,7 +31,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -128,9 +126,7 @@ public class UiUtils {
     // IncognitoUtils function
     @Deprecated
     public static boolean isIncognitoAsWindowEnabled() {
-        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
-                        ContextUtils.getApplicationContext());
+        return ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled();
     }
 
     /**
