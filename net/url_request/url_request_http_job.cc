@@ -2043,7 +2043,11 @@ void URLRequestHttpJob::RecordCompletionHistograms(CompletionCause reason) {
       }
 
       auto& proxy_chain = response_info_->proxy_chain;
-      bool direct_only = features::kIpPrivacyDirectOnly.Get();
+
+      // TODO: crbug.com/458071609 - Delete this default value placeholder for
+      // features::kIpPrivacyDirectOnly when cleaning up IPP histograms.
+      bool direct_only = false;
+
       if (proxy_chain.is_for_ip_protection()) {
         base::UmaHistogramTimes("Net.HttpJob.IpProtection.TotalTimeNotCached3",
                                 total_time);

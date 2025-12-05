@@ -1394,13 +1394,6 @@ int HttpNetworkTransaction::BuildRequestHeaders(
     auth_controllers_[HttpAuth::AUTH_SERVER]->AddAuthorizationHeader(
         &request_headers_);
 
-  bool is_proxied_request =
-      proxy_info_.is_for_ip_protection() && !proxy_info_.is_direct();
-  if (features::kIpPrivacyAddHeaderToProxiedRequests.Get() &&
-      is_proxied_request) {
-    request_headers_.SetHeader("IP-Protection", "1");
-  }
-
   request_headers_.MergeFrom(request_->extra_headers);
 
   if (modify_headers_callbacks_) {

@@ -427,25 +427,6 @@ INSTANTIATE_TEST_SUITE_P(
     GetSyncTestModes(),
     testing::PrintToStringParamName());
 
-// Some tests are flaky on Chromeos when run with IP Protection enabled.
-// TODO(crbug.com/40935754): Fix flakes.
-class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt
-    : public SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest {
- public:
-  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt() {
-    feature_list_.InitAndDisableFeature(
-        net::features::kEnableIpProtectionProxy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
-    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt,
-    GetSyncTestModes(),
-    testing::PrintToStringParamName());
 
 IN_PROC_BROWSER_TEST_P(SingleClientNigoriSyncTest,
                        ShouldCommitKeystoreNigoriWhenReceivedDefault) {
@@ -1060,7 +1041,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt,
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     PRE_ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
@@ -1080,7 +1061,7 @@ IN_PROC_BROWSER_TEST_P(
 }
 
 IN_PROC_BROWSER_TEST_P(
-    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTestNoIpProt,
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
     ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   ASSERT_TRUE(SetupSync());
   sync_pb::NigoriSpecifics specifics;
