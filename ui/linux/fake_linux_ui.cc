@@ -88,6 +88,10 @@ bool FakeLinuxUi::PrimaryPasteEnabled() const {
   return true;
 }
 
+int FakeLinuxUi::GetWindowDragThresholdPx() const {
+  return kDefaultWindowDragThreshold;
+}
+
 std::vector<std::string> FakeLinuxUi::GetCmdLineFlagsForCopy() const {
   return {};
 }

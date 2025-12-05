@@ -648,6 +648,13 @@ bool GtkUi::PrimaryPasteEnabled() const {
   return paste_enabled;
 }
 
+int GtkUi::GetWindowDragThresholdPx() const {
+  gint threshold = kDefaultWindowDragThreshold;
+  g_object_get(gtk_settings_get_default(), "gtk-dnd-drag-threshold", &threshold,
+               nullptr);
+  return threshold;
+}
+
 bool GtkUi::PreferDarkTheme() const {
   gboolean dark = false;
   g_object_get(gtk_settings_get_default(), "gtk-application-prefer-dark-theme",

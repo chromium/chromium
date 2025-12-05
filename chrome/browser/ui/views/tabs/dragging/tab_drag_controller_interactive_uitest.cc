@@ -141,6 +141,7 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/views/frame/browser_native_widget_aura_linux.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/public/ozone_platform.h"
 #define DESKTOP_BROWSER_FRAME_AURA BrowserNativeWidgetAuraLinux
 #else
@@ -496,6 +497,17 @@ void ResizeUsingMouseEmulation(Browser* browser,
   ASSERT_TRUE(ui_test_utils::SendMouseEventsSync(
       ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::DOWN,
       window));
+
+  // Move the mouse past the drag threshold to allow the real move to proceed.
+  int threshold = ui::LinuxUi::kDefaultWindowDragThreshold + 1;
+  if (auto* linux_ui = ui::LinuxUi::instance()) {
+    threshold = linux_ui->GetWindowDragThresholdPx() + 1;
+  }
+  auto drag_threshold_move_target =
+      grab_coordinates + gfx::Vector2d(threshold, threshold);
+  ui_controls::ForceUseScreenCoordinatesOnce();
+  ASSERT_TRUE(
+      ui_test_utils::SendMouseMoveSync(drag_threshold_move_target, window));
 
   // `move_target` is in screen coordinates.
   ui_controls::ForceUseScreenCoordinatesOnce();

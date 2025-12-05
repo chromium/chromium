@@ -5,9 +5,12 @@
 #ifndef UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 #define UI_VIEWS_WIDGET_DESKTOP_AURA_WINDOW_EVENT_FILTER_LINUX_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "ui/base/hit_test.h"
 #include "ui/events/event_handler.h"
+#include "ui/gfx/geometry/point.h"
 #include "ui/views/views_export.h"
 
 namespace aura {
@@ -73,6 +76,11 @@ class VIEWS_EXPORT WindowEventFilterLinux : public ui::EventHandler {
   // initial click. Acting on a double click should only occur for matching
   // components.
   int click_component_ = HTNOWHERE;
+
+  // Capture the beginning of a potential drag on caption left-click.
+  // The drag will only happen if the system-provided mouse move threshold is
+  // met.
+  std::optional<gfx::Point> begin_drag_location_;
 };
 
 }  // namespace views

@@ -50,6 +50,7 @@ class FallbackLinuxUi : public LinuxUiAndTheme {
   WindowFrameAction GetWindowFrameAction(
       WindowFrameActionSource source) override;
   bool PrimaryPasteEnabled() const override;
+  int GetWindowDragThresholdPx() const override;
   std::vector<std::string> GetCmdLineFlagsForCopy() const override;
 
   // ui::LinuxUiTheme:
