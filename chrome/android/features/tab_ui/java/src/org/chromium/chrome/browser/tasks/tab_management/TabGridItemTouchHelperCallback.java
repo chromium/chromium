@@ -589,7 +589,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
 
         mCurrentActionState = actionState;
         if (actionState == ItemTouchHelper.ACTION_STATE_DRAG && mActionsOnAllRelatedTabs) {
-            int prev_hovered = mHoveredTabIndex;
+            int prevHovered = mHoveredTabIndex;
             mHoveredTabIndex =
                     TabListRecyclerView.getHoveredCardIndex(
                             recyclerView, viewHolder.itemView, dX, dY, mMergeThreshold);
@@ -607,8 +607,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper2.SimpleCallb
             } else {
                 mHoveredTabIndex = TabModel.INVALID_TAB_INDEX;
             }
-            if (prev_hovered != mHoveredTabIndex) {
-                mModel.updateHoveredCardForHover(prev_hovered, false);
+            if (prevHovered != mHoveredTabIndex) {
+                mModel.updateHoveredCardForHover(prevHovered, false);
             }
         } else if (actionState == ItemTouchHelper.ACTION_STATE_DRAG
                 && mTabGridDialogHandler != null) {
