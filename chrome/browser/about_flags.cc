@@ -11692,6 +11692,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kGlicTrustFirstOnboarding,
                                     kGlicTrustFirstOnboardingVariations,
                                     "GlicTrustFirstOnboarding")},
+    {"glic-default-tab-context-setting",
+     flag_descriptions::kGlicDefaultTabContextSettingName,
+     flag_descriptions::kGlicDefaultTabContextSettingDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicDefaultTabContextSetting)},
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,

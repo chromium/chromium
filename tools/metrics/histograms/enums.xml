@@ -10792,6 +10792,7 @@ from previous Chrome versions.
   <int value="-1213030642"
       label="ThirdPartyDisableChromeAutofillSettingsScreen:disabled"/>
   <int value="-1212959146" label="HideTabletToolbarDownloadButton:enabled"/>
+  <int value="-1212861749" label="GlicDefaultTabContextSetting:disabled"/>
   <int value="-1212855900" label="enable-all-bookmarks-view"/>
   <int value="-1212273428" label="enable-experimental-app-list"/>
   <int value="-1212167260" label="disable-app-window-cycling"/>
@@ -16404,6 +16405,7 @@ from previous Chrome versions.
   <int value="746944193" label="enable-automatic-password-saving:disabled"/>
   <int value="747022163" label="TabGroupCreationDialogAndroid:enabled"/>
   <int value="747076955" label="MobileIdentityConsistency:enabled"/>
+  <int value="747279145" label="GlicDefaultTabContextSetting:enabled"/>
   <int value="747391377" label="DesktopPWAsRunOnOsLogin:disabled"/>
   <int value="747477721" label="EolIncentive:disabled"/>
   <int value="747847237" label="PhysicalWeb:enabled"/>
