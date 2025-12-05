@@ -383,6 +383,110 @@ export function formOrFieldsetsToFormData(
 }
 
 /**
+ * Fills |form| with the form data object corresponding to the unowned elements
+ * and fieldsets in the document.
+ * |extract_mask| controls what data is extracted.
+ * Returns true if |form| is filled out. Returns false if there are no fields or
+ * too many fields in the |form|.
+ *
+ * It is based on the logic in
+ *     bool UnownedFormElementsAndFieldSetsToFormData(
+ *         const std::vector<blink::WebElement>& fieldsets,
+ *         const std::vector<blink::WebFormControlElement>& control_elements,
+ *         const GURL& origin,
+ *         ExtractMask extract_mask,
+ *         FormData* form)
+ * and
+ *     bool UnownedCheckoutFormElementsAndFieldSetsToFormData(
+ *         const std::vector<blink::WebElement>& fieldsets,
+ *         const std::vector<blink::WebFormControlElement>& control_elements,
+ *         const blink::WebFormControlElement* element,
+ *         const blink::WebDocument& document,
+ *         ExtractMask extract_mask,
+ *         FormData* form,
+ *         FormFieldData* field)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc
+ *
+ * @param frame The window or frame where the
+ *     formElement is in.
+ * @param fieldsets The fieldsets to look through.
+ * @param controlElements The control elements that
+ *     will be processed.
+ * @param restrictUnownedFieldsToFormlessCheckout whether forms made of
+ *     unowned fields (i.e., not within a <form> tag) should be restricted to
+ *     those that appear to be in a checkout flow.
+ * @param form Form to fill in the AutofillFormData
+ *     information of formElement.
+ * @return Whether there are fields and not too many fields in the
+ *     form.
+ */
+export function unownedFormElementsAndFieldSetsToFormData(
+    frame: Window, fieldsets: Element[],
+    controlElements: fillConstants.FormControlElement[],
+    iframeElements: HTMLIFrameElement[],
+    restrictUnownedFieldsToFormlessCheckout: boolean,
+    form: fillUtil.AutofillFormData): boolean {
+  if (!frame) {
+    return false;
+  }
+  form.name = '';
+  form.origin = getFrameUrlOrOrigin(frame);
+  form.action = '';
+
+  // To avoid performance bottlenecks, do not keep child frames if their
+  // quantity exceeds the allowed threshold.
+  if (iframeElements.length > fillConstants.MAX_EXTRACTABLE_FRAMES &&
+      autofillFormFeaturesApi.getFunction(
+          'isAutofillAcrossIframesThrottlingEnabled')()) {
+    iframeElements = [];
+  }
+
+  if (!restrictUnownedFieldsToFormlessCheckout) {
+    return formOrFieldsetsToFormData(
+        /*formElement=*/ null, /*formControlElement=*/ null, fieldsets,
+        controlElements, /*iframeElements=*/ iframeElements, form);
+  }
+
+  const title = document.title.toLowerCase();
+  const path = document.location.pathname.toLowerCase();
+  // The keywords are defined in
+  // UnownedCheckoutFormElementsAndFieldSetsToFormData in
+  // components/autofill/content/renderer/form_autofill_util.cc
+  const keywords =
+      ['payment', 'checkout', 'address', 'delivery', 'shipping', 'wallet'];
+
+  const count = keywords.length;
+  for (let index = 0; index < count; index++) {
+    const keyword = keywords[index]!;
+    if (title.includes(keyword) || path.includes(keyword)) {
+      return formOrFieldsetsToFormData(
+          /* formElement= */ null, /* formControlElement= */ null, fieldsets,
+          controlElements, /* iframeElements= */ iframeElements, form);
+    }
+  }
+
+  // Since it's not a checkout flow, only add fields that have a non-"off"
+  // autocomplete attribute to the formless autofill.
+  const controlElementsWithAutocomplete: fillConstants.FormControlElement[] =
+      [];
+  for (const controlElement of controlElements) {
+    if (controlElement.hasAttribute('autocomplete') &&
+        controlElement.getAttribute('autocomplete') !== 'off') {
+      controlElementsWithAutocomplete.push(controlElement);
+    }
+  }
+
+  if (controlElementsWithAutocomplete.length === 0) {
+    return false;
+  }
+  // TODO(crbug.com/40266126): Pass iframe elements.
+  return formOrFieldsetsToFormData(
+      /* formElement= */ null, /* formControlElement= */ null, fieldsets,
+      controlElementsWithAutocomplete, /* iframeElements= */ iframeElements,
+      form);
+}
+
+/**
  * For each label element, get the corresponding form control element, use the
  * form control element along with |controlElements| and |elementArray| to find
  * the previously created AutofillFormFieldData and set the

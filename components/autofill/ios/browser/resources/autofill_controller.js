@@ -5,10 +5,11 @@
 import * as fill_constants from '//components/autofill/ios/form_util/resources/fill_constants.js';
 import * as inferenceUtil from '//components/autofill/ios/form_util/resources/fill_element_inference_util.js';
 import * as fillUtil from '//components/autofill/ios/form_util/resources/fill_util.js';
-import {webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
+import {unownedFormElementsAndFieldSetsToFormData, webFormElementToFormData} from '//components/autofill/ios/form_util/resources/fill_web_form.js';
 import {getFormControlElements, getFormElementFromIdentifier, getFormElementFromRendererId, getIframeElements} from '//components/autofill/ios/form_util/resources/form_utils.js';
 import {CrWebApi, gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {isTextField, sendWebKitMessage, trim} from '//ios/web/public/js_messaging/resources/utils.js';
+
 
 /**
  * @fileoverview Installs Autofill management functions on the __gCrWeb object.
@@ -153,10 +154,9 @@ function extractUnownedFields(restrictUnownedFieldsToFormlessCheckout) {
       [];
   if (numEditableUnownedElements > 0 || iframeElements.length > 0) {
     const unownedForm = new __gCrWeb['common'].JSONSafeObject();
-    const hasUnownedForm =
-        __gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData(
-            window, fieldsets, unownedControlElements, iframeElements,
-            restrictUnownedFieldsToFormlessCheckout, unownedForm);
+    const hasUnownedForm = unownedFormElementsAndFieldSetsToFormData(
+        window, fieldsets, unownedControlElements, iframeElements,
+        restrictUnownedFieldsToFormlessCheckout, unownedForm);
     if (hasUnownedForm) {
       return unownedForm;
     }
