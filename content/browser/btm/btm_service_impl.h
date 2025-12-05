@@ -19,7 +19,7 @@
 #include "content/browser/btm/btm_utils.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
 
 namespace content {

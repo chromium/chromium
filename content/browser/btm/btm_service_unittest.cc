@@ -29,7 +29,7 @@
 #include "content/browser/btm/btm_test_utils.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"

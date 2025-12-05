@@ -13,7 +13,7 @@
 #include "content/browser/btm/btm_bounce_detector.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/browser/btm/cookie_access_filter.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_handle_user_data.h"

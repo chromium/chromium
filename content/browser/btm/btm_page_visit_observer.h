@@ -15,7 +15,7 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"

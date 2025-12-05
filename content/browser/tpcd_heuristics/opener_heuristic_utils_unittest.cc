@@ -8,7 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "components/content_settings/core/common/features.h"
 #include "content/browser/btm/btm_bounce_detector.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/features.h"

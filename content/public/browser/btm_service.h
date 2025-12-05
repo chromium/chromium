@@ -14,7 +14,7 @@
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_data_remover.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 
 class GURL;
 

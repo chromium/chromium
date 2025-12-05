@@ -1,9 +1,9 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_INFO_H_
-#define CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_INFO_H_
+#ifndef CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_H_
+#define CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_H_
 
 #include <memory>
 #include <optional>
@@ -159,4 +159,4 @@ using BtmRedirectChainPtr = std::unique_ptr<BtmRedirectChain>;
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_INFO_H_
+#endif  // CONTENT_PUBLIC_BROWSER_BTM_REDIRECT_H_

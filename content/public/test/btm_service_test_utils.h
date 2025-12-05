@@ -7,7 +7,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
 #include "url/gurl.h"
 

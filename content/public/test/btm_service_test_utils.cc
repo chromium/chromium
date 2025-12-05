@@ -6,7 +6,7 @@
 
 #include "base/logging.h"
 #include "content/browser/btm/btm_bounce_detector.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 
 namespace content {
 void Populate3PcExceptions(BrowserContext* browser_context,

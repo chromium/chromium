@@ -24,7 +24,7 @@
 #include "content/browser/btm/cookie_access_filter.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/allow_service_worker_result.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/dedicated_worker_service.h"
 #include "content/public/browser/navigation_handle.h"

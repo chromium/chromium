@@ -20,7 +20,7 @@
 #include "content/browser/btm/btm_service_impl.h"
 #include "content/browser/btm/btm_utils.h"
 #include "content/browser/renderer_host/cookie_access_observers.h"
-#include "content/public/browser/btm_redirect_info.h"
+#include "content/public/browser/btm_redirect.h"
 #include "content/public/browser/btm_service.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
