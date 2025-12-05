@@ -317,7 +317,7 @@ void TestResponseProvider::GetLanguageResponse(
   if ([self isRunningTest:@selector(testTranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateAfterReaderMode)] ||
       [self isRunningTest:@selector(testTranslatePriorToReaderMode)] ||
-      [self isRunningTest:@selector(testNoAutotranslateInReaderMode)] ||
+      [self isRunningTest:@selector(testAutotranslateInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateBadgeInReaderMode)] ||
       [self isRunningTest:@selector(testTranslateInClosedReaderMode)] ||
       [self isRunningTest:@selector
@@ -1555,9 +1555,9 @@ void TestResponseProvider::GetLanguageResponse(
                  @"Show Original Banner was not found.");
 }
 
-// Tests that if the original page is not translated, the Reading Mode page is
-// not either, regardless of the autotranslate settings.
-- (void)testNoAutotranslateInReaderMode {
+// Tests that autotranslate applies to both the original page and the Reading
+// Mode page.
+- (void)testAutotranslateInReaderMode {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -1593,18 +1593,6 @@ void TestResponseProvider::GetLanguageResponse(
 
   // Make sure the page is translated.
   [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
-  // Wait for "Show Original?" banner to appear.
-  GREYAssertTrue([self isAfterTranslateBannerVisible],
-                 @"Show Original Banner was not found.");
-
-  // Tap on banner button to revert.
-  [[EarlGrey
-      selectElementWithMatcher:
-          grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
-                         IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_UNDO_ACTION)),
-                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil)]
-      performAction:grey_tap()];
-  [ChromeEarlGrey waitForWebStateContainingText:"Restored"];
 
   // Open Reader Mode.
   GREYAssertTrue(
@@ -1616,8 +1604,8 @@ void TestResponseProvider::GetLanguageResponse(
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Verify page is not translated.
-  [ChromeEarlGrey waitForWebStateNotContainingText:"Translated"];
+  // Verify page is translated.
+  [ChromeEarlGrey waitForWebStateContainingText:"Translated"];
 }
 
 // Tests that opening and closing reader mode does not impact the state of the
