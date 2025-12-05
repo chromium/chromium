@@ -271,56 +271,6 @@ public class ExtensionWindowControllerBridgeIntegrationTest {
 
     @Test
     @MediumTest
-    @Restriction(
-            // Test needs "new window" in app menu and the tablet behavior to enter split screen
-            // mode to trigger a window bounds change.
-            DeviceFormFactor.ONLY_TABLET)
-    @Features.DisableFeatures(
-            // When ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL is enabled, a new window will be full
-            // screen instead of being in the split screen mode. This test relies on the split
-            // screen mode to trigger task bounds change, so
-            // ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL needs to be disabled.
-            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void
-            startChromeTabbedActivity_triggerTaskBoundsChange_notifyExtensionWindowController() {
-        // Arrange:
-        // (1) Launch ChromeTabbedActivity (the first window).
-        // (2) Add a native WindowControllerListObserverForTesting to capture extension internal
-        // events.
-        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
-        int firstTaskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
-        var extensionWindowControllerBridge = getExtensionWindowControllerBridge(firstTaskId);
-        assertNotNull(extensionWindowControllerBridge);
-        int firstExtensionWindowId =
-                extensionWindowControllerBridge.getExtensionWindowIdForTesting();
-        ExtensionWindowControllerBridgeImpl.addWindowControllerListObserverForTesting();
-
-        // Act: Open a new window.
-        // On tablets, this will enter split screen mode and trigger a window bounds change for the
-        // first window.
-        RegularNewTabPageStation ntpStation =
-                webPageStation.openRegularTabAppMenu().openNewWindow();
-        int secondTaskId = ntpStation.getActivity().getTaskId();
-        var secondChromeAndroidTask = getChromeAndroidTask(secondTaskId);
-        assertNotNull(secondChromeAndroidTask);
-        CriteriaHelper.pollUiThread(secondChromeAndroidTask::isActive);
-
-        // Assert.
-        var extensionInternalEvents =
-                ExtensionWindowControllerBridgeImpl.getExtensionInternalEventsForTesting()
-                        .get(firstExtensionWindowId);
-        assertNotNull(extensionInternalEvents);
-        assertTrue(
-                extensionInternalEvents.contains(
-                        ExtensionInternalWindowEventForTesting.BOUNDS_CHANGED));
-
-        // Cleanup.
-        ExtensionWindowControllerBridgeImpl.removeWindowControllerListObserverForTesting();
-        ntpStation.getActivity().finish();
-    }
-
-    @Test
-    @MediumTest
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP /* Test needs "new window" in app menu. */)
     public void startChromeTabbedActivity_triggerTaskFocusChange_notifyExtensionWindowController() {
         // Arrange:

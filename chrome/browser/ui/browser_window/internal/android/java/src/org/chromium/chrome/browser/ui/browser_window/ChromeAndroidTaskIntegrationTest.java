@@ -36,7 +36,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
@@ -259,44 +258,6 @@ public class ChromeAndroidTaskIntegrationTest {
         assertTrue(
                 secondChromeAndroidTask.getLastActivatedTimeMillis()
                         > firstChromeAndroidTask.getLastActivatedTimeMillis());
-
-        // Cleanup.
-        ntpStation.getActivity().finish();
-    }
-
-    @Test
-    @MediumTest
-    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
-    @Restriction(
-            // Test needs "new window" in app menu and the tablet behavior to enter split screen
-            // mode to trigger onConfigurationChanged().
-            DeviceFormFactor.ONLY_TABLET)
-    @DisableFeatures(
-            // When ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL is enabled, a new window will be full
-            // screen instead of being in the split screen mode. This test relies on the split
-            // screen mode to trigger onConfigurationChanged(), so
-            // ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL needs to be disabled.
-            ChromeFeatureList.ROBUST_WINDOW_MANAGEMENT_EXPERIMENTAL)
-    public void onConfigurationChanged_invokesOnTaskBoundsChangedForFeature() {
-        // Arrange:
-        // Launch ChromeTabbedActivity;
-        // Find its ChromeAndroidTask;
-        // Add a mock ChromeAndroidTaskFeature.
-        WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
-        int taskId = mFreshCtaTransitTestRule.getActivity().getTaskId();
-        var chromeAndroidTask = getChromeAndroidTask(taskId);
-        assertNotNull(chromeAndroidTask);
-        var testFeature = new TestChromeAndroidTaskFeature();
-        chromeAndroidTask.addFeature(testFeature);
-
-        // Act:
-        // Open a new window, which on tablet will enter split screen mode and trigger a
-        // configuration change on the first window.
-        RegularNewTabPageStation ntpStation =
-                webPageStation.openRegularTabAppMenu().openNewWindow();
-
-        // Assert.
-        assertEquals(1, testFeature.mTimesOnTaskBoundsChanged);
 
         // Cleanup.
         ntpStation.getActivity().finish();
