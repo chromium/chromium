@@ -12,6 +12,8 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/webid/DigitalCredentialsPresentationDelegate.java",
       "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
       "android/java/src/org/chromium/chrome/browser/webid/IdentityCredentialsDelegate.java",
+      "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
+      "android/java/src/org/chromium/chrome/browser/webid/TestIdP.java",
     ]
     deps = [
       "$google_play_services_package:google_play_services_identity_credentials_java",
@@ -32,7 +34,10 @@ if (is_android) {
   }
 
   generate_jni("jni_headers") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java" ]
+    sources = [
+      "android/java/src/org/chromium/chrome/browser/webid/DigitalIdentityProvider.java",
+      "android/java/src/org/chromium/chrome/browser/webid/IdentityProviderService.java",
+    ]
   }
 
   robolectric_library("junit") {
@@ -67,6 +72,9 @@ source_set("webid") {
     "federated_identity_permission_context_factory.h",
     "identity_provider_permission_request.h",
   ]
+  if (is_android) {
+    sources += [ "identity_provider_service.h" ]
+  }
   public_deps = [
     "//chrome/browser/profiles:profile",
     "//components/content_settings/core/browser",
@@ -79,6 +87,9 @@ source_set("webid") {
     "//third_party/blink/public/common",
     "//url",
   ]
+  if (is_android) {
+    public_deps += [ "//chrome/browser/webid:jni_headers" ]
+  }
 }
 
 source_set("impl") {
@@ -94,6 +105,9 @@ source_set("impl") {
     "federated_identity_permission_context_factory.cc",
     "identity_provider_permission_request.cc",
   ]
+  if (is_android) {
+    sources += [ "identity_provider_service.cc" ]
+  }
   deps = [
     ":webid",
     "//base",

@@ -147,6 +147,14 @@
                  android:permission="android.permission.BIND_JOB_SERVICE"
                  android:exported="false"/>
 
+        <service
+            android:name="org.chromium.chrome.browser.webid.TestIdP"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="org.w3.FedCM" />
+            </intent-filter>
+        </service>
+
         <!-- The following service entries exist in order to allow us
              to start more than one sandboxed process. -->
 
