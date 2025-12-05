@@ -3794,6 +3794,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.ActiveGpuDisplayInfo"
+    enum="ActiveGpuDisplayInfo" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active GPU's display information whether likely built-in or external when a
+    HardwareContextReset event happened in the MediaFoundationService process.
+    Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
     name="Media.EME.MediaFoundationService.HardwareContextReset.ActiveGpuInfo"
     enum="ActiveGpuInfo" expires_after="2026-04-05">
   <owner>sangbaekpark@chromium.org</owner>
@@ -3802,6 +3814,17 @@ chromium-metrics-reviews@google.com.
     Active and non-active GPU vendor information when a HardwareContextReset
     event happened in the MediaFoundationService process. Reported whenever such
     an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.ActiveGpuVendorId"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Active GPU vendor ID when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
   </summary>
 </histogram>
 
@@ -3823,6 +3846,17 @@ chromium-metrics-reviews@google.com.
   <owner>media-dev-uma@chromium.org</owner>
   <summary>
     The number of GPUs when a HardwareContextReset event happened in the
+    MediaFoundationService process. Reported whenever such an event happens.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.EME.MediaFoundationService.HardwareContextReset.NonActiveGpuVendorId"
+    enum="GpuVendorId" expires_after="2026-04-05">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Non-active GPU vendor ID when a HardwareContextReset event happened in the
     MediaFoundationService process. Reported whenever such an event happens.
   </summary>
 </histogram>

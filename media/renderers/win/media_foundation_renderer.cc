@@ -6,6 +6,7 @@
 
 #include <Audioclient.h>
 #include <mferror.h>
+#include <winuser.h>
 
 #include <memory>
 #include <optional>
@@ -55,6 +56,7 @@ constexpr uint32_t kGpuVendorIdIntel = 0x8086;
 constexpr uint32_t kGpuVendorIdNvidia = 0x10de;
 constexpr uint32_t kGpuVendorIdAmd = 0x1002;
 constexpr uint32_t kGpuVendorIdNone = 0x0000;
+constexpr int kGpuVendorIdUnknown = -1;
 
 constexpr uint32_t kGpuBitmaskIntel = 0x001;
 constexpr uint32_t kGpuBitmaskNvidia = 0x001 << 1;
@@ -96,6 +98,14 @@ enum class ActiveGpuInfo : uint32_t {
   kAmdOther = kAmd | (kOther << kMakeGpuNonActive),
   kOtherOther = kOther | (kOther << kMakeGpuNonActive),
   kMaxValue = kOtherOther
+};
+
+// Reported to UMA. Do NOT change or reuse existing values.
+enum class ActiveGpuDisplayInfo {
+  kUnknown = 0,
+  kLikelyBuiltIn = 1,   // Likely built-in display
+  kLikelyExternal = 2,  // Likely external display
+  kMaxValue = kLikelyExternal
 };
 
 // The |g_video_window_class| atom obtained is used as the |lpClassName|
@@ -227,6 +237,17 @@ std::vector<uint32_t> GetNonActiveGpuVendorIds(const LUID& active_gpu_luid) {
           adapter_desc.AdapterLuid.LowPart == active_gpu_luid.LowPart) {
         continue;
       }
+      // Ignore software renderer based GPUs. See gpu/config/gpu_info.cc
+      if (adapter_desc.VendorId == 0x0000 || adapter_desc.VendorId == 0xFFFF ||
+          adapter_desc.VendorId == 0x15ad ||
+          (adapter_desc.VendorId == 0x1414 &&
+           adapter_desc.DeviceId == 0x008c)) {
+        DVLOG(3) << __func__ << ": Adapter " << i << " Vendor ID: 0x"
+                 << std::hex << adapter_desc.VendorId << ", Device ID: 0x"
+                 << std::hex << adapter_desc.DeviceId
+                 << " is a software renderer!";
+        continue;
+      }
       vendor_ids.push_back(adapter_desc.VendorId);
       DVLOG(3) << __func__ << ": Adapter " << i << " Vendor ID: 0x" << std::hex
                << adapter_desc.VendorId;
@@ -266,6 +287,65 @@ int GetTotalDisplayCount() {
   return count;
 }
 
+ActiveGpuDisplayInfo GetActiveGpuDisplayInfo(const LUID& active_gpu_luid) {
+  UINT32 num_paths = 0;
+  UINT32 num_modes = 0;
+
+  // Get required buffer sizes for active paths
+  LONG status = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &num_paths,
+                                            &num_modes);
+
+  if (status != ERROR_SUCCESS) {
+    DVLOG(1) << __func__ << ": GetDisplayConfigBufferSizes failed: " << status;
+    return ActiveGpuDisplayInfo::kUnknown;
+  }
+
+  std::vector<DISPLAYCONFIG_PATH_INFO> paths(num_paths);
+  std::vector<DISPLAYCONFIG_MODE_INFO> modes(num_modes);
+
+  // Query the display configuration
+  status = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &num_paths, paths.data(),
+                              &num_modes, modes.data(), nullptr);
+
+  if (status != ERROR_SUCCESS) {
+    DVLOG(1) << __func__ << ": QueryDisplayConfig failed: " << status;
+    return ActiveGpuDisplayInfo::kUnknown;
+  }
+
+  // Iterate through paths and retrieve target device info
+  for (UINT32 i = 0; i < num_paths; ++i) {
+    DISPLAYCONFIG_PATH_INFO& current_path = paths[i];
+    DISPLAYCONFIG_TARGET_DEVICE_NAME target_name = {};
+    target_name.header.size = sizeof(target_name);
+    target_name.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_TARGET_NAME;
+    target_name.header.adapterId = current_path.targetInfo.adapterId;
+    target_name.header.id = current_path.targetInfo.id;
+
+    status = DisplayConfigGetDeviceInfo(&target_name.header);
+    if (status != ERROR_SUCCESS) {
+      continue;
+    }
+
+    if (active_gpu_luid.HighPart == target_name.header.adapterId.HighPart &&
+        active_gpu_luid.LowPart == target_name.header.adapterId.LowPart) {
+      // Check specifically for embedded types to infer "built-in"
+      if (target_name.outputTechnology ==
+              DISPLAYCONFIG_OUTPUT_TECHNOLOGY_LVDS ||
+          target_name.outputTechnology ==
+              DISPLAYCONFIG_OUTPUT_TECHNOLOGY_DISPLAYPORT_EMBEDDED ||
+          target_name.outputTechnology ==
+              DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL) {
+        DVLOG(3) << __func__ << ": This is likely a BUILT-IN display.";
+        return ActiveGpuDisplayInfo::kLikelyBuiltIn;
+      } else {
+        DVLOG(3) << __func__ << ": This is likely an EXTERNAL display.";
+        return ActiveGpuDisplayInfo::kLikelyExternal;
+      }
+    }
+  }
+  return ActiveGpuDisplayInfo::kUnknown;
+}
+
 void ReportGpuInfoUma(const std::string& uma_prefix,
                       IMFDXGIDeviceManager* dxgi_device_manager) {
   // For some tests, this can be nullptr.
@@ -282,6 +362,10 @@ void ReportGpuInfoUma(const std::string& uma_prefix,
                                   GpuOrDisplayCount::kUnknown);
     base::UmaHistogramEnumeration(uma_prefix + ".ActiveGpuInfo",
                                   ActiveGpuInfo::kNone);
+    base::UmaHistogramSparse(uma_prefix + ".ActiveGpuVendorId",
+                             kGpuVendorIdUnknown);
+    base::UmaHistogramSparse(uma_prefix + ".NonActiveGpuVendorId",
+                             kGpuVendorIdUnknown);
   } else {
     const auto all_nonactive_gpus = GetNonActiveGpuVendorIds(active_gpu_luid);
     const auto nonactive_gpu_count = all_nonactive_gpus.size();
@@ -290,11 +374,15 @@ void ReportGpuInfoUma(const std::string& uma_prefix,
     const auto active_gpu_info = static_cast<ActiveGpuInfo>(
         GpuVendorIdToBitmask(active_gpu_vendor_id) |
         (GpuVendorIdToBitmask(nonactive_gpu_id) << kMakeGpuNonActive));
+    const auto active_gpu_display_info =
+        GetActiveGpuDisplayInfo(active_gpu_luid);
 
     DVLOG(3) << __func__ << ": nonactive_gpu_count=" << nonactive_gpu_count
              << ", active_gpu_vendor_id=" << active_gpu_vendor_id
              << ", nonactive_gpu_id=" << nonactive_gpu_id
-             << ", active_gpu_info=" << static_cast<uint32_t>(active_gpu_info);
+             << ", active_gpu_info=" << static_cast<uint32_t>(active_gpu_info)
+             << ", active_gpu_display_info="
+             << static_cast<uint32_t>(active_gpu_display_info);
 
     base::UmaHistogramEnumeration(uma_prefix + ".GpuCount",
                                   nonactive_gpu_count > 0
@@ -302,6 +390,14 @@ void ReportGpuInfoUma(const std::string& uma_prefix,
                                       : GpuOrDisplayCount::kOne);
     base::UmaHistogramEnumeration(uma_prefix + ".ActiveGpuInfo",
                                   active_gpu_info);
+    base::UmaHistogramEnumeration(uma_prefix + ".ActiveGpuDisplayInfo",
+                                  active_gpu_display_info);
+    base::UmaHistogramSparse(uma_prefix + ".ActiveGpuVendorId",
+                             active_gpu_vendor_id);
+    if (nonactive_gpu_id != kGpuVendorIdNone) {
+      base::UmaHistogramSparse(uma_prefix + ".NonActiveGpuVendorId",
+                               nonactive_gpu_id);
+    }
   }
 
   const auto display_count = GetTotalDisplayCount();
