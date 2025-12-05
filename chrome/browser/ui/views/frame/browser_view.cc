@@ -5005,7 +5005,8 @@ int BrowserView::NonClientHitTest(const gfx::Point& point) {
 }
 
 gfx::Size BrowserView::GetMinimumSize() const {
-  return GetBrowserViewLayout()->GetMinimumSize(this);
+  auto* const layout = GetBrowserViewLayout();
+  return layout ? layout->GetMinimumSize(this) : gfx::Size();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
