@@ -81,7 +81,7 @@ impl<T: PrimitiveEnum> From<T> for MojomValue {
 
 /// Implements the MojomParse trait for a leaf type. (Ab)uses the fact that
 /// MojomType and MojomValue use identically-named variants.
-macro_rules! mojom_parse_leaf_impl {
+macro_rules! mojomparse_leaf_impl {
     ($target_type:ty, $variant:ident) => {
         impl MojomParse for $target_type {
             fn mojom_type() -> MojomType {
@@ -113,17 +113,17 @@ macro_rules! mojom_parse_leaf_impl {
     };
 }
 
-mojom_parse_leaf_impl!(u8, UInt8);
-mojom_parse_leaf_impl!(u16, UInt16);
-mojom_parse_leaf_impl!(u32, UInt32);
-mojom_parse_leaf_impl!(u64, UInt64);
-mojom_parse_leaf_impl!(i8, Int8);
-mojom_parse_leaf_impl!(i16, Int16);
-mojom_parse_leaf_impl!(i32, Int32);
-mojom_parse_leaf_impl!(i64, Int64);
+mojomparse_leaf_impl!(u8, UInt8);
+mojomparse_leaf_impl!(u16, UInt16);
+mojomparse_leaf_impl!(u32, UInt32);
+mojomparse_leaf_impl!(u64, UInt64);
+mojomparse_leaf_impl!(i8, Int8);
+mojomparse_leaf_impl!(i16, Int16);
+mojomparse_leaf_impl!(i32, Int32);
+mojomparse_leaf_impl!(i64, Int64);
 
-mojom_parse_leaf_impl!(bool, Bool);
-mojom_parse_leaf_impl!(String, String);
+mojomparse_leaf_impl!(bool, Bool);
+mojomparse_leaf_impl!(MojomString, String);
 
 // Implement MojomParse for any type that implements PrimitiveEnum and the other
 // requirements for MojomParse. All requirements are derived by

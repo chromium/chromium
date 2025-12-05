@@ -64,10 +64,29 @@ pub fn parse_padding(data: &mut ParserData, bytes_to_parse: usize) -> ParsingRes
             remaining_bytes: data.remaining_bytes.len(),
         },
     };
-    data.remaining_bytes =
-        data.remaining_bytes.get((bytes_to_parse as usize)..).ok_or_else(mk_err)?;
+    data.remaining_bytes = data.remaining_bytes.get(bytes_to_parse..).ok_or_else(mk_err)?;
     data.bytes_parsed += bytes_to_parse;
     Ok(())
+}
+
+/// Returns a vector containing the next `bytes_to_parse` bytes, assuming they
+/// exist.
+pub fn parse_raw_bytes<'a, 'b>(
+    data: &'a mut ParserData<'b>,
+    bytes_to_parse: usize,
+) -> ParsingResult<&'b [u8]> {
+    let mk_err = || ParsingError {
+        offset: data.bytes_parsed(),
+        ty: ParsingErrorType::NotEnoughData {
+            tried_to_parse: format!("raw bytes"),
+            expected_size: bytes_to_parse,
+            remaining_bytes: data.remaining_bytes.len(),
+        },
+    };
+    let (head, tail) = data.remaining_bytes.split_at_checked(bytes_to_parse).ok_or_else(mk_err)?;
+    data.remaining_bytes = tail;
+    data.bytes_parsed += bytes_to_parse;
+    Ok(head)
 }
 
 // Declares a function named $name, which takes a byte slice (&[u8]), reads the

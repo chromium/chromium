@@ -175,6 +175,12 @@ fn parse_array(
         ));
     }
 
+    // If this array represents a string, we don't need to do fancy parsing
+    // of the body, just grab the bytes and call it a day.
+    if *array_type == PackedArrayType::String {
+        return parse_string(data, size_in_bytes, num_elements);
+    }
+
     // Make up dummy field names for debugging.
     let field_names =
         (0..num_elements).map(|idx| format!("Array_Element_{idx}")).collect::<Vec<_>>();
@@ -189,6 +195,7 @@ fn parse_array(
         array_body.into_iter(),
         num_elements,
     )?;
+
     Ok(MojomValue::Array(parsed_fields))
 }
 
@@ -323,6 +330,25 @@ fn parse_map(
             panic!("Tried to parse a map like a struct, but got non-array elements: {:?} ", elts)
         }
     }
+}
+
+/// Parse a string embedded in the mojom message. We don't do any validation of
+/// the bytes (since mojom doesn't provide any guarantees), so this is as
+/// simple as grabbing the bytes and ensuring the header was correct.
+fn parse_string(
+    data: &mut ParserData,
+    size_in_bytes: usize,
+    num_elements: usize,
+) -> ParsingResult<MojomValue> {
+    let string_contents = parse_raw_bytes(data, num_elements)?.to_vec();
+    // Array header size should be the size of the header (8) + the number of bytes
+    if size_in_bytes != num_elements + 8 {
+        return Err(ParsingError::wrong_size(data.bytes_parsed(), size_in_bytes, num_elements + 8));
+    }
+    // Array bodies always end at 8 byte alignment, though it's not
+    // reflected in the header's reported size.
+    skip_to_alignment(data, 8)?;
+    Ok(MojomValue::String(MojomString::from_bytes(string_contents)))
 }
 
 /// Parse the body of a struct, array, or union, having already consumed its

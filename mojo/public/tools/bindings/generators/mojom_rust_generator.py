@@ -23,7 +23,7 @@ _mojom_primitive_type_to_rust_type = {
     mojom.UINT64: "u64",
     mojom.FLOAT: "f32",
     mojom.DOUBLE: "f64",
-    mojom.STRING: "String",
+    mojom.STRING: "MojomString",
 }
 
 

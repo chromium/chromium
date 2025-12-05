@@ -1551,3 +1551,226 @@ fn test_maps() {
         ),
     );
 }
+
+// Mojom definition: string
+static STRING_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "string",
+    base_type: MojomType::String,
+    packed_type: MojomWireType::Pointer {
+        nested_data_type: PackedStructuredType::Array {
+            element_type: std::sync::Arc::new(MojomWireType::Leaf {
+                leaf_type: PackedLeafType::UInt8,
+            }),
+            array_type: PackedArrayType::String,
+        },
+    },
+});
+
+// Mojom Definition: array<string>
+static ARRAY_STRING_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "array<string>",
+    base_type: array!(MojomType::String, None),
+    packed_type: packed_array!(STRING_TY.packed_type.clone(), None),
+});
+
+// Mojom Definition: map<uint8, string>
+static MAP_U8_STRING_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<uint8, string>",
+    base_type: map!(MojomType::UInt8, MojomType::String),
+    packed_type: packed_map!(bare_leaf!(PackedLeafType::UInt8), STRING_TY.packed_type.clone()),
+});
+
+// Mojom Definition: map<string, int16>
+static MAP_STRING_I16_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "map<string, int16>",
+    base_type: map!(MojomType::String, MojomType::Int16),
+    packed_type: packed_map!(STRING_TY.packed_type.clone(), bare_leaf!(PackedLeafType::Int16)),
+});
+
+// Mojom Definition:
+// struct Strings {
+//   string str;
+//   array<string> arr;
+//   map<uint8, string> to_str;
+//   map<string, int16> from_str;
+//   HoldsComplexTypes u;
+// }
+static STRINGS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "Strings",
+    base_type: wrap_struct_fields_type(vec![
+        ("str".to_string(), STRING_TY.base_type.clone()),
+        ("arr".to_string(), ARRAY_STRING_TY.base_type.clone()),
+        ("to_str".to_string(), MAP_U8_STRING_TY.base_type.clone()),
+        ("from_str".to_string(), MAP_STRING_I16_TY.base_type.clone()),
+    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("str".to_string(), STRING_TY.as_struct_field(0)),
+            ("arr".to_string(), ARRAY_STRING_TY.as_struct_field(1)),
+            ("to_str".to_string(), MAP_U8_STRING_TY.as_struct_field(2)),
+            ("from_str".to_string(), MAP_STRING_I16_TY.as_struct_field(3)),
+        ],
+        4,
+    ),
+});
+
+fn mojomvalue_from_str(str: &str) -> MojomValue {
+    MojomValue::String(MojomString::from_str(str))
+}
+
+fn strings_mojom(
+    str: &str,
+    arr: Vec<&str>,
+    to_str: HashMap<u8, &str>,
+    from_str: HashMap<&str, i16>,
+) -> MojomValue {
+    wrap_struct_fields_value(vec![
+        ("str".to_string(), mojomvalue_from_str(str)),
+        ("arr".to_string(), MojomValue::Array(arr.into_iter().map(mojomvalue_from_str).collect())),
+        (
+            "to_str".to_string(),
+            MojomValue::Map(
+                to_str
+                    .into_iter()
+                    .map(|(k, v)| (MojomValue::UInt8(k), mojomvalue_from_str(v)))
+                    .collect(),
+            ),
+        ),
+        (
+            "from_str".to_string(),
+            MojomValue::Map(
+                from_str
+                    .into_iter()
+                    .map(|(k, v)| (mojomvalue_from_str(k), MojomValue::Int16(v)))
+                    .collect(),
+            ),
+        ),
+    ])
+}
+
+#[gtest(MojomParser, TestStrings)]
+fn test_strings() {
+    STRINGS_TY.validate_mojomparse(
+        Strings {
+            str: MojomString::from_str("test"),
+            arr: vec![MojomString::from_str("a"), MojomString::from_str("b")],
+            to_str: [(1, MojomString::from_str("one")), (2, MojomString::from_str("two"))].into(),
+            from_str: [(MojomString::from_str("three"), 3), (MojomString::from_str("four"), 4)]
+                .into(),
+        },
+        strings_mojom(
+            "test",
+            vec!["a", "b"],
+            [(1, "one"), (2, "two")].into(),
+            [("three", 3), ("four", 4)].into(),
+        ),
+    );
+
+    STRINGS_TY.validate_mojomparse(
+        Strings {
+            str: MojomString::from_str(""),
+            arr: vec![],
+            to_str: HashMap::new(),
+            from_str: HashMap::new(),
+        },
+        strings_mojom("", vec![], HashMap::new(), HashMap::new()),
+    );
+}
+
+// Mojom Definition:
+// union HoldsComplexTypes {
+//   string str;
+//   array<int8> arr;
+//   map<int8, int8> m;
+// }
+static HOLDS_COMPLEX_TYPES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "HoldsComplexTypes",
+    base_type: MojomType::Union {
+        variants: [
+            (0, STRING_TY.base_type.clone()),
+            (1, ARRAY_INT16_TY.base_type.clone()),
+            (2, MAP_U8_U8_TY.base_type.clone()),
+        ]
+        .into(),
+    },
+    packed_type: MojomWireType::Union {
+        variants: [
+            (0, STRING_TY.as_union_field()),
+            (1, ARRAY_INT16_TY.as_union_field()),
+            (2, MAP_U8_U8_TY.as_union_field()),
+        ]
+        .into(),
+    },
+});
+
+fn holds_complex_types_mojom_str(str: &str) -> MojomValue {
+    MojomValue::Union(0, Box::new(MojomValue::String(MojomString::from_str(str))))
+}
+
+fn holds_complex_types_mojom_arr(arr: Vec<i16>) -> MojomValue {
+    MojomValue::Union(
+        1,
+        Box::new(MojomValue::Array(arr.into_iter().map(MojomValue::Int16).collect())),
+    )
+}
+
+fn holds_complex_types_mojom_m(map: HashMap<u8, u8>) -> MojomValue {
+    MojomValue::Union(
+        2,
+        Box::new(MojomValue::Map(
+            map.into_iter().map(|(k, v)| (MojomValue::UInt8(k), MojomValue::UInt8(v))).collect(),
+        )),
+    )
+}
+
+static COMPLEX_UNION_HOLDER_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
+    type_name: "ComplexUnionHolder",
+    base_type: wrap_struct_fields_type(vec![(
+        "u".to_string(),
+        HOLDS_COMPLEX_TYPES_TY.base_type.clone(),
+    )]),
+    packed_type: wrap_packed_struct_fields(
+        vec![("u".to_string(), HOLDS_COMPLEX_TYPES_TY.as_struct_field(0))],
+        1,
+    ),
+});
+
+#[gtest(MojomParser, TestComplexUnion)]
+fn test_complex_union() {
+    // Test both the union and the union inside a struct
+    HOLDS_COMPLEX_TYPES_TY.validate_mojomparse(
+        HoldsComplexTypes::str(MojomString::from_str("hello")),
+        holds_complex_types_mojom_str("hello"),
+    );
+
+    COMPLEX_UNION_HOLDER_TY.validate_mojomparse(
+        ComplexUnionHolder { u: HoldsComplexTypes::str(MojomString::from_str("eek")) },
+        wrap_struct_fields_value(vec![("u".to_string(), holds_complex_types_mojom_str("eek"))]),
+    );
+
+    HOLDS_COMPLEX_TYPES_TY.validate_mojomparse(
+        HoldsComplexTypes::arr(vec![1, 2, 3]),
+        holds_complex_types_mojom_arr(vec![1, 2, 3]),
+    );
+
+    COMPLEX_UNION_HOLDER_TY.validate_mojomparse(
+        ComplexUnionHolder { u: HoldsComplexTypes::arr(vec![99, 222, 301, 282]) },
+        wrap_struct_fields_value(vec![(
+            "u".to_string(),
+            holds_complex_types_mojom_arr(vec![99, 222, 301, 282]),
+        )]),
+    );
+
+    HOLDS_COMPLEX_TYPES_TY.validate_mojomparse(
+        HoldsComplexTypes::m([(1, 10), (2, 20)].into()),
+        holds_complex_types_mojom_m([(1, 10), (2, 20)].into()),
+    );
+
+    COMPLEX_UNION_HOLDER_TY.validate_mojomparse(
+        ComplexUnionHolder { u: HoldsComplexTypes::m([(19, 120), (29, 210)].into()) },
+        wrap_struct_fields_value(vec![(
+            "u".to_string(),
+            holds_complex_types_mojom_m([(19, 120), (29, 210)].into()),
+        )]),
+    );
+}

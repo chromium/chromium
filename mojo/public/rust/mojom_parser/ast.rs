@@ -62,7 +62,7 @@ pub enum MojomValue {
     UInt32(u32),
     Int64(i64),
     UInt64(u64),
-    String(String),
+    String(MojomString),
     Enum(u32),
     Union(u32, Box<MojomValue>),
     Struct(Vec<String>, Vec<MojomValue>),
@@ -288,5 +288,36 @@ impl<T> Predicate<T> {
 
     pub fn call(&self, arg: T) -> bool {
         (self.f)(arg)
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, PartialOrd, Ord, Eq, Hash)]
+pub struct MojomString(Vec<u8>);
+
+impl MojomString {
+    pub fn to_bytes(&self) -> &[u8] {
+        &self.0
+    }
+
+    pub fn into_bytes(self) -> Vec<u8> {
+        self.0
+    }
+
+    pub fn to_string_lossy(&self) -> std::borrow::Cow<'_, str> {
+        String::from_utf8_lossy(&self.0)
+    }
+
+    pub fn from_str(s: &str) -> Self {
+        MojomString(s.as_bytes().to_vec())
+    }
+
+    pub fn from_bytes(v: Vec<u8>) -> Self {
+        MojomString(v)
+    }
+}
+
+impl From<String> for MojomString {
+    fn from(s: String) -> Self {
+        MojomString(s.into_bytes())
     }
 }

@@ -109,7 +109,7 @@ enum NestedData<'a> {
         packed_fields: &'a [StructuredBodyElementOwned],
     },
     Array {
-        elements: &'a Vec<MojomValue>,
+        contents: &'a MojomValue,
         element_type: &'a Arc<MojomWireType>,
         array_type: &'a PackedArrayType,
     },
@@ -159,10 +159,21 @@ pub fn deparse_struct(
 
 fn deparse_array(
     data: &mut Vec<u8>,
-    element_values: &Vec<MojomValue>,
+    contents: &MojomValue,
     element_type: &Arc<MojomWireType>,
     array_type: &PackedArrayType,
 ) -> Result<()> {
+    let element_values = match (array_type, contents) {
+        (PackedArrayType::String, MojomValue::String(string)) => {
+            return deparse_string(data, string);
+        }
+        (
+            PackedArrayType::SizedArray(_) | PackedArrayType::UnsizedArray,
+            MojomValue::Array(element_values),
+        ) => element_values,
+        _ => bail!("deparse_array: Got mismatched type and value: {array_type:?} vs. {contents:?}"),
+    };
+
     let num_elements = element_values.len();
 
     if let PackedArrayType::SizedArray(expected_num_elements) = array_type
@@ -256,6 +267,22 @@ fn deparse_map(
     deparse_struct(data, &field_values, &packed_fields)
 }
 
+fn deparse_string(data: &mut Vec<u8>, value: &MojomString) -> Result<()> {
+    let bytes = value.to_bytes();
+    let num_bytes: u32 = bytes
+        .len()
+        .try_into()
+        .with_context(|| "Mojom cannot serialize strings of more than 2^32 bytes")?;
+    // Write header size (8 + num elements) and number of elements
+    data.extend(u32::to_le_bytes(8 + num_bytes));
+    data.extend(u32::to_le_bytes(num_bytes));
+
+    // Write the actual string, then pad to 8 byte alignment
+    data.extend(bytes);
+    pad_to_alignment(data, 8);
+    Ok(())
+}
+
 /// Deparse the fields of a struct (or union) after having parsed its header
 ///
 /// See the documentation of parse_union in parse_values.rs for an explanation
@@ -330,10 +357,10 @@ where
                                 packed_fields: packed_field_types,
                             },
                             (
-                                MojomValue::Array(nested_data_fields),
+                                MojomValue::Array(_) | MojomValue::String(_),
                                 PackedStructuredType::Array { element_type, array_type },
                             ) => NestedData::Array {
-                                elements: nested_data_fields,
+                                contents: nested_data_value,
                                 element_type,
                                 array_type,
                             },
@@ -409,8 +436,8 @@ where
             NestedData::Struct { field_values, packed_fields } => {
                 deparse_struct(data, field_values, packed_fields)?
             }
-            NestedData::Array { elements, element_type, array_type } => {
-                deparse_array(data, elements, element_type, array_type)?
+            NestedData::Array { contents, element_type, array_type } => {
+                deparse_array(data, contents, element_type, array_type)?
             }
             NestedData::Union { tag, value, variants } => {
                 deparse_union(data, None, tag, value, variants)?
@@ -447,8 +474,8 @@ pub fn deparse_single_value_for_testing(
                 nested_data_type: PackedStructuredType::Array { element_type, array_type },
                 ..
             },
-            MojomValue::Array(elements),
-        ) => deparse_array(&mut data, elements, element_type, array_type)?,
+            MojomValue::Array(_) | MojomValue::String(_),
+        ) => deparse_array(&mut data, value, element_type, array_type)?,
         (
             MojomWireType::Union { variants, .. }
             | MojomWireType::Pointer {

@@ -19,6 +19,8 @@ chromium::import! {
     "//mojo/public/rust/mojom_parser:validation_parser";
 }
 
+use std::iter;
+
 use mojom_parser_core::*;
 use parser_unittests_rust::parser_unittests::*;
 use rust_gtest_interop::prelude::*;
@@ -782,5 +784,116 @@ fn test_map_parsing() -> anyhow::Result<()> {
         ),
     )?;
 
+    Ok(())
+}
+
+// Create the expected wire format representation of string.
+fn str_wire_format(str: &str) -> String {
+    let size = 8 + str.len();
+    let num_chars = str.len();
+    let padding = (8 - (str.len() % 8)) % 8;
+    let body: String =
+        str.as_bytes().iter().fold("".to_string(), |acc, b| format!("{acc} [u1]{b}"));
+    let padding: String = iter::repeat_n("[u1]0 ", padding).collect();
+    format!("[u4]{size} [u4]{num_chars} {body} {padding}")
+}
+
+#[gtest(MojomParser, TestStringParsing)]
+fn test_string_parsing() -> anyhow::Result<()> {
+    use std::collections::HashMap;
+
+    validate_parsing::<MojomString>(MojomString::from_str("hello"), &str_wire_format("hello"))?;
+
+    validate_parsing::<Vec<MojomString>>(
+        vec![
+            MojomString::from_str("life"),
+            MojomString::from_str("universe"),
+            MojomString::from_str("everything"),
+        ],
+        &format!(
+            "{} {} {} {} {} {} {} {}",
+            "[u4]32 [u4]3 ",
+            "[dist8]life_ptr [dist8]universe_ptr [dist8]everything_ptr",
+            "[anchr]life_ptr",
+            &str_wire_format("life"),
+            "[anchr]universe_ptr",
+            &str_wire_format("universe"),
+            "[anchr]everything_ptr",
+            &str_wire_format("everything"),
+        ),
+    )?;
+
+    validate_parsing::<HashMap<u8, MojomString>>(
+        [(10, MojomString::from_str("ten")), (20, MojomString::from_str("twenty"))].into(),
+        &format!(
+            "{} {} {} {} {} {} {} {} {}",
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            "[anchr]keys_ptr ",
+            "[u4]10 [u4]2 [u1]10 [u1]20 [u2]0 [u4]0 ",
+            "[anchr]values_ptr ",
+            "[u4]24 [u4]2 [dist8]ten_ptr [dist8]twenty_ptr ",
+            "[anchr]ten_ptr ",
+            &str_wire_format("ten"),
+            "[anchr]twenty_ptr ",
+            &str_wire_format("twenty"),
+        ),
+    )?;
+
+    validate_parsing::<HashMap<MojomString, i16>>(
+        [("three".to_string().into(), 3), ("four".to_string().into(), 4)].into(),
+        &format!(
+            "{} {} {} {} {} {} {} {} {}",
+            "[u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            "[anchr]keys_ptr ",
+            "[u4]24 [u4]2 [dist8]four_ptr [dist8]three_ptr ",
+            "[anchr]four_ptr ",
+            &str_wire_format("four"),
+            "[anchr]three_ptr ",
+            &str_wire_format("three"),
+            "[anchr]values_ptr ",
+            "[u4]12 [u4]2 [s2]4 [s2]3 [u4]0 ",
+        ),
+    )?;
+    Ok(())
+}
+
+#[gtest(MojomParser, TestComplexUnionParsing)]
+fn test_complex_union_parsing() -> anyhow::Result<()> {
+    // HoldsComplexTypes: string
+    validate_parsing::<HoldsComplexTypes>(
+        HoldsComplexTypes::str(MojomString::from_str("union_string")),
+        &format!(
+            "[u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
+            &str_wire_format("union_string")
+        ),
+    )?;
+
+    validate_parsing::<ComplexUnionHolder>(
+        ComplexUnionHolder { u: HoldsComplexTypes::str(MojomString::from_str("union_string")) },
+        &format!(
+            "[u4]24 [u4]0 [u4]16 [u4]0 [dist8]union_str_ptr [anchr]union_str_ptr {}",
+            &str_wire_format("union_string")
+        ),
+    )?;
+
+    // HoldsComplexTypes: array<int16>
+    validate_parsing::<HoldsComplexTypes>(
+        HoldsComplexTypes::arr(vec![-10, -20, -30]),
+        concat!(
+            "[u4]16 [u4]1 [dist8]union_arr_ptr ",
+            "[anchr]union_arr_ptr [u4]14 [u4]3 [s2]-10 [s2]-20 [s2]-30 [u2]0"
+        ),
+    )?;
+
+    // HoldsComplexTypes: map<uint8, uint8>
+    validate_parsing::<HoldsComplexTypes>(
+        HoldsComplexTypes::m([(100, 1), (101, 2)].into()),
+        concat!(
+            "[u4]16 [u4]2 [dist8]union_map_ptr ",
+            "[anchr]union_map_ptr [u4]24 [u4]0 [dist8]keys_ptr [dist8]values_ptr ",
+            "[anchr]keys_ptr [u4]10 [u4]2 [u1]100 [u1]101 [u2]0 [u4]0 ",
+            "[anchr]values_ptr [u4]10 [u4]2 [u1]1 [u1]2 [u2]0 [u4]0 ",
+        ),
+    )?;
     Ok(())
 }

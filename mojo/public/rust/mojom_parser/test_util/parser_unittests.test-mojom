@@ -170,5 +170,23 @@ struct Maps {
   map<int8, FourInts> to_struct;
   map<int8, NestedUnion> to_union;
   map<int8, map<int16, uint32>> to_map;
-  // Strings are also allowed as keys, add that when we implement them
+};
+
+struct Strings {
+  string str;
+  array<string> arr;
+  map<uint8, string> to_str;
+  map<string, int16> from_str;
+};
+
+// Now that we have arrays, maps, and strings, we should
+// make sure a union can hold all of them properly.
+union HoldsComplexTypes {
+  string str;
+  array<int16> arr;
+  map<uint8, uint8> m;
+};
+
+struct ComplexUnionHolder {
+  HoldsComplexTypes u;
 };
