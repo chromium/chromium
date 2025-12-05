@@ -380,7 +380,10 @@ void HTMLAnchorElementBase::SetURL(const KURL& url) {
 DOMOrigin* HTMLAnchorElementBase::GetDOMOrigin(LocalDOMWindow*) const {
   // No access check is necessary, as anchor elements are not accessible
   // cross-origin.
-  return DOMOrigin::Create(SecurityOrigin::Create(Url()));
+  if (FastHasAttribute(html_names::kHrefAttr)) {
+    return DOMOrigin::Create(SecurityOrigin::Create(Url()));
+  }
+  return nullptr;
 }
 
 String HTMLAnchorElementBase::Input() const {

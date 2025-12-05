@@ -1,6 +1,16 @@
 // META: title=`Origin.from(HTMLHyperlinkElementUtils)`
 // META: script=resources/serializations.js
 
+test(t => {
+  const invalid = document.createElement("a");
+  assert_throws_js(TypeError, _ => Origin.from(invalid));
+}, `Origin.from(<a>) throws.`);
+
+test(t => {
+  const invalid = document.createElement("area");
+  assert_throws_js(TypeError, _ => Origin.from(invalid));
+}, `Origin.from(<area>) throws.`);
+
 for (const opaque of urls.opaque) {
   // <a>
   test(t => {
