@@ -50,7 +50,7 @@ pub trait MojomParse:
             }
             None => {
                 // No current entry, initialize it by packing the input type.
-                let wire_type_box = Box::new(pack_mojom_type(&Self::mojom_type(), 0));
+                let wire_type_box = Box::new(pack_mojom_type(&Self::mojom_type()));
                 let wire_type_ref: &'static MojomWireType = Box::leak(wire_type_box);
                 WIRE_TYPE.write().unwrap().insert(TypeId::of::<Self>(), wire_type_ref);
                 return wire_type_ref;

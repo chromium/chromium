@@ -22,30 +22,44 @@ fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result
 // to have a single function/macro that validates the type and extracts the
 // value at once. Currently we have to match twice, since the rust type system
 // forgets that we validated the type.
-fn check_value_has_expected_type(value: &MojomValue, expected_type: &MojomWireType) -> Result<()> {
+fn check_value_has_expected_type<T>(
+    value: &MojomValue,
+    expected_type: &StructuredBodyElementRef<'_, T>,
+) -> Result<()>
+where
+    T: std::fmt::Debug + std::borrow::Borrow<BitfieldOrdinals>,
+{
     let matches = match (expected_type, value) {
-        (MojomWireType::Leaf { leaf_type, .. }, _) => match (leaf_type, value) {
-            (PackedLeafType::Int8, MojomValue::Int8(_))
-            | (PackedLeafType::UInt8, MojomValue::UInt8(_))
-            | (PackedLeafType::Int16, MojomValue::Int16(_))
-            | (PackedLeafType::UInt16, MojomValue::UInt16(_))
-            | (PackedLeafType::Int32, MojomValue::Int32(_))
-            | (PackedLeafType::UInt32, MojomValue::UInt32(_))
-            | (PackedLeafType::Int64, MojomValue::Int64(_))
-            | (PackedLeafType::UInt64, MojomValue::UInt64(_))
-            | (PackedLeafType::Enum { .. }, MojomValue::Enum(_)) => true,
-            _ => false,
-        },
-        (MojomWireType::Bitfield { .. }, MojomValue::Bool(_))
-        | (MojomWireType::Union { .. }, MojomValue::Union { .. }) => true,
-        (MojomWireType::Pointer { nested_data_type, .. }, _) => match (nested_data_type, value) {
+        (StructuredBodyElement::Bitfield(_), MojomValue::Bool(_)) => true,
+        (StructuredBodyElement::SingleValue(_, wire_type), _) => {
+            match (wire_type, value) {
+                (MojomWireType::Leaf { leaf_type, .. }, _) => match (leaf_type, value) {
+                    (PackedLeafType::Bool, MojomValue::Bool(_))
+                    | (PackedLeafType::Int8, MojomValue::Int8(_))
+                    | (PackedLeafType::UInt8, MojomValue::UInt8(_))
+                    | (PackedLeafType::Int16, MojomValue::Int16(_))
+                    | (PackedLeafType::UInt16, MojomValue::UInt16(_))
+                    | (PackedLeafType::Int32, MojomValue::Int32(_))
+                    | (PackedLeafType::UInt32, MojomValue::UInt32(_))
+                    | (PackedLeafType::Int64, MojomValue::Int64(_))
+                    | (PackedLeafType::UInt64, MojomValue::UInt64(_))
+                    | (PackedLeafType::Enum { .. }, MojomValue::Enum(_)) => true,
+                    _ => false,
+                },
+                (MojomWireType::Union { .. }, MojomValue::Union { .. }) => true,
+                (MojomWireType::Pointer { nested_data_type, .. }, _) => {
+                    match (nested_data_type, value) {
             (PackedStructuredType::Struct { .. }, MojomValue::Struct { .. })
             // FOR_RELEASE: Should we care about which type of array this was originally?
             | (PackedStructuredType::Array { .. }, MojomValue::Array { .. })
             | (PackedStructuredType::Array { .. }, MojomValue::String { .. })
             | (PackedStructuredType::Union { .. }, MojomValue::Union { .. }) => true,
             _ => false,
-        },
+        }
+                }
+                _ => false,
+            }
+        }
         _ => false,
     };
     if matches {
@@ -65,6 +79,10 @@ fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
 /// Write out the bytes for a leaf node
 fn deparse_leaf_value(data: &mut Vec<u8>, value: &MojomValue) -> Result<()> {
     match value {
+        MojomValue::Bool(value) => {
+            let v = if *value { 1u8 } else { 0u8 };
+            data.extend(v.to_le_bytes())
+        }
         MojomValue::Int8(value) => data.extend(value.to_le_bytes()),
         MojomValue::UInt8(value) => data.extend(value.to_le_bytes()),
         MojomValue::Int16(value) => data.extend(value.to_le_bytes()),
@@ -84,7 +102,7 @@ fn deparse_leaf_value(data: &mut Vec<u8>, value: &MojomValue) -> Result<()> {
 // later in the message.
 
 enum NestedData<'a> {
-    Struct { field_values: &'a [MojomValue], packed_fields: &'a [MojomWireType] },
+    Struct { field_values: &'a [MojomValue], packed_fields: &'a [StructuredBodyElementOwned] },
     Array { elements: &'a Vec<MojomValue>, element_type: &'a Box<MojomWireType> },
     Union { tag: u32, value: &'a Box<MojomValue>, variants: &'a HashMap<u32, MojomWireType> },
 }
@@ -107,12 +125,17 @@ fn write_to_slice(data: &mut Vec<u8>, start: usize, len: usize, value: &[u8]) {
 pub fn deparse_struct(
     data: &mut Vec<u8>,
     field_values: &[MojomValue],
-    packed_fields: &[MojomWireType],
+    packed_fields: &[StructuredBodyElementOwned],
 ) -> Result<()> {
     // Write the struct's header
     data.extend([0; 4]); // Size; we'll fill this in later
     data.extend([0; 4]); // Version number; not supported yet
-    deparse_structured_body(data, None, field_values, packed_fields)
+    deparse_structured_body(
+        data,
+        None,
+        field_values,
+        packed_fields.iter().map(StructuredBodyElementOwned::as_ref),
+    )
 }
 
 /// Serialize a union to the wire.
@@ -134,11 +157,14 @@ fn deparse_union<'a>(
     data.extend([0; 4]); // Size; we'll fill this in later
     data.extend(tag.to_le_bytes()); // Union tag
 
+    let struct_ref_element: StructuredBodyElementMixed =
+        StructuredBodyElement::SingleValue(0, expected_wire_type);
+
     deparse_structured_body(
         data,
         enclosing_nested_data_list,
         std::slice::from_ref(&*value),
-        std::slice::from_ref(expected_wire_type),
+        std::iter::once(struct_ref_element),
     )
 }
 
@@ -147,12 +173,16 @@ fn deparse_union<'a>(
 /// See the documentation of parse_union in parse_values.rs for an explanation
 /// of the `enclosing_nested_data_list` argument
 // FOR_RELEASE: Try to take the value by value instead of by reference
-fn deparse_structured_body<'a>(
+fn deparse_structured_body<'a, 'b, IterT, BitfieldT>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     field_values: &'a [MojomValue],
-    packed_fields: &'a [MojomWireType],
-) -> Result<()> {
+    packed_fields: IterT,
+) -> Result<()>
+where
+    BitfieldT: std::fmt::Debug + std::borrow::Borrow<BitfieldOrdinals>,
+    IterT: Iterator<Item = StructuredBodyElementRef<'a, BitfieldT>>,
+{
     // Start counting from the beginning of the header, which we already wrote
     let initial_bytes = data.len() - 8;
 
@@ -166,14 +196,8 @@ fn deparse_structured_body<'a>(
     // (for nested data) prepare for them to be written later, in order.
     for packed_field in packed_fields {
         match packed_field {
-            MojomWireType::Leaf { ordinal, leaf_type: _ } => {
-                let leaf_value = get_field_at_ordinal(field_values, *ordinal)?;
-                check_value_has_expected_type(leaf_value, packed_field)?;
-                pad_to_alignment(data, packed_field.alignment());
-                deparse_leaf_value(data, leaf_value)?
-            }
-            MojomWireType::Bitfield { ordinals } => {
-                let mut iter = ordinals.into_iter().enumerate();
+            StructuredBodyElement::Bitfield(ref ordinals) => {
+                let mut iter = ordinals.borrow().into_iter().enumerate();
                 let mut bitfield: u8 = 0;
                 // Construct the bitfield bit-by-bit
                 while let Some((idx, Some(ordinal))) = iter.next() {
@@ -183,53 +207,74 @@ fn deparse_structured_body<'a>(
                     } else {
                         // We know this will fail, but calling it lets us avoid
                         // writing a custom error message here.
-                        check_value_has_expected_type(bit_value, packed_field)?;
+                        check_value_has_expected_type(bit_value, &packed_field)?;
                     }
                 }
                 // Now we've set all the bits, write it to the wire
                 data.push(bitfield)
             }
-            MojomWireType::Pointer { ordinal, nested_data_type } => {
-                let nested_data_value = get_field_at_ordinal(field_values, *ordinal)?;
-                let nested_data = match (nested_data_value, nested_data_type) {
-                    (
-                        MojomValue::Struct(_field_names, nested_data_fields),
-                        PackedStructuredType::Struct { packed_field_types, packed_field_names: _ },
-                    ) => NestedData::Struct {
-                        field_values: nested_data_fields,
-                        packed_fields: packed_field_types,
-                    },
-                    (
-                        MojomValue::Array(nested_data_fields),
-                        PackedStructuredType::Array { element_type, .. },
-                    ) => NestedData::Array { elements: nested_data_fields, element_type },
-                    (
-                        MojomValue::Union(tag, value),
-                        PackedStructuredType::Union { variants, .. },
-                    ) => NestedData::Union { tag: *tag, value, variants },
-                    _ => bail!(
-                        "Unexpected type for nested data: Expected {:?}, got {:?}",
-                        nested_data_type,
-                        nested_data_value
-                    ),
-                };
-                nested_data_list.push(NestedDataInfo { nested_data, ptr_loc: data.len() });
-                // Allocate space for the pointer, we'll write to it later.
-                pad_to_alignment(data, 8);
-                data.extend([0; 8]);
-            }
-            MojomWireType::Union { ordinal, variants } => {
-                let union_value = get_field_at_ordinal(field_values, *ordinal)?;
-                let (tag, contained_value) = match union_value {
-                    MojomValue::Union(tag, value) => (tag, value),
-                    _ => {
-                        // We know this will fail, but calling it lets us avoid
-                        // writing a custom error message here.
-                        return check_value_has_expected_type(union_value, packed_field);
+            StructuredBodyElement::SingleValue(ordinal, wire_type) => {
+                match wire_type {
+                    MojomWireType::Leaf { leaf_type: _ } => {
+                        let leaf_value = get_field_at_ordinal(field_values, ordinal)?;
+                        check_value_has_expected_type(leaf_value, &packed_field)?;
+                        pad_to_alignment(data, packed_field.alignment());
+                        deparse_leaf_value(data, leaf_value)?
                     }
-                };
-                pad_to_alignment(data, 8);
-                deparse_union(data, Some(nested_data_list), *tag, contained_value, variants)?;
+
+                    MojomWireType::Pointer { nested_data_type } => {
+                        let nested_data_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let nested_data = match (nested_data_value, nested_data_type) {
+                            (
+                                MojomValue::Struct(_field_names, nested_data_fields),
+                                PackedStructuredType::Struct {
+                                    packed_field_types,
+                                    packed_field_names: _,
+                                    num_elements_in_value: _,
+                                },
+                            ) => NestedData::Struct {
+                                field_values: nested_data_fields,
+                                packed_fields: packed_field_types,
+                            },
+                            (
+                                MojomValue::Array(nested_data_fields),
+                                PackedStructuredType::Array { element_type, .. },
+                            ) => NestedData::Array { elements: nested_data_fields, element_type },
+                            (
+                                MojomValue::Union(tag, value),
+                                PackedStructuredType::Union { variants, .. },
+                            ) => NestedData::Union { tag: *tag, value, variants },
+                            _ => bail!(
+                                "Unexpected type for nested data: Expected {:?}, got {:?}",
+                                nested_data_type,
+                                nested_data_value
+                            ),
+                        };
+                        nested_data_list.push(NestedDataInfo { nested_data, ptr_loc: data.len() });
+                        // Allocate space for the pointer, we'll write to it later.
+                        pad_to_alignment(data, 8);
+                        data.extend([0; 8]);
+                    }
+                    MojomWireType::Union { variants } => {
+                        let union_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let (tag, contained_value) = match union_value {
+                            MojomValue::Union(tag, value) => (tag, value),
+                            _ => {
+                                // We know this will fail, but calling it lets us avoid
+                                // writing a custom error message here.
+                                return check_value_has_expected_type(union_value, &packed_field);
+                            }
+                        };
+                        pad_to_alignment(data, 8);
+                        deparse_union(
+                            data,
+                            Some(nested_data_list),
+                            *tag,
+                            contained_value,
+                            variants,
+                        )?;
+                    }
+                }
             }
         }
     }
@@ -281,13 +326,9 @@ pub fn deparse_single_value_for_testing(
     let mut data: Vec<u8> = vec![];
     match (wire_type, value) {
         (MojomWireType::Leaf { .. }, _) => deparse_leaf_value(&mut data, value)?,
-        (MojomWireType::Bitfield { .. }, _) => {
-            unimplemented!("Bitfields cannot be deparsed individually")
-        }
         (
             MojomWireType::Pointer {
-                nested_data_type:
-                    PackedStructuredType::Struct { packed_field_types, packed_field_names: _ },
+                nested_data_type: PackedStructuredType::Struct { packed_field_types, .. },
                 ..
             },
             MojomValue::Struct(_field_names, fields),
@@ -306,7 +347,9 @@ pub fn deparse_single_value_for_testing(
         ) => deparse_union(&mut data, None, *tag, value, variants)?,
         _ => {
             // This will fail, just calling for the error message
-            check_value_has_expected_type(value, wire_type)?
+            let wire_elt: StructuredBodyElementMixed =
+                StructuredBodyElement::SingleValue(0, wire_type);
+            check_value_has_expected_type(value, &wire_elt)?
         }
     };
     Ok(data)

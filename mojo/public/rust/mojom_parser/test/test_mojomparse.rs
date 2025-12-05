@@ -56,32 +56,39 @@ fn wrap_struct_fields_value(fields: Vec<(String, MojomValue)>) -> MojomValue {
     MojomValue::Struct(field_names, fields)
 }
 
-fn wrap_packed_struct_fields(fields: Vec<(String, MojomWireType)>) -> MojomWireType {
+fn wrap_packed_struct_fields(
+    fields: Vec<(String, StructuredBodyElementOwned)>,
+    num_elements_in_value: usize,
+) -> MojomWireType {
     let (packed_field_names, packed_field_types) = fields.into_iter().unzip();
     MojomWireType::Pointer {
-        ordinal: 0,
-        nested_data_type: PackedStructuredType::Struct { packed_field_names, packed_field_types },
+        nested_data_type: PackedStructuredType::Struct {
+            packed_field_names,
+            packed_field_types,
+            num_elements_in_value,
+        },
     }
+}
+
+// Helper macros since otherwise the lines get too long
+// and it's harder to read the test cases
+macro_rules! bare_leaf {
+    ($leaf_ty:expr) => {
+        MojomWireType::Leaf { leaf_type: $leaf_ty }
+    };
+}
+
+macro_rules! struct_leaf {
+    ($ord:expr, $leaf_ty:expr) => {
+        StructuredBodyElement::SingleValue($ord, MojomWireType::Leaf { leaf_type: $leaf_ty })
+    };
 }
 
 impl TestType {
     /// Return the packed version of this type as a struct field with the given
     /// ordinal
-    fn as_struct_field(&self, ordinal: Ordinal) -> MojomWireType {
-        match self.packed_type.clone() {
-            MojomWireType::Leaf { ordinal: _, leaf_type } => {
-                MojomWireType::Leaf { ordinal, leaf_type }
-            }
-            MojomWireType::Bitfield { ordinals: _ } => {
-                panic!("Bitfields aren't supported as individuals")
-            }
-            MojomWireType::Pointer { ordinal: _, nested_data_type } => {
-                MojomWireType::Pointer { ordinal, nested_data_type }
-            }
-            MojomWireType::Union { ordinal: _, variants } => {
-                MojomWireType::Union { ordinal, variants }
-            }
-        }
+    fn as_struct_field(&self, ordinal: Ordinal) -> StructuredBodyElementOwned {
+        StructuredBodyElement::SingleValue(ordinal, self.packed_type.clone())
     }
 
     /// Return the packed version of this type as a union field
@@ -89,7 +96,6 @@ impl TestType {
         match self.packed_type.clone() {
             // Nested unions are represented as pointers
             MojomWireType::Union { variants, .. } => MojomWireType::Pointer {
-                ordinal: 0,
                 nested_data_type: PackedStructuredType::Union { variants },
             },
             // Everything else is represented as itself.
@@ -117,7 +123,7 @@ impl TestType {
 
         expect_eq!(
             *T::wire_type(),
-            self.as_struct_field(0),
+            self.packed_type,
             "Type {} failed to pack correctly!",
             self.type_name
         );
@@ -136,7 +142,7 @@ impl TestType {
 static EMPTY_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     type_name: "Empty",
     base_type: wrap_struct_fields_type(vec![]),
-    packed_type: wrap_packed_struct_fields(vec![]),
+    packed_type: wrap_packed_struct_fields(vec![], 0),
 });
 
 fn empty_mojom() -> MojomValue {
@@ -158,12 +164,15 @@ static FOUR_INTS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("c".to_string(), MojomType::Int32),
         ("d".to_string(), MojomType::Int64),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("a".to_string(), MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int8 }),
-        ("b".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int16 }),
-        ("c".to_string(), MojomWireType::Leaf { ordinal: 2, leaf_type: PackedLeafType::Int32 }),
-        ("d".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int64 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("a".to_string(), struct_leaf!(0, PackedLeafType::Int8)),
+            ("b".to_string(), struct_leaf!(1, PackedLeafType::Int16)),
+            ("c".to_string(), struct_leaf!(2, PackedLeafType::Int32)),
+            ("d".to_string(), struct_leaf!(3, PackedLeafType::Int64)),
+        ],
+        4,
+    ),
 });
 
 fn four_ints_mojom(a: i8, b: i16, c: i32, d: i64) -> MojomValue {
@@ -190,12 +199,15 @@ static FOUR_INTS_REVERSED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("b".to_string(), MojomType::Int16),
         ("a".to_string(), MojomType::Int8),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("d".to_string(), MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int64 }),
-        ("c".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int32 }),
-        ("b".to_string(), MojomWireType::Leaf { ordinal: 2, leaf_type: PackedLeafType::Int16 }),
-        ("a".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int8 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("d".to_string(), struct_leaf!(0, PackedLeafType::Int64)),
+            ("c".to_string(), struct_leaf!(1, PackedLeafType::Int32)),
+            ("b".to_string(), struct_leaf!(2, PackedLeafType::Int16)),
+            ("a".to_string(), struct_leaf!(3, PackedLeafType::Int8)),
+        ],
+        4,
+    ),
 });
 
 fn four_ints_reversed_mojom(a: i8, b: i16, c: i32, d: i64) -> MojomValue {
@@ -222,12 +234,15 @@ static FOUR_INTS_INTERMIXED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("c".to_string(), MojomType::Int16),
         ("d".to_string(), MojomType::Int8),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("a".to_string(), MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int8 }),
-        ("d".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int8 }),
-        ("c".to_string(), MojomWireType::Leaf { ordinal: 2, leaf_type: PackedLeafType::Int16 }),
-        ("b".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int32 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("a".to_string(), struct_leaf!(0, PackedLeafType::Int8)),
+            ("d".to_string(), struct_leaf!(3, PackedLeafType::Int8)),
+            ("c".to_string(), struct_leaf!(2, PackedLeafType::Int16)),
+            ("b".to_string(), struct_leaf!(1, PackedLeafType::Int32)),
+        ],
+        4,
+    ),
 });
 
 fn four_ints_intermixed_mojom(a: i8, b: i32, c: i16, d: i8) -> MojomValue {
@@ -258,14 +273,17 @@ static ONCE_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("f3".to_string(), FOUR_INTS_INTERMIXED_TY.base_type.clone()),
         ("c".to_string(), MojomType::UInt16),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("f1".to_string(), FOUR_INTS_TY.as_struct_field(0)),
-        ("a".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::UInt32 }),
-        ("b".to_string(), MojomWireType::Leaf { ordinal: 2, leaf_type: PackedLeafType::Int8 }),
-        ("c".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt16 }),
-        ("f2".to_string(), FOUR_INTS_REVERSED_TY.as_struct_field(3)),
-        ("f3".to_string(), FOUR_INTS_INTERMIXED_TY.as_struct_field(4)),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("f1".to_string(), FOUR_INTS_TY.as_struct_field(0)),
+            ("a".to_string(), struct_leaf!(1, PackedLeafType::UInt32)),
+            ("b".to_string(), struct_leaf!(2, PackedLeafType::Int8)),
+            ("c".to_string(), struct_leaf!(5, PackedLeafType::UInt16)),
+            ("f2".to_string(), FOUR_INTS_REVERSED_TY.as_struct_field(3)),
+            ("f3".to_string(), FOUR_INTS_INTERMIXED_TY.as_struct_field(4)),
+        ],
+        6,
+    ),
 });
 
 fn once_nested_mojom(
@@ -301,13 +319,16 @@ static TWICE_NESTED_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("b".to_string(), MojomType::Int32),
         ("c".to_string(), MojomType::Int32),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("o".to_string(), ONCE_NESTED_TY.as_struct_field(0)),
-        ("a".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int16 }),
-        ("b".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int32 }),
-        ("f".to_string(), FOUR_INTS_TY.as_struct_field(2)),
-        ("c".to_string(), MojomWireType::Leaf { ordinal: 4, leaf_type: PackedLeafType::Int32 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("o".to_string(), ONCE_NESTED_TY.as_struct_field(0)),
+            ("a".to_string(), struct_leaf!(1, PackedLeafType::Int16)),
+            ("b".to_string(), struct_leaf!(3, PackedLeafType::Int32)),
+            ("f".to_string(), FOUR_INTS_TY.as_struct_field(2)),
+            ("c".to_string(), struct_leaf!(4, PackedLeafType::Int32)),
+        ],
+        5,
+    ),
 });
 
 fn twice_nested_mojom(o: MojomValue, a: i16, f: MojomValue, b: i32, c: i32) -> MojomValue {
@@ -341,21 +362,38 @@ static TEN_BOOLS_AND_A_BYTE_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("b8".to_string(), MojomType::Bool),
         ("b9".to_string(), MojomType::Bool),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        (
-            "b0".to_string(),
-            MojomWireType::Bitfield {
-                ordinals: [Some(0), Some(1), Some(2), Some(3), Some(4), Some(6), Some(7), Some(8)],
-            },
-        ),
-        ("n1".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt8 }),
-        (
-            "b8".to_string(),
-            MojomWireType::Bitfield {
-                ordinals: [Some(9), Some(10), None, None, None, None, None, None],
-            },
-        ),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            (
+                "b0".to_string(),
+                StructuredBodyElement::Bitfield([
+                    Some(0),
+                    Some(1),
+                    Some(2),
+                    Some(3),
+                    Some(4),
+                    Some(6),
+                    Some(7),
+                    Some(8),
+                ]),
+            ),
+            ("n1".to_string(), struct_leaf!(5, PackedLeafType::UInt8)),
+            (
+                "b8".to_string(),
+                StructuredBodyElement::Bitfield([
+                    Some(9),
+                    Some(10),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                ]),
+            ),
+        ],
+        11,
+    ),
 });
 
 fn ten_bools_and_a_byte_mojom(
@@ -407,21 +445,38 @@ static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestTyp
         ("b8".to_string(), MojomType::Bool),
         ("b9".to_string(), MojomType::Bool),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        (
-            "b0".to_string(),
-            MojomWireType::Bitfield {
-                ordinals: [Some(0), Some(1), Some(2), Some(3), Some(4), Some(6), Some(7), Some(8)],
-            },
-        ),
-        (
-            "b8".to_string(),
-            MojomWireType::Bitfield {
-                ordinals: [Some(9), Some(10), None, None, None, None, None, None],
-            },
-        ),
-        ("n1".to_string(), MojomWireType::Leaf { ordinal: 5, leaf_type: PackedLeafType::UInt16 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            (
+                "b0".to_string(),
+                StructuredBodyElement::Bitfield([
+                    Some(0),
+                    Some(1),
+                    Some(2),
+                    Some(3),
+                    Some(4),
+                    Some(6),
+                    Some(7),
+                    Some(8),
+                ]),
+            ),
+            (
+                "b8".to_string(),
+                StructuredBodyElement::Bitfield([
+                    Some(9),
+                    Some(10),
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                ]),
+            ),
+            ("n1".to_string(), struct_leaf!(5, PackedLeafType::UInt16)),
+        ],
+        11,
+    ),
 });
 
 fn ten_bools_and_two_bytes_mojom(
@@ -606,23 +661,14 @@ static SOME_ENUMS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("n1".to_string(), MojomType::UInt64),
         ("e2".to_string(), MojomType::Enum { is_valid: TEST_ENUM2_PRED }),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        (
-            "e1".to_string(),
-            MojomWireType::Leaf {
-                ordinal: 0,
-                leaf_type: PackedLeafType::Enum { is_valid: TEST_ENUM_PRED },
-            },
-        ),
-        (
-            "e2".to_string(),
-            MojomWireType::Leaf {
-                ordinal: 2,
-                leaf_type: PackedLeafType::Enum { is_valid: TEST_ENUM2_PRED },
-            },
-        ),
-        ("n1".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::UInt64 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("e1".to_string(), struct_leaf!(0, PackedLeafType::Enum { is_valid: TEST_ENUM_PRED })),
+            ("e2".to_string(), struct_leaf!(2, PackedLeafType::Enum { is_valid: TEST_ENUM2_PRED })),
+            ("n1".to_string(), struct_leaf!(1, PackedLeafType::UInt64)),
+        ],
+        3,
+    ),
 });
 
 fn some_enums_mojom(e1: u32, n1: u64, e2: u32) -> MojomValue {
@@ -683,29 +729,12 @@ static BASE_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         .into(),
     },
     packed_type: MojomWireType::Union {
-        ordinal: 0,
         variants: [
-            (0, MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int8 }),
-            (1, MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::UInt64 }),
-            (
-                2,
-                MojomWireType::Leaf {
-                    ordinal: 0,
-                    leaf_type: PackedLeafType::Enum { is_valid: TEST_ENUM_PRED },
-                },
-            ),
-            (
-                3,
-                MojomWireType::Bitfield {
-                    ordinals: [Some(0), None, None, None, None, None, None, None],
-                },
-            ),
-            (
-                4,
-                MojomWireType::Bitfield {
-                    ordinals: [Some(0), None, None, None, None, None, None, None],
-                },
-            ),
+            (0, bare_leaf!(PackedLeafType::Int8)),
+            (1, bare_leaf!(PackedLeafType::UInt64)),
+            (2, bare_leaf!(PackedLeafType::Enum { is_valid: TEST_ENUM_PRED })),
+            (3, bare_leaf!(PackedLeafType::Bool)),
+            (4, bare_leaf!(PackedLeafType::Bool)),
             (5, EMPTY_TY.as_union_field()),
             (6, FOUR_INTS_TY.as_union_field()),
         ]
@@ -752,12 +781,8 @@ static NESTED_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         variants: [(0, MojomType::Int32), (1, BASE_UNION_TY.base_type.clone())].into(),
     },
     packed_type: MojomWireType::Union {
-        ordinal: 0,
-        variants: [
-            (0, MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int32 }),
-            (1, BASE_UNION_TY.as_union_field()),
-        ]
-        .into(),
+        variants: [(0, bare_leaf!(PackedLeafType::Int32)), (1, BASE_UNION_TY.as_union_field())]
+            .into(),
     },
 });
 
@@ -782,11 +807,14 @@ static WITH_NESTED_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("u".to_string(), NESTED_UNION_TY.base_type.clone()),
         ("n2".to_string(), MojomType::Int32),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("n1".to_string(), MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int64 }),
-        ("u".to_string(), NESTED_UNION_TY.as_struct_field(1)),
-        ("n2".to_string(), MojomWireType::Leaf { ordinal: 2, leaf_type: PackedLeafType::Int32 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("n1".to_string(), struct_leaf!(0, PackedLeafType::Int64)),
+            ("u".to_string(), NESTED_UNION_TY.as_struct_field(1)),
+            ("n2".to_string(), struct_leaf!(2, PackedLeafType::Int32)),
+        ],
+        3,
+    ),
 });
 
 fn with_nested_union_mojom(n1: i64, u: MojomValue, n2: i32) -> MojomValue {
@@ -816,15 +844,9 @@ static NESTEDER_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         .into(),
     },
     packed_type: MojomWireType::Union {
-        ordinal: 0,
         variants: [
-            (
-                0,
-                MojomWireType::Bitfield {
-                    ordinals: [Some(0), None, None, None, None, None, None, None],
-                },
-            ),
-            (1, MojomWireType::Leaf { ordinal: 0, leaf_type: PackedLeafType::Int8 }),
+            (0, bare_leaf!(PackedLeafType::Bool)),
+            (1, bare_leaf!(PackedLeafType::Int8)),
             (2, NESTED_UNION_TY.as_union_field()),
             (3, WITH_NESTED_UNION_TY.as_union_field()),
         ]
@@ -870,16 +892,19 @@ static WITH_MANY_UNIONS_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         ("i3".to_string(), MojomType::Int32),
         ("i4".to_string(), MojomType::Int32),
     ]),
-    packed_type: wrap_packed_struct_fields(vec![
-        ("u1".to_string(), NESTED_UNION_TY.as_struct_field(0)),
-        ("i1".to_string(), MojomWireType::Leaf { ordinal: 1, leaf_type: PackedLeafType::Int8 }),
-        ("i3".to_string(), MojomWireType::Leaf { ordinal: 6, leaf_type: PackedLeafType::Int32 }),
-        ("u2".to_string(), NESTEDER_UNION_TY.as_struct_field(2)),
-        ("i2".to_string(), MojomWireType::Leaf { ordinal: 3, leaf_type: PackedLeafType::Int64 }),
-        ("u3".to_string(), BASE_UNION_TY.as_struct_field(4)),
-        ("u4".to_string(), NESTEDER_UNION_TY.as_struct_field(5)),
-        ("i4".to_string(), MojomWireType::Leaf { ordinal: 7, leaf_type: PackedLeafType::Int32 }),
-    ]),
+    packed_type: wrap_packed_struct_fields(
+        vec![
+            ("u1".to_string(), NESTED_UNION_TY.as_struct_field(0)),
+            ("i1".to_string(), struct_leaf!(1, PackedLeafType::Int8)),
+            ("i3".to_string(), struct_leaf!(6, PackedLeafType::Int32)),
+            ("u2".to_string(), NESTEDER_UNION_TY.as_struct_field(2)),
+            ("i2".to_string(), struct_leaf!(3, PackedLeafType::Int64)),
+            ("u3".to_string(), BASE_UNION_TY.as_struct_field(4)),
+            ("u4".to_string(), NESTEDER_UNION_TY.as_struct_field(5)),
+            ("i4".to_string(), struct_leaf!(7, PackedLeafType::Int32)),
+        ],
+        8,
+    ),
 });
 
 fn with_many_unions_mojom(

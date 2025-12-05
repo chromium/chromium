@@ -68,13 +68,18 @@ pub fn parse_message(data_slice: &[u8], ty: &MojomWireType) -> ParsingResult<Moj
     match ty {
         MojomWireType::Pointer {
             nested_data_type:
-                PackedStructuredType::Struct { packed_field_names, packed_field_types },
+                PackedStructuredType::Struct {
+                    packed_field_names,
+                    packed_field_types,
+                    num_elements_in_value,
+                },
             ..
         } => {
             let ret = crate::parse_values::parse_struct(
                 &mut data,
                 packed_field_names,
                 packed_field_types,
+                *num_elements_in_value,
             )?;
             if data.remaining_bytes() != 0 {
                 // We don't support the interface ID struct yet

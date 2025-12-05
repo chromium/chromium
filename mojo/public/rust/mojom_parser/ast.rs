@@ -77,6 +77,13 @@ pub enum MojomValue {
 /// definition, i.e. "the nth field"
 pub type Ordinal = usize;
 
+/// A bitfield consist of up to 8 booleans packed into a single byte.
+/// The ordinals represent which bits correspond to which elements of the
+/// enclosing body, starting with the LSB. Bits are never skipped, so the
+/// array is a contiguous block of `Some`s, followed by zero or more
+/// `None`s.
+pub type BitfieldOrdinals = [Option<Ordinal>; 8];
+
 #[derive(Debug, Clone, PartialEq)]
 /// Representation of a Mojom type that has been packed into the wire format. It
 /// contains enough information to both parse and deparse the associated type.
@@ -94,27 +101,53 @@ pub type Ordinal = usize;
 pub enum MojomWireType {
     /// A single value with no additional structure, which is encoded directly
     /// at this location.
-    Leaf { ordinal: Ordinal, leaf_type: PackedLeafType },
-    /// Up to 8 booleans packed into a single byte.
-    Bitfield {
-        /// A list of the ordinal associated with each bit, starting with the
-        /// LSB. Bits are never skipped, so the array is a contiguous
-        /// block of `Some`s, followed by zero or more `None`s.
-        ordinals: [Option<Ordinal>; 8],
-        // The associated data is always a single byte, so no need to store a
-        // type here.
-    },
+    Leaf { leaf_type: PackedLeafType },
     /// A 64-bit pointer to an array, struct, or union, which will appear at the
     /// end of the containing value.
-    Pointer { ordinal: Ordinal, nested_data_type: PackedStructuredType },
+    Pointer { nested_data_type: PackedStructuredType },
     /// A 128-bit value (not a pointer!) which contains a tag and a 64-bit value
     /// (which may be a pointer).
-    Union { ordinal: Ordinal, variants: HashMap<u32, MojomWireType> },
+    Union { variants: HashMap<u32, MojomWireType> },
 }
+
+/// This type represents an element in the body of a struct, array, or union.
+///
+/// You should read `WireTy` as `MojomWireType` and `BitfieldTy` as
+/// `BitfieldOrdinal`. However, we need to parameterize the type because
+/// sometimes we'll want to have references and sometimes we'll want to have
+/// owned values. In the AST, all values are owned, but during parsing/deparsing
+/// we'll sometimes need to create these on-the-fly from existing references.
+///
+/// For convenience, we define StructuredBodyElementOwned (which owns all its
+/// data), StructuredBodyElementMixed (which owns the bitfield but not the wire
+/// type), and StructuredBodyElementRef (which has a reference to the wire type,
+/// and may or may not own the bitfield).
+///
+/// Note: std::borrow::Cow is not appropriate because we need to enforce when
+/// data is/isn't owned (always owned in the AST, always refs during parsing).
+#[derive(Debug, Clone, PartialEq)]
+pub enum StructuredBodyElement<WireTy, BitfieldTy>
+where
+    WireTy: std::borrow::Borrow<MojomWireType>,
+    BitfieldTy: std::borrow::Borrow<BitfieldOrdinals>,
+{
+    /// A single value with the given ordinal
+    SingleValue(Ordinal, WireTy),
+    /// Up to 8 bools packed into a single byte
+    Bitfield(BitfieldTy),
+}
+
+pub type StructuredBodyElementOwned = StructuredBodyElement<MojomWireType, BitfieldOrdinals>;
+pub type StructuredBodyElementMixed<'a> =
+    StructuredBodyElement<&'a MojomWireType, BitfieldOrdinals>;
+pub type StructuredBodyElementRef<'a, T> = StructuredBodyElement<&'a MojomWireType, T>;
 
 #[derive(Debug, Clone, PartialEq)]
 /// A type which is simply encoded as itself
 pub enum PackedLeafType {
+    // Note that single booleans should never appear in a struct; they get
+    // packed into a bitfield instead.
+    Bool,
     Int8,
     UInt8,
     Int16,
@@ -128,9 +161,21 @@ pub enum PackedLeafType {
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum PackedStructuredType {
-    Struct { packed_field_names: Vec<String>, packed_field_types: Vec<MojomWireType> },
-    Array { element_type: Box<MojomWireType>, array_type: PackedArrayType },
-    Union { variants: HashMap<u32, MojomWireType> },
+    Struct {
+        packed_field_names: Vec<String>,
+        packed_field_types: Vec<StructuredBodyElementOwned>,
+        /// Stores the number of elements this struct has in its _non-packed_
+        /// form. It's equal to 1 + the maximum ordinal in packed_field_types,
+        /// or 0 if packed_field_types is empty.
+        num_elements_in_value: usize,
+    },
+    Array {
+        element_type: Box<MojomWireType>,
+        array_type: PackedArrayType,
+    },
+    Union {
+        variants: HashMap<u32, MojomWireType>,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -149,14 +194,12 @@ impl MojomWireType {
     pub fn size(&self) -> usize {
         match self {
             MojomWireType::Leaf { leaf_type, .. } => match leaf_type {
-                PackedLeafType::Int8 | PackedLeafType::UInt8 => 1,
+                PackedLeafType::Int8 | PackedLeafType::UInt8 | PackedLeafType::Bool => 1,
                 PackedLeafType::Int16 | PackedLeafType::UInt16 => 2,
                 PackedLeafType::Int32 | PackedLeafType::UInt32 => 4,
                 PackedLeafType::Int64 | PackedLeafType::UInt64 => 8,
                 PackedLeafType::Enum { .. } => 4,
             },
-            MojomWireType::Bitfield { .. } => 1,
-            // Structs and arrays are stored as 64-bit pointers
             MojomWireType::Pointer { .. } => 8,
             MojomWireType::Union { .. } => 16,
         }
@@ -169,6 +212,37 @@ impl MojomWireType {
         match self {
             MojomWireType::Union { .. } => 8,
             _ => self.size(),
+        }
+    }
+}
+
+impl<T, T2> StructuredBodyElement<T, T2>
+where
+    T: std::borrow::Borrow<MojomWireType>,
+    T2: std::borrow::Borrow<BitfieldOrdinals>,
+{
+    pub fn size(&self) -> usize {
+        match self {
+            Self::SingleValue(_, wire_type) => wire_type.borrow().size(),
+            Self::Bitfield(_) => 1,
+        }
+    }
+
+    pub fn alignment(&self) -> usize {
+        match self {
+            Self::SingleValue(_, wire_type) => wire_type.borrow().alignment(),
+            Self::Bitfield(_) => 1,
+        }
+    }
+}
+
+impl StructuredBodyElementOwned {
+    pub fn as_ref<'a>(&'a self) -> StructuredBodyElementRef<'a, &'a BitfieldOrdinals> {
+        match self {
+            Self::SingleValue(ordinal, wire_type) => {
+                StructuredBodyElement::SingleValue(*ordinal, wire_type)
+            }
+            Self::Bitfield(ordinals) => StructuredBodyElement::Bitfield(ordinals),
         }
     }
 }
