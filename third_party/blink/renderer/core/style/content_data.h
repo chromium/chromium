@@ -57,6 +57,9 @@ class ContentData : public GarbageCollected<ContentData> {
   virtual bool IsNone() const { return false; }
   virtual bool IsAlt() const { return IsAltText() || IsAltCounter(); }
 
+  // Returns true if this content data list contains any AltCounterContentData.
+  bool HasAltCounterContent() const;
+
   CORE_EXPORT static String ConcatenateAltText(
       const ContentData& first_alt_data);
 

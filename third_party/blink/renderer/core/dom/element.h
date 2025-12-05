@@ -87,6 +87,7 @@ class Attribute;
 class ColumnPseudoElement;
 class ContainerQueryData;
 class ContainerQueryEvaluator;
+class ContentData;
 class CSSPropertyName;
 class CSSPropertyValueSet;
 class CSSPseudoElement;
@@ -1825,6 +1826,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void RemovePopoverData();
   PopoverData& EnsurePopoverData();
   PopoverData* GetPopoverData() const;
+
+  // Alt content data is used by pseudo-elements to store a mutable copy
+  // of content data when it contains counter() or counters() in alt text.
+  ContentData* GetAltContentData() const;
+  void SetAltContentData(ContentData*);
 
   InvokerData& EnsureInvokerData();
   InvokerData* GetInvokerData() const;

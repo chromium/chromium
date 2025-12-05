@@ -880,8 +880,16 @@ void UpdateLayoutCounters(const LayoutObject& layout_object,
 void UpdateAltCounters(const StyleEngine& style_engine,
                        LayoutObject& layout_object,
                        CountersAttachmentContext& context) {
-  for (ContentData* content = layout_object.StyleRef().GetContentData();
-       content; content = content->Next()) {
+  auto* pseudo_element = DynamicTo<PseudoElement>(layout_object.GetNode());
+  if (!pseudo_element) {
+    return;
+  }
+  ContentData* content =
+      pseudo_element->CreateMutableAltContentDataForCountersIfNeeded();
+  if (!content) {
+    return;
+  }
+  for (; content; content = content->Next()) {
     if (auto* alt_counter_data = DynamicTo<AltCounterContentData>(content)) {
       alt_counter_data->UpdateText(context, style_engine, layout_object);
     }

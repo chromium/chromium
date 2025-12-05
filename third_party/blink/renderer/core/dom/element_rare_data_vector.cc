@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observation.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
+#include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -630,6 +631,23 @@ Element* ElementRareDataVector::GetFocusgroupLastFocused() const {
     return value->Get();
   }
   return nullptr;
+}
+
+ContentData* ElementRareDataVector::GetAltContentData() const {
+  if (auto* value =
+          GetWrappedField<Member<ContentData>>(FieldId::kAltContentData)) {
+    return value->Get();
+  }
+  return nullptr;
+}
+
+void ElementRareDataVector::SetAltContentData(ContentData* content_data) {
+  if (content_data) {
+    SetWrappedField<Member<ContentData>>(FieldId::kAltContentData,
+                                         content_data);
+  } else {
+    SetField(FieldId::kAltContentData, nullptr);
+  }
 }
 
 OverscrollAreaTracker& ElementRareDataVector::EnsureOverscrollAreaTracker(

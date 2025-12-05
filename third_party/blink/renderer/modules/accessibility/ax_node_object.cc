@@ -57,6 +57,7 @@
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -1514,8 +1515,8 @@ std::optional<String> AXNodeObject::GetCSSAltText(const Element* element) {
     return std::nullopt;
   }
 
-  if (element->IsPseudoElement()) {
-    for (const ContentData* content_data = style->GetContentData();
+  if (auto* pseudo_element = DynamicTo<PseudoElement>(element)) {
+    for (const ContentData* content_data = pseudo_element->GetContentData();
          content_data; content_data = content_data->Next()) {
       if (content_data->IsAlt()) {
         return ContentData::ConcatenateAltText(*content_data);
@@ -2371,8 +2372,12 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     }
 
     if (GetCSSAltText(GetElement())) {
-      const ComputedStyle* style = GetElement()->GetComputedStyle();
-      ContentData* content_data = style->GetContentData();
+      const ContentData* content_data = nullptr;
+      if (auto* pseudo = DynamicTo<PseudoElement>(GetElement())) {
+        content_data = pseudo->GetContentData();
+      } else {
+        content_data = GetElement()->GetComputedStyle()->GetContentData();
+      }
       // We just check the first item of the content list to determine the
       // appropriate role, should only ever be image or text.
       // TODO(accessibility) Is it possible to use CSS alt text on an HTML tag

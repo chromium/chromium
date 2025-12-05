@@ -1580,6 +1580,17 @@ PopoverData* Element::GetPopoverData() const {
   return nullptr;
 }
 
+ContentData* Element::GetAltContentData() const {
+  if (const ElementRareDataVector* data = GetElementRareData()) {
+    return data->GetAltContentData();
+  }
+  return nullptr;
+}
+
+void Element::SetAltContentData(ContentData* content_data) {
+  EnsureElementRareData().SetAltContentData(content_data);
+}
+
 InvokerData& Element::EnsureInvokerData() {
   return EnsureElementRareData().EnsureInvokerData();
 }

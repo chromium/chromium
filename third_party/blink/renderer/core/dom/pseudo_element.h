@@ -34,6 +34,7 @@
 namespace blink {
 
 class ComputedStyle;
+class ContentData;
 
 class CORE_EXPORT PseudoElement : public Element {
  public:
@@ -94,6 +95,9 @@ class CORE_EXPORT PseudoElement : public Element {
   // This is different from |parentElement()| which returns the element's direct
   // ancestor.
   Element& UltimateOriginatingElement() const;
+
+  const ContentData* GetContentData() const;
+  ContentData* CreateMutableAltContentDataForCountersIfNeeded();
 
   virtual void Dispose();
 

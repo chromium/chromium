@@ -56,6 +56,15 @@ void ContentData::Trace(Visitor* visitor) const {
   visitor->Trace(next_);
 }
 
+bool ContentData::HasAltCounterContent() const {
+  for (const ContentData* current = this; current; current = current->Next()) {
+    if (current->IsAltCounter()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 String ContentData::ConcatenateAltText(const ContentData& first_alt_data) {
   DCHECK(first_alt_data.IsAlt());
   StringBuilder alt_text;

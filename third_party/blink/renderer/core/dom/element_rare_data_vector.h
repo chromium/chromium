@@ -27,6 +27,7 @@ namespace blink {
 
 class CSSStyleDeclaration;
 class ColumnPseudoElement;
+class ContentData;
 class ShadowRoot;
 class NamedNodeMap;
 class DOMTokenList;
@@ -103,8 +104,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kFocusgroupLastFocused = 39,
     kDisplayAdElementMonitor = 40,
     kOverscrollAreaTracker = 41,
+    kAltContentData = 42,
 
-    kNumFields = 42,
+    kNumFields = 43,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -476,6 +478,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetAffectedByMultipleHas() {
     fields_.has_invalidation_flags.affected_by_multiple_has = true;
   }
+
+  ContentData* GetAltContentData() const;
+  void SetAltContentData(ContentData* content_data);
 
   OverscrollAreaTracker& EnsureOverscrollAreaTracker(Element*);
   OverscrollAreaTracker* OverscrollAreaTracker() const;
