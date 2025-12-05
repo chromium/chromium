@@ -423,10 +423,7 @@ void ExternalBeginFrameSourceMac::SetPreferredInterval(
 
 base::TimeDelta ExternalBeginFrameSourceMac::GetMinimumFrameInterval() {
   if (display_link_mac_) {
-    auto refresh_rate = display_link_mac_->GetRefreshRate();
-    if (refresh_rate) {
-      return base::Seconds(1) / refresh_rate;
-    }
+    return display_link_mac_->GetRefreshInterval();
   }
 
   return BeginFrameArgs::DefaultInterval();

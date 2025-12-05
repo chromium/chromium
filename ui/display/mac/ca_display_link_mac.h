@@ -25,7 +25,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
   std::unique_ptr<VSyncCallbackMac> RegisterCallback(
       VSyncCallbackMac::Callback callback) override;
 
-  double GetRefreshRate() const override;
+  base::TimeDelta GetRefreshInterval() const override;
   void GetRefreshIntervalRange(base::TimeDelta& min_interval,
                                base::TimeDelta& max_interval,
                                base::TimeDelta& granularity) const override;

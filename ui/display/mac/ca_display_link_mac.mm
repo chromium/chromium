@@ -97,8 +97,8 @@ void CADisplayLinkMac::Step() {
   }
 }
 
-double CADisplayLinkMac::GetRefreshRate() const {
-  return display::GetNSScreenRefreshRate(display_id_);
+base::TimeDelta CADisplayLinkMac::GetRefreshInterval() const {
+  return display::GetNSScreenRefreshInterval(display_id_);
 }
 
 void CADisplayLinkMac::GetRefreshIntervalRange(

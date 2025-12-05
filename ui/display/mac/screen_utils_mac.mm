@@ -18,13 +18,13 @@ NSScreen* GetNSScreenFromDisplayID(CGDirectDisplayID display_id) {
   return nullptr;
 }
 
-double GetNSScreenRefreshRate(CGDirectDisplayID display_id) {
+base::TimeDelta GetNSScreenRefreshInterval(CGDirectDisplayID display_id) {
   NSScreen* screen = GetNSScreenFromDisplayID(display_id);
 
   if (screen) {
-    return screen.maximumFramesPerSecond;
+    return base::Seconds(1) * screen.minimumRefreshInterval;
   } else {
-    return 60.0;
+    return base::Seconds(1) / 60.0;
   }
 }
 

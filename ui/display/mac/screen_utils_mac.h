@@ -16,8 +16,8 @@ namespace display {
 // about a screen.
 NSScreen* GetNSScreenFromDisplayID(CGDirectDisplayID display_id);
 
-// Returns the highest refresh rate of the display.
-double GetNSScreenRefreshRate(CGDirectDisplayID display_id);
+// Returns the minimum refresh interval of the display.
+base::TimeDelta GetNSScreenRefreshInterval(CGDirectDisplayID display_id);
 
 // Returns the range of intervals the display can support.
 // All screen refresh rates fall between the values in min_interval and
