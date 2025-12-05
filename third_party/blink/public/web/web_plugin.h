@@ -131,6 +131,10 @@ class WebPlugin {
 
   virtual void UpdateVisibility(bool) = 0;
 
+  // Called when a data attribute (e.g. custom data-* attributes).
+  virtual void UpdateDataAttribute(const WebString& attribute_name,
+                                   const WebString& attribute_value) {}
+
   virtual WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&,
                                                ui::Cursor*) = 0;
 

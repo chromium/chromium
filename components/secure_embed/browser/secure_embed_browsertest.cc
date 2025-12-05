@@ -9,6 +9,7 @@
 #include "components/guest_contents/browser/guest_contents_handle.h"
 #include "components/secure_embed/browser/secure_embed_host.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/secure_embed_connector.h"
 #include "content/public/browser/web_contents.h"
@@ -19,6 +20,7 @@
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/text_input_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/dns/mock_host_resolver.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -26,13 +28,59 @@
 namespace secure_embed {
 
 namespace {
-constexpr char kEmbedTagTestUrl[] = "/secure_embed/embed_tag.html";
 constexpr char kAttachHarnessUrl[] =
     "/secure_embed/single_embed_attach_harness.html";
+constexpr char kRedBoxUrl[] = "/secure_embed/red_box.html";
+constexpr char kBlueBoxUrl[] = "/secure_embed/blue_box.html";
+constexpr char kEmptyUrl[] = "/secure_embed/empty.html";
 }  // namespace
 
 class SecureEmbedBrowserTest : public content::ContentBrowserTest {
  public:
+  // RAII helper for monitoring data-content-id attribute changes.
+  class ScopedDataContentIdMonitor {
+   public:
+    enum class ExpectZeroChange { kNo, kYes };
+
+    ScopedDataContentIdMonitor(content::WebContents* web_contents,
+                               ExpectZeroChange expect_zero)
+        : web_contents_(web_contents), expect_zero_(expect_zero) {
+      EXPECT_TRUE(
+          content::ExecJs(web_contents_, "startMonitoringDataContentId();"));
+    }
+
+    ~ScopedDataContentIdMonitor() {
+      bool zero_detected =
+          content::EvalJs(web_contents_, "wasZeroChangeDetected()")
+              .ExtractBool();
+
+      if (expect_zero_ == ExpectZeroChange::kYes) {
+        // Wait for zero change if we expect it but haven't seen it yet.
+        if (!zero_detected) {
+          EXPECT_TRUE(base::test::RunUntil([&]() {
+            return content::EvalJs(web_contents_, "wasZeroChangeDetected()")
+                .ExtractBool();
+          })) << "data-content-id was not set to 0 as expected";
+        }
+      } else {
+        EXPECT_FALSE(zero_detected)
+            << "data-content-id was unexpectedly set to 0 (DetachedByHost "
+               "incorrectly triggered)";
+      }
+
+      EXPECT_TRUE(
+          content::ExecJs(web_contents_, "stopMonitoringDataContentId();"));
+    }
+
+    ScopedDataContentIdMonitor(const ScopedDataContentIdMonitor&) = delete;
+    ScopedDataContentIdMonitor& operator=(const ScopedDataContentIdMonitor&) =
+        delete;
+
+   private:
+    raw_ptr<content::WebContents> web_contents_;
+    ExpectZeroChange expect_zero_;
+  };
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     content::ContentBrowserTest::SetUpCommandLine(command_line);
     // Enable pixel output in tests to allow CopyFromSurface to capture actual
@@ -44,6 +92,7 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
 
   void SetUpOnMainThread() override {
     content::ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("b.com", "127.0.0.1");
     embedded_test_server()->ServeFilesFromSourceDirectory(
         "components/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -61,19 +110,18 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
         .ExtractInt();
   }
 
-  bool WaitForHostCreation(size_t expected_count) {
+  bool WaitForHostCreation() {
     // Host creation is asynchronous because it requires mojo IPC between
     // the renderer process (SecureEmbedWebPlugin) and browser process
     // (SecureEmbedHost). Poll until the expected number of hosts are created.
-    return base::test::RunUntil([&]() {
-      return SecureEmbedHost::GetInstanceCountForTesting() >= expected_count;
-    });
+    return base::test::RunUntil(
+        [&]() { return SecureEmbedHost::GetInstanceCountForTesting() >= 1; });
   }
 
   bool WaitForHostAttachment(size_t expected_count) {
     // After host creation, the attachment happens asychronously when
-    // SecureEmbedHost::Attach() is called. Poll until the expected number of
-    // hosts are attachment.
+    // SecureEmbedHost::AttachConnector() is called. Poll until the expected
+    // number of hosts are attached.
     return base::test::RunUntil([&]() {
       return SecureEmbedHost::GetAttachedInstanceCountForTesting() >=
              expected_count;
@@ -164,16 +212,25 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
   }
 
   // Attach a guest to an embed element and wait for SecureEmbedHost creation.
-  void AttachGuestToEmbed(content::WebContents* guest_contents,
-                          size_t expected_host_count = 1) {
+  void AttachGuestToEmbed(content::WebContents* guest_contents) {
+    AttachGuestToEmbedWithId(guest_contents, std::nullopt);
+  }
+
+  // Attach a guest to an embed element with an optional ID.
+  void AttachGuestToEmbedWithId(content::WebContents* guest_contents,
+                                std::optional<std::string> embed_id) {
     guest_contents::GuestContentsHandle* guest_handle =
         guest_contents::GuestContentsHandle::CreateForWebContents(
             guest_contents);
     ASSERT_NE(guest_handle, nullptr);
     std::string script =
-        "createEmbed(" + base::NumberToString(guest_handle->id()) + ");";
+        "createEmbed(" + base::NumberToString(guest_handle->id());
+    if (embed_id.has_value()) {
+      script += ", '" + embed_id.value() + "'";
+    }
+    script += ");";
     ASSERT_TRUE(content::ExecJs(web_contents(), script));
-    ASSERT_TRUE(WaitForHostAttachment(expected_host_count));
+    ASSERT_TRUE(WaitForHostAttachment(1));
     EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
   }
 
@@ -212,15 +269,6 @@ class SecureEmbedBrowserTest : public content::ContentBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, EmbedTagCreatesPlugin) {
-  NavigateToTestUrl(kEmbedTagTestUrl);
-
-  EXPECT_EQ(1, CountEmbedElementsInPage());
-
-  ASSERT_TRUE(WaitForHostCreation(1));
-  EXPECT_EQ(1u, SecureEmbedHost::GetInstanceCountForTesting());
-}
-
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
                        PluginRendersRedSquare_AttachBeforeLoad) {
   NavigateToAttachHarness();
@@ -230,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
   AttachGuestToEmbed(guest_contents.get());
 
   // Now navigate the guest to the red box page after attachment.
-  NavigateGuestToUrl(guest_contents.get(), "/secure_embed/red_box.html");
+  NavigateGuestToUrl(guest_contents.get(), kRedBoxUrl);
 
   VerifyBoxRendering(SK_ColorRED);
 }
@@ -238,16 +286,14 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
                        PluginRendersRedSquare_AttachAfterLoad) {
   // Load content before attaching.
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
 
   VerifyBoxRendering(SK_ColorRED);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Crash) {
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
 
   VerifyBoxRendering(SK_ColorRED);
@@ -272,41 +318,43 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Crash) {
   EXPECT_TRUE(VerifyPixelColors(rwhv, capture_rect, expected_colors));
 }
 
-// TODO(secure-embed): This test fails right now because attribute changes do
-// not trigger re-attaches.
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
-                       DISABLED_PluginRendersRedSquare_MultipleAttachCalls) {
+                       PluginRendersRedSquare_MultipleAttachCalls) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_red.get(), "/secure_embed/red_box.html");
+  NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
   int guest_id_red = GetGuestHandleId(guest_contents_red.get());
 
   auto guest_contents_blue = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_blue.get(), "/secure_embed/blue_box.html");
+  NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
   int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
   AttachGuestToEmbed(guest_contents_red.get());
   VerifyBoxRendering(SK_ColorRED);
 
+  ScopedDataContentIdMonitor monitor(
+      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
+
   // Swap to the blue guest by changing the data-content-id attribute.
   std::string script_blue =
       "setDataContentId(" + base::NumberToString(guest_id_blue) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_blue));
   VerifyBoxRendering(SK_ColorBLUE);
+  EXPECT_EQ(guest_contents_red->GetSecureEmbedConnector(), nullptr);
 
   // Swap back to red guest.
   std::string script_red_again =
       "setDataContentId(" + base::NumberToString(guest_id_red) + ");";
   ASSERT_TRUE(content::ExecJs(web_contents(), script_red_again));
   VerifyBoxRendering(SK_ColorRED);
+  EXPECT_EQ(guest_contents_blue->GetSecureEmbedConnector(), nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenStopsRendering) {
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
 
@@ -324,8 +372,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenStopsRendering) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneStopsRendering) {
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   VerifyBoxRendering(SK_ColorRED);
 
@@ -344,16 +391,15 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneStopsRendering) {
 
 // TODO(secure-embed): This test fails right now because attribute changes do
 // not trigger re-attaches.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
-                       DISABLED_VisibilityHiddenSwapGuest) {
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, VisibilityHiddenSwapGuest) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_red.get(), "/secure_embed/red_box.html");
+  NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
 
   auto guest_contents_blue = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_blue.get(), "/secure_embed/blue_box.html");
+  NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
   int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
@@ -365,6 +411,9 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
       web_contents(),
       "document.querySelector('embed').style.visibility = 'hidden';"));
   VerifyBoxRendering(SK_ColorWHITE);
+
+  ScopedDataContentIdMonitor monitor(
+      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
 
   // Swap to the blue guest while hidden.
   std::string script_blue =
@@ -384,10 +433,10 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
 
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_red.get(), "/secure_embed/red_box.html");
+  NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
 
   auto guest_contents_blue = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_blue.get(), "/secure_embed/blue_box.html");
+  NavigateGuestToUrl(guest_contents_blue.get(), kBlueBoxUrl);
   int guest_id_blue = GetGuestHandleId(guest_contents_blue.get());
 
   // Attach the red guest first.
@@ -399,6 +448,9 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
       web_contents(),
       "document.querySelector('embed').style.display = 'none';"));
   VerifyBoxRendering(SK_ColorWHITE);
+
+  ScopedDataContentIdMonitor monitor(
+      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kNo);
 
   // Swap to the blue guest while display is none.
   std::string script_blue =
@@ -415,28 +467,57 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DisplayNoneSwapGuest) {
 
 // Create 2 <embed>s that use the same content id. The 2nd <embed> should show
 // and the 1st <embed> should be blank.
-// TODO(secure-embed): currently, the 1st <embed>'s rendering will stall on the
-// last frame before the 2nd <embed>'s installation.
-IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, DISABLED_TwoEmbedSameContentId) {
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TwoEmbedSameContentId) {
   NavigateToAttachHarness();
 
   // Create and load both guests.
   auto guest_contents_red = CreateGuestWebContents();
-  NavigateGuestToUrl(guest_contents_red.get(), "/secure_embed/red_box.html");
+  NavigateGuestToUrl(guest_contents_red.get(), kRedBoxUrl);
+  int guest_id_red = GetGuestHandleId(guest_contents_red.get());
 
   // Attach the red guest first.
-  AttachGuestToEmbed(guest_contents_red.get());
+  AttachGuestToEmbedWithId(guest_contents_red.get(), "embed1");
   VerifyBoxRendering(SK_ColorRED);
 
-  // Add a 2nd <embed> that uses the same content id.
-  AttachGuestToEmbed(guest_contents_red.get());
-  // This verify the color of the 1st <embed>, which should become blank.
+  // Cache the first host's delegate pointer before forced detachment.
+  auto* connector = guest_contents_red->GetSecureEmbedConnector();
+  ASSERT_NE(connector, nullptr);
+  auto* first_host_delegate = connector->GetDelegate();
+  ASSERT_NE(first_host_delegate, nullptr);
+  EXPECT_TRUE(first_host_delegate->IsAttachedForTesting());
+
+  // The first embed's data-content-id should be reset to 0 since it was
+  // forcibly detached when the guest was attached to the 2nd embed.
+  ScopedDataContentIdMonitor monitor(
+      web_contents(), ScopedDataContentIdMonitor::ExpectZeroChange::kYes);
+
+  // Add a 2nd <embed> with ID 'embed2' that uses the same content id.
+  AttachGuestToEmbedWithId(guest_contents_red.get(), "embed2");
+
+  // Then verify the color of the 1st <embed>, which should become blank.
   VerifyBoxRendering(SK_ColorWHITE);
+
+  // The first host should no longer think it's attached due to the forced
+  // detachment by being attached to the 2nd <embed>.
+  EXPECT_FALSE(first_host_delegate->IsAttachedForTesting());
+  auto* second_connector = guest_contents_red->GetSecureEmbedConnector();
+  ASSERT_NE(second_connector, nullptr);
+  EXPECT_TRUE(second_connector->GetDelegate()->IsAttachedForTesting());
+
+  // Try to reattach to the first embed by setting its data-content-id back to
+  // the original guest ID to ensure that a forced detachment doesn't prevent
+  // subsequent re-attachment.
+  std::string script_reattach_first =
+      "setDataContentId(" + base::NumberToString(guest_id_red) + ", 'embed1');";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach_first));
+  VerifyBoxRendering(SK_ColorRED);
+  EXPECT_TRUE(first_host_delegate->IsAttachedForTesting());
+  EXPECT_TRUE(content::EvalJs(web_contents(), "getDataContentId('embed2')")
+                  .ExtractString() == "0");
 }
 
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   int guest_id = GetGuestHandleId(guest_contents.get());
 
   AttachGuestToEmbed(guest_contents.get());
@@ -463,8 +544,7 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, ReattachSameGuestToNewEmbed) {
 //  clipboard; this test exercises a similar code path via
 //  BoundingBoxUpdateWaiter querying the selection's bounding box).
 IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TextInputManager) {
-  auto guest_contents =
-      SetupHarnessAndGuestWithContent("/secure_embed/red_box.html");
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
   AttachGuestToEmbed(guest_contents.get());
   content::TextInputManagerTester input_tester(web_contents());
   content::TextInputManagerTester guest_input_tester(guest_contents.get());
@@ -503,5 +583,135 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, TextInputManager) {
 }
 
 #endif
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, Detach) {
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
+  AttachGuestToEmbed(guest_contents.get());
+
+  VerifyBoxRendering(SK_ColorRED);
+
+  // Change the data-content-id attribute to 0 to trigger a detach.
+  std::string script_cause_detach = "setDataContentId(0);";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
+  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+  VerifyBoxRendering(SK_ColorWHITE);
+
+  // Re-attach the same guest.
+  int guest_id = GetGuestHandleId(guest_contents.get());
+  std::string script_reattach =
+      "setDataContentId(" + base::NumberToString(guest_id) + ");";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach));
+  VerifyBoxRendering(SK_ColorRED);
+  EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, GuestWithCrossSiteIframe) {
+  // If a OOPIF is present in the guest and sets up its TextInputManager before
+  // the embed is attached, we used to hit a DCHECK failure while attaching as
+  // all of the views that are part of the guest's frame tree must share the
+  // same TextInputManager as the embed's WebContents.
+  NavigateToAttachHarness();
+  auto guest_contents = CreateGuestWebContents();
+
+  NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
+
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", kRedBoxUrl);
+  std::string create_iframe_script =
+      "const iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      iframe_url.spec() +
+      "';"
+      "document.body.appendChild(iframe);";
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(), create_iframe_script));
+
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents.get()));
+
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+  EXPECT_NE(main_frame->GetProcess(), iframe->GetProcess());
+
+  AttachGuestToEmbed(guest_contents.get());
+  VerifyBoxRendering(SK_ColorRED);
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+                       DetachAndReattachGuestWithCrossSiteIframe) {
+  // If a OOPIF is present in the guest and sets up its TextInputManager before
+  // the embed is attached, we used to hit a DCHECK failure while attaching as
+  // all of the views that are part of the guest's frame tree must share the
+  // same TextInputManager as the embed's WebContents. This test is verifying
+  // that detach and re-attach also work correctly in this scenario.
+  NavigateToAttachHarness();
+  auto guest_contents = CreateGuestWebContents();
+
+  NavigateGuestToUrl(guest_contents.get(), kEmptyUrl);
+
+  GURL iframe_url = embedded_test_server()->GetURL("b.com", kRedBoxUrl);
+  std::string create_iframe_script =
+      "const iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      iframe_url.spec() +
+      "';"
+      "document.body.appendChild(iframe);";
+  ASSERT_TRUE(content::ExecJs(guest_contents.get(), create_iframe_script));
+
+  ASSERT_TRUE(content::WaitForLoadStop(guest_contents.get()));
+
+  content::RenderFrameHost* main_frame = guest_contents->GetPrimaryMainFrame();
+  content::RenderFrameHost* iframe = ChildFrameAt(main_frame, 0);
+  ASSERT_NE(iframe, nullptr);
+  EXPECT_NE(main_frame->GetProcess(), iframe->GetProcess());
+
+  AttachGuestToEmbed(guest_contents.get());
+  VerifyBoxRendering(SK_ColorRED);
+
+  // Change the data-content-id attribute to 0 to trigger a detach.
+  std::string script_cause_detach = "setDataContentId(0);";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_cause_detach));
+  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+  VerifyBoxRendering(SK_ColorWHITE);
+
+  // Reattach the same guest.
+  int guest_id = GetGuestHandleId(guest_contents.get());
+  std::string script_reattach =
+      "setDataContentId(" + base::NumberToString(guest_id) + ");;";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_reattach));
+  VerifyBoxRendering(SK_ColorRED);
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest, InvalidContentIdNegative) {
+  // Test that specifying an invalid (negative) content_id creates a host but
+  // doesn't attach any guest, resulting in white rendering.
+  NavigateToAttachHarness();
+
+  std::string script = "createEmbed(-1);";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script));
+
+  // Host should be created even with invalid content_id but no attach should
+  // happen.
+  ASSERT_TRUE(WaitForHostCreation());
+  EXPECT_EQ(1u, SecureEmbedHost::GetInstanceCountForTesting());
+  EXPECT_EQ(0u, SecureEmbedHost::GetAttachedInstanceCountForTesting());
+  VerifyBoxRendering(SK_ColorWHITE);
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedBrowserTest,
+                       AttachValidGuestThenUpdateToNegativeContentId) {
+  // Test that attaching a valid guest shows its content, but updating to a
+  // negative content_id detaches and results in white rendering.
+  auto guest_contents = SetupHarnessAndGuestWithContent(kRedBoxUrl);
+  AttachGuestToEmbed(guest_contents.get());
+
+  VerifyBoxRendering(SK_ColorRED);
+  EXPECT_NE(guest_contents->GetSecureEmbedConnector(), nullptr);
+
+  // Update the data-content-id to a negative number to trigger detachment.
+  std::string script_detach = "setDataContentId(-5);";
+  ASSERT_TRUE(content::ExecJs(web_contents(), script_detach));
+
+  VerifyBoxRendering(SK_ColorWHITE);
+  EXPECT_EQ(guest_contents->GetSecureEmbedConnector(), nullptr);
+}
 
 }  // namespace secure_embed

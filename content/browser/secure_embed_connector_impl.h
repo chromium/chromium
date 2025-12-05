@@ -43,7 +43,8 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
  public:
   // `embedded_web_contents` will have ownership of this.
   SecureEmbedConnectorImpl(WebContentsImpl* embedder_web_contents,
-                           WebContentsImpl* embedded_web_contents);
+                           WebContentsImpl* embedded_web_contents,
+                           SecureEmbedConnector::Delegate* delegate);
   ~SecureEmbedConnectorImpl() override;
 
   WebContentsView* GetEmbedderWebContentsView();
@@ -66,7 +67,6 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void ClearFocusOnInnerWebContents();
 
   // SecureEmbedConnector:
-  void SetDelegate(SecureEmbedConnector::Delegate* delegate) override;
   SecureEmbedConnector::Delegate* GetDelegate() override;
 
   void AddObserver(Observer* observer) override;
@@ -147,6 +147,10 @@ class SecureEmbedConnectorImpl : public SecureEmbedConnector,
   void UpdateViewForCurrentRenderFrameHost();
 
   void OnRenderViewReady();
+
+  // Call to notify observers of attachment and detachment.
+  void AfterAttached();
+  void BeforeDetached();
 
  private:
   // Forward decl for internal observer that tracks WebContents events and

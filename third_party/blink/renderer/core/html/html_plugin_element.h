@@ -110,6 +110,7 @@ class CORE_EXPORT HTMLPlugInElement
       const QualifiedName&,
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) override;
+  void ParseAttribute(const AttributeModificationParams& params) override;
   // HTMLFrameOwnerElement overrides:
   void DisconnectContentFrame() override;
   void NaturalSizingInfoChanged() final;

@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "components/secure_embed/browser/secure_embed_host.h"
 #include "components/secure_embed/common/secure_embed.mojom.h"
 #include "content/public/browser/render_frame_host.h"
@@ -107,14 +108,16 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
                        base::Unretained(this)));
   }
 
-  void Attach(int64_t content_id) override {
+  void AttachConnector(int64_t content_id) override {
     CHECK(secure_embed_);
     attach_call_count_++;
     last_content_id_ = content_id;
+  }
 
-    if (attach_callback_) {
-      std::move(attach_callback_).Run(content_id);
-    }
+  void DetachConnector() override {
+    detach_call_count_++;
+    // TODO(secure-embed): Create a constant for invalid content ID.
+    last_content_id_ = 0;
   }
 
   void SynchronizeVisualProperties(
@@ -125,22 +128,19 @@ class MockSecureEmbedHost : public mojom::SecureEmbedHost {
 
   void OnSecureEmbedDisconnected() { secure_embed_.reset(); }
 
-  void SetAttachCallback(base::OnceCallback<void(int64_t)> callback) {
-    attach_callback_ = std::move(callback);
-  }
-
   void SetDisconnectCallback(base::OnceClosure callback) {
     disconnect_callback_ = std::move(callback);
   }
 
   int attach_call_count() const { return attach_call_count_; }
+  int detach_call_count() const { return detach_call_count_; }
   int64_t last_content_id() const { return last_content_id_; }
 
  private:
   raw_ptr<SecureEmbedHostTracker> tracker_;
   int attach_call_count_ = 0;
+  int detach_call_count_ = 0;
   int64_t last_content_id_ = -1;
-  base::OnceCallback<void(int64_t)> attach_callback_;
   base::OnceClosure disconnect_callback_;
   mojo::AssociatedRemote<mojom::SecureEmbed> secure_embed_;
 };
@@ -206,15 +206,13 @@ class SecureEmbedRendererTest : public content::ContentBrowserTest {
   }
 
   bool WaitForAttachCall(MockSecureEmbedHost* host) {
-    if (host->attach_call_count() > 0) {
-      return true;
-    }
+    return base::test::RunUntil(
+        [host]() { return host->attach_call_count() > 0; });
+  }
 
-    base::RunLoop run_loop;
-    host->SetAttachCallback(base::BindLambdaForTesting(
-        [&](int64_t content_id) { run_loop.Quit(); }));
-    run_loop.Run();
-    return true;
+  bool WaitForDetachCall(MockSecureEmbedHost* host) {
+    return base::test::RunUntil(
+        [host]() { return host->detach_call_count() > 0; });
   }
 
   void WaitForHostAdded(size_t expected_count) {
@@ -258,9 +256,9 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, MultipleEmbedTags) {
   ASSERT_EQ(kMultipleEmbedCount, CountEmbedElementsInPage());
   ASSERT_EQ(kMultipleEmbedCount, GetMockHostCount());
 
-  // Verify each host has an independent Mojo connection and receives Attach().
-  // Collect all content_ids to verify we see 1, 2, and 3 (order is not
-  // deterministic).
+  // Verify each host has an independent Mojo connection and receives a call to
+  // AttachConnector(). Collect all content_ids to verify we see 1, 2, and 3
+  // (order is not deterministic).
   std::set<int64_t> content_ids;
   for (size_t i = 0; i < kMultipleEmbedCount; i++) {
     MockSecureEmbedHost* host = GetMockHost(i);
@@ -463,8 +461,74 @@ IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
   // Verify the original host was not disconnected or recreated
   EXPECT_FALSE(host_disconnected);
   EXPECT_EQ(host, GetMockHost(0));
+  // But we do expect it to have received a second AttachConnector() call with
+  // the new content ID.
+  EXPECT_EQ(2, host->attach_call_count());
+  EXPECT_EQ(5, host->last_content_id());
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest, Detach) {
+  NavigateToTestUrl(kTestUrl);
+
+  EXPECT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
+
+  MockSecureEmbedHost* host = GetMockHost(0);
+  ASSERT_NE(nullptr, host);
+
+  ASSERT_TRUE(WaitForAttachCall(host));
   EXPECT_EQ(1, host->attach_call_count());
   EXPECT_EQ(1, host->last_content_id());
+
+  // Change the data-content-id attribute to 0 to trigger a detach.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', '0');"));
+
+  ASSERT_TRUE(WaitForDetachCall(host));
+  EXPECT_EQ(1, host->detach_call_count());
+  EXPECT_EQ(0, host->last_content_id());
+}
+
+IN_PROC_BROWSER_TEST_F(SecureEmbedRendererTest,
+                       UpdateDataAttributeWithInvalidStrings) {
+  NavigateToTestUrl(kTestUrl);
+  ASSERT_EQ(kSingleEmbedCount, CountEmbedElementsInPage());
+  ASSERT_EQ(kSingleEmbedCount, GetMockHostCount());
+
+  MockSecureEmbedHost* host = GetMockHost(0);
+  ASSERT_NE(nullptr, host);
+
+  ASSERT_TRUE(WaitForAttachCall(host));
+  EXPECT_EQ(1, host->attach_call_count());
+  EXPECT_EQ(1, host->last_content_id());
+
+  // Test a variety of invalid data-content-id attribute values to ensure that
+  // they don't lead to calls to attach on the host.
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', 'invalid');"));
+  EXPECT_EQ(1, host->attach_call_count());
+  EXPECT_EQ(0, host->detach_call_count());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', '123abc');"));
+  EXPECT_EQ(1, host->attach_call_count());
+  EXPECT_EQ(1, host->last_content_id());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', '');"));
+  EXPECT_EQ(1, host->attach_call_count());
+  EXPECT_EQ(0, host->detach_call_count());
+
+  ASSERT_TRUE(content::ExecJs(
+      web_contents(),
+      "document.embeds[0].setAttribute('data-content-id', '5');"));
+  ASSERT_TRUE(WaitForAttachCall(host));
+  EXPECT_EQ(2, host->attach_call_count());
+  EXPECT_EQ(5, host->last_content_id());
 }
 
 }  // namespace secure_embed

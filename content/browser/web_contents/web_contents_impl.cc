@@ -938,8 +938,8 @@ GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginForTesting() const {
 
 void WebContentsImpl::SetSecureEmbedConnector(
     std::unique_ptr<SecureEmbedConnectorImpl> connector) {
-  DCHECK(!node_.outer_web_contents());
-  secure_embed_connector_ = std::move(connector);
+  CHECK(!node_.outer_web_contents());
+  CHECK(connector);
 
   RenderFrameHostManager* inner_render_manager = GetRenderManager();
   RenderFrameHostImpl* inner_main_frame =
@@ -978,6 +978,17 @@ void WebContentsImpl::SetSecureEmbedConnector(
     }
   }
 
+  // Must unregister before setting a new connector as that will change the
+  // TextInputManager for this WebContents. Without doing this, child frames'
+  // RWHVs would fail to unregister from the previous TextInputManager.
+  RecursivelyUnregisterRenderWidgetHostViews();
+
+  // The new connector must be set before creating RWHVs as they need to get the
+  // new TextInputManager. But, it must not be set before destroying the old
+  // `view_` as that prevents unregistering as an Observer of the previous
+  // TextInputManager.
+  secure_embed_connector_ = std::move(connector);
+
   // When the WebContents being initialized has not already navigated, the
   // browser side Render{View,Frame}Host must be initialized and the
   // RenderWidgetHostView created. This is needed because the usual
@@ -1009,6 +1020,60 @@ void WebContentsImpl::SetSecureEmbedConnector(
   }
 
   RecursivelyRegisterRenderWidgetHostViews();
+}
+
+void WebContentsImpl::ClearSecureEmbedConnector() {
+  CHECK(secure_embed_connector_);
+
+  // Because there may be child frames, we need to unregister all RWHVs before
+  // clearing the connector, which will change the TextInputManager for this
+  // WebContents FrameTree.
+  RecursivelyUnregisterRenderWidgetHostViews();
+
+  // RenderWidgetHostView are of type RenderWidgetHostViewChildFrame and they
+  // need to be re-created with appropriate platform views.
+  std::vector<RenderViewHostImpl*> list_of_rvh_with_rwhv;
+  GetPrimaryFrameTree().ForEachRenderViewHost(
+      [&list_of_rvh_with_rwhv](RenderViewHostImpl* rvh) {
+        if (rvh->GetWidget() && rvh->GetWidget()->GetView()) {
+          // While in theory only child frame RWHVs should exist at this stage,
+          // in practice, a race with navigation cleanup could result in a main
+          // frame RWHV that is pending deletion still existing here.
+          // This might happen when a WebContents is destroyed immediately
+          // after it navigates and then attaches to an outer WebContents.
+          if (rvh->GetWidget()->GetView()->IsRenderWidgetHostViewChildFrame()) {
+            list_of_rvh_with_rwhv.push_back(rvh);
+          }
+          rvh->GetWidget()->GetView()->Destroy();
+        }
+      });
+
+  // Destroy WebContentsViewChildFrame.
+  render_view_host_delegate_view_ = nullptr;
+  view_ = nullptr;
+
+  secure_embed_connector_.reset();
+
+  // Recreate WebContentsView.
+  view_ = CreateWebContentsView(
+      this, GetContentClient()->browser()->GetWebContentsViewDelegate(this),
+      &render_view_host_delegate_view_);
+  view_->CreateView(gfx::NativeView());
+
+  // Recreate and register RenderWidgetHostView. Don't do this if the
+  // WebContents is being destroyed because it will cause a CHECK failure in
+  // SendScreenRects().
+  if (!IsBeingDestroyed()) {
+    for (RenderViewHostImpl* rvh : list_of_rvh_with_rwhv) {
+      CreateRenderWidgetHostViewForRenderManager(rvh);
+    }
+    RecursivelyRegisterRenderWidgetHostViews();
+  }
+
+  RenderFrameHostManager* inner_render_manager = GetRenderManager();
+  RenderFrameHostImpl* inner_main_frame =
+      inner_render_manager->current_frame_host();
+  inner_main_frame->UpdateAXTreeData();
 }
 
 GURL WebContentsImpl::GetPartitionedPopinEmbedderOriginImpl() const {

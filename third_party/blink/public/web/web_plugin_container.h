@@ -164,6 +164,11 @@ class WebPluginContainer {
   // Request to unlock a current mouse lock.
   virtual void UnlockMouse() = 0;
 
+  // Notifies the plugin of a data attribute change (e.g., custom
+  // data-* attributes).
+  virtual void UpdateDataAttribute(const WebString& attribute_name,
+                                   const WebString& attribute_value) = 0;
+
  protected:
   ~WebPluginContainer() = default;
 };

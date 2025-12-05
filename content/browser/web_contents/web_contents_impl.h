@@ -1630,6 +1630,7 @@ class CONTENT_EXPORT WebContentsImpl
 
   void SetSecureEmbedConnector(
       std::unique_ptr<content::SecureEmbedConnectorImpl> connector);
+  void ClearSecureEmbedConnector();
 
  private:
   using FrameTreeIterationCallback = base::FunctionRef<void(FrameTree&)>;

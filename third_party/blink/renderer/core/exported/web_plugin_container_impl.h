@@ -150,6 +150,8 @@ class CORE_EXPORT WebPluginContainerImpl final
   bool IsMouseLocked() override;
   bool LockMouse(bool request_unadjusted_movement) override;
   void UnlockMouse() override;
+  void UpdateDataAttribute(const WebString& attribute_name,
+                           const WebString& attribute_value) override;
 
   // Printing interface. The plugin can support custom printing
   // (which means it controls the layout, number of pages etc).

@@ -65,13 +65,7 @@ SecureEmbedWebPlugin::~SecureEmbedWebPlugin() = default;
 bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
   container_ = container;
 
-  // We'll be embedding an outside surface layer.
-  layer_ = cc::SurfaceLayer::Create();
-  layer_->SetIsDrawable(true);
-  layer_->SetSurfaceHitTestable(true);
-
-  // Provide the layer to the container
-  container_->SetCcLayer(layer_.get());
+  InitializeSurfaceLayer();
 
   if (host_) {
     mojo::PendingAssociatedRemote<mojom::SecureEmbed> pending_remote =
@@ -87,7 +81,9 @@ bool SecureEmbedWebPlugin::Initialize(blink::WebPluginContainer* container) {
     host_->SetSecureEmbed(std::move(pending_remote));
 
     // Then attach with the content ID.
-    host_->Attach(contents_id_);
+    if (contents_id_ > 0) {
+      host_->AttachConnector(contents_id_);
+    }
   }
   return true;
 }
@@ -112,6 +108,14 @@ void SecureEmbedWebPlugin::OnSecureEmbedHostDisconnected() {
   // If the browser side of the connection goes down, we're in an unexpected
   // state and likely need to flag this plugin as broken.
   NOTREACHED();
+}
+
+void SecureEmbedWebPlugin::InitializeSurfaceLayer() {
+  // We'll be embedding an outside surface layer.
+  layer_ = cc::SurfaceLayer::Create();
+  layer_->SetIsDrawable(true);
+  layer_->SetSurfaceHitTestable(true);
+  container_->SetCcLayer(layer_.get());
 }
 
 blink::WebPluginContainer* SecureEmbedWebPlugin::Container() const {
@@ -279,6 +283,30 @@ void SecureEmbedWebPlugin::UpdateFocus(bool focused,
 
 void SecureEmbedWebPlugin::UpdateVisibility(bool is_visible) {}
 
+void SecureEmbedWebPlugin::UpdateDataAttribute(
+    const blink::WebString& attribute_name,
+    const blink::WebString& attribute_value) {
+  if (attribute_name.Utf8() != "data-content-id") {
+    return;
+  }
+
+  int new_contents_id = -1;
+  if (!base::StringToInt(attribute_value.Utf8(), &new_contents_id) ||
+      new_contents_id == contents_id_) {
+    return;
+  }
+
+  contents_id_ = new_contents_id;
+  if (host_) {
+    if (contents_id_ <= 0) {
+      host_->DetachConnector();
+      DetachInternal();
+    } else {
+      host_->AttachConnector(contents_id_);
+    }
+  }
+}
+
 blink::WebInputEventResult SecureEmbedWebPlugin::HandleInputEvent(
     const blink::WebCoalescedInputEvent& coalesced_event,
     ui::Cursor* cursor) {
@@ -344,6 +372,24 @@ void SecureEmbedWebPlugin::ChildProcessGone() {
   crashed_layer_->SetMasksToBounds(true);
   crashed_layer_->SetIsDrawable(true);
   container_->SetCcLayer(crashed_layer_.get());
+  container_->ScheduleAnimation();
+}
+
+void SecureEmbedWebPlugin::DetachPlugin() {
+  // The browser forcibly detached the guest that was previously attached to
+  // to this plugin. This can happen when the guest is being re-attached
+  // elsewhere.
+  contents_id_ = 0;
+  // We send this change back to the renderer so that the data-content-id
+  // attribute is updated accordingly. It'll be async but will allow detection
+  // of the detachment eventually.
+  container_->GetElement().SetAttribute("data-content-id", "0");
+  DetachInternal();
+}
+
+void SecureEmbedWebPlugin::DetachInternal() {
+  InitializeSurfaceLayer();
+  SetFrameSinkId(viz::FrameSinkId());
   container_->ScheduleAnimation();
 }
 

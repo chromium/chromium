@@ -29,11 +29,12 @@ interface SecureEmbed {
 
   RequestFocus(FocusOperation focus_op);
 
-  // TODO(secure-embed): It may make sense to generalize this to cases where
-  // the inside is detached programmatically, e.g. due to being attached
-  // elsewhere. That should also stop drawing the embedded contents
-  // (but might not want to paint a sad frame).
+  // Called when the child process has crashed.
   ChildProcessGone();
+
+  // Called when the browser forcibly detaches the guest, typically because
+  // it's being re-attached elsewhere.
+  DetachPlugin();
 };
 
 // Implemented by Browser. Available on RenderFrameHost.
@@ -42,7 +43,12 @@ interface SecureEmbedHost {
   // must be called before other methods on SecureEmbedHost.
   SetSecureEmbed(pending_associated_remote<SecureEmbed> secure_embed);
 
-  Attach(int64 content_id);
+  // Attaches the guest content identified by `content_id` (a
+  // GuestContentsHandle) to the host.
+  AttachConnector(int64 content_id);
+
+  // Detaches the guest content from the host.
+  DetachConnector();
 
   // `is_visible` here reports visibility with respect to visibility: CSS
   // property; the embed may also be hidden by display:none in which case

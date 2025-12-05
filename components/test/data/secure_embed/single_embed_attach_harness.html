@@ -8,21 +8,85 @@ body {
 }
 </style>
 <script>
+  let mutationObserver = null;
+  let zeroChangeDetected = false;
+
   // Create and attach the embed element. Called from the browser test with the
-  // content_id
-  function createEmbed(contentId) {
+  // content_id. Optional embedId can be provided to give the embed an ID
+  // attribute for later targeting.
+  function createEmbed(contentId, embedId) {
     const embed = document.createElement('embed');
     embed.setAttribute('data-content-id', contentId);
     embed.setAttribute('type', 'application/x-google-chrome-secure-embed');
+    if (embedId !== undefined) {
+      embed.id = embedId;
+    }
     document.body.appendChild(embed);
   }
 
+  // Get the current data-content-id of a specific embed. If embedId is
+  // provided, targets the embed with that ID. Otherwise, targets the first
+  // embed.
+  function getDataContentId(embedId) {
+    let embed;
+    if (embedId !== undefined) {
+      embed = document.getElementById(embedId);
+    } else {
+      embed = document.querySelector('embed');
+    }
+    return embed ? embed.getAttribute('data-content-id') : null;
+  }
+
   // Changes the data-content-id attribute on the embed element.
-  function setDataContentId(contentId) {
-    const embed = document.querySelector('embed');
+  // If embedId is provided, targets the embed with that ID. Otherwise, targets
+  // the first embed.
+  function setDataContentId(contentId, embedId) {
+    let embed;
+    if (embedId !== undefined) {
+      embed = document.getElementById(embedId);
+    } else {
+      embed = document.querySelector('embed');
+    }
     if (embed) {
       embed.setAttribute('data-content-id', contentId);
     }
+  }
+
+  // Start monitoring for changes to data-content-id to "0".
+  function startMonitoringDataContentId() {
+    zeroChangeDetected = false;
+    const embed = document.querySelector('embed');
+    if (!embed) return;
+
+    mutationObserver = new MutationObserver((mutations) => {
+      for (const mutation of mutations) {
+        if (mutation.type === 'attributes' &&
+            mutation.attributeName === 'data-content-id') {
+          const newValue = embed.getAttribute('data-content-id');
+          if (newValue === '0') {
+            zeroChangeDetected = true;
+          }
+        }
+      }
+    });
+
+    mutationObserver.observe(embed, {
+      attributes: true,
+      attributeFilter: ['data-content-id']
+    });
+  }
+
+  // Stop monitoring for data-content-id changes.
+  function stopMonitoringDataContentId() {
+    if (mutationObserver) {
+      mutationObserver.disconnect();
+      mutationObserver = null;
+    }
+  }
+
+  // Check if a data-content-id change to zero was detected.
+  function wasZeroChangeDetected() {
+    return zeroChangeDetected;
   }
 </script>
 </head>

@@ -54,6 +54,8 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
                       bool is_visible) override;
   void UpdateFocus(bool focused, blink::mojom::FocusType focus_type) override;
   void UpdateVisibility(bool is_visible) override;
+  void UpdateDataAttribute(const blink::WebString& attribute_name,
+                           const blink::WebString& attribute_value) override;
   blink::WebInputEventResult HandleInputEvent(
       const blink::WebCoalescedInputEvent& event,
       ui::Cursor* cursor) override;
@@ -68,6 +70,7 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void UpdateLocalSurfaceIdFromChild(
       const ::viz::LocalSurfaceId& local_surface_id) override;
   void ChildProcessGone() override;
+  void DetachPlugin() override;
   void RequestFocus(mojom::FocusOperation focus_op) override;
 
   // cc::ContentLayerClient, used only if we're painting a sad frame.
@@ -82,6 +85,9 @@ class SecureEmbedWebPlugin : public blink::WebPlugin,
   void OnSecureEmbedHostDisconnected();
 
   void SynchronizeVisualProperties();
+
+  void DetachInternal();
+  void InitializeSurfaceLayer();
 
   // The guest contents ID parsed from the `data-content-id` attribute.
   int contents_id_ = -1;

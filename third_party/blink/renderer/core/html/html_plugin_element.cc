@@ -944,4 +944,18 @@ const ComputedStyle* HTMLPlugInElement::CustomStyleForLayoutObject(
   return style;
 }
 
+void HTMLPlugInElement::ParseAttribute(
+    const AttributeModificationParams& params) {
+  if (params.name.LocalName().StartsWith("data-")) {
+    // If a data attribute changes, notify the plugin.
+    WebPluginContainerImpl* plugin = OwnedPlugin();
+    if (plugin) {
+      plugin->UpdateDataAttribute(
+          WebString::FromUTF8(params.name.LocalName().Utf8()),
+          WebString::FromUTF8(params.new_value.Utf8()));
+    }
+  }
+  HTMLFrameOwnerElement::ParseAttribute(params);
+}
+
 }  // namespace blink

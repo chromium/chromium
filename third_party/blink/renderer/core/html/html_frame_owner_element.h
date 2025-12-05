@@ -110,6 +110,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void RemovedFrom(ContainerNode& insertion_point) override;
   // Element overrides:
   void DidRecalcStyle(const StyleRecalcChange) override;
+  void ParseAttribute(const AttributeModificationParams&) override;
 
   // FrameOwner overrides:
   Frame* ContentFrame() const final { return content_frame_.Get(); }
@@ -153,8 +154,6 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
   void MaybeClearDeferredFetchPolicy();
 
   void CancelPendingLazyLoad();
-
-  void ParseAttribute(const AttributeModificationParams&) override;
 
   void DidSetAdStatus();
 

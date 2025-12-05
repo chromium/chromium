@@ -449,6 +449,15 @@ void WebPluginContainerImpl::PrintEnd() {
   web_plugin_->PrintEnd();
 }
 
+void WebPluginContainerImpl::UpdateDataAttribute(
+    const WebString& attribute_name,
+    const WebString& attribute_value) {
+  if (!web_plugin_) {
+    return;
+  }
+  web_plugin_->UpdateDataAttribute(attribute_name, attribute_value);
+}
+
 void WebPluginContainerImpl::Copy() {
   if (!web_plugin_->CanCopy())
     return;
