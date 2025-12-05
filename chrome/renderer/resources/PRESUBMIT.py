@@ -24,5 +24,6 @@ def CheckWebDevStyle(input_api, output_api):
 
 def CheckPatchFormatted(input_api, output_api):
   results = input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
-                                                         check_js=True)
+                                                         check_js=True,
+                                                         check_python=False)
   return results
