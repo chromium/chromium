@@ -4,19 +4,48 @@
 
 #include "chrome/browser/ui/read_anything/read_anything_controller.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
-#include "base/functional/bind.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/accessibility/accessibility_features.h"
+
+///////////////////////////////////////////////////////////////////////////////
+// WebContentsObserverInstance
+
+WebContentsObserverInstance::WebContentsObserverInstance(
+    content::WebContents* web_contents,
+    base::RepeatingClosure primary_page_changed_callback,
+    base::RepeatingCallback<void(content::Visibility)>
+        visibility_changed_callback)
+    : content::WebContentsObserver(web_contents),
+      primary_page_changed_callback_(primary_page_changed_callback),
+      visibility_changed_callback_(visibility_changed_callback) {}
+
+WebContentsObserverInstance::~WebContentsObserverInstance() = default;
+
+// content::WebContentsObserver:
+void WebContentsObserverInstance::PrimaryPageChanged(content::Page& page) {
+  primary_page_changed_callback_.Run();
+}
+
+void WebContentsObserverInstance::OnVisibilityChanged(
+    content::Visibility visibility) {
+  visibility_changed_callback_.Run(visibility);
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// ReadAnythingController
 
 DEFINE_USER_DATA(ReadAnythingController);
 
@@ -47,6 +76,13 @@ ReadAnythingController::ReadAnythingController(tabs::TabInterface* tab)
   tab_subscriptions_.push_back(
       tab_->RegisterWillDetach(base::BindRepeating(
           &ReadAnythingController::TabWillDetach, weak_factory_.GetWeakPtr())));
+
+  main_page_observer_ = std::make_unique<WebContentsObserverInstance>(
+      /*web_contents=*/tab_->GetContents(),
+      /*primary_page_changed_callback=*/
+      base::BindRepeating(&ReadAnythingController::OnMainPagePrimaryPageChanged,
+                          base::Unretained(this)),
+      /*visibility_changed_callback=*/base::DoNothing());
 }
 
 ReadAnythingController::~ReadAnythingController() {
@@ -57,8 +93,9 @@ ReadAnythingController::~ReadAnythingController() {
     tab_->GetBrowserWindowInterface()->GetTabStripModel()->RemoveObserver(this);
   }
 
-  if (web_contents()) {
-    web_contents()->RemoveUserData(ReadAnythingControllerGlue::UserDataKey());
+  if (ra_web_ui_observer_ && ra_web_ui_observer_->web_contents()) {
+    ra_web_ui_observer_->web_contents()->RemoveUserData(
+        ReadAnythingControllerGlue::UserDataKey());
   }
 }
 
@@ -112,6 +149,10 @@ bool ReadAnythingController::isActiveTab() {
   return is_active_tab_;
 }
 
+int ReadAnythingController::GetNavCounterForTesting() const {
+  return nav_counter_;
+}
+
 // Returns the SidePanelUI for the active tab if the tab is active and has a
 // browser window interface. Returns nullptr otherwise.
 SidePanelUI* ReadAnythingController::GetSidePanelUI() {
@@ -132,7 +173,14 @@ ReadAnythingController::GetOrCreateWebUIWrapper() {
             GURL(chrome::kChromeUIUntrustedReadAnythingSidePanelURL), profile,
             IDS_READING_MODE_TITLE,
             /*esc_closes_ui=*/false);
-    Observe(web_ui_wrapper_->web_contents());
+
+    ra_web_ui_observer_ = std::make_unique<WebContentsObserverInstance>(
+        /*web_contents=*/web_ui_wrapper_->web_contents(), base::DoNothing(),
+        /*primary_page_changed_callback=*/
+        base::BindRepeating(
+            &ReadAnythingController::OnReadAnythingVisibilityChanged,
+            /*visibility_changed_callback=*/base::Unretained(this)));
+
     ReadAnythingControllerGlue::CreateForWebContents(
         web_ui_wrapper_->web_contents(), this);
   }
@@ -190,7 +238,13 @@ ReadAnythingController::GetPresentationState() const {
   return PresentationState::kInactive;
 }
 
-void ReadAnythingController::OnVisibilityChanged(
+void ReadAnythingController::OnMainPagePrimaryPageChanged() {
+  // TODO(crbug.com/460136558): Implement showing/hiding when this function
+  // gets called. Update tests to check if RM is visible / hidden instead of
+  // nav_counter check.
+  nav_counter_++;
+}
+void ReadAnythingController::OnReadAnythingVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
     has_shown_ui_ = true;

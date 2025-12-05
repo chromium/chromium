@@ -17,12 +17,39 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ReadAnythingController;
 class TabStripModel;
+
+// A helper class to observe a specific WebContents, so the ReadAnything
+// Controller can observe multiple WebContents. Event callbacks are configured
+// by the instantiator.
+class WebContentsObserverInstance : public content::WebContentsObserver {
+ public:
+  WebContentsObserverInstance(
+      content::WebContents* web_contents,
+      base::RepeatingClosure primary_page_changed_callback,
+      base::RepeatingCallback<void(content::Visibility)>
+          visibility_changed_callback);
+
+  WebContentsObserverInstance(const WebContentsObserverInstance&) = delete;
+  WebContentsObserverInstance& operator=(const WebContentsObserverInstance&) =
+      delete;
+  ~WebContentsObserverInstance() override;
+
+  // content::WebContentsObserver:
+  void PrimaryPageChanged(content::Page& page) override;
+  void OnVisibilityChanged(content::Visibility visibility) override;
+
+ private:
+  base::RepeatingClosure primary_page_changed_callback_;
+  base::RepeatingCallback<void(content::Visibility)>
+      visibility_changed_callback_;
+};
 
 // Allows the Reading Mode WebUI (namely, the ReadAnythingUntrustedPageHandler)
 // to lookup the ReadAnythingController from the WebUI's WebContents.
@@ -51,8 +78,7 @@ class ReadAnythingControllerGlue
 //
 // It acts as the primary entry point for all Reading Mode commands and is
 // responsible for orchestrating the display of the Reading Mode UI.
-class ReadAnythingController : public TabStripModelObserver,
-                               content::WebContentsObserver {
+class ReadAnythingController : public TabStripModelObserver {
  public:
   using Observer = ReadAnythingLifecycleObserver;
 
@@ -92,6 +118,8 @@ class ReadAnythingController : public TabStripModelObserver,
   // TODO(crbug.com/447418049): Open immersive reading mode via this entrypoint.
   void ToggleReadAnythingSidePanel(SidePanelOpenTrigger trigger);
 
+  int GetNavCounterForTesting() const;
+
   // Returns the current presentation state of the Reading Mode feature.
   PresentationState GetPresentationState() const;
 
@@ -121,9 +149,6 @@ class ReadAnythingController : public TabStripModelObserver,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection_change) override;
 
-  // content::WebContentsObserver:
-  void OnVisibilityChanged(content::Visibility visibility) override;
-
   // Called by other host views of the Reading Mode WebUI to return ownership of
   // the WebUIContentsWrapper to this controller.
   void TransferWebUiOwnership(
@@ -135,9 +160,23 @@ class ReadAnythingController : public TabStripModelObserver,
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
 
+  std::unique_ptr<WebContentsObserverInstance> main_page_observer_;
+  std::unique_ptr<WebContentsObserverInstance> ra_web_ui_observer_;
+
+  // Callback for when main_page_observer_ receives a PrimaryPageChanged event.
+  void OnMainPagePrimaryPageChanged();
+
+  // Callback for when ra_web_ui_observer_ receives a OnVisibilityChanged
+  // event.
+  void OnReadAnythingVisibilityChanged(content::Visibility visibility);
+
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
+
+  // TODO(crbug.com/460136558): Used for tests, remove when implementing
+  // OnTabNavigation.
+  int nav_counter_ = 0;
 
   raw_ptr<tabs::TabInterface> tab_ = nullptr;
   ui::ScopedUnownedUserData<ReadAnythingController> scoped_unowned_user_data_;
