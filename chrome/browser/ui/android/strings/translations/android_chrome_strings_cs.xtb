@@ -257,7 +257,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="2194856509914051091">Co je třeba zvážit</translation>
 <translation id="22091350895006575">Přidat uživatelské jméno</translation>
 <translation id="221494669172414749">Otevřením Chromu bez zámku profilu odstraníte z auta uložená hesla a platební metody. Použití zámku profilu zajišťuje, aby tato data byla v bezpečí.</translation>
-<translation id="2227444325776770048">Pokračovat jako uživatel <ph name="USER_FULL_NAME" /></translation>
+<translation id="2227444325776770048">Pokračovat jako <ph name="USER_FULL_NAME" /></translation>
 <translation id="2230777942707397948">Prázdné okno</translation>
 <translation id="223356358902285214">Aktivita na webu a v aplikacích</translation>
 <translation id="2234827758954819389">Průvodce ochranou soukromí</translation>

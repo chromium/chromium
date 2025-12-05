@@ -2485,7 +2485,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2702801445560668637">Do przeczytania</translation>
 <translation id="270414148003105978">Sieci komórkowe</translation>
 <translation id="2704184184447774363">Podpisywanie dokumentów firmy Microsoft</translation>
-<translation id="2704606927547763573">Skopiowane</translation>
+<translation id="2704606927547763573">Skopiowano</translation>
 <translation id="270516211545221798">Szybkość touchpada</translation>
 <translation id="2705736684557713153">Przewiń na dół ekranu i włącz Instant Tethering, jeśli taka opcja jest widoczna. Jeśli jej nie ma, wszystko jest już gotowe.</translation>
 <translation id="2706304388244371417">Kopia zapasowa na Dysku Google W dowolnej chwili możesz w prosty sposób przywrócić dane lub używać ich na innym urządzeniu. Kopia zapasowa zawiera dane aplikacji. Kopie zapasowe są szyfrowane za pomocą hasła do konta Google Twojego dziecka i przesyłane do Google. <ph name="BEGIN_LINK1" />Więcej informacji o kopii zapasowej<ph name="BEGIN_LINK1_END" />Więcej informacji<ph name="END_LINK1" /></translation>
@@ -7450,7 +7450,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="6185132558746749656">Lokalizacja urządzenia</translation>
 <translation id="6185151644843671709">Klucz dostępu został zapisany, a kod PIN – utworzony</translation>
 <translation id="6185353868193925315">{PASSWORD_COUNT,plural, =1{1 hasło i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}few{{PASSWORD_COUNT} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}many{{PASSWORD_COUNT} haseł i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}other{{PASSWORD_COUNT} hasła i inne elementy zostały zapisane tylko na tym urządzeniu. Aby używać ich na innych urządzeniach, zapisz je na swoim koncie Google. Spowoduje to również usunięcie duplikatów.}}</translation>
-<translation id="6186177419203903310">Spowoduje to włączenie powiadomień o wszystkich nowych urządzeniach peryferyjnych USB w systemie. Na pewno chcesz kontynuować?</translation>
+<translation id="6186177419203903310">Spowoduje to włączenie powiadomień o wszystkich nowych urządzeniach peryferyjnych USB w systemie. Czy na pewno chcesz kontynuować?</translation>
 <translation id="6190953336330058278">Aplikacje do sterowania telefonem</translation>
 <translation id="6192333916571137726">Pobierz plik</translation>
 <translation id="6192413564913825901">Przenieś do folderu Wszystkie zakładki</translation>
@@ -7815,7 +7815,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6450876761651513209">Zmiana Twoich ustawień prywatności</translation>
 <translation id="6451591602925140504">{NUM_PAGES,plural, =0{<ph name="PAGE_TITLE" />}=1{<ph name="PAGE_TITLE" /> i jeszcze 1 karta}few{<ph name="PAGE_TITLE" /> i jeszcze # karty}many{<ph name="PAGE_TITLE" /> i jeszcze # kart}other{<ph name="PAGE_TITLE" /> i jeszcze # karty}}</translation>
 <translation id="6451689256222386810">Jeśli nie pamiętasz hasła wielowyrazowego lub chcesz zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph name="END_LINK" />.</translation>
-<translation id="6451861213630784801">Nie korzystasz teraz z konta</translation>
+<translation id="6451861213630784801">Jesteś wylogowany(-a)</translation>
 <translation id="6452181791372256707">Odrzuć</translation>
 <translation id="6452251728599530347">Ukończono <ph name="PERCENT" /></translation>
 <translation id="6452961788130242735">Problem z siecią lub niewłaściwy obszar</translation>
@@ -11281,7 +11281,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8823963789776061136">Możesz też wybrać plik PPD drukarki. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="8824701697284169214">Dodaj &amp;stronę</translation>
 <translation id="88265931742956713">Dostosuj przyciski na tablecie</translation>
-<translation id="8827125715368568315">Zablokowano uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
+<translation id="8827125715368568315">Zablokowano następujące uprawnienia: <ph name="PERMISSION" /> i jeszcze <ph name="COUNT" /></translation>
 <translation id="8827289157496676362">Przypnij rozszerzenie</translation>
 <translation id="8828933418460119530">Nazwa DNS</translation>
 <translation id="8830479210602243906">Zwiększ produktywność</translation>
@@ -11959,7 +11959,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="987264212798334818">Ogólne</translation>
 <translation id="988320949174893488">Czasami się zacina</translation>
 <translation id="988978206646512040">Puste hasło wielowyrazowe jest niedozwolone</translation>
-<translation id="992032470292211616">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na urządzeniu. Na pewno chcesz kontynuować?</translation>
+<translation id="992032470292211616">Rozszerzenia, aplikacje i motywy mogą wyrządzić szkody na urządzeniu. Czy na pewno chcesz kontynuować?</translation>
 <translation id="992256792861109788">Różowy</translation>
 <translation id="992592832486024913">Wyłącz ChromeVox (komunikaty głosowe)</translation>
 <translation id="992653586748191655">Sugerowane grupy kart (<ph name="NUM" />)</translation>

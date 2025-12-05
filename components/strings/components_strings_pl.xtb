@@ -26,7 +26,7 @@
 <translation id="1044897699341250361">Co to oznacza</translation>
 <translation id="1046350918013988591">Kupony i oferty promocyjne</translation>
 <translation id="1050038467049342496">Zamknij inne aplikacje</translation>
-<translation id="1053959602163383901">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> potwierdzasz swoją tożsamość za pomocą urządzenia uwierzytelniającego. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności. Możesz <ph name="LINK_TEXT" />.</translation>
+<translation id="1053959602163383901">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> potwierdzasz swoją tożsamość za pomocą urządzenia uwierzytelniającego. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności, które możesz <ph name="LINK_TEXT" />.</translation>
 <translation id="1055184225775184556">&amp;Cofnij dodanie</translation>
 <translation id="1056898198331236512">Ostrzeżenie</translation>
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, aby zagrać w grę Dino Run w Chrome, naciśnij Tab, a potem Enter</translation>
@@ -1044,7 +1044,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="270415722347413271">Dysk optyczny (matowy)</translation>
 <translation id="2704192696317130398">Zablokować mysz?</translation>
 <translation id="2704283930420550640">Wartość nie pasuje do formatu.</translation>
-<translation id="2704606927547763573">Skopiowane</translation>
+<translation id="2704606927547763573">Skopiowano</translation>
 <translation id="2705137772291741111">Zapisana w pamięci podręcznej kopia tej strony jest uszkodzona.</translation>
 <translation id="2709516037105925701">Autouzupełnianie</translation>
 <translation id="2713444072780614174">Biały</translation>
@@ -2471,7 +2471,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="505757197798929356">Podaj powód otwarcia (wymagane)</translation>
 <translation id="5058282932481719070">Więcej informacji o ulepszonym autouzupełnianiu w ustawieniach</translation>
 <translation id="5060419232449737386">Ustawienia napisów</translation>
-<translation id="5060483733937416656">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> potwierdzasz swoją tożsamość za pomocą Windows Hello. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności. Możesz <ph name="LINK_TEXT" />.</translation>
+<translation id="5060483733937416656">W witrynach korzystających z <ph name="PROVIDER_ORIGIN" /> potwierdzasz swoją tożsamość za pomocą Windows Hello. Możliwe, że ten dostawca przechowuje dane Twojej formy płatności, które możesz <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Czy chodziło Ci o <ph name="LOOKALIKE_DOMAIN" />?</translation>
 <translation id="5066056036849835175">Historia drukowania</translation>
 <translation id="5068524481479508725">A10</translation>
@@ -3978,7 +3978,7 @@ Dodatkowe informacje:
 <translation id="7543525346216957623">Poproś rodzica</translation>
 <translation id="7546409722674205727">Rozpoczyna się <ph name="APP_NAME" /></translation>
 <translation id="7548892272833184391">Naprawianie błędów połączenia</translation>
-<translation id="7549584377607005141">Do poprawnego wyświetlenia tej strony internetowej wymagane są dane wpisane przez Ciebie wcześniej. Możesz wysłać je ponownie, ale spowoduje to powtórzenie wszystkich działań wykonanych poprzednio przez stronę.</translation>
+<translation id="7549584377607005141">Do poprawnego wyświetlenia tej strony internetowej są wymagane wpisane przez Ciebie wcześniej dane. Możesz wysłać je ponownie, ale spowoduje to powtórzenie wszystkich działań wykonanych poprzednio przez stronę.</translation>
 <translation id="7550637293666041147">Twoja nazwa użytkownika na urządzeniu i w Chrome</translation>
 <translation id="7552846755917812628">Skorzystaj z tych wskazówek:</translation>
 <translation id="7554242657529665960">Od administratora: „<ph name="ADMIN_MESSAGE" />”</translation>
