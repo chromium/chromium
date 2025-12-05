@@ -89,7 +89,6 @@ _TEST_TARGET_ALLOWLIST = [
     '//components/exo/wayland:wayland_client_compatibility_tests',
     '//components/exo/wayland:wayland_client_tests',
     '//components/facilitated_payments/core/validation:pix_code_validator_fuzzer',
-    '//components/ip_protection:components_ip_protection_fuzztests',
     '//components/minidump_uploader:minidump_uploader_test',
     '//components/paint_preview/browser:paint_preview_browser_unit_tests',
     '//components/paint_preview/common:paint_preview_common_unit_tests',

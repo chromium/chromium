@@ -1487,14 +1487,6 @@
                   'ios/chrome/browser/widget_kit|'\
                   'ios/chrome/widget_kit_extension',
     },
-    'ip_protection': {
-      'filepath': 'chrome/browser/ip_protection/' \
-                  '|components/ip_protection/' \
-                  '|components/privacy_sandbox/masked_domain_list/' \
-                  '|services/network/ip_protection/' \
-                  '|services/network/network_service_proxy_delegate' \
-                  '|third_party/anonymous_tokens/',
-    },
     'ipcz': {
       'filepath': 'third_party/ipcz/',
     },
@@ -3075,11 +3067,6 @@
     'ios_web': ['ios-reviews+web@chromium.org'],
     'ios_web_view': ['ios-web-view-eng+reviews@google.com'],
     'ios_widget_kit': ['rkgibson+watch@chromium.org'],
-    'ip_protection': ['aakallam+watch@chromium.org',
-                      'awillia@chromium.org',
-                      'djmitche@chromium.org',
-      'ortuno+watch@chromium.org',
-      'rizvis+watch@google.com'],
     'ipcz': ['andreaorru+watch@chromium.org'],
     'isolated_web_apps_apis': ['greengrape@google.com',
                                'rmcelrath+watch@chromium.org',

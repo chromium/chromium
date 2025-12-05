@@ -901,30 +901,3 @@ source_set("blind_sign_auth_test_support") {
   public_deps =
       [ "//third_party/anonymous_tokens:anonymous_tokens_test_support" ]
 }
-
-if (is_android) {
-  import("//build/config/android/rules.gni")
-
-  proto_java_library("blind_sign_auth_proto_java") {
-    visibility = [
-      "//components/ip_protection/*",
-      "//net/third_party/quiche/*",
-    ]
-
-    proto_path = "src/"
-
-    sources = [
-      "src/quiche/blind_sign_auth/proto/any.proto",
-      "src/quiche/blind_sign_auth/proto/attestation.proto",
-      "src/quiche/blind_sign_auth/proto/auth_and_sign.proto",
-      "src/quiche/blind_sign_auth/proto/get_initial_data.proto",
-      "src/quiche/blind_sign_auth/proto/key_services.proto",
-      "src/quiche/blind_sign_auth/proto/proxy_layer.proto",
-      "src/quiche/blind_sign_auth/proto/public_metadata.proto",
-    ]
-
-    deps = [ "//third_party/anonymous_tokens:anonymous_tokens_java_proto" ]
-
-    import_dirs = [ "//third_party/anonymous_tokens/src/" ]
-  }
-}
