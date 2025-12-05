@@ -20,7 +20,7 @@ use crate::parse_primitives::ParserData;
 // now, just handle the different possible header versions manually.
 fn parse_header(data: &mut ParserData) -> ParsingResult<()> {
     use crate::parse_primitives::*;
-    let size_in_bytes = crate::parse_values::parse_size(data, false)?;
+    let size_in_bytes = crate::parse_values::parse_size(data, false, false)?;
     let version_number = parse_u32(data)?;
     let _interface_id = parse_u32(data)?;
     let _msg_name = parse_u32(data)?;

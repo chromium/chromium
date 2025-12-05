@@ -68,6 +68,7 @@ fn wrap_packed_struct_fields(
             packed_field_types,
             num_elements_in_value,
         },
+        is_nullable: false,
     }
 }
 
@@ -75,13 +76,16 @@ fn wrap_packed_struct_fields(
 // and it's harder to read the test cases
 macro_rules! bare_leaf {
     ($leaf_ty:expr) => {
-        MojomWireType::Leaf { leaf_type: $leaf_ty }
+        MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: false }
     };
 }
 
 macro_rules! struct_leaf {
     ($ord:expr, $leaf_ty:expr) => {
-        StructuredBodyElement::SingleValue($ord, MojomWireType::Leaf { leaf_type: $leaf_ty })
+        StructuredBodyElement::SingleValue(
+            $ord,
+            MojomWireType::Leaf { leaf_type: $leaf_ty, is_nullable: false },
+        )
     };
 }
 
@@ -96,8 +100,9 @@ impl TestType {
     fn as_union_field(&self) -> MojomWireType {
         match self.packed_type.clone() {
             // Nested unions are represented as pointers
-            MojomWireType::Union { variants, .. } => MojomWireType::Pointer {
+            MojomWireType::Union { variants, is_nullable } => MojomWireType::Pointer {
                 nested_data_type: PackedStructuredType::Union { variants },
+                is_nullable,
             },
             // Everything else is represented as itself.
             _ => self.packed_type.clone(),
@@ -368,22 +373,22 @@ static TEN_BOOLS_AND_A_BYTE_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
             (
                 "b0".to_string(),
                 StructuredBodyElement::Bitfield([
-                    Some(0),
-                    Some(1),
-                    Some(2),
-                    Some(3),
-                    Some(4),
-                    Some(6),
-                    Some(7),
-                    Some(8),
+                    Some((0, false)),
+                    Some((1, false)),
+                    Some((2, false)),
+                    Some((3, false)),
+                    Some((4, false)),
+                    Some((6, false)),
+                    Some((7, false)),
+                    Some((8, false)),
                 ]),
             ),
             ("n1".to_string(), struct_leaf!(5, PackedLeafType::UInt8)),
             (
                 "b8".to_string(),
                 StructuredBodyElement::Bitfield([
-                    Some(9),
-                    Some(10),
+                    Some((9, false)),
+                    Some((10, false)),
                     None,
                     None,
                     None,
@@ -451,21 +456,21 @@ static TEN_BOOLS_AND_TWO_BYTES_TY: LazyLock<TestType> = LazyLock::new(|| TestTyp
             (
                 "b0".to_string(),
                 StructuredBodyElement::Bitfield([
-                    Some(0),
-                    Some(1),
-                    Some(2),
-                    Some(3),
-                    Some(4),
-                    Some(6),
-                    Some(7),
-                    Some(8),
+                    Some((0, false)),
+                    Some((1, false)),
+                    Some((2, false)),
+                    Some((3, false)),
+                    Some((4, false)),
+                    Some((6, false)),
+                    Some((7, false)),
+                    Some((8, false)),
                 ]),
             ),
             (
                 "b8".to_string(),
                 StructuredBodyElement::Bitfield([
-                    Some(9),
-                    Some(10),
+                    Some((9, false)),
+                    Some((10, false)),
                     None,
                     None,
                     None,
@@ -740,34 +745,35 @@ static BASE_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
             (6, FOUR_INTS_TY.as_union_field()),
         ]
         .into(),
+        is_nullable: false,
     },
 });
 
-fn test_union_mojom_n1(n1: i8) -> MojomValue {
+fn base_union_mojom_n1(n1: i8) -> MojomValue {
     MojomValue::Union(0, Box::new(MojomValue::Int8(n1)))
 }
 
-fn test_union_mojom_u1(u1: u64) -> MojomValue {
+fn base_union_mojom_u1(u1: u64) -> MojomValue {
     MojomValue::Union(1, Box::new(MojomValue::UInt64(u1)))
 }
 
-fn test_union_mojom_e1(e1: u32) -> MojomValue {
+fn base_union_mojom_e1(e1: u32) -> MojomValue {
     MojomValue::Union(2, Box::new(MojomValue::Enum(e1)))
 }
 
-fn test_union_mojom_b1(b1: bool) -> MojomValue {
+fn base_union_mojom_b1(b1: bool) -> MojomValue {
     MojomValue::Union(3, Box::new(MojomValue::Bool(b1)))
 }
 
-fn test_union_mojom_b2(b2: bool) -> MojomValue {
+fn base_union_mojom_b2(b2: bool) -> MojomValue {
     MojomValue::Union(4, Box::new(MojomValue::Bool(b2)))
 }
 
-fn test_union_mojom_em1(em1: MojomValue) -> MojomValue {
+fn base_union_mojom_em1(em1: MojomValue) -> MojomValue {
     MojomValue::Union(5, Box::new(em1))
 }
 
-fn test_union_mojom_f1(f1: MojomValue) -> MojomValue {
+fn base_union_mojom_f1(f1: MojomValue) -> MojomValue {
     MojomValue::Union(6, Box::new(f1))
 }
 
@@ -784,6 +790,7 @@ static NESTED_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
     packed_type: MojomWireType::Union {
         variants: [(0, bare_leaf!(PackedLeafType::Int32)), (1, BASE_UNION_TY.as_union_field())]
             .into(),
+        is_nullable: false,
     },
 });
 
@@ -852,6 +859,7 @@ static NESTEDER_UNION_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
             (3, WITH_NESTED_UNION_TY.as_union_field()),
         ]
         .into(),
+        is_nullable: false,
     },
 });
 
@@ -932,16 +940,16 @@ fn with_many_unions_mojom(
 
 #[gtest(MojomParser, TestUnions)]
 fn test_unions() {
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::n1(10), test_union_mojom_n1(10));
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::u1(987654321), test_union_mojom_u1(987654321));
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::e1(TestEnum::Three), test_union_mojom_e1(3));
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::b1(false), test_union_mojom_b1(false));
-    BASE_UNION_TY.validate_mojomparse(BaseUnion::b2(true), test_union_mojom_b2(true));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::n1(10), base_union_mojom_n1(10));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::u1(987654321), base_union_mojom_u1(987654321));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::e1(TestEnum::Three), base_union_mojom_e1(3));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::b1(false), base_union_mojom_b1(false));
+    BASE_UNION_TY.validate_mojomparse(BaseUnion::b2(true), base_union_mojom_b2(true));
     BASE_UNION_TY
-        .validate_mojomparse(BaseUnion::em1(Empty {}), test_union_mojom_em1(empty_mojom()));
+        .validate_mojomparse(BaseUnion::em1(Empty {}), base_union_mojom_em1(empty_mojom()));
     BASE_UNION_TY.validate_mojomparse(
         BaseUnion::f1(FourInts { a: 5, b: 6, c: 7, d: 8 }),
-        test_union_mojom_f1(four_ints_mojom(5, 6, 7, 8)),
+        base_union_mojom_f1(four_ints_mojom(5, 6, 7, 8)),
     );
 
     expect_true!(BaseUnion::try_from(MojomValue::Union(99, Box::new(MojomValue::Int8(0)))).is_err());
@@ -952,7 +960,7 @@ fn test_unions() {
     NESTED_UNION_TY.validate_mojomparse(NestedUnion::n(60), nested_union_mojom_n(60));
     NESTED_UNION_TY.validate_mojomparse(
         NestedUnion::u(BaseUnion::n1(70)),
-        nested_union_mojom_u(test_union_mojom_n1(70)),
+        nested_union_mojom_u(base_union_mojom_n1(70)),
     );
 
     WITH_NESTED_UNION_TY.validate_mojomparse(
@@ -987,7 +995,7 @@ fn test_unions() {
             11,
             nesteder_union_mojom_b(false),
             22,
-            test_union_mojom_n1(55),
+            base_union_mojom_n1(55),
             nesteder_union_mojom_n(12),
             33,
             44,
@@ -1012,6 +1020,7 @@ macro_rules! packed_array {
                     PackedArrayType::UnsizedArray
                 },
             },
+            is_nullable: false,
         }
     };
 }
@@ -1349,6 +1358,7 @@ macro_rules! packed_map {
                 key_type: std::sync::Arc::new($key_type),
                 value_type: std::sync::Arc::new($value_type),
             },
+            is_nullable: false,
         }
     };
 }
@@ -1560,9 +1570,11 @@ static STRING_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
         nested_data_type: PackedStructuredType::Array {
             element_type: std::sync::Arc::new(MojomWireType::Leaf {
                 leaf_type: PackedLeafType::UInt8,
+                is_nullable: false,
             }),
             array_type: PackedArrayType::String,
         },
+        is_nullable: false,
     },
 });
 
@@ -1700,6 +1712,7 @@ static HOLDS_COMPLEX_TYPES_TY: LazyLock<TestType> = LazyLock::new(|| TestType {
             (2, MAP_U8_U8_TY.as_union_field()),
         ]
         .into(),
+        is_nullable: false,
     },
 });
 

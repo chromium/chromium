@@ -100,20 +100,28 @@ struct NestedDataInfo<'a> {
     /// start of the enclosing struct
     expected_offset: usize,
     /// Tracks whether this pointer was contained in a union, and if so what
-    /// its discriminant was.
-    union_discriminant: Option<u32>,
+    /// its discriminant was, and whether the outer union was nullable.
+    union_discriminant: Option<(u32, bool)>,
+    /// Tracks whether the pointer was nullable (if so, we should wrap the
+    /// parsed result in an option.)
+    was_nullable: bool,
 }
 
 /// Parse a 32-bit size as part of a struct or array header
 /// FOR_RELEASE: Maybe make a (slightly) more general parse_header function
 /// which parses this and the following 4 bytes as well.
-pub fn parse_size(data: &mut ParserData, is_array: bool) -> ParsingResult<usize> {
+pub fn parse_size(
+    data: &mut ParserData,
+    is_array: bool,
+    may_be_null: bool,
+) -> ParsingResult<usize> {
     let parsed_value = parse_u32(data)?;
     let mk_err = || Err(ParsingError::invalid_size(data.bytes_parsed() - 4, parsed_value));
     let size = parsed_value.try_into().or_else(|_| mk_err())?;
     // Non-array sizes are always divisible by 8.
     let invalid_remainder = !is_array && size % 8 != 0;
-    if size < 8 || invalid_remainder {
+    let too_small = (size == 0 && !may_be_null) || (0 < size && size < 8);
+    if too_small || invalid_remainder {
         return mk_err();
     }
     Ok(size)
@@ -139,7 +147,7 @@ pub fn parse_struct(
     num_elements_in_value: usize,
 ) -> ParsingResult<MojomValue> {
     // Parse the struct header
-    let size_in_bytes = parse_size(data, false)?;
+    let size_in_bytes = parse_size(data, false, false)?;
     let _version_number = parse_u32(data)?; // We're ignoring versioning for now
 
     let (parsed_names, parsed_fields) = parse_structured_body(
@@ -160,7 +168,7 @@ fn parse_array(
     array_type: &PackedArrayType,
 ) -> ParsingResult<MojomValue> {
     // Parse the array header
-    let size_in_bytes = parse_size(data, true)?;
+    let size_in_bytes = parse_size(data, true, false)?;
     // usize always fits into 32 bits on our platforms
     let num_elements = parse_u32(data)?.try_into().unwrap();
 
@@ -182,8 +190,16 @@ fn parse_array(
     }
 
     // Make up dummy field names for debugging.
-    let field_names =
-        (0..num_elements).map(|idx| format!("Array_Element_{idx}")).collect::<Vec<_>>();
+    let num_tag_bitfields = if element_type.is_nullable_primitive() {
+        // Nullable primitives need some bitfields at the beginning to hold
+        // the tag bits; one bitfield for every 8 elements.
+        (num_elements + 7) / 8 // Divide by 8, rounding up
+    } else {
+        0
+    };
+    let tag_names = (0..num_tag_bitfields).map(|idx| format!("Array_Tags_{idx}"));
+    let elt_names = (0..num_elements).map(|idx| format!("Array_Element_{idx}"));
+    let field_names = tag_names.chain(elt_names).collect::<Vec<_>>();
     // An array body is equivalent to a struct body with `num_elements` copies of
     // its field
     let array_body = crate::pack::pack_array_body(element_type, num_elements);
@@ -224,18 +240,29 @@ fn parse_array(
 /// This function also returns the union's discriminant value.
 fn parse_union<'a>(
     data: &mut ParserData,
-    enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
+    mut enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     variants: &'a BTreeMap<u32, MojomWireType>,
+    is_nullable: bool,
 ) -> ParsingResult<(u32, Option<MojomValue>)> {
     // Parse the union header
-    let size_in_bytes = parse_size(data, false)?;
+    let size_in_bytes = parse_size(data, false, is_nullable)?;
+
+    // The only way for the size to be 0 is if the union is (validly) null.
+    // In that case we've nothing else to do here.
+    if size_in_bytes == 0 {
+        // Skip the remaining bytes in the value
+        parse_padding(data, 12)?;
+        return Ok((0, Some(MojomValue::Nullable(None))));
+    }
+
     let tag = parse_u32(data)?;
+
     let field_ty = match variants.get(&tag) {
         Some(wire_ty) => wire_ty,
         None => return Err(ParsingError::invalid_discriminant(data.bytes_parsed() - 4, tag)),
     };
 
-    let in_enclosing_body = enclosing_nested_data_list.is_some();
+    let enclosing_nested_data_len = enclosing_nested_data_list.as_deref().map(Vec::len);
 
     // A union is structured data with a single, variable field.
     // Make up a dummy field name for debugging.
@@ -245,7 +272,7 @@ fn parse_union<'a>(
 
     let (_names, mut parsed_fields) = parse_structured_body(
         data,
-        enclosing_nested_data_list,
+        enclosing_nested_data_list.as_deref_mut(),
         size_in_bytes,
         std::slice::from_ref(&field_name),
         std::iter::once(struct_ref_element),
@@ -253,18 +280,25 @@ fn parse_union<'a>(
     )?;
     assert_eq!(parsed_fields.len(), 1);
 
-    let ret = match (in_enclosing_body, field_ty) {
-        // If the union contained a pointer and we were in an enclosing body,
-        // then it appended nested data info instead of constructing a union value
-        (true, MojomWireType::Pointer { .. }) => None,
-        (_, MojomWireType::Union { .. }) => {
-            // Sanity check because unions are really complicated
-            unreachable!("Unions should never be packed directly in other unions")
-        }
-        // If the union contained a non-pointer value, or it was standalone,
-        // then the union value has already been fully constructed.
-        _ => Some(MojomValue::Union(tag, Box::new(parsed_fields.pop().unwrap()))),
+    // If we were in an enclosing body, and we pushed something to the nested
+    // data list, then we haven't actually parsed the union's contents yet, so
+    // we can't return anything useful (parsed_fields contains a dummy value).
+    let ret = if let Some(old_len) = enclosing_nested_data_len
+        && let new_len = enclosing_nested_data_list.unwrap().len()
+        && new_len > old_len
+    {
+        None
+    } else {
+        Some(MojomValue::Union(tag, Box::new(parsed_fields.pop().unwrap())))
     };
+
+    let ret = ret.map(|parsed_value| {
+        if is_nullable {
+            MojomValue::Nullable(Some(Box::new(parsed_value)))
+        } else {
+            parsed_value
+        }
+    });
 
     Ok((tag, ret))
 }
@@ -289,6 +323,7 @@ fn parse_map(
                     element_type: key_type.clone(),
                     array_type: PackedArrayType::UnsizedArray,
                 },
+                is_nullable: false,
             },
         ),
         StructuredBodyElement::SingleValue(
@@ -299,6 +334,7 @@ fn parse_map(
                     element_type: value_type.clone(),
                     array_type: PackedArrayType::UnsizedArray,
                 },
+                is_nullable: false,
             },
         ),
     ];
@@ -351,6 +387,32 @@ fn parse_string(
     Ok(MojomValue::String(MojomString::from_bytes(string_contents)))
 }
 
+const DUMMY_MOJOMVALUE: MojomValue = MojomValue::Int8(0);
+
+/// Create a MojomValue::Nullable out of the given value, if appropriate.
+///
+/// Our parser handles nullable primitives as follows: first, we read the tag
+/// bit, which the packing algorithm guarantees will appear before the primitive
+/// value. We treat this like any other value, and so we will write either
+/// Bool(true) or Bool(false) into the appropriate ordinals.
+///
+/// When we reach the primitive value itself, we then check whether the current
+/// value is a Bool, or whether it's the designated dummy value. In the former
+/// case, we assume that we're a nullable, and wrap the given value. Otherwise
+/// we assume we're _not_ nullable, and return the value unchanged.
+fn wrap_nullable_primitive(
+    ret_values: &[MojomValue],
+    ordinal: Ordinal,
+    parsed_value: MojomValue,
+) -> MojomValue {
+    match ret_values[ordinal] {
+        MojomValue::Bool(false) => MojomValue::Nullable(None),
+        MojomValue::Bool(true) => MojomValue::Nullable(Some(Box::new(parsed_value))),
+        DUMMY_MOJOMVALUE => parsed_value,
+        _ => panic!("We tried to overwrite an already-parsed value!"),
+    }
+}
+
 /// Parse the body of a struct, array, or union, having already consumed its
 /// header to figure out its expected size and what fields it has.
 ///
@@ -386,12 +448,14 @@ where
     // by index. We have to provide dummy values since rust won't allow
     // uninitialized memory.
     let mut ret_names: Vec<String> = vec![String::new(); num_elements_in_value];
-    let mut ret_values: Vec<MojomValue> = vec![MojomValue::Int8(0); num_elements_in_value];
+    let mut ret_values: Vec<MojomValue> = vec![DUMMY_MOJOMVALUE; num_elements_in_value];
 
     for (index, struct_ref_element) in fields.enumerate() {
         // Make sure we're at the right alignment for this field
         skip_to_alignment(data, struct_ref_element.alignment())?;
 
+        // FOR_RELEASE: It would be nice to use zip_eq from itertools instead of
+        // pulling out the name by index, if itertools gets approved for chromium
         let name = field_names
             .get(index)
             .expect("parse_structured_body: field_names should have the same length as fields");
@@ -400,18 +464,28 @@ where
             StructuredBodyElement::Bitfield(ordinals) => {
                 let mut iter = ordinals.borrow().iter().enumerate();
                 let parsed_bits = parse_u8(data)?;
-                while let Some((idx, Some(ordinal))) = iter.next() {
+                while let Some((idx, Some((ordinal, _)))) = iter.next() {
                     let bit = (parsed_bits >> idx) & 1;
+                    let parsed_val = MojomValue::Bool(bit == 1);
+                    let parsed_val = wrap_nullable_primitive(&ret_values, *ordinal, parsed_val);
                     ret_names[*ordinal] = name.clone();
-                    ret_values[*ordinal] = MojomValue::Bool(bit == 1);
+                    ret_values[*ordinal] = parsed_val;
                 }
             }
             StructuredBodyElement::SingleValue(ordinal, mojom_wire_type) => {
                 match mojom_wire_type {
-                    // Nested structured data, record for later
-                    MojomWireType::Pointer { nested_data_type } => {
-                        // We don't currently support null pointers
-                        let pointer_value = parse_pointer(data, false)?;
+                    // Nested structured data, record for later unless it was null.
+                    MojomWireType::Pointer { nested_data_type, is_nullable } => {
+                        let pointer_value = parse_pointer(data, *is_nullable)?;
+
+                        // If the pointer was (validly) null, then there's no
+                        // nested data to parse, we can just say None here.
+                        if pointer_value == 0 {
+                            ret_names[ordinal] = name.clone();
+                            ret_values[ordinal] = MojomValue::Nullable(None);
+                            continue;
+                        }
+
                         let nested_info = NestedDataInfo {
                             ty: nested_data_type,
                             ordinal: ordinal,
@@ -424,19 +498,22 @@ where
                             // then we'll fill in this field when we finish
                             // parsing the union value.
                             union_discriminant: None,
+                            was_nullable: *is_nullable,
                         };
                         nested_data_list.push(nested_info);
                     }
                     // Nested leaf data, just parse it
-                    MojomWireType::Leaf { leaf_type } => {
+                    MojomWireType::Leaf { leaf_type, .. } => {
                         let parsed_value = parse_leaf_element(data, leaf_type)?;
+                        let parsed_value =
+                            wrap_nullable_primitive(&ret_values, ordinal, parsed_value);
                         ret_names[ordinal] = name.clone();
                         ret_values[ordinal] = parsed_value;
                     }
-                    MojomWireType::Union { variants } => {
+                    MojomWireType::Union { variants, is_nullable } => {
                         let bytes_parsed_at_union_start =
                             data.bytes_parsed() - initial_bytes_parsed;
-                        match parse_union(data, Some(nested_data_list), variants)? {
+                        match parse_union(data, Some(nested_data_list), variants, *is_nullable)? {
                             // If we have a complete value, we can just store it as usual.
                             (_, Some(parsed_value)) => {
                                 ret_names[ordinal] = name.clone();
@@ -451,7 +528,7 @@ where
                                 // directly in other unions, so we'll never recurse more than once.
                                 let nested_data_info = nested_data_list.last_mut().unwrap();
                                 // This was previously None
-                                nested_data_info.union_discriminant = Some(tag);
+                                nested_data_info.union_discriminant = Some((tag, *is_nullable));
                                 // This was previously the ordinal in the _union_ (i.e. 0)
                                 nested_data_info.ordinal = ordinal;
                                 // This was previously the distance from the start of the _union_
@@ -506,15 +583,29 @@ where
             PackedStructuredType::Array { element_type, array_type } => {
                 parse_array(data, element_type, array_type)?
             }
-            PackedStructuredType::Union { variants } => parse_union(data, None, variants)?
-                .1
-                .expect("Parsing nested union should always return a value"),
+            PackedStructuredType::Union { variants } => {
+                // Unions in a structured body are never nullable
+                // (the pointer would have been nullable instead)
+                parse_union(data, None, variants, false)?
+                    .1
+                    .expect("Parsing nested union should always return a value")
+            }
             PackedStructuredType::Map { key_type, value_type } => {
                 parse_map(data, key_type, value_type)?
             }
         };
-        if let Some(tag) = nested_data.union_discriminant {
-            parsed_data = MojomValue::Union(tag, Box::new(parsed_data))
+        // If necessary, wrap the parsed value based on the type it was contained in
+        if nested_data.was_nullable {
+            // The pointer to this data was nullable
+            parsed_data = MojomValue::Nullable(Some(Box::new(parsed_data)));
+        }
+        if let Some((tag, _)) = nested_data.union_discriminant {
+            // This data was contained inside a union
+            parsed_data = MojomValue::Union(tag, Box::new(parsed_data));
+        };
+        if let Some((_, true)) = nested_data.union_discriminant {
+            // This data was contained inside a _nullable_ union
+            parsed_data = MojomValue::Nullable(Some(Box::new(parsed_data)));
         };
         ret_names[nested_data.ordinal] = nested_data.field_name;
         ret_values[nested_data.ordinal] = parsed_data;
@@ -532,8 +623,10 @@ pub fn parse_single_value_for_testing(
 ) -> ParsingResult<MojomValue> {
     let mut data = ParserData::new(data);
     match wire_type {
-        MojomWireType::Leaf { leaf_type } => parse_leaf_element(&mut data, leaf_type),
-        MojomWireType::Pointer { nested_data_type } => match nested_data_type {
+        MojomWireType::Leaf { leaf_type, is_nullable: false } => {
+            parse_leaf_element(&mut data, leaf_type)
+        }
+        MojomWireType::Pointer { nested_data_type, is_nullable: false } => match nested_data_type {
             PackedStructuredType::Struct {
                 packed_field_names,
                 packed_field_types,
@@ -554,8 +647,11 @@ pub fn parse_single_value_for_testing(
                 parse_map(&mut data, key_type, value_type)
             }
         },
-        MojomWireType::Union { variants } => Ok(parse_union(&mut data, None, variants)?
-            .1
-            .expect("Parsing standalone union should always return a value")),
+        MojomWireType::Union { variants, is_nullable } => {
+            Ok(parse_union(&mut data, None, variants, *is_nullable)?
+                .1
+                .expect("Parsing standalone union should always return a value"))
+        }
+        _ => panic!("Invalid argument to parse_single_value_for_testing: {wire_type:?}"),
     }
 }

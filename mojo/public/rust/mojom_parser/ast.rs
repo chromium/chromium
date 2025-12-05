@@ -44,6 +44,7 @@ pub enum MojomType {
     // rust's type system can't enforce that the length is correct so there's little point.
     Array { element_type: Box<MojomType>, num_elements: Option<usize> },
     Map { key_type: Box<MojomType>, value_type: Box<MojomType> },
+    Nullable { inner_type: Box<MojomType> },
 }
 
 /// Representation of a value of a MojomType. These are what get encoded/decoded
@@ -70,6 +71,7 @@ pub enum MojomValue {
     Array(Vec<MojomValue>),
     // We use a BTreeMap so that we get a consistent ordering when serializing.
     Map(BTreeMap<MojomValue, MojomValue>),
+    Nullable(Option<Box<MojomValue>>),
 }
 
 /**************************************************************** */
@@ -86,7 +88,10 @@ pub type Ordinal = usize;
 /// enclosing body, starting with the LSB. Bits are never skipped, so the
 /// array is a contiguous block of `Some`s, followed by zero or more
 /// `None`s.
-pub type BitfieldOrdinals = [Option<Ordinal>; 8];
+///
+/// Each ordinal is associated with a boolean indicating whether it is the tag
+/// bit for a nullable primitive. This is only used during deparsing.
+pub type BitfieldOrdinals = [Option<(Ordinal, bool)>; 8];
 
 #[derive(Debug, Clone, PartialEq)]
 /// Representation of a Mojom type that has been packed into the wire format. It
@@ -102,16 +107,27 @@ pub type BitfieldOrdinals = [Option<Ordinal>; 8];
 /// fields of the struct, each bit of the field is associated with an ordinal.
 ///
 /// Unions can be represented as either a direct value, or a pointer.
+///
+/// # Nullability
+/// Each wire type carries a bit indicating whether it is valid for values of
+/// that type to be null. The interpretation is different for different types.
+/// For unions and pointers, it indicates that 0 is a valid value.
+///
+/// For leaf values, nullability is instead indicated by the presence of a tag
+/// bit earlier the enclosing structured body (nullable leaves are not allowed
+/// inside unions). In our AST, that tag bit will be a boolean with the same
+/// ordinal as the value itself. If the tag is 1, then the nullable is Some,
+/// otherwise it is None.
 pub enum MojomWireType {
     /// A single value with no additional structure, which is encoded directly
     /// at this location.
-    Leaf { leaf_type: PackedLeafType },
+    Leaf { leaf_type: PackedLeafType, is_nullable: bool },
     /// A 64-bit pointer to an array, struct, or union, which will appear at the
     /// end of the containing value.
-    Pointer { nested_data_type: PackedStructuredType },
+    Pointer { nested_data_type: PackedStructuredType, is_nullable: bool },
     /// A 128-bit value (not a pointer!) which contains a tag and a 64-bit value
     /// (which may be a pointer).
-    Union { variants: BTreeMap<u32, MojomWireType> },
+    Union { variants: BTreeMap<u32, MojomWireType>, is_nullable: bool },
 }
 
 /// This type represents an element in the body of a struct, array, or union.
@@ -197,6 +213,10 @@ pub enum PackedArrayType {
     String,
 }
 
+/**************************************************************** */
+// Implementations of useful functions and methods for AST types.
+/*************************************************************** */
+
 impl MojomWireType {
     /// Returns the size (in bytes) of a wire type, when stored as a struct
     /// field.
@@ -221,6 +241,49 @@ impl MojomWireType {
         match self {
             MojomWireType::Union { .. } => 8,
             _ => self.size(),
+        }
+    }
+
+    pub fn is_nullable(&self) -> bool {
+        match self {
+            MojomWireType::Leaf { is_nullable, .. }
+            | MojomWireType::Pointer { is_nullable, .. }
+            | MojomWireType::Union { is_nullable, .. } => *is_nullable,
+        }
+    }
+
+    pub fn is_nullable_primitive(&self) -> bool {
+        match self {
+            MojomWireType::Leaf { is_nullable, .. } => *is_nullable,
+            _ => false,
+        }
+    }
+
+    pub fn make_nullable(self) -> Self {
+        match self {
+            MojomWireType::Leaf { leaf_type, .. } => {
+                MojomWireType::Leaf { leaf_type, is_nullable: true }
+            }
+            MojomWireType::Pointer { nested_data_type, .. } => {
+                MojomWireType::Pointer { nested_data_type, is_nullable: true }
+            }
+            MojomWireType::Union { variants, .. } => {
+                MojomWireType::Union { variants, is_nullable: true }
+            }
+        }
+    }
+
+    /// Check if this type is valid as the key to a Mojom map.
+    /// Valid keys are non-nullable primitives and strings.
+    pub fn is_valid_map_key(&self) -> bool {
+        match self {
+            MojomWireType::Leaf { is_nullable: false, .. }
+            | MojomWireType::Pointer {
+                nested_data_type:
+                    PackedStructuredType::Array { array_type: PackedArrayType::String, .. },
+                is_nullable: false,
+            } => true,
+            _ => false,
         }
     }
 }

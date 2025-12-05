@@ -19,56 +19,61 @@ fn get_field_at_ordinal(field_values: &[MojomValue], ordinal: Ordinal) -> Result
     Ok(field_value)
 }
 
-// FOR_RELEASE: If we can figure out how to make it typecheck, it would be nicer
-// to have a single function/macro that validates the type and extracts the
-// value at once. Currently we have to match twice, since the rust type system
-// forgets that we validated the type.
-fn check_value_has_expected_type<T>(
-    value: &MojomValue,
-    expected_type: &StructuredBodyElementRef<'_, T>,
-) -> Result<()>
-where
-    T: std::fmt::Debug + std::borrow::Borrow<BitfieldOrdinals>,
-{
-    let matches = match (expected_type, value) {
-        (StructuredBodyElement::Bitfield(_), MojomValue::Bool(_)) => true,
-        (StructuredBodyElement::SingleValue(_, wire_type), _) => {
-            match (wire_type, value) {
-                (MojomWireType::Leaf { leaf_type, .. }, _) => match (leaf_type, value) {
-                    (PackedLeafType::Bool, MojomValue::Bool(_))
-                    | (PackedLeafType::Int8, MojomValue::Int8(_))
-                    | (PackedLeafType::UInt8, MojomValue::UInt8(_))
-                    | (PackedLeafType::Int16, MojomValue::Int16(_))
-                    | (PackedLeafType::UInt16, MojomValue::UInt16(_))
-                    | (PackedLeafType::Int32, MojomValue::Int32(_))
-                    | (PackedLeafType::UInt32, MojomValue::UInt32(_))
-                    | (PackedLeafType::Int64, MojomValue::Int64(_))
-                    | (PackedLeafType::UInt64, MojomValue::UInt64(_))
-                    | (PackedLeafType::Enum { .. }, MojomValue::Enum(_)) => true,
-                    _ => false,
-                },
-                (MojomWireType::Union { .. }, MojomValue::Union { .. }) => true,
-                (MojomWireType::Pointer { nested_data_type, .. }, _) => {
-                    match (nested_data_type, value) {
-            (PackedStructuredType::Struct { .. }, MojomValue::Struct { .. })
-            // FOR_RELEASE: Should we care about which type of array this was originally?
-            | (PackedStructuredType::Array { .. }, MojomValue::Array { .. })
-            | (PackedStructuredType::Array { .. }, MojomValue::String { .. })
-            | (PackedStructuredType::Map { .. }, MojomValue::Map { .. })
-            | (PackedStructuredType::Union { .. }, MojomValue::Union { .. }) => true,
-            _ => false,
+/// Abstract over possibly-nullable MojomValues.
+///
+/// This function takes a MojomValue which _might_ be nullable, and returns an
+/// option:
+/// - If `value` is not nullable, it returns `Some(value)`.
+/// - If `value` is Nullable(Some(inner_value)), it returns `Some(inner_value)`.
+/// - If `value` is None, it returns `None`.
+///
+/// If the value is not of the expected nullability, it returns an error.
+///
+/// This function allows other code to not care about whether the value was
+/// originally a nullable or not, since `value` and `Nullable(Some(value))`
+/// map to the same thing.
+///
+/// Note that:
+/// - If `None` is returned, it means the original value was _validly_ `None`.
+/// - If `Some(value)` is returned, then `value` should not be a
+/// `MojomValue::Nullable`, because Mojom does not permit nested nullable types.
+fn flatten_possibly_nullable_value(
+    maybe_nullable: &MojomValue,
+    expect_nullable: bool,
+) -> Result<Option<&MojomValue>> {
+    match maybe_nullable {
+        MojomValue::Nullable(_) if !expect_nullable => {
+            bail!("Got nullable value for non-nullable type")
         }
-                }
-                _ => false,
-            }
-        }
-        _ => false,
-    };
-    if matches {
-        return Ok(());
-    } else {
-        bail!("Expected to find type {:?}, but got value {:?}", expected_type, value)
+        MojomValue::Nullable(None) => Ok(None),
+        MojomValue::Nullable(Some(inner_value)) => Ok(Some(&**inner_value)),
+        _ if expect_nullable => bail!("Got non-nullable value for nullable type"),
+        _ => Ok(Some(maybe_nullable)),
     }
+}
+
+/// If the contained value is (validly) null, then write num_bytes empty bytes
+/// to the data vector; otherwise, return the contained value.
+///
+/// This is a macro instead of a function so we can `continue` inside it.
+macro_rules! write_or_extract_nullable {
+    ($data:expr, $val:expr, $is_nullable:expr, $num_bytes:expr) => {
+        match flatten_possibly_nullable_value($val, $is_nullable)? {
+            None => {
+                // For a null value, we need only write a bunch of 0s
+                $data.extend(vec![0; $num_bytes]);
+                continue;
+            }
+            Some(v) => v,
+        }
+    };
+}
+
+// Standard error message for getting a value that doesn't match its type
+macro_rules! wrong_type {
+    ($expected_type:expr, $value:expr) => {
+        bail!("Expected to find type {:?}, but got value {:?}", $expected_type, $value)
+    };
 }
 
 fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
@@ -79,22 +84,25 @@ fn pad_to_alignment(data: &mut Vec<u8>, alignment: usize) {
 }
 
 /// Write out the bytes for a leaf node
-fn deparse_leaf_value(data: &mut Vec<u8>, value: &MojomValue) -> Result<()> {
-    match value {
-        MojomValue::Bool(value) => {
-            let v = if *value { 1u8 } else { 0u8 };
-            data.extend(v.to_le_bytes())
+fn deparse_leaf_value(
+    data: &mut Vec<u8>,
+    value: &MojomValue,
+    leaf_type: &PackedLeafType,
+) -> Result<()> {
+    match (value, leaf_type) {
+        (MojomValue::Bool(value), PackedLeafType::Bool) => {
+            data.extend((*value as u8).to_le_bytes())
         }
-        MojomValue::Int8(value) => data.extend(value.to_le_bytes()),
-        MojomValue::UInt8(value) => data.extend(value.to_le_bytes()),
-        MojomValue::Int16(value) => data.extend(value.to_le_bytes()),
-        MojomValue::UInt16(value) => data.extend(value.to_le_bytes()),
-        MojomValue::Int32(value) => data.extend(value.to_le_bytes()),
-        MojomValue::UInt32(value) => data.extend(value.to_le_bytes()),
-        MojomValue::Int64(value) => data.extend(value.to_le_bytes()),
-        MojomValue::UInt64(value) => data.extend(value.to_le_bytes()),
-        MojomValue::Enum(value) => data.extend(value.to_le_bytes()),
-        _ => bail!("deparse_leaf_value: {:?} is not a leaf value", value),
+        (MojomValue::Int8(value), PackedLeafType::Int8) => data.extend(value.to_le_bytes()),
+        (MojomValue::UInt8(value), PackedLeafType::UInt8) => data.extend(value.to_le_bytes()),
+        (MojomValue::Int16(value), PackedLeafType::Int16) => data.extend(value.to_le_bytes()),
+        (MojomValue::UInt16(value), PackedLeafType::UInt16) => data.extend(value.to_le_bytes()),
+        (MojomValue::Int32(value), PackedLeafType::Int32) => data.extend(value.to_le_bytes()),
+        (MojomValue::UInt32(value), PackedLeafType::UInt32) => data.extend(value.to_le_bytes()),
+        (MojomValue::Int64(value), PackedLeafType::Int64) => data.extend(value.to_le_bytes()),
+        (MojomValue::UInt64(value), PackedLeafType::UInt64) => data.extend(value.to_le_bytes()),
+        (MojomValue::Enum(value), PackedLeafType::Enum { .. }) => data.extend(value.to_le_bytes()),
+        _ => wrong_type!(leaf_type, value),
     }
     Ok(())
 }
@@ -203,7 +211,7 @@ fn deparse_union<'a>(
     data: &mut Vec<u8>,
     enclosing_nested_data_list: Option<&mut Vec<NestedDataInfo<'a>>>,
     tag: u32,
-    value: &'a Box<MojomValue>,
+    contained_value: &'a Box<MojomValue>,
     variants: &'a BTreeMap<u32, MojomWireType>,
 ) -> Result<()> {
     // Write the union's header
@@ -221,7 +229,7 @@ fn deparse_union<'a>(
         data,
         enclosing_nested_data_list,
         false,
-        std::slice::from_ref(&*value),
+        std::slice::from_ref(&*contained_value),
         std::iter::once(struct_ref_element),
     )
 }
@@ -251,6 +259,7 @@ fn deparse_map(
                     element_type: key_type.clone(),
                     array_type: PackedArrayType::UnsizedArray,
                 },
+                is_nullable: false,
             },
         ),
         StructuredBodyElement::SingleValue(
@@ -261,6 +270,7 @@ fn deparse_map(
                     element_type: value_type.clone(),
                     array_type: PackedArrayType::UnsizedArray,
                 },
+                is_nullable: false,
             },
         ),
     ];
@@ -320,30 +330,45 @@ where
                 let mut iter = ordinals.borrow().into_iter().enumerate();
                 let mut bitfield: u8 = 0;
                 // Construct the bitfield bit-by-bit
-                while let Some((idx, Some(ordinal))) = iter.next() {
-                    let bit_value = get_field_at_ordinal(field_values, *ordinal)?;
-                    if let MojomValue::Bool(bit) = bit_value {
-                        bitfield |= (*bit as u8) << idx;
-                    } else {
-                        // We know this will fail, but calling it lets us avoid
-                        // writing a custom error message here.
-                        check_value_has_expected_type(bit_value, &packed_field)?;
-                    }
+                while let Some((idx, Some((ordinal, is_tag_bit)))) = iter.next() {
+                    let bit_mojom_value = get_field_at_ordinal(field_values, *ordinal)?;
+
+                    let bit_value = match bit_mojom_value {
+                        MojomValue::Bool(bit) => *bit,
+                        MojomValue::Nullable(None) => false,
+                        MojomValue::Nullable(Some(_)) if *is_tag_bit => true,
+                        MojomValue::Nullable(Some(inner_value)) => {
+                            // If deref patterns are ever stabilized, we won't need
+                            // a nested match here.
+                            match &**inner_value {
+                                MojomValue::Bool(bit) => *bit,
+                                _ => bail!("Got non-bool value when deparsing a bitfield"),
+                            }
+                        }
+                        _ => {
+                            wrong_type!(&packed_field, bit_mojom_value);
+                        }
+                    };
+                    bitfield |= (bit_value as u8) << idx;
                 }
                 // Now we've set all the bits, write it to the wire
                 data.push(bitfield)
             }
             StructuredBodyElement::SingleValue(ordinal, wire_type) => {
                 match wire_type {
-                    MojomWireType::Leaf { leaf_type: _ } => {
+                    MojomWireType::Leaf { leaf_type, is_nullable } => {
+                        let num_bytes = wire_type.size();
                         let leaf_value = get_field_at_ordinal(field_values, ordinal)?;
-                        check_value_has_expected_type(leaf_value, &packed_field)?;
+                        let leaf_value =
+                            write_or_extract_nullable!(data, leaf_value, *is_nullable, num_bytes);
                         pad_to_alignment(data, packed_field.alignment());
-                        deparse_leaf_value(data, leaf_value)?
+                        deparse_leaf_value(data, leaf_value, leaf_type)?
                     }
 
-                    MojomWireType::Pointer { nested_data_type } => {
+                    MojomWireType::Pointer { nested_data_type, is_nullable } => {
                         let nested_data_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let nested_data_value =
+                            write_or_extract_nullable!(data, nested_data_value, *is_nullable, 8);
                         let nested_data = match (nested_data_value, nested_data_type) {
                             (
                                 MojomValue::Struct(_field_names, nested_data_fields),
@@ -383,14 +408,14 @@ where
                         pad_to_alignment(data, 8);
                         data.extend([0; 8]);
                     }
-                    MojomWireType::Union { variants } => {
+                    MojomWireType::Union { variants, is_nullable } => {
                         let union_value = get_field_at_ordinal(field_values, ordinal)?;
+                        let union_value =
+                            write_or_extract_nullable!(data, union_value, *is_nullable, 16);
                         let (tag, contained_value) = match union_value {
                             MojomValue::Union(tag, value) => (tag, value),
                             _ => {
-                                // We know this will fail, but calling it lets us avoid
-                                // writing a custom error message here.
-                                return check_value_has_expected_type(union_value, &packed_field);
+                                wrong_type!(&packed_field, union_value);
                             }
                         };
                         pad_to_alignment(data, 8);
@@ -461,7 +486,9 @@ pub fn deparse_single_value_for_testing(
 ) -> Result<Vec<u8>> {
     let mut data: Vec<u8> = vec![];
     match (wire_type, value) {
-        (MojomWireType::Leaf { .. }, _) => deparse_leaf_value(&mut data, value)?,
+        (MojomWireType::Leaf { leaf_type, .. }, _) => {
+            deparse_leaf_value(&mut data, value, leaf_type)?
+        }
         (
             MojomWireType::Pointer {
                 nested_data_type: PackedStructuredType::Struct { packed_field_types, .. },
@@ -491,11 +518,12 @@ pub fn deparse_single_value_for_testing(
             },
             MojomValue::Map(values_map),
         ) => deparse_map(&mut data, values_map, key_type, value_type)?,
+        _ if wire_type.is_nullable() => {
+            // Nullables only make sense in the context of an enclosing body
+            panic!("Cannot deparse single nullable values for testing")
+        }
         _ => {
-            // This will fail, just calling for the error message
-            let wire_elt: StructuredBodyElementMixed =
-                StructuredBodyElement::SingleValue(0, wire_type);
-            check_value_has_expected_type(value, &wire_elt)?
+            wrong_type!(wire_type, value);
         }
     };
     Ok(data)
