@@ -109,6 +109,12 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _mostVisitedSites = std::move(mostVisitedSites);
     _mostVisitedBridge =
         std::make_unique<ntp_tiles::MostVisitedSitesObserverBridge>(self);
+    if (IsContentSuggestionsCustomizable()) {
+      _mostVisitedSites->EnableTileTypes(
+          ntp_tiles::MostVisitedSites::EnableTileTypesOptions()
+              .with_top_sites(true)
+              .with_custom_links(true));
+    }
     _mostVisitedSites->AddMostVisitedURLsObserver(_mostVisitedBridge.get(),
                                                   kMaxNumMostVisitedTiles);
   }
@@ -313,15 +319,14 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
                       }]];
     [menuElements addObject:[self.actionFactory
                                 actionToUnpinSiteFromMostVisitedTileWithBlock:^{
-                                    // TODO(crbug.com/459873750): Unpin.
+                                  [weakSelf pinOrUnpinMostVisited:item];
                                 }]];
   } else {
     if (IsContentSuggestionsCustomizable()) {
-      [menuElements
-          addObject:[self.actionFactory
-                        actionToPinSiteToMostVisitedTileWithBlock:^{
-                            // TODO(crbug.com/459873750): Pin the site.
-                        }]];
+      [menuElements addObject:[self.actionFactory
+                                  actionToPinSiteToMostVisitedTileWithBlock:^{
+                                    [weakSelf pinOrUnpinMostVisited:item];
+                                  }]];
     }
     [menuElements addObject:[self.actionFactory actionToRemoveWithBlock:^{
                     [weakSelf removeMostVisited:item];
@@ -448,6 +453,18 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
       return;
     }
   }
+}
+
+// Pins or unpins the item to/from the most visited tile, depending on whether
+// the item is already pinned or not.
+- (void)pinOrUnpinMostVisited:(MostVisitedItem*)item {
+  GURL url = item.URL;
+  if (_mostVisitedSites->HasCustomLink(url)) {
+    // Remove the custom link.
+    _mostVisitedSites->DeleteCustomLink(url);
+    return;
+  }
+  _mostVisitedSites->AddCustomLink(url, base::SysNSStringToUTF16(item.title));
 }
 
 // Converts a ntp_tiles::NTPTile `tile` to a MostVisitedItem

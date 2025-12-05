@@ -41,6 +41,7 @@
 #import "components/metrics/demographics/user_demographics.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/ntp_tiles/custom_links_manager_impl.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/ntp_tiles/popular_sites_impl.h"
 #import "components/ntp_tiles/pref_names.h"
@@ -725,6 +726,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
   language::LanguagePrefs::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);
+  ntp_tiles::CustomLinksManagerImpl::RegisterProfilePrefs(registry);
   ntp_tiles::MostVisitedSites::RegisterProfilePrefs(registry);
   ntp_tiles::PopularSitesImpl::RegisterProfilePrefs(registry);
   optimization_guide::prefs::RegisterProfilePrefs(registry);

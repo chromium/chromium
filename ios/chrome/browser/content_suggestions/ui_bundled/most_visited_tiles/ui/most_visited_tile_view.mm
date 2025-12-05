@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -110,7 +111,12 @@
     self.imageContainerView.backgroundColor =
         [UIColor colorNamed:kGrey100Color];
   }
-  self.titleLabel.text = item.title;
+
+  if (item.isPinned) {
+    self.titleLabel.attributedText = [self pinnedTitle:item.title];
+  } else {
+    self.titleLabel.text = item.title;
+  }
   self.accessibilityLabel = item.title;
   _incognitoAvailable = item.incognitoAvailable;
   _commandHandler = item.commandHandler;
@@ -296,6 +302,26 @@
     [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                        withAction:@selector(applyBackgroundColors)];
   }
+}
+
+// Returns an attributed string prepended by the "pin" symbol. Helper method to
+// create the title label for pinned tiles.
+- (NSAttributedString*)pinnedTitle:(NSString*)title {
+  UIImageSymbolConfiguration* symbolConfig = [UIImageSymbolConfiguration
+      configurationWithFont:self.titleLabel.font
+                      scale:UIImageSymbolScaleSmall];
+  NSTextAttachment* attachment = [[NSTextAttachment alloc] init];
+  UIImage* originalSymbolImage =
+      DefaultSymbolWithConfiguration(kPinSymbol, symbolConfig);
+  attachment.image = [originalSymbolImage
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  NSAttributedString* symbolString =
+      [NSAttributedString attributedStringWithAttachment:attachment];
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc] initWithAttributedString:symbolString];
+  [attributedString
+      appendAttributedString:[[NSAttributedString alloc] initWithString:title]];
+  return attributedString;
 }
 
 @end

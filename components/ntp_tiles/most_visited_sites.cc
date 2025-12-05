@@ -354,7 +354,7 @@ bool MostVisitedSites::IsCustomLinksInitialized() const {
 void MostVisitedSites::EnableTileTypes(
     const MostVisitedSites::EnableTileTypesOptions& options) {
   // Mixing of personal types is only supported on Android.
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (options.enable_top_sites && options.enable_custom_links) {
     NOTIMPLEMENTED();
   }
