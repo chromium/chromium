@@ -323,11 +323,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
       new_passkey.newly_shadowed_credential_ids(),
       UnorderedElementsAre(passkey1a.credential_id(), passkey1b.credential_id(),
                            passkey1c.credential_id()));
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
-              UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
-                                   PasskeyHasSyncId(new_passkey.sync_id())));
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
-              ElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey1a.rp_id(), ShadowedCredentials::kExclude),
+      UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
+                           PasskeyHasSyncId(new_passkey.sync_id())));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey2.rp_id(), ShadowedCredentials::kExclude),
+      ElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
 }
 
 // Tests CreatePasskey from a pre-constructed WebAuthnCredentialSpecifics.
@@ -382,11 +384,13 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
       new_passkey.newly_shadowed_credential_ids(),
       UnorderedElementsAre(passkey1a.credential_id(), passkey1b.credential_id(),
                            passkey1c.credential_id()));
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
-              UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
-                                   PasskeyHasSyncId(new_passkey.sync_id())));
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
-              ElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey1a.rp_id(), ShadowedCredentials::kExclude),
+      UnorderedElementsAre(PasskeyHasSyncId(passkey3.sync_id()),
+                           PasskeyHasSyncId(new_passkey.sync_id())));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey2.rp_id(), ShadowedCredentials::kExclude),
+      ElementsAre(PasskeyHasSyncId(passkey2.sync_id())));
 }
 
 // Adding a remote passkey should sync to the client.
@@ -424,9 +428,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
                                                PasskeyHasSyncId(sync_id2)))
           .Wait());
 
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1a.rp_id()),
-              UnorderedElementsAre(PasskeyHasSyncId(sync_id1a),
-                                   PasskeyHasSyncId(sync_id1b)));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey1a.rp_id(), ShadowedCredentials::kExclude),
+      UnorderedElementsAre(PasskeyHasSyncId(sync_id1a),
+                           PasskeyHasSyncId(sync_id1b)));
   EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1a.rp_id(),
                                                   passkey1a.credential_id()),
               Optional(PasskeyHasSyncId(sync_id1a)));
@@ -437,7 +442,7 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest, GetPasskeys) {
       GetModel().GetPasskeyByCredentialId(kRpId2, passkey1a.credential_id()),
       std::nullopt);
 
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(kRpId2),
+  EXPECT_THAT(GetModel().GetPasskeys(kRpId2, ShadowedCredentials::kExclude),
               ElementsAre(PasskeyHasSyncId(sync_id2)));
 }
 
@@ -463,16 +468,18 @@ IN_PROC_BROWSER_TEST_P(SingleClientWebAuthnCredentialsSyncTest,
                                        PasskeyHasSyncId(sync_id2)))
                   .Wait());
 
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey1.rp_id()),
-              ElementsAre(PasskeyHasSyncId(sync_id1)));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey1.rp_id(), ShadowedCredentials::kExclude),
+      ElementsAre(PasskeyHasSyncId(sync_id1)));
   EXPECT_THAT(GetModel().GetPasskeyByCredentialId(passkey1.rp_id(),
                                                   passkey1.credential_id()),
               Optional(PasskeyHasSyncId(sync_id1)));
   EXPECT_EQ(GetModel().GetPasskeyByCredentialId(
                 passkey1_shadow.rp_id(), passkey1_shadow.credential_id()),
             std::nullopt);
-  EXPECT_THAT(GetModel().GetPasskeysForRelyingPartyId(passkey2.rp_id()),
-              ElementsAre(PasskeyHasSyncId(sync_id2)));
+  EXPECT_THAT(
+      GetModel().GetPasskeys(passkey2.rp_id(), ShadowedCredentials::kExclude),
+      ElementsAre(PasskeyHasSyncId(sync_id2)));
   EXPECT_THAT(
       GetModel().GetPasskeyByCredentialId(kRpId2, passkey2.credential_id()),
       Optional(PasskeyHasSyncId(sync_id2)));

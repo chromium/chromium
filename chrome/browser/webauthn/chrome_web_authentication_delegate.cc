@@ -195,8 +195,9 @@ void DeleteUnacceptedPasskeys(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   bool is_passkey_deleted = false;
-  for (const auto& passkey :
-       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+  for (const auto& passkey : passkey_store->GetPasskeys(
+           relying_party_id,
+           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
                              passkey.user_id().end()) == user_id &&
         !base::Contains(all_accepted_credentials_ids,
@@ -241,7 +242,9 @@ void HideAndRestorePasskeys(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_store->GetPasskeysForRelyingPartyId(relying_party_id);
+      passkey_store->GetPasskeys(
+          relying_party_id,
+          webauthn::PasskeyModel::ShadowedCredentials::kExclude);
   const auto passkey_it =
       std::ranges::find_if(passkeys, [&user_id](const auto& passkey) {
         return std::vector<uint8_t>(passkey.user_id().begin(),
@@ -505,8 +508,9 @@ void ChromeWebAuthenticationDelegate::UpdateUserPasskeys(
       PasskeyModelFactory::GetInstance()->GetForProfile(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
   bool is_passkey_updated = false;
-  for (const auto& passkey :
-       passkey_store->GetPasskeysForRelyingPartyId(relying_party_id)) {
+  for (const auto& passkey : passkey_store->GetPasskeys(
+           relying_party_id,
+           webauthn::PasskeyModel::ShadowedCredentials::kExclude)) {
     if (std::vector<uint8_t>(passkey.user_id().begin(),
                              passkey.user_id().end()) == user_id &&
         (passkey.user_name() != name ||

@@ -257,7 +257,8 @@ TEST_F(PasskeyTabHelperTest, FilterPasskeys) {
 
   // Make sure 2 distinct passkeys were added.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeysForRelyingPartyId(kRpId);
+      passkey_model_->GetPasskeys(kRpId,
+                                  PasskeyModel::ShadowedCredentials::kExclude);
   EXPECT_EQ(passkeys.size(), 2u);
 
   // Empty allow credentials list, expect no filtering.

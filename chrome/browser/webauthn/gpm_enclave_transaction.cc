@@ -233,7 +233,8 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
                          weak_ptr_factory_.GetWeakPtr());
       std::vector<std::vector<uint8_t>> existing_credential_ids;
       std::ranges::transform(
-          passkey_model_->GetPasskeysForRelyingPartyId(rp_id_),
+          passkey_model_->GetPasskeys(
+              rp_id_, webauthn::PasskeyModel::ShadowedCredentials::kExclude),
           std::back_inserter(existing_credential_ids),
           [](const sync_pb::WebauthnCredentialSpecifics& cred) {
             const std::string& cred_id = cred.credential_id();
@@ -247,7 +248,8 @@ void GPMEnclaveTransaction::StartEnclaveTransaction(
       CHECK(selected_credential_id_);
       std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> selected_credential;
       std::vector<sync_pb::WebauthnCredentialSpecifics> credentials =
-          passkey_model_->GetPasskeysForRelyingPartyId(rp_id_);
+          passkey_model_->GetPasskeys(
+              rp_id_, webauthn::PasskeyModel::ShadowedCredentials::kExclude);
       for (auto& cred : credentials) {
         if (std::ranges::equal(base::as_byte_span(cred.credential_id()),
                                base::span(*selected_credential_id_))) {

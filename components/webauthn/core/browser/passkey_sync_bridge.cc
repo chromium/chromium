@@ -360,18 +360,6 @@ PasskeySyncBridge::GetPasskeyByUserId(const std::string& rp_id,
   return std::nullopt;
 }
 
-std::vector<sync_pb::WebauthnCredentialSpecifics>
-PasskeySyncBridge::GetPasskeysForRelyingPartyId(
-    const std::string& rp_id) const {
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  for (const auto& passkey : data_) {
-    if (passkey.second.rp_id() == rp_id) {
-      passkeys.emplace_back(passkey.second);
-    }
-  }
-  return passkey_model_utils::FilterShadowedCredentials(passkeys);
-}
-
 bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
                                       const base::Location& location) {
   // Find the credential with the given |credential_id|.

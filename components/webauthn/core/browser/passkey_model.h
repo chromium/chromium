@@ -136,11 +136,6 @@ class PasskeyModel : public KeyedService {
   GetPasskeyByUserId(const std::string& rp_id,
                      const std::string& user_id) const = 0;
 
-  // Returns all passkeys for the given Relying Party ID. Shadowed entities,
-  // which aren't suitable for generating assertions, are ignored.
-  virtual std::vector<sync_pb::WebauthnCredentialSpecifics>
-  GetPasskeysForRelyingPartyId(const std::string& rp_id) const = 0;
-
   // Deletes the passkey with the given `credential_id`. If the passkey is the
   // head of the shadow chain, then all passkeys for the same (user id, rp id)
   // are deleted as well. `location` is used for logging purposes and

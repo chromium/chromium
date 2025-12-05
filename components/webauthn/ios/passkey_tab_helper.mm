@@ -270,7 +270,8 @@ bool PasskeyTabHelper::HasExcludedPasskey(
   }
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeysForRelyingPartyId(params.RpId());
+      passkey_model_->GetPasskeys(params.RpId(),
+                                  PasskeyModel::ShadowedCredentials::kExclude);
   for (const auto& passkey : passkeys) {
     if (exclude_credentials.contains(passkey.credential_id())) {
       return true;
@@ -283,7 +284,8 @@ std::vector<sync_pb::WebauthnCredentialSpecifics>
 PasskeyTabHelper::GetFilteredPasskeys(
     const AssertionRequestParams& params) const {
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetPasskeysForRelyingPartyId(params.RpId());
+      passkey_model_->GetPasskeys(params.RpId(),
+                                  PasskeyModel::ShadowedCredentials::kExclude);
   if (passkeys.empty()) {
     return passkeys;
   }

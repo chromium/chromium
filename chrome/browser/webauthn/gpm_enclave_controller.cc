@@ -414,7 +414,8 @@ GPMEnclaveController::GPMEnclaveController(
   Profile* const profile = GetProfile();
   webauthn::PasskeyModel* passkey_model =
       PasskeyModelFactory::GetInstance()->GetForProfile(profile);
-  creds_ = passkey_model->GetPasskeysForRelyingPartyId(rp_id_);
+  creds_ = passkey_model->GetPasskeys(
+      rp_id_, webauthn::PasskeyModel::ShadowedCredentials::kExclude);
   if (base::FeatureList::IsEnabled(device::kWebAuthnSignalApiHidePasskeys)) {
     std::erase_if(creds_, [](const auto& cred) { return cred.hidden(); });
   }

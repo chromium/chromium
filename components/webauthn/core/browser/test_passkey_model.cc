@@ -130,15 +130,6 @@ TestPasskeyModel::GetPasskeyByUserId(const std::string& rp_id,
   return result.front();
 }
 
-std::vector<sync_pb::WebauthnCredentialSpecifics>
-TestPasskeyModel::GetPasskeysForRelyingPartyId(const std::string& rp_id) const {
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  std::ranges::copy_if(
-      credentials_, std::back_inserter(passkeys),
-      [&rp_id](const auto& passkey) { return passkey.rp_id() == rp_id; });
-  return passkey_model_utils::FilterShadowedCredentials(passkeys);
-}
-
 sync_pb::WebauthnCredentialSpecifics TestPasskeyModel::CreatePasskey(
     std::string_view rp_id,
     const UserEntity& user_entity,
