@@ -28,6 +28,10 @@ namespace display::win {
 
 namespace {
 
+// Default values used to construct internal::DisplayInfo.
+constexpr float kSdrWhiteLevel = 200.0;
+constexpr float kDisplayFrequency = 60.0;
+
 // Headless display device names are fakes that look similar to the real display
 // device names.
 constexpr WCHAR kHeadlessDisplayDeviceNamePrefix[] = LR"(\\.\HEADLESS_DISPLAY)";
@@ -51,6 +55,11 @@ int64_t GetHeadlessDisplayIdFromMonitorInfo(const MONITORINFOEX& monitor_info) {
 gfx::Vector2dF GetDisplayPhysicalPixelsPerInch(float device_scaling_factor) {
   const int dpi = GetDPIFromScalingFactor(device_scaling_factor);
   return gfx::Vector2dF(dpi, dpi);
+}
+
+DISPLAYCONFIG_VIDEO_OUTPUT_TECHNOLOGY GetOutputTechnology(bool is_internal) {
+  return is_internal ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
+                     : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER;
 }
 
 void SetHeadlessDisplayDeviceName(MONITORINFOEX& monitor_info,
@@ -282,6 +291,15 @@ void ScreenWinHeadless::OnColorProfilesChanged() {
   // headless mode.
 }
 
+void ScreenWinHeadless::SetRequestHDRStatusCallback(
+    RequestHDRStatusCallback request_hdr_status_callback) {
+  // Ignore all HDR Status requests in headless mode.
+}
+
+void ScreenWinHeadless::SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) {
+  // Ignore all DXGI info in headless mode.
+}
+
 gfx::NativeWindow ScreenWinHeadless::GetNativeWindowAtScreenPoint(
     const gfx::Point& point,
     const std::set<gfx::NativeWindow>& ignore) const {
@@ -373,15 +391,10 @@ int64_t ScreenWinHeadless::AddDisplay(const Display& display) {
 
   internal::DisplayInfo display_info(
       display_id, monitor_info, display.device_scale_factor(),
-      /*sdr_white_level=*/200.0,
-      /*rotation=*/display.rotation(),
-      /*display_frequency=*/60.0,
-      /*pixels_per_inch=*/
+      display.color_depth(), kSdrWhiteLevel, display.rotation(),
+      kDisplayFrequency,
       GetDisplayPhysicalPixelsPerInch(display.device_scale_factor()),
-      /*output_technology=*/display.IsInternal()
-          ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
-          : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-      display.label());
+      GetOutputTechnology(display.IsInternal()), display.label());
 
   // Get the existing display infos and append the new one.
   std::vector<internal::DisplayInfo> display_infos = GetExistingDisplayInfos();
@@ -445,16 +458,11 @@ ScreenWinHeadless::DisplayInfosFromScreenInfo(
     headless_monitor_info_.insert({display_id, monitor_info});
 
     internal::DisplayInfo display_info(
-        display_id, monitor_info, device_scale_factor,
-        /*sdr_white_level=*/200.0,
-        /*rotation=*/Display::DegreesToRotation(screen_info.rotation),
-        /*display_frequency=*/60.0,
-        /*pixels_per_inch=*/
+        display_id, monitor_info, device_scale_factor, screen_info.color_depth,
+        kSdrWhiteLevel, Display::DegreesToRotation(screen_info.rotation),
+        kDisplayFrequency,
         GetDisplayPhysicalPixelsPerInch(screen_info.device_pixel_ratio),
-        /*output_technology=*/screen_info.is_internal
-            ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
-            : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-        screen_info.label);
+        GetOutputTechnology(screen_info.is_internal), screen_info.label);
 
     display_infos.push_back(std::move(display_info));
 
@@ -478,15 +486,10 @@ std::vector<internal::DisplayInfo> ScreenWinHeadless::GetExistingDisplayInfos(
 
     internal::DisplayInfo display_info(
         display.id(), *monitor_info, display.device_scale_factor(),
-        /*sdr_white_level=*/200.0,
-        /*rotation=*/display.rotation(),
-        /*display_frequency=*/60.0,
-        /*pixels_per_inch=*/
+        display.color_depth(), kSdrWhiteLevel, display.rotation(),
+        kDisplayFrequency,
         GetDisplayPhysicalPixelsPerInch(display.device_scale_factor()),
-        /*output_technology=*/display.IsInternal()
-            ? DISPLAYCONFIG_OUTPUT_TECHNOLOGY_INTERNAL
-            : DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-        display.label());
+        GetOutputTechnology(display.IsInternal()), display.label());
 
     display_infos.push_back(std::move(display_info));
   }

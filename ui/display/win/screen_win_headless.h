@@ -101,6 +101,10 @@ class DISPLAY_EXPORT ScreenWinHeadless
   ScreenWinDisplay GetScreenWinDisplayForHMONITOR(
       HMONITOR monitor) const override;
 
+  void SetRequestHDRStatusCallback(
+      RequestHDRStatusCallback request_hdr_status_callback) override;
+  void SetDXGIInfo(gfx::mojom::DXGIInfoPtr dxgi_info) override;
+
   // ColorProfileReader::Client:
   void OnColorProfilesChanged() override;
 

@@ -16,6 +16,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/debug/alias.h"
 #include "base/feature_list.h"
@@ -303,6 +304,16 @@ Display CreateDisplayFromDisplayInfo(
     display.set_depth_per_component(Display::kHDR10BitsPerComponent);
   }
   display.SetColorSpaces(color_spaces);
+
+  // Override default color and per component depths set by the prior call to
+  // display.SetColorSpaces() with the settings specified in display info unless
+  // HDR support is enabled. In the latter case the depths are set to HDR
+  // specific defaults which we don't want to touch.
+  if (!color_spaces.SupportsHDR()) {
+    display.set_color_depth(display_info.color_depth());
+    display.set_depth_per_component(Display::kDefaultBitsPerComponent);
+  }
+
   return display;
 }
 
@@ -456,25 +467,31 @@ std::optional<gfx::Vector2dF> GetMonitorPixelsPerInch(HMONITOR monitor) {
   return std::nullopt;
 }
 
-BOOL CALLBACK EnumDisplayMonitorsCallback(HMONITOR monitor,
-                                          HDC hdc,
-                                          LPRECT rect,
-                                          LPARAM data) {
-  reinterpret_cast<std::vector<HMONITOR>*>(data)->push_back(monitor);
-  return TRUE;
-}
-
 std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
-  std::vector<HMONITOR> monitors;
-  EnumDisplayMonitors(nullptr, nullptr, EnumDisplayMonitorsCallback,
-                      reinterpret_cast<LPARAM>(&monitors));
+  struct DeviceCaps {
+    int color_depth;
+  };
+  base::flat_map<HMONITOR, DeviceCaps> monitors;
+
+  ::EnumDisplayMonitors(
+      ::GetDC(HWND_DESKTOP), /*lprcClip=*/nullptr,
+      [](HMONITOR hMonitor, HDC hdc, LPRECT lpRect, LPARAM lParam) -> BOOL {
+        auto* monitors =
+            reinterpret_cast<base::flat_map<HMONITOR, DeviceCaps>*>(lParam);
+        // The provided hdc is only valid in this context, we won't be able to
+        // query it outside, so grab all the device caps we need here.
+        int color_depth = ::GetDeviceCaps(hdc, BITSPIXEL);
+        monitors->insert({hMonitor, {.color_depth = color_depth}});
+        return TRUE;
+      },
+      reinterpret_cast<LPARAM>(&monitors));
 
   std::vector<internal::DisplayInfo> display_infos;
   display_infos.reserve(monitors.size());
 
   base::flat_set<int64_t> hashed_ids;
   base::flat_set<int64_t> hashed_keys;
-  for (HMONITOR monitor : monitors) {
+  for (const auto& [monitor, device_caps] : monitors) {
     const std::optional<MONITORINFOEX> monitor_info =
         GetMonitorInfoFromHMONITOR(monitor);
     if (!monitor_info) {
@@ -488,14 +505,18 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
         GetMonitorPixelsPerInch(monitor).value_or(
             GetDefaultMonitorPhysicalPixelsPerInch());
     const auto path_info = GetDisplayConfigPathInfo(monitor);
+    const int color_depth = device_caps.color_depth > 0
+                                ? device_caps.color_depth
+                                : Display::kDefaultBitsPerPixel;
     std::optional<HMONITOR> cached_hmonitor;
     if (features::IsScreenWinDisplayLookupByHMONITOREnabled()) {
       cached_hmonitor = monitor;
     }
     display_infos.emplace_back(
         std::move(cached_hmonitor), *monitor_info,
-        GetMonitorScaleFactor(monitor), GetSDRWhiteLevel(path_info),
-        display_settings.rotation, display_settings.frequency, pixels_per_inch,
+        GetMonitorScaleFactor(monitor), color_depth,
+        GetSDRWhiteLevel(path_info), display_settings.rotation,
+        display_settings.frequency, pixels_per_inch,
         GetOutputTechnology(path_info), GetFriendlyDeviceName(path_info));
 
     // Gauge ids derived from DISPLAY_DEVICE's DeviceID and DeviceKey.
@@ -612,9 +633,11 @@ ScreenWinDisplay CreateFallbackPrimaryScreenDisplay() {
                                   ? Display::GetForcedDeviceScaleFactor()
                                   : 1.0;
   internal::DisplayInfo display_info(
-      std::nullopt, monitor_info, device_scale_factor, 1.0f, Display::ROTATE_0,
-      60.0f, gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER,
-      std::string());
+      std::nullopt, monitor_info, device_scale_factor,
+      Display::kDefaultBitsPerPixel,
+      /*sdr_white_level=*/1.0f, Display::ROTATE_0,
+      /*display_frequency=*/60.0f, gfx::Vector2dF(),
+      DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
   ScreenWinDisplay screen_win_display(display_info);
   screen_win_display.modifiable_display().set_detected(false);
   return screen_win_display;

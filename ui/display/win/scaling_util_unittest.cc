@@ -26,8 +26,9 @@ internal::DisplayInfo CreateDisplayInfo(int x,
                                                  gfx::Rect(x, y, width, height),
                                                  kFakeDisplayName);
   return internal::DisplayInfo(
-      std::nullopt, monitor_info, scale_factor, 1.0f, Display::ROTATE_0, 60.0f,
-      gfx::Vector2dF(), DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
+      std::nullopt, monitor_info, scale_factor, Display::kDefaultBitsPerPixel,
+      1.0f, Display::ROTATE_0, 60.0f, gfx::Vector2dF(),
+      DISPLAYCONFIG_OUTPUT_TECHNOLOGY_OTHER, std::string());
 }
 
 ::testing::AssertionResult AssertOffsetsEqual(

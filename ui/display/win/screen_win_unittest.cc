@@ -185,8 +185,9 @@ class TestScreenWinManager final : public TestScreenWinInitializer {
       cached_hmonitor = monitor;
     }
     display_infos_.push_back(internal::DisplayInfo(
-        std::move(cached_hmonitor), monitor_info, device_scale_factor, 1.0f,
-        Display::ROTATE_0, 60.0f, gfx::Vector2dF(), tech, std::string()));
+        std::move(cached_hmonitor), monitor_info, device_scale_factor,
+        Display::kDefaultBitsPerPixel, 1.0f, Display::ROTATE_0, 60.0f,
+        gfx::Vector2dF(), tech, std::string()));
   }
 
   HWND CreateFakeHwnd(const gfx::Rect& bounds) override {

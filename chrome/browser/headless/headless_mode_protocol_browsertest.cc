@@ -340,13 +340,7 @@ HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsRotationAngle,
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsPixelRatio,
                             "shared/screen-details-pixel-ratio.js")
 
-// TODO(crbug.com/442920826): Re-enable this test
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ScreenDetailsColorDepth DISABLED_ScreenDetailsColorDepth
-#else
-#define MAYBE_ScreenDetailsColorDepth ScreenDetailsColorDepth
-#endif
-HEADLESS_MODE_PROTOCOL_TEST(MAYBE_ScreenDetailsColorDepth,
+HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsColorDepth,
                             "shared/screen-details-color-depth.js")
 
 HEADLESS_MODE_PROTOCOL_TEST(ScreenDetailsWorkArea,
