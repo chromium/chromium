@@ -34,20 +34,6 @@
 #define CMD_ARG(x) x
 #endif  // !BUILDFLAG(IS_WIN)
 
-namespace {
-
-// Helper to create a CommandLine object from a single argument, handling
-// platform differences for string types.
-static base::CommandLine MakeCommandLine(std::string_view argument) {
-#if BUILDFLAG(IS_WIN)
-  return base::CommandLine({L"", base::ASCIIToWide(argument)});
-#else
-  return base::CommandLine({"", std::string(argument)});
-#endif
-}
-
-}  // namespace
-
 TEST(StartupTabProviderTest, GetInitialPrefsTabsForState) {
   std::vector<GURL> input = {GURL(u"https://new_tab_page"),
                              GURL(u"https://www.google.com")};
@@ -351,6 +337,21 @@ TEST(StartupTabProviderTest, GetCommandLineTabs) {
   }
 }
 
+#if !BUILDFLAG(CHROME_FOR_TESTING)
+namespace {
+
+// Helper to create a CommandLine object from a single argument, handling
+// platform differences for string types.
+static base::CommandLine MakeCommandLine(std::string_view argument) {
+#if BUILDFLAG(IS_WIN)
+  return base::CommandLine({L"", base::ASCIIToWide(argument)});
+#else
+  return base::CommandLine({"", std::string(argument)});
+#endif
+}
+
+}  // namespace
+
 TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
   const std::string scheme_prefix =
       base::StrCat({shell_integration::GetDirectLaunchUrlScheme(), "://"});
@@ -488,6 +489,7 @@ TEST(StartupTabProviderTest, GetCommandLineTabsCustomScheme) {
               instance.HasCommandLineTabs(command_line, base::FilePath()));
   }
 }
+#endif  // BUILDFLAG(CHROME_FOR_TESTING)
 
 // This test fails on Windows. TODO(crbug.com/40265634): Investigate and
 // fix this test on Windows.
