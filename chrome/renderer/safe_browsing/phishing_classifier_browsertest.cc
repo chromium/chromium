@@ -176,7 +176,15 @@ class PhishingClassifierTest
                          flat::TfLiteModelMetadata_::CreateThresholdDirect(
                              builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
                          flat::TfLiteModelMetadata_::CreateThresholdDirect(
-                             builder, "953255ea26aa8578d06593ff33e99298", 2.0)};
+                             builder, "953255ea26aa8578d06593ff33e99298", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0),
+                         flat::TfLiteModelMetadata_::CreateThresholdDirect(
+                             builder, "c9a8640be09f97f170f1a2708058c48f", 2.0)};
     flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
         flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector,
                                               48, 48);

@@ -180,7 +180,7 @@ void PhishingClassifier::OnVisualTfLiteModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::vector<double> result) {
   Scorer* scorer = ScorerStorage::GetInstance()->GetScorer();
-  if (static_cast<int>(result.size()) > scorer->tflite_thresholds().size()) {
+  if (static_cast<int>(result.size()) != scorer->tflite_thresholds().size()) {
     // Model is misconfigured, so bail out.
     RunFailureCallback(Result::kInvalidScore);
     return;

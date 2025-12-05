@@ -497,45 +497,94 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
 
   // Case 1: ClientPhishingRequest's image embedding doesn't meet threshold.
   {
-    // Create a ClientPhishingRequest.
-    ClientPhishingRequest request;
-    request.set_url("http://example-phishing.com");
-    request.set_is_phishing(
-        false);  // Visual TFLite scores are below threshold.
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
 
     // Add an image_feature_embedding that will match.
-    auto* features = request.mutable_image_feature_embedding();
+    auto* features = request->mutable_image_feature_embedding();
     for (int i = 0; i < 64; ++i) {
       features->add_embedding_value(100);  // No match.
     }
 
     // Call the classification function.
-    csd_service->ClassifyPhishingThroughThresholds(&request);
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
 
-    EXPECT_FALSE(request.is_phishing());
-    ASSERT_FALSE(request.has_target_image_embedding_score());
+    EXPECT_FALSE(request->is_phishing());
+    ASSERT_FALSE(request->has_target_image_embedding_score());
   }
   // Case 2: Visual TFLite already flagged the page phishy.
   {
-    // Create a ClientPhishingRequest.
-    ClientPhishingRequest request;
-    request.set_url("http://example-phishing.com");
-    request.set_is_phishing(
-        true);  // Visual TFLite scores were above threshold.
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url, safe_browsing::mojom::ClientSideDetectionType::kTriggerModels,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
 
     // Add an image_feature_embedding that will match.
-    auto* features = request.mutable_image_feature_embedding();
+    auto* features = request->mutable_image_feature_embedding();
     for (int i = 0; i < 64; ++i) {
       features->add_embedding_value(i / 100.0);  // Perfect match.
     }
 
-    // Call the classification function.
-    csd_service->ClassifyPhishingThroughThresholds(&request);
+    // Preemptively set the phishing to true.
+    request->set_is_phishing(true);
 
-    EXPECT_TRUE(request.is_phishing());
+    // Call the classification function.
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
+
+    EXPECT_TRUE(request->is_phishing());
     ASSERT_FALSE(
-        request.has_target_image_embedding_score());  // Not set despite perfect
-                                                      // match.
+        request->has_target_image_embedding_score());  // Not set despite
+                                                       // perfect match.
   }
 #endif
 }
@@ -587,36 +636,65 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionServiceBrowserTest,
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  // Setup TargetEmbeddings.
-  float threshold = 0.95;
-  tflite::task::vision::FeatureVector target_fv;
-  for (int i = 0; i < 64; ++i) {
-    target_fv.add_value_float(0.1);
+  {
+    // First obtain the verdict through the phishing detector.
+    base::RunLoop run_loop;
+
+    mojo::AssociatedRemote<mojom::PhishingDetector> phishing_detector;
+    rfh->GetRemoteAssociatedInterfaces()->GetInterface(&phishing_detector);
+
+    mojom::PhishingDetectorResult result;
+    std::optional<mojo_base::ProtoWrapper> verdict;
+    phishing_detector->StartPhishingDetection(
+        url,
+        safe_browsing::mojom::ClientSideDetectionType::kImageEmbeddingMatch,
+        base::BindOnce(
+            [](base::RepeatingClosure quit_closure,
+               mojom::PhishingDetectorResult* out_result,
+               std::optional<mojo_base::ProtoWrapper>* out_verdict,
+               mojom::PhishingDetectorResult result,
+               std::optional<mojo_base::ProtoWrapper> verdict) {
+              *out_result = result;
+              *out_verdict = std::move(verdict);
+              quit_closure.Run();
+            },
+            run_loop.QuitClosure(), &result, &verdict));
+
+    run_loop.Run();
+
+    EXPECT_EQ(result, mojom::PhishingDetectorResult::SUCCESS);
+
+    ASSERT_TRUE(verdict.has_value());
+    auto request = verdict->As<ClientPhishingRequest>();
+
+    // Setup TargetEmbeddings.
+    float threshold = 0.95;
+    tflite::task::vision::FeatureVector target_fv;
+    for (int i = 0; i < 64; ++i) {
+      target_fv.add_value_float(0.1);
+    }
+    TargetEmbedding target(target_fv, threshold);
+    std::vector<TargetEmbedding> test_targets;
+    test_targets.push_back(std::move(target));
+    csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
+
+    // Add an image_feature_embedding that will match.
+    auto* features = request->mutable_image_feature_embedding();
+    for (int i = 0; i < 64; ++i) {
+      features->add_embedding_value(0.1);  // Perfect match.
+    }
+
+    // Call the classification function.
+    csd_service->ClassifyPhishingThroughThresholds(&request.value());
+
+    EXPECT_TRUE(request->is_phishing());
+    ASSERT_TRUE(request->has_target_image_embedding_score());
+    EXPECT_EQ(
+        request->target_image_embedding_score().id(),
+        "ac7d206f95fb23a5ad4d52d76c4acd22d16bdcdbb3a6decc66f8eaabc9b40534");
+    EXPECT_NEAR(request->target_image_embedding_score().score(), 1.0, 0.001);
   }
-  TargetEmbedding target(target_fv, threshold);
-  std::vector<TargetEmbedding> test_targets;
-  test_targets.push_back(std::move(target));
-  csd_service->SetTargetImageEmbeddingsForTesting(std::move(test_targets));
 
-  // Create a ClientPhishingRequest.
-  ClientPhishingRequest request;
-  request.set_url("http://example-phishing.com");
-  request.set_is_phishing(false);  // Visual TFLite scores are below threshold.
-
-  // Add an image_feature_embedding that will match.
-  auto* features = request.mutable_image_feature_embedding();
-  for (int i = 0; i < 64; ++i) {
-    features->add_embedding_value(0.1);  // Perfect match.
-  }
-
-  // Call the classification function.
-  csd_service->ClassifyPhishingThroughThresholds(&request);
-
-  EXPECT_TRUE(request.is_phishing());
-  ASSERT_TRUE(request.has_target_image_embedding_score());
-  EXPECT_EQ(request.target_image_embedding_score().id(),
-            "ac7d206f95fb23a5ad4d52d76c4acd22d16bdcdbb3a6decc66f8eaabc9b40534");
-  EXPECT_NEAR(request.target_image_embedding_score().score(), 1.0, 0.001);
 #endif
 }
 

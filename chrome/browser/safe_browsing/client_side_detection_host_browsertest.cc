@@ -126,7 +126,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
 
   // This is a fake CSD service which will have no thresholds due to no TfLite
   // models.
-  const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
+  const std::vector<TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds() override {
     return thresholds_;
   }
@@ -146,7 +146,7 @@ class FakeClientSideDetectionService : public ClientSideDetectionService {
   std::string access_token_;
   std::string client_side_model_;
   base::File visual_tflite_model_;
-  base::flat_map<std::string, TfLiteModelMetadata::Threshold> thresholds_;
+  std::vector<TfLiteModelMetadata::Threshold> thresholds_;
   base::RepeatingClosure request_callback_;
   base::WeakPtrFactory<ClientSideDetectionService> weak_factory_{this};
 };

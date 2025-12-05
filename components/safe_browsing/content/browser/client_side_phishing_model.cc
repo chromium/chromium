@@ -384,7 +384,7 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
               threshold.set_esb_threshold(flat_threshold->esb_threshold() > 0
                                               ? flat_threshold->esb_threshold()
                                               : flat_threshold->threshold());
-              thresholds_[flat_threshold->label()->str()] = threshold;
+              thresholds_.push_back(threshold);
             }
           }
         }
@@ -662,7 +662,7 @@ std::string ClientSidePhishingModel::GetHashFromEmbedding(
   return base::HexEncodeLower(raw_hash);
 }
 
-const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
+const std::vector<TfLiteModelMetadata::Threshold>&
 ClientSidePhishingModel::GetVisualTfLiteModelThresholds() const {
   return thresholds_;
 }

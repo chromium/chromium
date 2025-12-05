@@ -21,7 +21,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -173,7 +172,7 @@ class ClientSideDetectionService
   virtual bool IsModelMetadataImageEmbeddingVersionMatching();
 
   // Returns the visual TFLite model thresholds from the model class
-  virtual const base::flat_map<std::string, TfLiteModelMetadata::Threshold>&
+  virtual const std::vector<TfLiteModelMetadata::Threshold>&
   GetVisualTfLiteModelThresholds();
 
   // Compare the scores from classification to TFLite model thresholds
