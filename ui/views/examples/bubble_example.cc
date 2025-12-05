@@ -93,7 +93,7 @@ class ExampleBubble : public BubbleDialogDelegateView {
  protected:
   void Init() override {
     SetLayoutManager(std::make_unique<BoxLayout>(
-        BoxLayout::Orientation::kVertical, gfx::Insets(50)));
+        BoxLayout::Orientation::kVertical, gfx::Insets(30)));
     AddChildView(std::make_unique<Label>(GetArrowName(arrow())));
   }
 };
@@ -106,8 +106,11 @@ BubbleExample::BubbleExample() : ExampleBase("Bubble") {}
 BubbleExample::~BubbleExample() = default;
 
 void BubbleExample::CreateExampleView(View* container) {
-  container->SetLayoutManager(std::make_unique<BoxLayout>(
-      BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
+  auto* const box_layout =
+      container->SetLayoutManager(std::make_unique<BoxLayout>(
+          BoxLayout::Orientation::kHorizontal, gfx::Insets(), 10));
+  box_layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kCenter);
+  box_layout->set_main_axis_alignment(BoxLayout::MainAxisAlignment::kCenter);
 
   standard_shadow_ = container->AddChildView(std::make_unique<LabelButton>(
       base::BindRepeating(&BubbleExample::ShowBubble, base::Unretained(this),
