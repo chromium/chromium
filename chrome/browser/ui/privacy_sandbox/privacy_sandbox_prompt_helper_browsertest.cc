@@ -26,6 +26,7 @@
 #include "components/search_engines/search_engines_switches.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/sync/test/test_sync_service.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -588,6 +589,8 @@ class PrivacySandboxPromptHelperWithSearchEngineChoiceEnabledBrowserTest
     PrivacySandboxPromptHelperWithParamBrowserTest::SetUpCommandLine(
         command_line);
     command_line->AppendSwitchASCII(switches::kSearchEngineChoiceCountry, "BE");
+    command_line->AppendSwitchASCII(
+        variations::switches::kVariationsOverrideCountry, "BE");
     command_line->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
   }

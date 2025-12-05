@@ -361,6 +361,17 @@ bool RegionalCapabilitiesService::
     return true;
   }
 
+  if (const auto override = GetSearchEngineCountryOverride();
+      override.has_value() &&
+      (std::holds_alternative<SearchEngineCountryListOverride>(*override) ||
+       std::holds_alternative<RegionalProgramOverride>(*override))) {
+    // When overriding the list or the program directly, skip the region checks.
+    // This is a testing situation where we are manually overriding regional
+    // settings, the region checks are not relevant as the current country gets
+    // overridden too.
+    return true;
+  }
+
   if (!base::Contains(GetActiveProgramSettings().associated_countries,
                       client_->GetVariationsLatestCountryId())) {
     return false;
