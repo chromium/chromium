@@ -52,13 +52,10 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/modules/skcms/skcms.h"
+#include "ui/gfx/hdr_metadata.h"
 
 class SkColorSpace;
 class SkData;
-
-namespace gfx {
-struct HDRMetadata;
-}  // namespace gfx
 
 namespace blink {
 
@@ -331,9 +328,6 @@ class PLATFORM_EXPORT ImageDecoder {
   // kA16_unorm_SkColorType and kA16_float_SkColorType ImagePlanes.
   virtual uint8_t GetYUVBitDepth() const;
 
-  // Image decoders that support HDR metadata can override this.
-  virtual std::optional<gfx::HDRMetadata> GetHDRMetadata() const;
-
   // Image decoders that support C2PA manifest embedding can override this.
   virtual bool HasC2PAManifest() const;
 
@@ -413,6 +407,9 @@ class PLATFORM_EXPORT ImageDecoder {
   // color profile. This is independent of whether or not that profile's
   // transform has been baked into the pixel values.
   bool HasEmbeddedColorProfile() const { return embedded_color_profile_.get(); }
+
+  // Return the HDR metadata from the image and its color profile.
+  const gfx::HDRMetadata& GetHDRMetadata() const { return hdr_metadata_; }
 
   void SetEmbeddedColorProfile(std::unique_ptr<ColorProfile> profile);
 
@@ -562,6 +559,9 @@ class PLATFORM_EXPORT ImageDecoder {
   const cc::AuxImage aux_image_;
   ImageOrientationEnum orientation_ = ImageOrientationEnum::kDefault;
   gfx::Size density_corrected_size_;
+
+  // The HDR metadata that was read from the codec.
+  gfx::HDRMetadata hdr_metadata_;
 
   // The maximum amount of memory a decoded image should require. Ideally,
   // image decoders should downsample large images to fit under this limit

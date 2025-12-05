@@ -321,10 +321,6 @@ uint8_t CrabbyAVIFImageDecoder::GetYUVBitDepth() const {
   return bit_depth_;
 }
 
-std::optional<gfx::HDRMetadata> CrabbyAVIFImageDecoder::GetHDRMetadata() const {
-  return hdr_metadata_;
-}
-
 void CrabbyAVIFImageDecoder::DecodeToYUV() {
   DCHECK(image_planes_);
   DCHECK(CanDecodeToYUV());
@@ -866,9 +862,8 @@ bool CrabbyAVIFImageDecoder::UpdateDemuxer() {
   chroma_shift_y_ = format_info.chromaShiftY;
 
   if (container->clli.maxCLL || container->clli.maxPALL) {
-    hdr_metadata_ = gfx::HDRMetadata();
-    hdr_metadata_->cta_861_3 = gfx::HdrMetadataCta861_3(
-        container->clli.maxCLL, container->clli.maxPALL);
+    hdr_metadata_.cta_861_3 = gfx::HdrMetadataCta861_3(container->clli.maxCLL,
+                                                       container->clli.maxPALL);
   }
 
   // SetEmbeddedColorProfile() must be called before IsSizeAvailable() becomes

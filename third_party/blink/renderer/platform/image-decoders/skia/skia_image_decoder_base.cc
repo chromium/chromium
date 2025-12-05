@@ -102,7 +102,7 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
             SetEmbeddedColorProfile(std::make_unique<ColorProfile>(*profile));
           }
           if (codec_->getHdrMetadata() != skhdr::Metadata::MakeEmpty()) {
-            hdr_metadata_.emplace(codec_->getHdrMetadata());
+            hdr_metadata_ = gfx::HDRMetadata(codec_->getHdrMetadata());
           }
         }
         segment_stream_ = segment_stream_ptr;
@@ -122,10 +122,6 @@ void SkiaImageDecoderBase::OnSetData(scoped_refptr<SegmentReader> data) {
         return;
     }
   }
-}
-
-std::optional<gfx::HDRMetadata> SkiaImageDecoderBase::GetHDRMetadata() const {
-  return hdr_metadata_;
 }
 
 int SkiaImageDecoderBase::RepetitionCount() const {

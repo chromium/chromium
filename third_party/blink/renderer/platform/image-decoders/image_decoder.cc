@@ -525,10 +525,6 @@ uint8_t ImageDecoder::GetYUVBitDepth() const {
   return 8;
 }
 
-std::optional<gfx::HDRMetadata> ImageDecoder::GetHDRMetadata() const {
-  return std::nullopt;
-}
-
 bool ImageDecoder::HasC2PAManifest() const {
   return false;
 }
@@ -543,7 +539,7 @@ cc::ImageHeaderMetadata ImageDecoder::MakeMetadataForDecodeAcceleration()
   cc::ImageHeaderMetadata image_metadata{};
   image_metadata.image_type = FileExtensionToImageType(FilenameExtension());
   image_metadata.yuv_subsampling = GetYUVSubsampling();
-  image_metadata.hdr_metadata = GetHDRMetadata().value_or(gfx::HDRMetadata());
+  image_metadata.hdr_metadata = hdr_metadata_;
   image_metadata.image_size = size_;
   image_metadata.has_embedded_color_profile = HasEmbeddedColorProfile();
   return image_metadata;
