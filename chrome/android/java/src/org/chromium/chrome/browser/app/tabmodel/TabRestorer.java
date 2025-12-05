@@ -63,6 +63,13 @@ class TabRestorer {
     }
 
     interface TabRestorerDelegate {
+        /**
+         * Called when all the data is loaded.
+         *
+         * @param restoredTabCount The number of tabs that were restored.
+         */
+        void onDataLoaded(int restoredTabCount);
+
         /** Called when the tab restorer is cancelled. */
         void onCancelled();
 
@@ -114,10 +121,12 @@ class TabRestorer {
      */
     public void onDataLoaded(StorageLoadedData data) {
         mData = data;
+        int restoredTabCount = data.getLoadedTabStates().length;
 
         // Special case for when cancellation happened during loading. In this case we cancel as
         // soon as loading has finished.
         if (mState == State.CANCELLED) {
+            mDelegate.onDataLoaded(restoredTabCount);
             cancelInternal();
             return;
         }
@@ -125,12 +134,14 @@ class TabRestorer {
         // Start was already called before the load finished. Start immediately.
         if (mState == State.RESTORE_ONCE_LOADED) {
             mState = State.LOADED;
+            mDelegate.onDataLoaded(restoredTabCount);
             start(mRestoreActiveTabImmediately);
             return;
         }
 
         assert mState == State.EMPTY;
         mState = State.LOADED;
+        mDelegate.onDataLoaded(restoredTabCount);
     }
 
     /**
