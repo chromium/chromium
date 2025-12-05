@@ -398,14 +398,7 @@ CreateInputDataFromAnnotatedPageContent(
 
   if (_contextualSearchSession) {
     _contextualSearchSession->DeleteFile(item.serverToken);
-    if (base::FeatureList::IsEnabled(
-            omnibox::kComposeboxUsesChromeComposeClient) &&
-        _items.count <= 1) {
-      // Reload suggestions to reflect the updated context. This is done only
-      // when there is one or no attachment, as multi-attachment contextual
-      // suggestions are not currently supported.
-      [self.delegate reloadAutocompleteSuggestions];
-    }
+    [self reloadSuggestions];
   }
 
   if (base::FeatureList::IsEnabled(kComposeboxAutoattachTab) &&
@@ -447,7 +440,7 @@ CreateInputDataFromAnnotatedPageContent(
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   if (base::FeatureList::IsEnabled(
           omnibox::kComposeboxUsesChromeComposeClient)) {
-    [self.delegate reloadAutocompleteSuggestions];
+    [self reloadSuggestions];
   }
 
   [self.consumer setAIModeEnabled:mode == ComposeboxMode::kAIM];
@@ -801,10 +794,7 @@ CreateInputDataFromAnnotatedPageContent(
       [self removeItem:item];
       break;
     case contextual_search::FileUploadStatus::kProcessingSuggestSignalsReady:
-      // Avoid reloading when suggest inputs are invalid (e.g. empty).
-      if (AreLensSuggestInputsReady([self suggestInputs])) {
-        [self.delegate reloadAutocompleteSuggestions];
-      }
+      [self reloadSuggestions];
       break;
     case contextual_search::FileUploadStatus::kNotUploaded:
     case contextual_search::FileUploadStatus::kProcessing:
@@ -824,6 +814,25 @@ CreateInputDataFromAnnotatedPageContent(
 }
 
 #pragma mark - Private
+
+// Reloads the displayed suggestions based on the attachments/modeHolder.
+- (void)reloadSuggestions {
+  BOOL shouldRestartAutocomplete = (_items.count == 0);
+
+  if (_items.count == 1) {
+    shouldRestartAutocomplete = YES;
+    if (_items[0].type ==
+        ComposeboxInputItemType::kComposeboxInputItemTypeImage) {
+      shouldRestartAutocomplete =
+          IsComposeboxFetchContextualSuggestionsForImageEnabled();
+    }
+  } else if (_items.count > 1) {
+    shouldRestartAutocomplete =
+        IsComposeboxFetchContextualSuggestionsForMultiAttachmentsEnabled();
+  }
+  [self.delegate
+      reloadAutocompleteSuggestionsRestarting:shouldRestartAutocomplete];
+}
 
 // Cleans attachments when switching to image generation mode.
 // This method ensures that only one image attachment is kept, and all other

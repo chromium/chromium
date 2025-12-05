@@ -414,8 +414,8 @@ const CGFloat kSnackbarBottomMargin = 10;
 
 #pragma mark - ComposeboxInputPlateMediatorDelegate
 
-- (void)reloadAutocompleteSuggestions {
-  [_omniboxCoordinator clearSuggestionsAndRestartAutocomplete];
+- (void)reloadAutocompleteSuggestionsRestarting:(BOOL)restart {
+  [_omniboxCoordinator clearSuggestionsWithRestartAutocomplete:restart];
 }
 
 - (void)showAttachmentLimitError {

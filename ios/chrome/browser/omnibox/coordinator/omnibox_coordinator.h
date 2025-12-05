@@ -94,8 +94,9 @@ class OmniboxClient;
 /// Returns the toolbar omnibox consumer.
 - (id<ToolbarOmniboxConsumer>)toolbarOmniboxConsumer;
 
-// Clears the omnibox suggestions and restarts autocomplete.
-- (void)clearSuggestionsAndRestartAutocomplete;
+// Clears the omnibox suggestions and optionally restarts autocomplete.
+- (void)clearSuggestionsWithRestartAutocomplete:(BOOL)restartAutocomplete;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_OMNIBOX_COORDINATOR_OMNIBOX_COORDINATOR_H_
