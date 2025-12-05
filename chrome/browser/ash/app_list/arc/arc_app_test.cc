@@ -31,7 +31,11 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_util.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom-shared.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -123,10 +127,26 @@ void ArcAppTest::PreProfileSetUp() {
   // ProfileManager, and use ScopedAccountIdAnnotator.
   ash::ProfileHelper::SetProfileToUserForTestingEnabled(true);
 
+  if (!ash::InstallAttributes::IsInitialized()) {
+    install_attributes_ = std::make_unique<ash::ScopedStubInstallAttributes>(
+        ash::StubInstallAttributes::CreateConsumerOwned());
+  }
+
+  // ScopedTestingCrosSettings may be initialized from other testing utility,
+  // such as ExtensionServiceTestBase
+  if (!ash::CrosSettings::IsInitialized()) {
+    cros_settings_ = std::make_unique<ash::ScopedTestingCrosSettings>();
+  }
+
   // ChromeMainDelegate::PostEarlyInitialization:
   if (!ash::ConciergeClient::Get()) {
     concierge_client_initialized_ = true;
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+  }
+
+  if (!ash::DlcserviceClient::Get()) {
+    dlcservice_client_initialized_ = true;
+    ash::DlcserviceClient::InitializeFake();
   }
 
   // ChromeBrowserMainPartsAsh::PreCreateMainMessageLoop:
@@ -144,9 +164,13 @@ void ArcAppTest::PreProfileSetUp() {
   arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
   // ConciergeClient must outlive ArcSessionManager.
   CHECK(ash::ConciergeClient::Get());
-  arc_session_manager_ =
-      arc::CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-          base::BindRepeating(arc::FakeArcSession::Create)));
+
+  arc_dlc_installer_ =
+      std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
+  arc_session_manager_ = arc::CreateTestArcSessionManager(
+      std::make_unique<arc::ArcSessionRunner>(
+          base::BindRepeating(arc::FakeArcSession::Create)),
+      arc_dlc_installer_.get());
   DCHECK(arc::ArcSessionManager::Get());
   arc::ArcSessionManager::SetUiEnabledForTesting(false);
 
@@ -413,6 +437,9 @@ void ArcAppTest::PreProfileTearDown() {
 
   apps::ArcAppsFactory::GetInstance()->ShutDownForTesting(profile_);
 
+  arc_session_manager_.reset();
+  arc_dlc_installer_.reset();
+
   if (initialize_real_intent_helper_bridge_) {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());
@@ -455,6 +482,11 @@ void ArcAppTest::PostProfileTearDown() {
     user_manager_.Reset();
   }
 
+  if (dlcservice_client_initialized_) {
+    ash::DlcserviceClient::Shutdown();
+    dlcservice_client_initialized_ = false;
+  }
+
   // ConciergeClient may be initialized from other testing utility, such as
   // ash::AshTestHelper::SetUp(), so Shutdown() only when it is initialized in
   // ArcAppTest::SetUp().
@@ -466,6 +498,9 @@ void ArcAppTest::PostProfileTearDown() {
   // TODO(crbug.com/455728516): Fix tests that create TestingProfile without
   // ProfileManager, and use ScopedAccountIdAnnotator.
   ash::ProfileHelper::SetProfileToUserForTestingEnabled(false);
+
+  cros_settings_.reset();
+  install_attributes_.reset();
 }
 
 void ArcAppTest::StopArcInstance() {

@@ -148,7 +148,8 @@ ArcSessionRunner* g_arc_session_runner_for_testing = nullptr;
 std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
     ArcBridgeService* arc_bridge_service,
     version_info::Channel channel,
-    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager) {
+    ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager,
+    ArcDlcInstaller* arc_dlc_installer) {
   auto delegate = std::make_unique<AdbSideloadingAvailabilityDelegateImpl>();
   std::unique_ptr<ArcSessionRunner> runner(
       std::exchange(g_arc_session_runner_for_testing, nullptr));
@@ -157,8 +158,8 @@ std::unique_ptr<ArcSessionManager> CreateArcSessionManager(
         base::BindRepeating(ArcSession::Create, arc_bridge_service, channel,
                             scheduler_configuration_manager, delegate.get()));
   }
-  return std::make_unique<ArcSessionManager>(std::move(runner),
-                                             std::move(delegate));
+  return std::make_unique<ArcSessionManager>(
+      std::move(runner), std::move(delegate), arc_dlc_installer);
 }
 
 #if !BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
@@ -180,13 +181,14 @@ void CheckArcvmDlcImageStatus() {
 ArcServiceLauncher::ArcServiceLauncher(
     ash::SchedulerConfigurationManagerBase* scheduler_configuration_manager)
     : arc_service_manager_(std::make_unique<ArcServiceManager>()),
+      scheduler_configuration_manager_(scheduler_configuration_manager),
+      arc_dlc_installer_(
+          std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get())),
       arc_session_manager_(
           CreateArcSessionManager(arc_service_manager_->arc_bridge_service(),
                                   ash::GetChannel(),
-                                  scheduler_configuration_manager)),
-      scheduler_configuration_manager_(scheduler_configuration_manager),
-      arc_dlc_installer_(std::make_unique<ArcDlcInstaller>(
-          ash::CrosSettings::Get())) {
+                                  scheduler_configuration_manager,
+                                  arc_dlc_installer_.get())) {
   DCHECK(g_arc_service_launcher == nullptr);
   g_arc_service_launcher = this;
 
@@ -437,7 +439,6 @@ void ArcServiceLauncher::Shutdown() {
   web_apk_manager_.reset();
   arc_net_url_opener_.reset();
   arc_icon_cache_delegate_provider_.reset();
-  arc_dlc_installer_.reset();
 }
 
 void ArcServiceLauncher::ResetForTesting() {
@@ -446,17 +447,15 @@ void ArcServiceLauncher::ResetForTesting() {
   Shutdown();
   arc_session_manager_.reset();
 
+  arc_dlc_installer_ =
+      std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+
   // No recreation of arc_service_manager. Pointers to its ArcBridgeService
   // may be referred from existing KeyedService, so destoying it would cause
   // unexpected behavior, specifically on test teardown.
   arc_session_manager_ = CreateArcSessionManager(
       arc_service_manager_->arc_bridge_service(), ash::GetChannel(),
-      scheduler_configuration_manager_);
-
-  // Recreate arc_dlc_installer_ after shutdown because browser_test will run
-  // ResetForTesting and then do the OnPrimaryUserProfilePrepared.
-  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>(
-      ash::CrosSettings::Get());
+      scheduler_configuration_manager_, arc_dlc_installer_.get());
 }
 
 #if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)

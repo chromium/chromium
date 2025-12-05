@@ -29,6 +29,14 @@ namespace arc {
 // installation, and facilitates enabling ARC on devices.
 class ArcDlcInstaller {
  public:
+  // Represents the installation state of the ARCVM DLC.
+  enum class DlcState {
+    kNotRequired,
+    kInstalled,
+    kNotInstalled,
+    kError,
+  };
+
   explicit ArcDlcInstaller(ash::CrosSettings* cros_settings);
 
   ArcDlcInstaller(const ArcDlcInstaller&) = delete;
@@ -43,6 +51,9 @@ class ArcDlcInstaller {
   // Determines if the DLC installation is necessary based on
   // board, management, and feature flag conditions.
   bool IsDlcRequired();
+
+  // Checks the current state of the ARCVM DLC.
+  void CheckInstallationState(base::OnceCallback<void(DlcState)> callback);
 
  private:
   // Callback invoked after ARC DLC preparation is complete.

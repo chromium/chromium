@@ -15,12 +15,16 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/crosh.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -82,6 +86,7 @@ class ArcCroshServiceProviderTest : public testing::Test {
   void SetUp() override {
     ash::UpstartClient::InitializeFake();
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
 
     base::CommandLine* command_line =
         scoped_command_line.GetProcessCommandLine();
@@ -90,13 +95,17 @@ class ArcCroshServiceProviderTest : public testing::Test {
 
     service_provider_ = std::make_unique<ArcCroshServiceProvider>();
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    cros_settings_test_helper_ =
+        std::make_unique<ash::ScopedCrosSettingsTestHelper>();
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
-
+    arc_dlc_installer_ =
+        std::make_unique<arc::ArcDlcInstaller>(ash::CrosSettings::Get());
     // Make the session manager skip creating UI.
     arc::ArcSessionManager::SetUiEnabledForTesting(/*enabled=*/false);
     arc_session_manager_ = arc::CreateTestArcSessionManager(
         std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     // Log in as a primary profile to enable ARCVM.
     profile_manager_ = std::make_unique<TestingProfileManager>(
@@ -155,8 +164,11 @@ class ArcCroshServiceProviderTest : public testing::Test {
     profile_manager_->DeleteTestingProfile(kPrimaryUserProfileName);
     profile_manager_->DeleteTestingProfile(kSecondaryUserProfileName);
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
+    cros_settings_test_helper_.reset();
     service_provider_.reset();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
     ash::UpstartClient::Shutdown();
   }
@@ -199,6 +211,8 @@ class ArcCroshServiceProviderTest : public testing::Test {
   std::unique_ptr<ArcCroshServiceProvider> service_provider_;
   MockArcShellExecutionInstance mock_arc_shell_execution_instance_;
   std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<arc::ArcDlcInstaller> arc_dlc_installer_;
+  std::unique_ptr<ash::ScopedCrosSettingsTestHelper> cros_settings_test_helper_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

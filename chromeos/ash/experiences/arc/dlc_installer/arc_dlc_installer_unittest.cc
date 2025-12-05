@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
@@ -66,6 +67,15 @@ class ArcDlcInstallerTest : public testing::Test {
                         base::Value(enabled));
   }
 
+  // Sets up the conditions for IsDlcRequired() to return true.
+  void SetUpDlcRequired() {
+    test_install_attributes_.Get()->SetCloudManaged("example.com",
+                                                    "fake-device-id");
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        ash::switches::kEnableArcVmDlc);
+    SetFlexArcPreloadEnabled(true);
+  }
+
   void PrepareArcAndWait(bool expected_result) {
     base::RunLoop run_loop;
     arc_dlc_installer_->PrepareArc(base::BindOnce(
@@ -74,6 +84,19 @@ class ArcDlcInstallerTest : public testing::Test {
           loop->Quit();
         },
         base::Unretained(&run_loop), expected_result));
+    run_loop.Run();
+  }
+
+  // Helper to run CheckInstallationState and wait for its callback.
+  void CheckInstallationStateAndWait(ArcDlcInstaller::DlcState expected_state) {
+    base::RunLoop run_loop;
+    arc_dlc_installer_->CheckInstallationState(base::BindOnce(
+        [](base::RunLoop* loop, ArcDlcInstaller::DlcState expected,
+           ArcDlcInstaller::DlcState actual_state) {
+          EXPECT_EQ(expected, actual_state);
+          loop->Quit();
+        },
+        base::Unretained(&run_loop), expected_state));
     run_loop.Run();
   }
 
@@ -224,6 +247,53 @@ TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
   VerifyNotifications(
       {arc_dlc_install_notification_manager::kArcVmPreloadSucceededId,
        arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
+}
+
+TEST_F(ArcDlcInstallerTest, CheckInstallationState_DlcNotRequired) {
+  // By default, IsDlcRequired() is false.
+  CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kNotRequired);
+}
+
+TEST_F(ArcDlcInstallerTest, CheckInstallationState_DlcServiceUnavailable) {
+  SetUpDlcRequired();
+  fake_dlcservice_client()->set_service_availability(false);
+
+  CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kError);
+}
+
+TEST_F(ArcDlcInstallerTest, CheckInstallationState_GetDlcStateError) {
+  SetUpDlcRequired();
+  fake_dlcservice_client()->set_service_availability(true);
+  fake_dlcservice_client()->set_get_dlc_state_error("android-vm-dlc",
+                                                    dlcservice::kErrorInternal);
+
+  CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kError);
+}
+
+TEST_F(ArcDlcInstallerTest, CheckInstallationState_Installed) {
+  SetUpDlcRequired();
+  fake_dlcservice_client()->set_service_availability(true);
+  fake_dlcservice_client()->set_get_dlc_state_error("android-vm-dlc",
+                                                    dlcservice::kErrorNone);
+
+  dlcservice::DlcState dlc_state;
+  dlc_state.set_state(dlcservice::DlcState::INSTALLED);
+  fake_dlcservice_client()->set_dlc_state("android-vm-dlc", dlc_state);
+
+  CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kInstalled);
+}
+
+TEST_F(ArcDlcInstallerTest, CheckInstallationState_NotInstalled) {
+  SetUpDlcRequired();
+  fake_dlcservice_client()->set_service_availability(true);
+  fake_dlcservice_client()->set_get_dlc_state_error("android-vm-dlc",
+                                                    dlcservice::kErrorNone);
+
+  dlcservice::DlcState dlc_state;
+  dlc_state.set_state(dlcservice::DlcState::NOT_INSTALLED);
+  fake_dlcservice_client()->set_dlc_state("android-vm-dlc", dlc_state);
+
+  CheckInstallationStateAndWait(ArcDlcInstaller::DlcState::kNotInstalled);
 }
 
 }  // namespace arc

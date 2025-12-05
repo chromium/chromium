@@ -73,6 +73,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -264,6 +265,7 @@ class FetchManifestAndInstallCommandTest
   base::HistogramTester histogram_tester_;
 
 #if BUILDFLAG(IS_CHROMEOS)
+  ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
   ArcAppTest arc_app_test_;
   std::unique_ptr<arc::FakeIntentHelperHost> fake_intent_helper_host_;
   std::unique_ptr<arc::FakeIntentHelperInstance> fake_intent_helper_instance_;

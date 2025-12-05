@@ -16,6 +16,9 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/policy.mojom.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
@@ -95,27 +98,25 @@ class ArcCertInstallerTest : public testing::Test {
  public:
   ArcCertInstallerTest()
       : arc_service_manager_(std::make_unique<arc::ArcServiceManager>()),
-        profile_(std::make_unique<TestingProfile>()) {
+        profile_(std::make_unique<TestingProfile>()) {}
+
+  ArcCertInstallerTest(const ArcCertInstallerTest&) = delete;
+  ArcCertInstallerTest& operator=(const ArcCertInstallerTest&) = delete;
+
+  void SetUp() override {
     ash::ConciergeClient::InitializeFake(nullptr);
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<arc::ArcSessionRunner>(
-            base::BindRepeating(arc::FakeArcSession::Create)));
+    ash::DlcserviceClient::InitializeFake();
+    arc_dlc_installer_ =
+        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<arc::ArcSessionRunner>(
+            base::BindRepeating(arc::FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     arc_policy_bridge_ =
         arc::ArcPolicyBridge::GetForBrowserContextForTesting(profile_.get());
     policy_instance_ = std::make_unique<arc::MockPolicyInstance>();
     arc_service_manager_->arc_bridge_service()->policy()->SetInstance(
         policy_instance_.get());
-  }
-
-  ArcCertInstallerTest(const ArcCertInstallerTest&) = delete;
-  ArcCertInstallerTest& operator=(const ArcCertInstallerTest&) = delete;
-
-  ~ArcCertInstallerTest() override {
-    arc_service_manager_->arc_bridge_service()->policy()->CloseInstance(
-        policy_instance_.get());
-  }
-
-  void SetUp() override {
     auto mock_queue = std::make_unique<policy::RemoteCommandsQueue>();
     queue_ = mock_queue.get();
     installer_ =
@@ -125,8 +126,14 @@ class ArcCertInstallerTest : public testing::Test {
 
   void TearDown() override {
     queue_->RemoveObserver(&observer_);
+    arc_service_manager_->arc_bridge_service()->policy()->CloseInstance(
+        policy_instance_.get());
     installer_.reset();
     queue_ = nullptr;
+    arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
+    ash::DlcserviceClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
   void ExpectArcCommandForName(const std::string& name,
@@ -152,6 +159,7 @@ class ArcCertInstallerTest : public testing::Test {
   // (because BrowserContextKeyedServices are destroyed together with Profile,
   // and ArcPolicyBridge is such a service).
   const std::unique_ptr<arc::ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
   const std::unique_ptr<TestingProfile> profile_;
   raw_ptr<arc::ArcPolicyBridge> arc_policy_bridge_;

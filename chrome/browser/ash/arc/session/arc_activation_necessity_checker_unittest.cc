@@ -24,10 +24,12 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_features.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/mojom/app.mojom.h"
 #include "chromeos/ash/experiences/arc/session/adb_sideloading_availability_delegate.h"
 #include "chromeos/ash/experiences/arc/session/arc_bridge_service.h"
@@ -87,11 +89,15 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
         ash::switches::kEnableArcVm);
 
     ash::ConciergeClient::InitializeFake();
+    ash::DlcserviceClient::InitializeFake();
 
     arc_service_manager_ = std::make_unique<ArcServiceManager>();
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ =
+        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
@@ -135,11 +141,11 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
     checker_.reset();
     app_instance_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     arc_service_manager_.reset();
-
     profile_ = nullptr;
     testing_profile_manager_.DeleteAllTestingProfiles();
-
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
@@ -153,6 +159,7 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
   session_manager::SessionManager session_manager_{
       std::make_unique<session_manager::FakeSessionManagerDelegate>()};
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   user_manager::ScopedUserManager user_manager_;
 

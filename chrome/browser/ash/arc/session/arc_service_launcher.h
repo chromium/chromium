@@ -121,6 +121,10 @@ class ArcServiceLauncher {
   void OnDlcImageBindMountArcPath(bool result);
 
   std::unique_ptr<ArcServiceManager> arc_service_manager_;
+  // |scheduler_configuration_manager_| outlives |this|.
+  const raw_ptr<ash::SchedulerConfigurationManagerBase>
+      scheduler_configuration_manager_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler>
       arc_play_store_enabled_preference_handler_;
@@ -130,12 +134,6 @@ class ArcServiceLauncher {
   std::unique_ptr<BrowserUrlOpener> arc_net_url_opener_;
   std::unique_ptr<ArcVmDataMigrationNotifier> arc_vm_data_migration_notifier_;
   std::unique_ptr<ArcLockedFullscreenManager> arc_locked_fullscreen_manager_;
-
-  // |scheduler_configuration_manager_| outlives |this|.
-  const raw_ptr<ash::SchedulerConfigurationManagerBase>
-      scheduler_configuration_manager_;
-
-  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 
   std::unique_ptr<apps::WebApkManager> web_apk_manager_;
 

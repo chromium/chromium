@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -25,6 +26,34 @@ namespace {
 constexpr const char kArcvmDlcId[] = "android-vm-dlc";
 constexpr const char kArcvmBindMountDlcPath[] =
     "arcvm_2dbind_2dmount_2ddlc_2dpath";
+
+void OnGetDlcState(base::OnceCallback<void(ArcDlcInstaller::DlcState)> callback,
+                   std::string_view err,
+                   const dlcservice::DlcState& dlc_state) {
+  if (err != dlcservice::kErrorNone) {
+    LOG(ERROR) << "GetDlcState failed for " << kArcvmDlcId << ": " << err;
+    std::move(callback).Run(ArcDlcInstaller::DlcState::kError);
+    return;
+  }
+
+  if (dlc_state.state() == dlcservice::DlcState::INSTALLED) {
+    std::move(callback).Run(ArcDlcInstaller::DlcState::kInstalled);
+  } else {
+    std::move(callback).Run(ArcDlcInstaller::DlcState::kNotInstalled);
+  }
+}
+
+void OnDlcServiceAvailableForStateCheck(
+    base::OnceCallback<void(ArcDlcInstaller::DlcState)> callback,
+    bool available) {
+  if (!available) {
+    LOG(ERROR) << "dlcservice not available.";
+    std::move(callback).Run(ArcDlcInstaller::DlcState::kError);
+    return;
+  }
+  ash::DlcserviceClient::Get()->GetDlcState(
+      kArcvmDlcId, base::BindOnce(&OnGetDlcState, std::move(callback)));
+}
 
 }  // namespace
 
@@ -51,6 +80,17 @@ void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
   prepare_arc_callback_ = std::move(callback);
   ash::DlcserviceClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
       &ArcDlcInstaller::OnDlcServiceAvailable, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcDlcInstaller::CheckInstallationState(
+    base::OnceCallback<void(DlcState)> callback) {
+  if (!IsDlcRequired()) {
+    std::move(callback).Run(DlcState::kNotRequired);
+    return;
+  }
+
+  ash::DlcserviceClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&OnDlcServiceAvailableForStateCheck, std::move(callback)));
 }
 
 void ArcDlcInstaller::OnDlcServiceAvailable(bool service_available) {

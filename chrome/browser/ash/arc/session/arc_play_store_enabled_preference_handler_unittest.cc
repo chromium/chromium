@@ -26,9 +26,12 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
+#include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/dbus/upstart/upstart_client.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/experiences/arc/arc_prefs.h"
+#include "chromeos/ash/experiences/arc/dlc_installer/arc_dlc_installer.h"
 #include "chromeos/ash/experiences/arc/session/arc_session_runner.h"
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
@@ -73,6 +76,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
+    ash::DlcserviceClient::InitializeFake();
     ash::SessionManagerClient::InitializeFakeInMemory();
     ash::UpstartClient::InitializeFake();
 
@@ -102,9 +106,12 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
     user_manager_->OnUserProfileCreated(kTestAccountId, profile_->GetPrefs());
 
-    arc_session_manager_ =
-        CreateTestArcSessionManager(std::make_unique<ArcSessionRunner>(
-            base::BindRepeating(FakeArcSession::Create)));
+    arc_dlc_installer_ =
+        std::make_unique<ArcDlcInstaller>(ash::CrosSettings::Get());
+    arc_session_manager_ = CreateTestArcSessionManager(
+        std::make_unique<ArcSessionRunner>(
+            base::BindRepeating(FakeArcSession::Create)),
+        arc_dlc_installer_.get());
     preference_handler_ =
         std::make_unique<ArcPlayStoreEnabledPreferenceHandler>(
             profile_.get(), arc_session_manager_.get());
@@ -118,6 +125,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
   void TearDown() override {
     preference_handler_.reset();
     arc_session_manager_.reset();
+    arc_dlc_installer_.reset();
     identity_test_env_profile_adaptor_.reset();
 
     user_manager_->OnUserProfileWillBeDestroyed(kTestAccountId);
@@ -125,6 +133,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
     testing_profile_manager_.DeleteAllTestingProfiles();
     ash::UpstartClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
+    ash::DlcserviceClient::Shutdown();
     ash::ConciergeClient::Shutdown();
   }
 
@@ -169,6 +178,7 @@ class ArcPlayStoreEnabledPreferenceHandlerTest : public testing::Test {
 
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;
+  std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
   std::unique_ptr<ArcSessionManager> arc_session_manager_;
   std::unique_ptr<ash::FakeLoginDisplayHost> fake_login_display_host_;
   std::unique_ptr<ArcPlayStoreEnabledPreferenceHandler> preference_handler_;
