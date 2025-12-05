@@ -17,7 +17,6 @@
 TabDragData::TabDragData(TabDragContext* source_context, TabSlotView* view)
     : source_model_index(source_context->GetIndexOf(view)),
       view_type(view->GetTabSlotViewType()) {
-  source_model_index = source_context->GetIndexOf(view);
   if (source_model_index.has_value()) {
     contents = source_context->GetTabStripModel()->GetWebContentsAt(
         source_model_index.value());
