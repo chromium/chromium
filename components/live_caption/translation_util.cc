@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "components/live_caption/translation_util.h"
 
+#include <utility>
+
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -49,16 +51,16 @@ std::vector<std::string> SplitSentences(const std::string& text,
   return sentences;
 }
 
-bool ContainsTrailingSpace(const std::string& str) {
+bool ContainsTrailingSpace(std::string_view str) {
   return !str.empty() && base::IsAsciiWhitespace(str.back());
 }
 
-std::string RemoveTrailingSpace(const std::string& str) {
+std::string RemoveTrailingSpace(std::string_view str) {
   if (ContainsTrailingSpace(str)) {
-    return str.substr(0, str.length() - 1);
+    return std::string(str.substr(0, str.length() - 1));
   }
 
-  return str;
+  return std::string(str);
 }
 
 std::string RemovePunctuationToLower(std::string str) {
@@ -67,11 +69,11 @@ std::string RemovePunctuationToLower(std::string str) {
   return base::ToLowerASCII(str);
 }
 
-std::string GetTranslationCacheKey(const std::string& source_language,
-                                   const std::string& target_language,
-                                   const std::string& transcription) {
+std::string GetTranslationCacheKey(std::string_view source_language,
+                                   std::string_view target_language,
+                                   std::string_view transcription) {
   return base::StrCat({source_language, target_language, "|",
-                       RemovePunctuationToLower(transcription)});
+                       RemovePunctuationToLower(std::string(transcription))});
 }
 
 bool IsIdeographicLocale(const std::string& locale) {
@@ -104,20 +106,21 @@ TranslationCache::FindCachedTranslationOrRemaining(
   std::string cached_translation;
   std::string string_to_translate;
   bool cached_translation_found = true;
-  for (const std::string& sentence : sentences) {
+  for (std::string_view sentence : sentences) {
     if (cached_translation_found) {
-      std::string trailing_space =
-          ContainsTrailingSpace(sentence)
-              ? sentence.substr(sentence.length() - 1, sentence.length())
-              : std::string();
+      std::string_view trailing_space;
+      if (ContainsTrailingSpace(sentence)) {
+        trailing_space =
+            sentence.substr(sentence.length() - 1, sentence.length());
+      }
       auto translation_cache_key = GetTranslationCacheKey(
           source_language, target_language,
           trailing_space.empty() ? sentence : RemoveTrailingSpace(sentence));
-      auto iter = translation_cache_.find(translation_cache_key);
-      if (iter != translation_cache_.end()) {
+      if (auto iter = translation_cache_.find(translation_cache_key);
+          iter != translation_cache_.end()) {
         cached_translation += iter->second;
         if (!trailing_space.empty()) {
-          cached_translation += trailing_space;
+          base::StrAppend(&cached_translation, {trailing_space});
         }
 
         continue;
@@ -128,9 +131,9 @@ TranslationCache::FindCachedTranslationOrRemaining(
     string_to_translate = base::StrCat({string_to_translate, sentence});
   }
   if (cached_translation_found) {
-    return std::make_pair("", cached_translation);
+    return {"", std::move(cached_translation)};
   } else {
-    return std::make_pair(string_to_translate, cached_translation);
+    return {std::move(string_to_translate), std::move(cached_translation)};
   }
 }
 
@@ -148,7 +151,8 @@ void TranslationCache::InsertIntoCache(
       // Sentences are always cached without the trailing space.
       std::string sentence = RemoveTrailingSpace(original_sentences[i]);
       translation_cache_.insert(
-          {GetTranslationCacheKey(source_language, target_language, sentence),
+          {GetTranslationCacheKey(source_language, target_language,
+                                  std::move(sentence)),
            RemoveTrailingSpace(translated_sentences[i])});
     }
   }

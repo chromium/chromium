@@ -21,14 +21,14 @@ using TranslateEventCallback = base::OnceCallback<void(const TranslateEvent&)>;
 // sentence.
 std::vector<std::string> SplitSentences(const std::string& text,
                                         const std::string& locale);
-bool ContainsTrailingSpace(const std::string& str);
+bool ContainsTrailingSpace(std::string_view str);
 
-std::string RemoveTrailingSpace(const std::string& str);
+std::string RemoveTrailingSpace(std::string_view str);
 
 std::string RemovePunctuationToLower(std::string str);
-std::string GetTranslationCacheKey(const std::string& source_language,
-                                   const std::string& target_language,
-                                   const std::string& transcription);
+std::string GetTranslationCacheKey(std::string_view source_language,
+                                   std::string_view target_language,
+                                   std::string_view transcription);
 bool IsIdeographicLocale(const std::string& locale);
 
 // Used to cache translations to avoid retranslating the same string. The key
