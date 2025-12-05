@@ -2466,6 +2466,63 @@ TEST(SpanTest, CopyPrefixFrom) {
   span(arr).copy_from(vals);
 }
 
+TEST(SpanTest, CopyFromVolatile) {
+  // Test basic copy from volatile memory (dynamic extent).
+  volatile int volatile_source[] = {7, 8, 9};
+  int dest[] = {1, 2, 3};
+
+  span<int> dest_span(dest);
+  span<const volatile int> source_span(volatile_source);
+
+  dest_span.copy_from(source_span);
+  EXPECT_THAT(dest, ElementsAre(7, 8, 9));
+
+  // Test with different values.
+  volatile_source[0] = 10;
+  volatile_source[1] = 20;
+  volatile_source[2] = 30;
+
+  dest_span.copy_from(source_span);
+  EXPECT_THAT(dest, ElementsAre(10, 20, 30));
+
+  // Test with empty spans.
+  span<int> empty_dest;
+  span<const volatile int> empty_source;
+  empty_dest.copy_from(empty_source);
+
+  // Test partial copy with subspans.
+  volatile int partial_source[] = {100, 200, 300, 400};
+  int partial_dest[] = {0, 0, 0, 0};
+
+  span<int>(partial_dest)
+      .first(2u)
+      .copy_from(span<const volatile int>(partial_source).first(2u));
+  EXPECT_THAT(partial_dest, ElementsAre(100, 200, 0, 0));
+
+  span<int>(partial_dest)
+      .last(2u)
+      .copy_from(span<const volatile int>(partial_source).last(2u));
+  EXPECT_THAT(partial_dest, ElementsAre(100, 200, 300, 400));
+
+  // Test fixed-extent span copying from fixed-extent volatile span.
+  volatile int fixed_source[] = {11, 22, 33};
+  int fixed_dest[] = {0, 0, 0};
+  span<int, 3> fixed_dest_span(fixed_dest);
+  span<const volatile int, 3> fixed_source_span(fixed_source);
+
+  fixed_dest_span.copy_from(fixed_source_span);
+  EXPECT_THAT(fixed_dest, ElementsAre(11, 22, 33));
+
+  // Test fixed-extent span copying from dynamic-extent volatile span.
+  volatile int dynamic_source[] = {44, 55, 66};
+  int fixed_dest2[] = {0, 0, 0};
+  span<int, 3> fixed_dest_span2(fixed_dest2);
+  span<const volatile int> dynamic_source_span(dynamic_source);
+
+  fixed_dest_span2.copy_from(dynamic_source_span);
+  EXPECT_THAT(fixed_dest2, ElementsAre(44, 55, 66));
+}
+
 TEST(SpanTest, SplitAt) {
   int arr[] = {1, 2, 3};
   span<int, 0> empty_static_span;

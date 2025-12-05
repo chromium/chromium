@@ -617,11 +617,18 @@ class GSL_POINTER span {
              // overload above; if they don't, it's because the extent doesn't
              // match. Rejecting this here improves the resulting errors.
              N == dynamic_extent &&
-             std::convertible_to<R &&, span<const element_type>>)
+             (std::convertible_to<R &&, span<const element_type>> ||
+              std::convertible_to<R &&, span<const volatile element_type>>))
   constexpr void copy_from(R&& other) {
     // Note: The constructor `CHECK()`s that a dynamic-extent `other` has the
     // right size.
-    copy_from(span<const element_type, extent>(std::forward<R>(other)));
+    if constexpr (std::convertible_to<R&&, span<const volatile element_type>> &&
+                  !std::convertible_to<R&&, span<const element_type>>) {
+      copy_from(
+          span<const volatile element_type, extent>(std::forward<R>(other)));
+    } else {
+      copy_from(span<const element_type, extent>(std::forward<R>(other)));
+    }
   }
 
   // Like `copy_from()`, but may be more performant; however, the caller must
@@ -673,6 +680,19 @@ class GSL_POINTER span {
       return first(other.size()).copy_from(other);
     } else {
       return first<N>().copy_from(other);
+    }
+  }
+
+  // Performs a deep copy from a volatile source span. The spans must be the
+  // same size.
+  //
+  // (Not in `std::`; supports volatile memory access patterns.)
+  template <typename U>
+    requires(!std::is_const_v<element_type> &&
+             std::is_same_v<U, const volatile element_type>)
+  constexpr void copy_from(span<U, extent> other) {
+    for (size_t i = 0; i < extent; ++i) {
+      (*this)[i] = other[i];
     }
   }
 
@@ -1127,6 +1147,20 @@ class GSL_POINTER span<ElementType, dynamic_extent, InternalPtrType> {
       } else {
         std::ranges::copy_backward(other, end());
       }
+    }
+  }
+
+  // Performs a deep copy from a volatile source span. The spans must be the
+  // same size.
+  //
+  // (Not in `std::`; supports volatile memory access patterns.)
+  template <typename U>
+    requires(!std::is_const_v<element_type> &&
+             std::is_same_v<U, const volatile element_type>)
+  constexpr void copy_from(span<U> other) {
+    CHECK(size() == other.size());
+    for (size_t i = 0; i < size(); ++i) {
+      (*this)[i] = other[i];
     }
   }
 
