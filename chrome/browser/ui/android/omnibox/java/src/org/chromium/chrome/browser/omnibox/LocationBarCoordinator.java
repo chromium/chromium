@@ -525,6 +525,9 @@ public class LocationBarCoordinator
         mStatusCoordinator.destroy();
         mStatusCoordinator = null;
 
+        mOmniboxDropdownEmbedderImpl.destroy();
+        mOmniboxDropdownEmbedderImpl = null;
+
         if (mFuseboxCoordinator != null) {
             mFuseboxCoordinator.destroy();
             mFuseboxCoordinator = null;

@@ -367,4 +367,8 @@ class OmniboxSuggestionsDropdownEmbedderImpl
         mWindowInsetsCompat = windowInsetsCompat;
         return result;
     }
+
+    public void destroy() {
+        mContext.unregisterComponentCallbacks(this);
+    }
 }
