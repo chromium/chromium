@@ -5073,6 +5073,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="443196770280837407">Abra o Gemini com um atalho do teclado.</translation>
 <translation id="4432621511648257259">Senha incorreta</translation>
 <translation id="4434611816075088065">Não há mais nada que precise da sua atenção no momento</translation>
+<translation id="4435020454241191356">Adicione um nome ou marcador ao seu perfil</translation>
 <translation id="443503224864902151">Desconecta você da maioria dos sites. Sua Conta do Google continuará conectada para que seja possível excluir seus dados sincronizados.</translation>
 <translation id="4437879751057074691">Oferecer para salvar senhas e chaves de acesso</translation>
 <translation id="4437947179446780764">Adicionar provedor de serviços de DNS personalizado</translation>
@@ -5084,6 +5085,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4441928470323187829">Fixada pelo administrador</translation>
 <translation id="4442863809158514979">Conferir permissões da Web</translation>
 <translation id="4442937638623063085">Nenhum perfil foi encontrado. Insira o código de ativação fornecido pela sua operadora.</translation>
+<translation id="4443111948803895537">Proteção de contas e redes</translation>
 <translation id="4443536555189480885">&amp;Ajuda</translation>
 <translation id="4444304522807523469">Acessar scanners de documentos acoplados via USB ou na rede local</translation>
 <translation id="4444512841222467874">Se não for disponibilizado mais espaço, é possível que usuários e dados sejam removidos automaticamente.</translation>
@@ -6405,6 +6407,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quer usar informações pessoais da sua carteira digital. Continue apenas se confiar neste site. Sites perigosos podem induzir você a revelar dados como nome civil ou número de documento de identificação.</translation>
 <translation id="5390677308841849479">Vermelho-escuro e laranja</translation>
 <translation id="5392192690789334093">Permitir o envio de notificações</translation>
+<translation id="5392864580775235956">Adicione e edite uma imagem</translation>
 <translation id="5393330235977997602">Opções de PIN</translation>
 <translation id="5393474451146553463">Pergunte ao Google sobre esta guia</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}other{# links}}</translation>
@@ -7360,6 +7363,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6057381398996433816">Este site foi impedido de usar sensores de luz e movimento.</translation>
 <translation id="6059276912018042191">Guias recentes do Chrome</translation>
 <translation id="6059652578941944813">Hierarquia de certificados</translation>
+<translation id="6059775313639803773">Receba respostas detalhadas com mais fontes, e só um pouquinho mais de tempo</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6061408389284235459">Uma notificação foi enviada para o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Criar QR code</translation>
@@ -9688,6 +9692,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Acesso à localização negado</translation>
 <translation id="7675175806582227035">Com permissão para controlar e reprogramar seus dispositivos MIDI</translation>
+<translation id="7676019765091965045">Detecção de senhas comprometidas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> guia encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envie sua voz para que o Google permita que o ditado seja usado em qualquer campo de texto.</translation>
 <translation id="7678588695732963732">Redefinir todas as permissões de dispositivos USB?</translation>
@@ -10781,6 +10786,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8405118833120731611">{0,plural, =1{Fechar este perfil}one{Fechar este perfil (# janela)}other{Fechar este perfil (# janelas)}}</translation>
 <translation id="8407199357649073301">Nível de registro:</translation>
 <translation id="8408270600235826886">Você pode controlar quais dados são compartilhados com o Google. É possível mudar isso a qualquer momento nas Configurações. Os dados serão usados de acordo com a <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> do Google.</translation>
+<translation id="8410079205308393430">Mostrar sugestões</translation>
 <translation id="8410133743809404768">Você pode pesquisar na barra de endereço usando "@history", assim como na página "Histórico"</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">tela cheia</translation>

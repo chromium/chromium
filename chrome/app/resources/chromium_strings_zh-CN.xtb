@@ -652,6 +652,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8493179195440786826">Chromium版本太旧</translation>
 <translation id="850264194101621529">感谢您选择 Chromium 作为默认浏览器！</translation>
 <translation id="8522801943730206384">您需要先保存密码，然后才能使用 Chromium 的密码检查功能</translation>
+<translation id="8548787790260785208">如果 Chromium 发现您的密码在公开数据泄露事件中外泄，会向您发出警告</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8556420416730706394">您可以固定图片搜索功能以方便访问，点击侧边栏顶部的“固定”按钮即可</translation>
 <translation id="856656450041460113">搜索语言列表</translation>

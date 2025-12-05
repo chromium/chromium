@@ -5069,6 +5069,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="443196770280837407">Отваряйте Gemini с клавишна комбинация.</translation>
 <translation id="4432621511648257259">Неправилна парола</translation>
 <translation id="4434611816075088065">В момента нищо друго не изисква вниманието ви</translation>
+<translation id="4435020454241191356">Добавете име или етикет за потребителския си профил</translation>
 <translation id="443503224864902151">Ще излезете от повечето сайтове, но не и от профила си в Google, за да могат да бъдат изтрити синхронизираните ви данни.</translation>
 <translation id="4437879751057074691">Показване на предложение за запазване на паролите и ключовете за достъп</translation>
 <translation id="4437947179446780764">Добавяне на персонализиран доставчик на DNS услуги</translation>
@@ -5080,6 +5081,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4441928470323187829">Фиксирано от администратора ви</translation>
 <translation id="4442863809158514979">Преглед на разрешенията за мрежата</translation>
 <translation id="4442937638623063085">Няма намерени потребителски профили. Въведете кода за активиране, предоставен от оператора ви.</translation>
+<translation id="4443111948803895537">Защита на профила и мрежата</translation>
 <translation id="4443536555189480885">&amp;Помощ</translation>
 <translation id="4444304522807523469">Достъп до скенери на документи, свързани чрез USB или с локалната мрежа</translation>
 <translation id="4444512841222467874">Ако не освободите място, може да последва автоматично премахване на потребители и данни.</translation>
@@ -6401,6 +6403,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> иска да използва лична информация от дигиталния ви портфейл. Продължете само ако имате доверие на този сайт. Опасните сайтове може да ви подведат да разкриете информация, като например името ви или номер на ваш документ за самоличност.</translation>
 <translation id="5390677308841849479">Тъмночервено и оранжево</translation>
 <translation id="5392192690789334093">Сайтове с разрешение да изпращат известия</translation>
+<translation id="5392864580775235956">Добавяне и редактиране на изображение</translation>
 <translation id="5393330235977997602">Опции за ПИН кода</translation>
 <translation id="5393474451146553463">Попитайте Google за този раздел</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Връзка}other{# връзки}}</translation>
@@ -7356,6 +7359,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6057381398996433816">Сайтът бе блокиран, така че да не използва сензорите за движение и светлина.</translation>
 <translation id="6059276912018042191">Скорошни раздели на Chrome</translation>
 <translation id="6059652578941944813">Йерархия на сертификатите</translation>
+<translation id="6059775313639803773">Получавайте по-задълбочени отговори с повече източници, но за малко повече време</translation>
 <translation id="6059925163896151826">USB устройства</translation>
 <translation id="6061408389284235459">До <ph name="DEVICE_NAME" /> бе изпратено известие</translation>
 <translation id="6063284707309177505">Създаване на QR код</translation>
@@ -9682,6 +9686,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> приложения</translation>
 <translation id="7674542105240814168">Достъпът до местоположението е отказан</translation>
 <translation id="7675175806582227035">Сайтове с разрешение да контролират и препрограмират MIDI устройствата ви</translation>
+<translation id="7676019765091965045">Откриване на компрометирани пароли</translation>
 <translation id="7676119992609591770">Беше открит <ph name="NUM" /> раздел за „<ph name="SEARCH_TEXT" />“</translation>
 <translation id="7676867886086876795">Изпращане на гласа ви до Google, за да можете да диктувате във всяко текстово поле.</translation>
 <translation id="7678588695732963732">Да се нулират ли разрешенията за всички USB устройства?</translation>
@@ -10775,6 +10780,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8405118833120731611">{0,plural, =1{Затваряне на този потребителски профил}other{Затваряне на този потребителски профил (# прозореца)}}</translation>
 <translation id="8407199357649073301">Ниво на запис в регистрационния файл:</translation>
 <translation id="8408270600235826886">Имате възможност да контролирате каква информация се споделя с Google. Можете да промените това по всяко време от настройките. Данните ще се използват в съответствие с <ph name="BEGIN_LINK" />Декларацията ни за поверителност<ph name="END_LINK" />.</translation>
+<translation id="8410079205308393430">Показване на предложения</translation>
 <translation id="8410133743809404768">Можете да търсите в адресната лента посредством @history, както и от страницата „История“</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">цял екран</translation>

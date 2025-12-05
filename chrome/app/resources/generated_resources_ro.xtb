@@ -5059,6 +5059,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="443196770280837407">Deschide Gemini cu o comandă rapidă de la tastatură.</translation>
 <translation id="4432621511648257259">Parolă incorectă</translation>
 <translation id="4434611816075088065">Momentan, nu există elemente care necesită atenție din partea ta</translation>
+<translation id="4435020454241191356">Adaugă un nume sau o etichetă pentru profil</translation>
 <translation id="443503224864902151">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google, astfel încât datele sincronizate să poată fi șterse.</translation>
 <translation id="4437879751057074691">Oferă salvarea parolelor și a cheilor de acces</translation>
 <translation id="4437947179446780764">Adaugă un furnizor de servicii DNS personalizat</translation>
@@ -5070,6 +5071,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4441928470323187829">Fixată de administrator</translation>
 <translation id="4442863809158514979">Vezi permisiunile web</translation>
 <translation id="4442937638623063085">Nu s-au găsit profiluri. Introdu codul de activare oferit de operatorul tău.</translation>
+<translation id="4443111948803895537">Protecția contului și a rețelei</translation>
 <translation id="4443536555189480885">&amp;Ajutor</translation>
 <translation id="4444304522807523469">Accesează scanerele de documente atașate prin USB sau dintr-o rețea locală</translation>
 <translation id="4444512841222467874">Dacă nu se eliberează spațiu, este posibil ca utilizatorii și datele să fie eliminate automat.</translation>
@@ -6389,6 +6391,7 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> dorește să-ți folosească informațiile cu caracter personal din portofelul digital. Continuă numai dacă ai încredere în acest site. Site-urile periculoase te pot păcăli să dezvălui informații cum ar fi numele oficial sau numărul actului de identitate.</translation>
 <translation id="5390677308841849479">Roșu închis și portocaliu</translation>
 <translation id="5392192690789334093">Au permisiunea de a trimite notificări</translation>
+<translation id="5392864580775235956">Adaugă și editează o imagine</translation>
 <translation id="5393330235977997602">Opțiuni pentru PIN</translation>
 <translation id="5393474451146553463">Întreabă Google despre această filă</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}few{# linkuri}other{# de linkuri}}</translation>
@@ -7343,6 +7346,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="6057381398996433816">Acest site nu are permisiunea de a folosi senzorii de mișcare și de lumină.</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="6059652578941944813">Ierarhie de certificate</translation>
+<translation id="6059775313639803773">Răspunsuri mai detaliate cu mai multe surse, cu puțin timp în plus</translation>
 <translation id="6059925163896151826">Dispozitive USB</translation>
 <translation id="6061408389284235459">A fost trimisă o notificare către <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Creează un cod QR</translation>
@@ -9671,6 +9675,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicații</translation>
 <translation id="7674542105240814168">Accesul la locație a fost refuzat</translation>
 <translation id="7675175806582227035">Au permisiunea de a controla și reprograma dispozitivele MIDI</translation>
+<translation id="7676019765091965045">Detectarea parolelor compromise</translation>
 <translation id="7676119992609591770">S-a găsit <ph name="NUM" /> filă pentru „<ph name="SEARCH_TEXT" />”</translation>
 <translation id="7676867886086876795">Trimite-ți vocea la Google pentru a permite dictarea în orice câmp de text.</translation>
 <translation id="7678588695732963732">Resetezi toate permisiunile pentru dispozitivul USB?</translation>
@@ -10764,6 +10769,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8405118833120731611">{0,plural, =1{Închide acest profil}few{Închide acest profil (# ferestre)}other{Închide acest profil (# de ferestre)}}</translation>
 <translation id="8407199357649073301">Nivelul înregistrării:</translation>
 <translation id="8408270600235826886">Poți stabili ce informații sunt trimise la Google. Poți modifica oricând opțiunea din Setări. Datele vor fi folosite conform <ph name="BEGIN_LINK" />Politicii de confidențialitate<ph name="END_LINK" /> Google.</translation>
+<translation id="8410079205308393430">Afișează sugestii</translation>
 <translation id="8410133743809404768">Poți căuta în bara de adrese folosind @istoric, precum și din pagina Istoric</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">ecran complet</translation>

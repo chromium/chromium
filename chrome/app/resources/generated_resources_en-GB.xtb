@@ -5072,6 +5072,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="443196770280837407">Open Gemini with a keyboard shortcut.</translation>
 <translation id="4432621511648257259">Password incorrect</translation>
 <translation id="4434611816075088065">Nothing else needs your attention at the moment</translation>
+<translation id="4435020454241191356">Add a name or label for your profile</translation>
 <translation id="443503224864902151">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be deleted.</translation>
 <translation id="4437879751057074691">Offer to save passwords and passkeys</translation>
 <translation id="4437947179446780764">Add custom DNS service provider</translation>
@@ -5083,6 +5084,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4441928470323187829">Pinned by your administrator</translation>
 <translation id="4442863809158514979">View web permissions</translation>
 <translation id="4442937638623063085">No profiles were found. Please enter the activation code provided by your operator.</translation>
+<translation id="4443111948803895537">Account and network protection</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
 <translation id="4444304522807523469">Access document scanners attached via USB or on the local network</translation>
 <translation id="4444512841222467874">If space isn’t made available, users and data may be automatically removed.</translation>
@@ -6404,6 +6406,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> wants to use personal info from your digital wallet. Only continue if you trust this site. Dangerous sites might trick you into revealing things like your legal name or ID number.</translation>
 <translation id="5390677308841849479">Dark red and orange</translation>
 <translation id="5392192690789334093">Allowed to send notifications</translation>
+<translation id="5392864580775235956">Add and edit an image</translation>
 <translation id="5393330235977997602">PIN options</translation>
 <translation id="5393474451146553463">Ask Google about this tab</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# links}}</translation>
@@ -7358,6 +7361,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="6057381398996433816">This site has been blocked from using motion and light sensors.</translation>
 <translation id="6059276912018042191">Recent Chrome tabs</translation>
 <translation id="6059652578941944813">Certificate Hierarchy</translation>
+<translation id="6059775313639803773">Get deeper responses with more sources, in a little extra time</translation>
 <translation id="6059925163896151826">USB devices</translation>
 <translation id="6061408389284235459">A notification was sent to <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Create QR code</translation>
@@ -9684,6 +9688,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Location access denied</translation>
 <translation id="7675175806582227035">Allowed to control and reprogramme your MIDI devices</translation>
+<translation id="7676019765091965045">Compromised password detection</translation>
 <translation id="7676119992609591770">Found <ph name="NUM" /> tab for '<ph name="SEARCH_TEXT" />'</translation>
 <translation id="7676867886086876795">Send your voice to Google to allow dictation into any text field.</translation>
 <translation id="7678588695732963732">Reset all USB device permissions?</translation>
@@ -10777,6 +10782,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8405118833120731611">{0,plural, =1{Close this profile}other{Close this profile (# windows)}}</translation>
 <translation id="8407199357649073301">Log level:</translation>
 <translation id="8408270600235826886">You can control what data is shared with Google. You can change this at any time in Settings. Data will be used according to Google's <ph name="BEGIN_LINK" />Privacy Policy<ph name="END_LINK" />.</translation>
+<translation id="8410079205308393430">Show suggestions</translation>
 <translation id="8410133743809404768">You can search in the address bar using '@history', as well as from the History page</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">fullscreen</translation>

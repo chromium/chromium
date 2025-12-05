@@ -5059,6 +5059,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="443196770280837407">Abre Gemini con una combinación de teclas.</translation>
 <translation id="4432621511648257259">Contraseña incorrecta</translation>
 <translation id="4434611816075088065">No hay nada que requiera tu atención en este momento</translation>
+<translation id="4435020454241191356">Añade un nombre o una etiqueta a tu perfil</translation>
 <translation id="443503224864902151">Se cerrará tu sesión en la mayoría de los sitios. Sin embargo, se mantendrá iniciada la sesión en tu cuenta de Google para que se puedan eliminar tus datos sincronizados.</translation>
 <translation id="4437879751057074691">Preguntar si quiero guardar contraseñas y llaves de acceso</translation>
 <translation id="4437947179446780764">Añadir proveedor de servicios de DNS personalizado</translation>
@@ -5070,6 +5071,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4441928470323187829">Fijada por tu administrador</translation>
 <translation id="4442863809158514979">Ver permisos web</translation>
 <translation id="4442937638623063085">No se ha encontrado ningún perfil. Introduce el código de activación facilitado por tu operador.</translation>
+<translation id="4443111948803895537">Protección de la cuenta y la red</translation>
 <translation id="4443536555189480885">&amp;Ayuda</translation>
 <translation id="4444304522807523469">Acceder a escáneres de documentos conectados a través de USB o en la red local</translation>
 <translation id="4444512841222467874">Si no se libera espacio, es posible que se eliminen automáticamente usuarios y datos.</translation>
@@ -6389,6 +6391,7 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu cartera digital. Continúa solo si confías en este sitio. Hay sitios peligrosos que podrían intentar engañarte para que reveles datos como tu nombre y apellidos o tu número de identificación.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5392192690789334093">Con permiso para enviar notificaciones</translation>
+<translation id="5392864580775235956">Añadir y editar una imagen</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
 <translation id="5393474451146553463">Preguntar a Google sobre esta pestaña</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Enlace}other{# enlaces}}</translation>
@@ -7343,6 +7346,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6057381398996433816">Este sitio web no tiene permiso para usar los sensores de luz y movimiento.</translation>
 <translation id="6059276912018042191">Pestañas de Chrome recientes</translation>
 <translation id="6059652578941944813">Jerarquía de certificados</translation>
+<translation id="6059775313639803773">Recibe respuestas más detalladas con más fuentes, en un poco más de tiempo</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6061408389284235459">Se ha enviado una notificación a <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Crear código QR</translation>
@@ -9669,6 +9673,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplicaciones</translation>
 <translation id="7674542105240814168">Acceso a la ubicación rechazado</translation>
 <translation id="7675175806582227035">Tienen permiso para controlar y reprogramar tus dispositivos MIDI</translation>
+<translation id="7676019765091965045">Detección de contraseñas vulneradas</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> pestaña encontrada para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para utilizar el dictado en cualquier campo de texto.</translation>
 <translation id="7678588695732963732">¿Restablecer todos los permisos del dispositivo USB?</translation>
@@ -10762,6 +10767,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8405118833120731611">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar esta opción en cualquier momento en Ajustes. Los datos se usan de acuerdo con la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
+<translation id="8410079205308393430">Mostrar sugerencias</translation>
 <translation id="8410133743809404768">Puedes buscar en la barra de direcciones usando "@history", así como en la página Historial</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantalla completa</translation>

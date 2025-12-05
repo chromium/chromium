@@ -5055,6 +5055,7 @@
 <translation id="443196770280837407">使用鍵盤快速鍵開啟 Gemini。</translation>
 <translation id="4432621511648257259">密碼不正確</translation>
 <translation id="4434611816075088065">目前沒有需要處理的事項</translation>
+<translation id="4435020454241191356">新增設定檔名稱或標籤</translation>
 <translation id="443503224864902151">你會從大多數網站登出，但不會因此登出 Google 帳戶，所以仍可刪除同步資料。</translation>
 <translation id="4437879751057074691">提供儲存密碼和密碼金鑰的選項</translation>
 <translation id="4437947179446780764">新增自訂 DNS 服務供應商</translation>
@@ -5066,6 +5067,7 @@
 <translation id="4441928470323187829">已由系統管理員固定</translation>
 <translation id="4442863809158514979">查看網路權限</translation>
 <translation id="4442937638623063085">找不到任何設定檔，請輸入電信業者提供的啟用代碼。</translation>
+<translation id="4443111948803895537">帳戶和網路防護</translation>
 <translation id="4443536555189480885">說明(&amp;H)</translation>
 <translation id="4444304522807523469">存取透過 USB 附加或是在區域網路上的文件掃描器</translation>
 <translation id="4444512841222467874">如果未釋出可用空間，系統可能會自動移除使用者和資料。</translation>
@@ -6382,6 +6384,7 @@
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> 想要使用你在數位錢包中的個人資訊。除非你信任這個網站，否則請勿繼續操作。危險網站可能會誘騙你提供法定姓名或身分證字號等資料。</translation>
 <translation id="5390677308841849479">深紅色與橘色</translation>
 <translation id="5392192690789334093">允許傳送通知</translation>
+<translation id="5392864580775235956">新增及編輯圖片</translation>
 <translation id="5393330235977997602">PIN 碼選項</translation>
 <translation id="5393474451146553463">向 Google 詢問與這個分頁相關的資訊</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{連結}other{# 個連結}}</translation>
@@ -7332,6 +7335,7 @@
 <translation id="6057381398996433816">這個網站已遭封鎖，無法使用動作感應器和光源感應器。</translation>
 <translation id="6059276912018042191">最近開啟的 Chrome 分頁</translation>
 <translation id="6059652578941944813">憑證階層</translation>
+<translation id="6059775313639803773">根據更多來源取得更深入的回覆內容，需要的時間會多一點</translation>
 <translation id="6059925163896151826">USB 裝置</translation>
 <translation id="6061408389284235459">已傳送通知給「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6063284707309177505">建立 QR 圖碼</translation>
@@ -9657,6 +9661,7 @@
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> 個應用程式</translation>
 <translation id="7674542105240814168">已拒絕提供位置資訊存取權</translation>
 <translation id="7675175806582227035">已允許控制 MIDI 裝置及重設程式</translation>
+<translation id="7676019765091965045">密碼外洩偵測</translation>
 <translation id="7676119992609591770">找到 <ph name="NUM" /> 個與「<ph name="SEARCH_TEXT" />」相符的分頁</translation>
 <translation id="7676867886086876795">將你的語音資料傳送給 Google，讓你在任何文字欄位中使用語音輸入功能。</translation>
 <translation id="7678588695732963732">要重設所有 USB 裝置權限嗎？</translation>
@@ -10750,6 +10755,7 @@
 <translation id="8405118833120731611">{0,plural, =1{關閉這個設定檔}other{關閉這個設定檔 (# 個視窗)}}</translation>
 <translation id="8407199357649073301">記錄層級：</translation>
 <translation id="8408270600235826886">您可以控制要分享哪些資料給 Google，並隨時在「設定」中進行變更。我們會依據《<ph name="BEGIN_LINK" />Google 隱私權政策<ph name="END_LINK" />》的規範使用相關資料。</translation>
+<translation id="8410079205308393430">顯示建議</translation>
 <translation id="8410133743809404768">你可以在網址列中使用「@歷史記錄」搜尋，也可以在「歷史記錄」頁面尋找</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">全螢幕</translation>

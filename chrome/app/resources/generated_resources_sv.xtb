@@ -5072,6 +5072,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="443196770280837407">Öppna Gemini med ett kortkommando.</translation>
 <translation id="4432621511648257259">Fel lösenord</translation>
 <translation id="4434611816075088065">Inget annat behöver åtgärdas just nu</translation>
+<translation id="4435020454241191356">Lägg till ett namn eller en etikett för profilen</translation>
 <translation id="443503224864902151">Du loggas ut från de flesta webbplatser. Du är fortfarande inloggad på Google-kontot så att synkroniserad data kan raderas.</translation>
 <translation id="4437879751057074691">Erbjud att spara lösenord och nycklar</translation>
 <translation id="4437947179446780764">Lägg till en anpassad DNS-tjänsteleverantör</translation>
@@ -5083,6 +5084,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4441928470323187829">Fäst av administratören</translation>
 <translation id="4442863809158514979">Visa webbehörigheter</translation>
 <translation id="4442937638623063085">Inga profiler hittades. Ange aktiveringskoden från operatören.</translation>
+<translation id="4443111948803895537">Konto- och nätverksskydd</translation>
 <translation id="4443536555189480885">&amp;Hjälp</translation>
 <translation id="4444304522807523469">Åtkomst till dokumentskannrar som är anslutna via USB eller i det lokala nätverket</translation>
 <translation id="4444512841222467874">Om du inte frigör utrymme kan användare och data tas bort automatiskt.</translation>
@@ -6404,6 +6406,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> vill använda personliga uppgifter från din digitala plånbok. Fortsätt bara om du litar på den här webbplatsen. Farliga webbplatser kan lura dig att avslöja sådant som ditt officiella namn eller personnummer.</translation>
 <translation id="5390677308841849479">Mörkröd och orange</translation>
 <translation id="5392192690789334093">Får skicka aviseringar</translation>
+<translation id="5392864580775235956">Lägg till och redigera en bild</translation>
 <translation id="5393330235977997602">Pinkodsalternativ</translation>
 <translation id="5393474451146553463">Fråga Google om den här fliken</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Länk}other{# länkar}}</translation>
@@ -7358,6 +7361,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6057381398996433816">Den här webbplatsen får inte använda enhetens rörelse- och ljussensor.</translation>
 <translation id="6059276912018042191">Senaste flikarna i Chrome</translation>
 <translation id="6059652578941944813">Certifikathierarki</translation>
+<translation id="6059775313639803773">Få mer djupgående svar med fler källor, efter en lite längre stund</translation>
 <translation id="6059925163896151826">USB-enheter</translation>
 <translation id="6061408389284235459">En avisering har skickats till <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Skapa QR-kod</translation>
@@ -9684,6 +9688,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> appar</translation>
 <translation id="7674542105240814168">Platsåtkomst har nekats</translation>
 <translation id="7675175806582227035">Tillåts att styra och omprogrammera dina MIDI-enheter</translation>
+<translation id="7676019765091965045">Detektering av utsatta lösenord</translation>
 <translation id="7676119992609591770"><ph name="NUM" /> flikar för <ph name="SEARCH_TEXT" /> hittades</translation>
 <translation id="7676867886086876795">Skicka det du säger till Google så att du kan tala in text i vilket textfält som helst.</translation>
 <translation id="7678588695732963732">Vill du återställa alla behörigheter för USB-enheter?</translation>
@@ -10777,6 +10782,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8405118833120731611">{0,plural, =1{Stäng den här profilen}other{Stäng den här profilen (# fönster)}}</translation>
 <translation id="8407199357649073301">Loggnivå:</translation>
 <translation id="8408270600235826886">Du styr vilken data som delas med Google. Du kan när som helst ändra detta i inställningarna. Data används i enlighet med Googles <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
+<translation id="8410079205308393430">Visa förslag</translation>
 <translation id="8410133743809404768">Du kan söka i adressfältet med @historik och på sidan Historik</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">helskärm</translation>

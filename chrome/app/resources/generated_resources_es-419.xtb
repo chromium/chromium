@@ -5056,6 +5056,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="443196770280837407">Abre Gemini con una combinación de teclas.</translation>
 <translation id="4432621511648257259">La contraseña es incorrecta</translation>
 <translation id="4434611816075088065">No hay nada más que requiera tu atención en este momento</translation>
+<translation id="4435020454241191356">Agrega un nombre o una etiqueta para tu perfil</translation>
 <translation id="443503224864902151">Saldrás de la mayoría de los sitios. Permanecerás en tu Cuenta de Google para que puedan borrarse tus datos sincronizados.</translation>
 <translation id="4437879751057074691">Ofrecer guardar contraseñas y llaves de acceso</translation>
 <translation id="4437947179446780764">Agregar proveedor de servicios de DNS personalizado</translation>
@@ -5067,6 +5068,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4441928470323187829">Fijado por tu administrador</translation>
 <translation id="4442863809158514979">Ver permisos web</translation>
 <translation id="4442937638623063085">No se encontraron perfiles. Ingresa el código de activación que te brinde tu proveedor.</translation>
+<translation id="4443111948803895537">Protección de la cuenta y la red</translation>
 <translation id="4443536555189480885">&amp;Ayuda</translation>
 <translation id="4444304522807523469">Acceder a los escáneres de documentos conectados vía USB o en la red local</translation>
 <translation id="4444512841222467874">Si no liberas espacio, es posible que se quiten usuarios y datos de forma automática.</translation>
@@ -6388,6 +6390,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> quiere usar información personal de tu billetera digital. Continúa solo si confías en este sitio. Los sitios peligrosos pueden engañarte para que reveles información como tu nombre legal o número de documento de identidad.</translation>
 <translation id="5390677308841849479">Rojo oscuro y naranja</translation>
 <translation id="5392192690789334093">Pueden enviar notificaciones</translation>
+<translation id="5392864580775235956">Agrega y edita una imagen</translation>
 <translation id="5393330235977997602">Opciones de PIN</translation>
 <translation id="5393474451146553463">Preguntar a Google sobre esta pestaña</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Vínculo}other{# vínculos}}</translation>
@@ -7342,6 +7345,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6057381398996433816">Este sitio no tiene permiso para usar los sensores de movimiento y luz.</translation>
 <translation id="6059276912018042191">Pestañas recientes de Chrome</translation>
 <translation id="6059652578941944813">Jerarquía de certificados</translation>
+<translation id="6059775313639803773">Obtén respuestas más completas con más fuentes, en un poco más de tiempo</translation>
 <translation id="6059925163896151826">Dispositivos USB</translation>
 <translation id="6061408389284235459">Se envió una notificación a <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Crear código QR</translation>
@@ -9668,6 +9672,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> apps</translation>
 <translation id="7674542105240814168">Se denegó el acceso a la ubicación</translation>
 <translation id="7675175806582227035">Pueden controlar y reprogramar tus dispositivos MIDI</translation>
+<translation id="7676019765091965045">Detección de contraseñas hackeadas</translation>
 <translation id="7676119992609591770">Se encontró <ph name="NUM" /> pestaña para "<ph name="SEARCH_TEXT" />"</translation>
 <translation id="7676867886086876795">Envía tu voz a Google para habilitar el dictado en cualquier campo de texto.</translation>
 <translation id="7678588695732963732">¿Quieres restablecer todos los permisos de dispositivos USB?</translation>
@@ -10761,6 +10766,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8405118833120731611">{0,plural, =1{Cerrar este perfil}other{Cerrar este perfil (# ventanas)}}</translation>
 <translation id="8407199357649073301">Nivel de registro:</translation>
 <translation id="8408270600235826886">Puedes controlar qué datos se comparten con Google. Puedes cambiar este parámetro cuando lo desees en Configuración. Se usarán los datos según la <ph name="BEGIN_LINK" />Política de Privacidad<ph name="END_LINK" /> de Google.</translation>
+<translation id="8410079205308393430">Mostrar sugerencias</translation>
 <translation id="8410133743809404768">Puedes buscar en la barra de direcciones con "@historial", así como en la página Historial.</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">pantalla completa</translation>

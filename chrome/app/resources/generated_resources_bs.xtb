@@ -5071,6 +5071,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="443196770280837407">Otvorite Gemini putem prečice na tastaturi.</translation>
 <translation id="4432621511648257259">Pogrešna lozinka</translation>
 <translation id="4434611816075088065">Trenutno ni za šta drugo nije potrebna vaša radnja</translation>
+<translation id="4435020454241191356">Dodajte naziv ili oznaku za profil</translation>
 <translation id="443503224864902151">Odjavljuje vas s većine web lokacija. Ostat ćete prijavljeni na Google računu, stoga se sinhronizirani podaci mogu izbrisati.</translation>
 <translation id="4437879751057074691">Nudi pohranjivanje lozinki i pristupnih ključeva</translation>
 <translation id="4437947179446780764">Dodajte prilagođenog pružaoca DNS usluga</translation>
@@ -5082,6 +5083,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4441928470323187829">Zakačio je vaš administrator</translation>
 <translation id="4442863809158514979">Prikaži odobrenja za web</translation>
 <translation id="4442937638623063085">Nije pronađen nijedan profil. Unesite kôd za aktivaciju koji pruža vaš mobilni operater.</translation>
+<translation id="4443111948803895537">Zaštita računa i mreže</translation>
 <translation id="4443536555189480885">&amp;Pomoć</translation>
 <translation id="4444304522807523469">Pristupi skenerima dokumenata spojenim putem USB-a ili lokalne mreže</translation>
 <translation id="4444512841222467874">Ako se ne obezbijedi prostor, može doći do automatskog uklanjanja korisnika i podataka.</translation>
@@ -6403,6 +6405,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5390367025924544771"><ph name="WEBSITE_ORIGIN" /> želi koristiti lične informacije iz vašeg digitalnog novčanika. Nastavite samo ako ovu web lokaciju smatrate pouzdanom. Opasne web lokacije vas mogu prevariti da otkrijete podatke kao što su vaše puno ime ili broj ličnog dokumenta.</translation>
 <translation id="5390677308841849479">Tamnocrvena i narandžasta</translation>
 <translation id="5392192690789334093">Dozvoljeno slanje obavještenja</translation>
+<translation id="5392864580775235956">Dodajte i uredite sliku</translation>
 <translation id="5393330235977997602">Opcije PIN-a</translation>
 <translation id="5393474451146553463">Pitajte Google o ovoj kartici</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Link}one{# link}few{# linka}other{# linkova}}</translation>
@@ -7357,6 +7360,7 @@ Ovoj radnji možete dodijeliti više prekidača.</translation>
 <translation id="6057381398996433816">Ovoj stranici je blokirano korištenje senzora pokreta i svjetla.</translation>
 <translation id="6059276912018042191">Nedavne kartice Chromea</translation>
 <translation id="6059652578941944813">Hijerarhija potvrda</translation>
+<translation id="6059775313639803773">Dobijajte detaljnije odgovore s više izvora, za samo malo dodatnog vremena</translation>
 <translation id="6059925163896151826">USB uređaji</translation>
 <translation id="6061408389284235459">Poslano je obavještenje na uređaj <ph name="DEVICE_NAME" /></translation>
 <translation id="6063284707309177505">Kreirajte QR kôd</translation>
@@ -9687,6 +9691,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikacije(a)</translation>
 <translation id="7674542105240814168">Pristup lokaciji je odbijen</translation>
 <translation id="7675175806582227035">Dozvoljeno je kopiranje i reprogramiranje MIDI uređaja</translation>
+<translation id="7676019765091965045">Otkrivanje ugroženih lozinki</translation>
 <translation id="7676119992609591770">Za upit "<ph name="SEARCH_TEXT" />" je pronađen sljedeći broj kartica: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Pošaljite Googleu svoj glas da dozvolite diktiranje u bilo koje tekstualno polje.</translation>
 <translation id="7678588695732963732">Poništiti sva odobrenja za USB uređaj?</translation>
@@ -10780,6 +10785,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8405118833120731611">{0,plural, =1{Zatvori profil}one{Zatvori profil (# prozor)}few{Zatvori profil (# prozora)}other{Zatvori profil (# prozora)}}</translation>
 <translation id="8407199357649073301">Nivo zapisa:</translation>
 <translation id="8408270600235826886">Možete kontrolirati koji podaci se dijele s Googleom. Ovo možete promijeniti bilo kada u Postavkama. Podaci će se koristiti u skladu s Googleovim <ph name="BEGIN_LINK" />Pravilima privatnosti<ph name="END_LINK" />.</translation>
+<translation id="8410079205308393430">Prikaži prijedloge</translation>
 <translation id="8410133743809404768">Možete pretraživati u traci za adresu pomoću oznake "@history", kao i na stranici Historija</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">prikaz preko cijelog ekrana</translation>

@@ -5058,6 +5058,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="443196770280837407">Otevírejte Gemini klávesovou zkratkou.</translation>
 <translation id="4432621511648257259">Nesprávné heslo</translation>
 <translation id="4434611816075088065">Nic jiného teď vaši pozornost nevyžaduje</translation>
+<translation id="4435020454241191356">Přidejte název nebo štítek svého profilu</translation>
 <translation id="443503224864902151">Budete odhlášeni z většiny webů. Zůstanete přihlášeni k účtu Google, aby bylo možné vymazat synchronizovaná data.</translation>
 <translation id="4437879751057074691">Nabízet ukládání hesel a přístupových klíčů</translation>
 <translation id="4437947179446780764">Přidat vlastního poskytovatele služby DNS</translation>
@@ -5069,6 +5070,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4441928470323187829">Připnuto administrátorem</translation>
 <translation id="4442863809158514979">Zobrazit webová oprávnění</translation>
 <translation id="4442937638623063085">Nebyly nalezeny žádné profily. Zadejte aktivační kód, který vám poskytl váš operátor.</translation>
+<translation id="4443111948803895537">Ochrana účtu a sítě</translation>
 <translation id="4443536555189480885">&amp;Nápověda</translation>
 <translation id="4444304522807523469">Přístup ke skenerům dokumentů připojeným přes USB nebo v místní síti</translation>
 <translation id="4444512841222467874">Pokud neuvolníte místo, může dojít k automatickému odebrání uživatelů a dat.</translation>
@@ -6388,6 +6390,7 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5390367025924544771">Web <ph name="WEBSITE_ORIGIN" /> chce použít osobní údaje z vaší digitální peněženky. Pokračujte jen v případě, že tomuto webu důvěřujete. Nebezpečné weby vás mohou přimět k prozrazení věcí, jako je vaše celé jméno nebo identifikační číslo.</translation>
 <translation id="5390677308841849479">Tmavě červená a oranžová</translation>
 <translation id="5392192690789334093">Odesílání oznámení je povoleno</translation>
+<translation id="5392864580775235956">Přidejte a upravte obrázek</translation>
 <translation id="5393330235977997602">Možnosti kódu PIN</translation>
 <translation id="5393474451146553463">Zeptat se Googlu na tuhle kartu</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Odkaz}few{# odkazy}many{# odkazu}other{# odkazů}}</translation>
@@ -7339,6 +7342,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="6057381398996433816">Tomuto webu bylo zablokováno používání senzorů pohybu a osvětlení.</translation>
 <translation id="6059276912018042191">Nedávno použité karty Chromu</translation>
 <translation id="6059652578941944813">Hierarchie certifikátů</translation>
+<translation id="6059775313639803773">Podrobnější odpovědi s více zdroji a jen trochou času navíc</translation>
 <translation id="6059925163896151826">Zařízení USB</translation>
 <translation id="6061408389284235459">Do zařízení <ph name="DEVICE_NAME" /> bylo odesláno oznámení</translation>
 <translation id="6063284707309177505">Vytvořit QR kód</translation>
@@ -9668,6 +9672,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7674537509496907005"><ph name="APP_COUNT" /> aplikace</translation>
 <translation id="7674542105240814168">Přístup k poloze byl odepřen</translation>
 <translation id="7675175806582227035">Povolení ovládat a přeprogramovávat zařízení MIDI</translation>
+<translation id="7676019765091965045">Detekce prolomených hesel</translation>
 <translation id="7676119992609591770">Pro dotaz <ph name="SEARCH_TEXT" /> bylo nalezeno karet: <ph name="NUM" /></translation>
 <translation id="7676867886086876795">Odesílat hlasové údaje do Googlu, aby bylo možné diktovat do libovolného textového pole.</translation>
 <translation id="7678588695732963732">Resetovat všechna oprávnění k zařízením USB?</translation>
@@ -10761,6 +10766,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8405118833120731611">{0,plural, =1{Zavřít tento profil}few{Zavřít tento profil (# okna)}many{Zavřít tento profil (# okna)}other{Zavřít tento profil (# oken)}}</translation>
 <translation id="8407199357649073301">Úroveň protokolu:</translation>
 <translation id="8408270600235826886">Můžete určit, jaké údaje jsou s Googlem sdíleny. Tuto možnost můžete kdykoli změnit v Nastavení. Údaje budou využívány v souladu se <ph name="BEGIN_LINK" />zásadami ochrany soukromí<ph name="END_LINK" /> společnosti Google.</translation>
+<translation id="8410079205308393430">Zobrazovat návrhy</translation>
 <translation id="8410133743809404768">Můžete vyhledávat na adresním řádku pomocí slova @history a také na stránce Historie</translation>
 <translation id="8410775397654368139">Google Play</translation>
 <translation id="8411043186249152291">celá obrazovka</translation>
