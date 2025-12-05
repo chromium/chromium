@@ -16,7 +16,9 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
+#include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,6 +48,18 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
 }
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
+
+void OmniboxPopupWebUIContent::ShowUI() {
+  auto* webui_controller = contents_wrapper()->GetWebUIController();
+  if (webui_controller) {
+    auto* omnibox_popup_ui = webui_controller->GetAs<OmniboxPopupUI>();
+    if (omnibox_popup_ui && omnibox_popup_ui->handler()) {
+      omnibox_popup_ui->handler()->OnShow();
+    }
+  }
+
+  OmniboxPopupWebUIBaseContent::ShowUI();
+}
 
 BEGIN_METADATA(OmniboxPopupWebUIContent)
 END_METADATA

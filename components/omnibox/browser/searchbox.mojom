@@ -368,6 +368,9 @@ interface Page {
   // Called when the keyword mode state changes.
   SetKeywordSelected(bool is_keyword_selected);
 
+  // Called when the popup is shown.
+  OnShow();
+
   // Called to set searchbox input.
   SetInputText(string input);
 

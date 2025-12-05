@@ -61,6 +61,7 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               (searchbox::mojom::OmniboxPopupSelectionPtr,
                searchbox::mojom::OmniboxPopupSelectionPtr));
   MOCK_METHOD(void, SetKeywordSelected, (bool is_keyword_selected), (override));
+  MOCK_METHOD(void, OnShow, ());
   MOCK_METHOD(void, SetInputText, (const std::string& input_text));
   MOCK_METHOD(void,
               SetThumbnail,

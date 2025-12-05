@@ -8,10 +8,10 @@ import '//resources/cr_elements/icons.html.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ContextualEntrypointAndCarouselElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_carousel.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
-import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
@@ -29,6 +29,7 @@ const canShowSecondarySideMediaQueryList =
 export interface OmniboxPopupAppElement {
   $: {
     matches: SearchboxDropdownElement,
+    context: ContextualEntrypointAndCarouselElement,
   };
 }
 
@@ -103,10 +104,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   protected accessor showContextEntrypoint_: boolean = false;
 
   private callbackRouter_: PageCallbackRouter;
-  private autocompleteResultChangedListenerId_: number|null = null;
-  private keywordSelectedListenerId_: number|null = null;
-  private selectionChangedListenerId_: number|null = null;
   private eventTracker_ = new EventTracker();
+  private listenerIds_: number[] = [];
   private pageHandler_: PageHandlerInterface;
 
   constructor() {
@@ -119,17 +118,17 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   override connectedCallback() {
     super.connectedCallback();
-    this.autocompleteResultChangedListenerId_ =
-        this.callbackRouter_.autocompleteResultChanged.addListener(
-            this.onAutocompleteResultChanged_.bind(this));
-    this.selectionChangedListenerId_ =
-        this.callbackRouter_.updateSelection.addListener(
-            this.onUpdateSelection_.bind(this));
-    this.keywordSelectedListenerId_ =
-        this.callbackRouter_.setKeywordSelected.addListener(
-            (isKeywordSelected: boolean) => {
-              this.isInKeywordMode_ = isKeywordSelected;
-            });
+    this.listenerIds_ = [
+      this.callbackRouter_.autocompleteResultChanged.addListener(
+          this.onAutocompleteResultChanged_.bind(this)),
+      this.callbackRouter_.onShow.addListener(this.onShow_.bind(this)),
+      this.callbackRouter_.updateSelection.addListener(
+          this.onUpdateSelection_.bind(this)),
+      this.callbackRouter_.setKeywordSelected.addListener(
+          (isKeywordSelected: boolean) => {
+            this.isInKeywordMode_ = isKeywordSelected;
+          }),
+    ];
     canShowSecondarySideMediaQueryList.addEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
 
@@ -144,13 +143,10 @@ export class OmniboxPopupAppElement extends I18nMixinLit
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.eventTracker_.removeAll();
-    assert(this.autocompleteResultChangedListenerId_);
-    this.callbackRouter_.removeListener(
-        this.autocompleteResultChangedListenerId_);
-    assert(this.selectionChangedListenerId_);
-    this.callbackRouter_.removeListener(this.selectionChangedListenerId_);
-    assert(this.keywordSelectedListenerId_);
-    this.callbackRouter_.removeListener(this.keywordSelectedListenerId_);
+    for (const listenerId of this.listenerIds_) {
+      this.callbackRouter_.removeListener(listenerId);
+    }
+    this.listenerIds_ = [];
     canShowSecondarySideMediaQueryList.removeEventListener(
         'change', this.onCanShowSecondarySideChanged_.bind(this));
   }
@@ -195,6 +191,15 @@ export class OmniboxPopupAppElement extends I18nMixinLit
       this.$.matches.selectFirst();
     } else if (this.$.matches.selectedMatchIndex >= result.matches.length) {
       this.$.matches.unselect();
+    }
+  }
+
+  private onShow_() {
+    // When the popup is shown, blur the contextual entrypoint. This prevents a
+    // focus ring from appearing on the entrypoint, e.g. when the user clicks
+    // away and then re-focuses the Omnibox.
+    if (this.showContextEntrypoint_) {
+      this.$.context.blurEntrypoint();
     }
   }
 
