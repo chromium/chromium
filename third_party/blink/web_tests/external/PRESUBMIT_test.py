@@ -22,6 +22,7 @@ class MockInputApi(object):
         self.python_executable = self.python3_executable = sys.executable
         self.subprocess = subprocess
         self.is_windows = sys.platform == 'win32'
+        self.is_committing = False
         self.environ = os.environ
         self.logging = PrintLogger()
         self.change = MockChange()
