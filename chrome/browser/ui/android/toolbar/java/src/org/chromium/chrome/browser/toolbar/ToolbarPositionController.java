@@ -435,7 +435,6 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     public static boolean isToolbarPositionCustomizationEnabled(
             Context context, boolean isCustomTab) {
         return !isCustomTab
-                && ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
                 && !DeviceInfo.isAutomotive()
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
     }

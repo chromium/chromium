@@ -132,9 +132,7 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
         try {
             Boolean oldPrefValue =
                     ChromeSharedPreferences.getInstance()
-                            .readBoolean(
-                                    ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
-                                    ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
+                            .readBoolean(ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED, true);
             // When transitioning to the new preference key value, use settings as the source to
             // prevent an animation. The first time this function gets called is during startup,
             // and the toolbar will appear buggy if the position transition has an animation.
@@ -163,7 +161,7 @@ public class AddressBarPreference extends ContainedRadioButtonGroupPreference
                                 ChromePreferenceKeys.TOOLBAR_TOP_ANCHORED,
                                 ToolbarPositionAndSource.UNDEFINED);
         if (posAndSource == ToolbarPositionAndSource.UNDEFINED) {
-            return fromLocalState(!ChromeFeatureList.sAndroidBottomToolbarDefaultToTop.getValue());
+            return DEFAULT_POSITION_AND_SOURCE;
         }
         return posAndSource;
     }

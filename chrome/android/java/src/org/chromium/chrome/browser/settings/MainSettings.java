@@ -622,8 +622,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         // - no CCT checks (settings are not accessible from CCTs),
         // - showing on Foldables in unfolded (open) state.
         boolean showSetting =
-                ChromeFeatureList.sAndroidBottomToolbar.isEnabled()
-                        && !DeviceInfo.isAutomotive()
+                !DeviceInfo.isAutomotive()
                         && (DeviceInfo.isFoldable()
                                 || !DeviceFormFactor.isNonMultiDisplayContextOnTablet(
                                         getContext()));

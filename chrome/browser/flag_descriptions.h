@@ -235,9 +235,6 @@ inline constexpr char kAndroidBcivBottomControlsDescription[] =
     "Let viz move bottom browser controls when scrolling. If this flag is "
     "enabled, AndroidBrowserControlsInViz must also be enabled.";
 
-inline constexpr char kAndroidBottomToolbarName[] = "Bottom Toolbar";
-inline constexpr char kAndroidBottomToolbarDescription[] =
-    "If enabled, displays the toolbar at the bottom.";
 
 inline constexpr char kAndroidBottomToolbarV2Name[] = "Bottom Toolbar V2";
 inline constexpr char kAndroidBottomToolbarV2Description[] =

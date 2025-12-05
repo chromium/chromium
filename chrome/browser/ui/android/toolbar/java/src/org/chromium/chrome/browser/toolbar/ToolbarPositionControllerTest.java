@@ -423,7 +423,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "ldltr-sw600dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testIsToolbarPositionCustomizationEnabled_tablet() {
         assertFalse(
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
@@ -431,7 +430,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testIsToolbarPositionCustomizationEnabled_phone() {
         assertFalse(
                 ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, true));
@@ -440,18 +438,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @Config(qualifiers = "sw400dp")
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testIsToolbarPositionCustomizationEnabled_featureDisabled() {
-        assertFalse(
-                ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, true));
-        assertFalse(
-                ToolbarPositionController.isToolbarPositionCustomizationEnabled(mContext, false));
-    }
-
-    @Test
     @Config(qualifiers = "sw400dp", sdk = android.os.Build.VERSION_CODES.R)
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testIsToolbarPositionCustomizationEnabled_foldable() {
         ShadowPackageManager shadowPackageManager = Shadows.shadowOf(mContext.getPackageManager());
         shadowPackageManager.setSystemFeature(PackageManager.FEATURE_SENSOR_HINGE_ANGLE, true);
@@ -461,7 +448,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testMetrics() {
         mStartupExpectation.assertExpected();
         HistogramWatcher watcher =
@@ -479,19 +465,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR + ":default_to_top/false")
-    public void testDefaultBottom() {
-        assertControlsAtBottom();
-        verify(mProgressBarContainer).setLayoutParams(mProgressBarLayoutParams);
-
-        setUserToolbarAnchorPreference(/* showToolbarOnTop= */ true);
-        assertControlsAtTop();
-        verify(mProgressBarContainer, times(2)).setLayoutParams(mProgressBarLayoutParams);
-    }
-
-    @Test
-    @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithPref() {
         assertControlsAtTop();
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
@@ -505,7 +478,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithNtpState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -519,7 +491,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithTabSwitcherState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -533,7 +504,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testUpdatePositionChangesWithOmniboxFocusState() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
@@ -549,7 +519,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testUpdatePositionFormField_MiniOriginBar() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -561,7 +530,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testUpdatePositionChangesWithFindInPage() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -575,7 +543,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testBottomControlsStacker() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -585,7 +552,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testBottomControlsStacker_toolbarLayer() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -603,7 +569,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testBottomControlsStacker_progressBarLayer() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -620,7 +585,6 @@ public class ToolbarPositionControllerTest {
 
     @Test
     @Config(qualifiers = "sw400dp")
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2)
     public void testBottomControlsStacker_visibilityChanges() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
@@ -641,10 +605,7 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2
-    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR_V2})
     public void testCalculateStateTransition() {
         boolean prefStateChanged = false;
         boolean ntpShowing = false;
@@ -943,7 +904,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testControlContainerTranslationAdjustments() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);
@@ -1010,7 +970,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testParentLayoutInLayoutDuringPositionChange() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         assertControlsAtBottom();
@@ -1030,7 +989,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testOnToEdgeChange() {
         int topInset = 50;
 
@@ -1045,7 +1003,6 @@ public class ToolbarPositionControllerTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR})
     public void testControlContainerHeightAdjustments() {
         setUserToolbarAnchorPreference(/* showToolbarOnTop= */ false);
         mIsFormFieldFocused.onNodeAttributeUpdated(true, false);

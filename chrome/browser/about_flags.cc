@@ -3051,13 +3051,6 @@ const FeatureEntry::FeatureVariation
              kAndroidAppIntegrationMultiDataSource_SkipBothDeviceAndSchemaCheck),
          nullptr}};
 
-const FeatureEntry::FeatureParam kAndroidBottomToolbar_DefaultToBottom[] = {
-    {"default_to_top", "false"}};
-
-const FeatureEntry::FeatureVariation kAndroidBottomToolbarVariations[] = {
-    {"default to bottom", kAndroidBottomToolbar_DefaultToBottom,
-     std::size(kAndroidBottomToolbar_DefaultToBottom), nullptr}};
-
 const FeatureEntry::FeatureParam kAuxiliarySearchDonation_MaxDonation_20[] = {
     {chrome::android::kAuxiliarySearchMaxBookmarksCountParam.name, "20"},
     {chrome::android::kAuxiliarySearchMaxTabsCountParam.name, "20"}};
@@ -6955,12 +6948,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kNewTabPageCustomizationToolbarButton)},
-
-    {"android-bottom-toolbar", flag_descriptions::kAndroidBottomToolbarName,
-     flag_descriptions::kAndroidBottomToolbarDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidBottomToolbar,
-                                    kAndroidBottomToolbarVariations,
-                                    "AndroidBottomToolbar")},
 
     {"android-bottom-toolbar-v2",
      flag_descriptions::kAndroidBottomToolbarV2Name,

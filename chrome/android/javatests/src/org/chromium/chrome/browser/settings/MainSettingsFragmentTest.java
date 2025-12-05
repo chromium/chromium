@@ -787,7 +787,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testAndroidAddressBarFlagOn() {
         startSettings();
         // This setting should only appear for certain devices, even if the flag is enabled. Since
@@ -815,7 +814,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testAndroidAddressBar_newLabel() {
         Assume.assumeThat(supportAddressBarSettings(), is(true));
         testNewPreferenceLabel(
@@ -827,7 +825,6 @@ public class MainSettingsFragmentTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
     public void testAndroidAddressBar_cleanUpBadPrefValue() {
         ChromeSharedPreferences.getInstance()
                 .writeInt(ChromePreferenceKeys.ADDRESS_BAR_SETTINGS_CLICKED, 1);
@@ -841,16 +838,6 @@ public class MainSettingsFragmentTest {
         Assert.assertEquals(
                 mMainSettings.getString(R.string.address_bar_settings),
                 mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR).getTitle().toString());
-    }
-
-    @Test
-    @SmallTest
-    @DisableFeatures(ChromeFeatureList.ANDROID_BOTTOM_TOOLBAR)
-    public void testAndroidAddressBarFlagOff() {
-        startSettings();
-        Assert.assertNull(
-                "Address Bar should not be shown when flag is off, regardless of device",
-                mMainSettings.findPreference(MainSettings.PREF_ADDRESS_BAR));
     }
 
     @Test
