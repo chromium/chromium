@@ -3817,10 +3817,19 @@ bool RenderViewContextMenu::IsReloadEnabled() const {
 }
 
 bool RenderViewContextMenu::IsViewSourceEnabled() const {
-  if (!!extensions::MimeHandlerViewGuest::FromRenderFrameHost(
+  if (extensions::MimeHandlerViewGuest::FromRenderFrameHost(
           GetRenderFrameHost())) {
     return false;
   }
+
+  // Additional DevTools policy check if the new policy dialog feature is not
+  // enabled.
+  if (base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog) &&
+      (!IsDevCommandEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT) ||
+       !DevToolsWindow::AllowDevToolsFor(GetProfile(), source_web_contents_))) {
+    return false;
+  }
+
   // Disallow ViewSource if DevTools are disabled.
   if (!IsDevCommandEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT)) {
     return false;
@@ -3839,8 +3848,11 @@ bool RenderViewContextMenu::IsDevCommandEnabled(int id) const {
 
     // Don't enable the web inspector if the developer tools are disabled via
     // the preference dev-tools-disabled.
-    if (!DevToolsWindow::AllowDevToolsFor(GetProfile(), source_web_contents_)) {
-      return false;
+    if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
+      if (!DevToolsWindow::AllowDevToolsFor(GetProfile(),
+                                            source_web_contents_)) {
+        return false;
+      }
     }
   }
 

@@ -1547,7 +1547,10 @@ void BrowserCommandController::InitCommandState() {
                                           dev_tools_enabled);
     command_updater_.UpdateCommandEnabled(IDC_DEV_TOOLS_TOGGLE,
                                           dev_tools_enabled);
-    command_updater_.UpdateCommandEnabled(IDC_VIEW_SOURCE, dev_tools_enabled);
+    command_updater_.UpdateCommandEnabled(
+        IDC_VIEW_SOURCE,
+        DevToolsWindow::AllowDevToolsFor(
+            profile(), browser_->tab_strip_model()->GetActiveWebContents()));
 #if BUILDFLAG(IS_MAC)
     command_updater_.UpdateCommandEnabled(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS,
                                           dev_tools_enabled);
@@ -1938,6 +1941,12 @@ void BrowserCommandController::UpdateCommandsForTabState() {
   UpdateCommandsForTabKeyboardFocus(GetKeyboardFocusedTabIndex(browser_));
   if (!base::FeatureList::IsEnabled(features::kDevToolsShowPolicyDialog)) {
     UpdateCommandsForDevTools();
+  } else {
+    // Block the View Source command if DevTools are disabled.
+    command_updater_.UpdateCommandEnabled(
+        IDC_VIEW_SOURCE,
+        DevToolsWindow::AllowDevToolsFor(
+            profile(), browser_->tab_strip_model()->GetActiveWebContents()));
   }
 
   // Disable the add to comparison table menu when the page is not a standard

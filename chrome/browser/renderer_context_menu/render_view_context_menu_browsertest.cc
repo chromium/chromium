@@ -36,10 +36,12 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/pdf/test_pdf_viewer_stream_manager.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -2887,6 +2889,67 @@ IN_PROC_BROWSER_TEST_F(OopifPdfExtensionContextMenuBrowserTest,
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_VIEW_SOURCE));
   EXPECT_FALSE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE));
   EXPECT_TRUE(menu.IsCommandIdEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+}
+
+class DevToolsPolicyContextMenuBrowserTest : public ContextMenuBrowserTestBase {
+ public:
+  DevToolsPolicyContextMenuBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDevToolsShowPolicyDialog);
+  }
+
+  void SetDevToolsAvailability(
+      policy::DeveloperToolsPolicyHandler::Availability availability) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kDevToolsAvailability, static_cast<int>(availability));
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsBlocked) {
+  SetDevToolsAvailability(
+      policy::DeveloperToolsPolicyHandler::Availability::kDisallowed);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL(), GURL(), u"", blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
+  ASSERT_TRUE(menu);
+
+  // Inspect should be present and enabled (to show the dialog).
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+
+  // View Source should be present but disabled (grayed out).
+  EXPECT_TRUE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_FALSE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsPolicyContextMenuBrowserTest, DevToolsAllowed) {
+  SetDevToolsAvailability(
+      policy::DeveloperToolsPolicyHandler::Availability::kAllowed);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+
+  std::unique_ptr<TestRenderViewContextMenu> menu = CreateContextMenu(
+      GURL(), GURL(), u"", blink::mojom::ContextMenuDataMediaType::kNone,
+      ui::mojom::MenuSourceType::kTouch);
+  ASSERT_TRUE(menu);
+
+  // Inspect should be enabled.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT));
+
+  // View Source should be enabled.
+  EXPECT_TRUE(menu->IsItemPresent(IDC_VIEW_SOURCE));
+  EXPECT_TRUE(menu->IsCommandIdEnabled(IDC_VIEW_SOURCE));
 }
 
 IN_PROC_BROWSER_TEST_P(PdfPluginContextMenuBrowserTestWithOopifOverride,
