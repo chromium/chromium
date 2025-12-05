@@ -250,7 +250,7 @@ D3D11VideoImageRepresentation::D3D11VideoImageRepresentation(
     SharedImageBacking* backing,
     MemoryTypeTracker* tracker,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture)
+    D3D11TextureAndArrayIndex d3d11_texture)
     : VideoImageRepresentation(manager, backing, tracker),
       d3d11_device_(std::move(d3d11_device)),
       d3d11_texture_(std::move(d3d11_texture)) {}
@@ -285,8 +285,8 @@ void D3D11VideoImageRepresentation::EndReadAccess() {
   d3d_image_backing->EndAccessD3D11(d3d11_device_);
 }
 
-Microsoft::WRL::ComPtr<ID3D11Texture2D>
-D3D11VideoImageRepresentation::GetD3D11Texture() const {
+D3D11TextureAndArrayIndex D3D11VideoImageRepresentation::GetD3D11Texture()
+    const {
   return d3d11_texture_;
 }
 
@@ -392,13 +392,14 @@ D3D11VideoImageCopyRepresentation::CreateFromGL(GLuint gl_texture_id,
 }
 
 std::unique_ptr<D3D11VideoImageCopyRepresentation>
-D3D11VideoImageCopyRepresentation::CreateFromD3D(SharedImageManager* manager,
-                                                 SharedImageBacking* backing,
-                                                 MemoryTypeTracker* tracker,
-                                                 ID3D11Device* d3d_device,
-                                                 ID3D11Texture2D* texture,
-                                                 std::string_view debug_label,
-                                                 ID3D11Device* texture_device) {
+D3D11VideoImageCopyRepresentation::CreateFromD3D(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    ID3D11Device* d3d_device,
+    D3D11TextureAndArrayIndex src_texture,
+    std::string_view debug_label,
+    ID3D11Device* texture_device) {
   auto* d3d_backing = static_cast<D3DImageBacking*>(backing);
   if (!d3d_backing->BeginAccessD3D11(texture_device, /*write_access=*/false,
                                      /*is_overlay_access=*/false)) {
@@ -409,7 +410,7 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(SharedImageManager* manager,
   };
 
   D3D11_TEXTURE2D_DESC source_desc;
-  texture->GetDesc(&source_desc);
+  src_texture.texture->GetDesc(&source_desc);
 
   D3D11_TEXTURE2D_DESC dest_desc = InitVideoCopyTextureDesc(
       source_desc.Width, source_desc.Height, source_desc.Format);
@@ -429,7 +430,7 @@ D3D11VideoImageCopyRepresentation::CreateFromD3D(SharedImageManager* manager,
                                updated_debug_label.c_str());
 
   if (!D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
-          texture, dest_texture.Get())) {
+          src_texture, dest_texture.Get())) {
     LOG(ERROR) << "Failed to copy texture for video";
     return nullptr;
   }
@@ -465,9 +466,9 @@ bool D3D11VideoImageCopyRepresentation::BeginReadAccess() {
 
 void D3D11VideoImageCopyRepresentation::EndReadAccess() {}
 
-Microsoft::WRL::ComPtr<ID3D11Texture2D>
-D3D11VideoImageCopyRepresentation::GetD3D11Texture() const {
-  return d3d11_texture_;
+D3D11TextureAndArrayIndex D3D11VideoImageCopyRepresentation::GetD3D11Texture()
+    const {
+  return D3D11TextureAndArrayIndex(d3d11_texture_, /*array_index=*/0);
 }
 
 // D3DSkiaGraphiteDawnImageRepresentation

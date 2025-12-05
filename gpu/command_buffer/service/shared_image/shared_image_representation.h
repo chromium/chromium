@@ -1184,6 +1184,21 @@ class GPU_GLES2_EXPORT RasterImageRepresentation
 ///////////////////////////////////////////////////////////////////////////////
 // VideoImageRepresentation
 
+#if BUILDFLAG(IS_WIN)
+// Holds a D3D11 texture array, and index into it.
+struct GPU_GLES2_EXPORT D3D11TextureAndArrayIndex {
+  D3D11TextureAndArrayIndex(Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+                            size_t array_index);
+  D3D11TextureAndArrayIndex(const D3D11TextureAndArrayIndex& other);
+  D3D11TextureAndArrayIndex(D3D11TextureAndArrayIndex&& other);
+
+  ~D3D11TextureAndArrayIndex();
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture;
+  size_t array_index = 0;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 class GPU_GLES2_EXPORT VideoImageRepresentation
     : public SharedImageRepresentation {
  public:
@@ -1195,7 +1210,7 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
     ~ScopedWriteAccess();
 
 #if BUILDFLAG(IS_WIN)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+    D3D11TextureAndArrayIndex GetD3D11Texture() const {
       return representation()->GetD3D11Texture();
     }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1209,7 +1224,7 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
     ~ScopedReadAccess();
 
 #if BUILDFLAG(IS_WIN)
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const {
+    D3D11TextureAndArrayIndex GetD3D11Texture() const {
       return representation()->GetD3D11Texture();
     }
 #endif  // BUILDFLAG(IS_WIN)
@@ -1231,7 +1246,7 @@ class GPU_GLES2_EXPORT VideoImageRepresentation
 
  protected:
 #if BUILDFLAG(IS_WIN)
-  virtual Microsoft::WRL::ComPtr<ID3D11Texture2D> GetD3D11Texture() const = 0;
+  virtual D3D11TextureAndArrayIndex GetD3D11Texture() const = 0;
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

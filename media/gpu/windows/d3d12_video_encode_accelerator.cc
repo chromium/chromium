@@ -157,11 +157,17 @@ void GenerateResourceOnSynTokenReleased(
                                   "Failed to produce video");
 
   auto scoped_read_access = representation->BeginScopedReadAccess();
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
+  gpu::D3D11TextureAndArrayIndex input_texture =
       scoped_read_access->GetD3D11Texture();
 
+  D3D11_TEXTURE2D_DESC desc;
+  input_texture.texture->GetDesc(&desc);
+  bool is_texture_array = desc.ArraySize > 1;
+  // Array index must be 0 if input is not texture array.
+  CHECK(is_texture_array || !input_texture.array_index);
+
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  HRESULT hr = input_texture.As(&dxgi_resource);
+  HRESULT hr = input_texture.texture.As(&dxgi_resource);
   RETURN_ON_FAILURE_WITH_CALLBACK(
       hr, "Failed to query IDXGIResource1 from input texture.");
 
@@ -173,17 +179,15 @@ void GenerateResourceOnSynTokenReleased(
       hr, "Failed to query IDXGIDevice2 from D3D11 device");
 
   base::win::ScopedHandle shared_handle;
-  HANDLE input_handle = nullptr;
-  hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,
-                                         nullptr, &input_handle);
-  bool use_shared_handle = false;
-  if (SUCCEEDED(hr)) {
-    use_shared_handle = true;
-    shared_handle.Set(input_handle);
+  if (!is_texture_array) {
+    HANDLE input_handle = nullptr;
+    hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,
+                                           nullptr, &input_handle);
+    if (SUCCEEDED(hr)) {
+      shared_handle.Set(input_handle);
+    }
   }
 
-  D3D11_TEXTURE2D_DESC desc;
-  input_texture->GetDesc(&desc);
   bool input_has_keyed_mutex =
       desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
   Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
@@ -191,8 +195,8 @@ void GenerateResourceOnSynTokenReleased(
 
   // If the input_texture is backed by shared handle, BeginScopedReadAccess()
   // will automatically acquire the keyed mutex if it exists.
-  if (!use_shared_handle && input_has_keyed_mutex) {
-    hr = input_texture.As(&keyed_mutex);
+  if (!shared_handle.is_valid() && input_has_keyed_mutex) {
+    hr = input_texture.texture.As(&keyed_mutex);
     if (SUCCEEDED(hr)) {
       // Acquire the keyed mutex before using the texture in D3D12.
       hr = keyed_mutex->AcquireSync(0, INFINITE);
@@ -215,11 +219,11 @@ void GenerateResourceOnSynTokenReleased(
     d3d11_context->Flush();
   }
 
-  if (!use_shared_handle) {
-    // If shared handle creation fails, create a copy of the texture. This does
-    // not need to be a keyed mutex texture, as we will make sure the copy is
-    // finished before handing over to D3D12, and D3D11 will not touch it any
-    // more.
+  if (!shared_handle.is_valid()) {
+    // If shared handle creation fails or the texture is an array, create a copy
+    // of the texture. This does not need to be a keyed mutex texture, as we
+    // will make sure the copy is finished before handing over to D3D12, and
+    // D3D11 will not touch it any more.
     desc.MiscFlags =
         D3D11_RESOURCE_MISC_SHARED_NTHANDLE | D3D11_RESOURCE_MISC_SHARED;
     desc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
@@ -235,7 +239,8 @@ void GenerateResourceOnSynTokenReleased(
         hr, "Failed to create shared texture for copying from shared image");
 
     d3d11_context->CopySubresourceRegion(shared_texture.Get(), 0, 0, 0, 0,
-                                         input_texture.Get(), 0, nullptr);
+                                         input_texture.texture.Get(),
+                                         input_texture.array_index, nullptr);
 
     // TODO(https://crbug.com/40275246): Pass a shared D3D11 fence and wait
     // on D3D12 video processor command queue, or D3D12 video encoder queue,

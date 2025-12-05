@@ -10,6 +10,7 @@
 #include <wrl/client.h>
 
 #include "gpu/command_buffer/service/shared_image/shared_image_copy_strategy.h"
+#include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 
 class ID3D11Texture2D;
 
@@ -22,8 +23,9 @@ class D3D11ImageSameAdapterCopyStrategy : public SharedImageCopyStrategy {
   D3D11ImageSameAdapterCopyStrategy();
   ~D3D11ImageSameAdapterCopyStrategy() override;
 
-  static bool CopyD3D11TextureOnSameAdapter(ID3D11Texture2D* source_texture,
-                                            ID3D11Texture2D* dest_texture);
+  static bool CopyD3D11TextureOnSameAdapter(
+      D3D11TextureAndArrayIndex source_texture,
+      ID3D11Texture2D* dest_texture);
 
   // SharedImageCopyStrategy implementation.
   bool CanCopy(SharedImageBacking* source_backing,

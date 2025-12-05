@@ -32,14 +32,14 @@ D3D11ImageSameAdapterCopyStrategy::~D3D11ImageSameAdapterCopyStrategy() =
 
 // static
 bool D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
-    ID3D11Texture2D* source_texture,
+    D3D11TextureAndArrayIndex source_texture,
     ID3D11Texture2D* dest_texture) {
-  if (!source_texture || !dest_texture) {
+  if (!source_texture.texture || !dest_texture) {
     return false;
   }
 
   Microsoft::WRL::ComPtr<ID3D11Device> src_device;
-  source_texture->GetDevice(&src_device);
+  source_texture.texture->GetDevice(&src_device);
 
   Microsoft::WRL::ComPtr<ID3D11Device> dest_device;
   dest_texture->GetDevice(&dest_device);
@@ -100,7 +100,9 @@ bool D3D11ImageSameAdapterCopyStrategy::CopyD3D11TextureOnSameAdapter(
   }
   {
     DXGIScopedReleaseKeyedMutex scoped_keyed_mutex(keyed_mutex, 0);
-    src_context->CopyResource(opened_texture_on_src.Get(), source_texture);
+    src_context->CopySubresourceRegion(opened_texture_on_src.Get(), 0, 0, 0, 0,
+                                       source_texture.texture.Get(),
+                                       source_texture.array_index, nullptr);
   }
 
   return true;
@@ -146,17 +148,16 @@ bool D3D11ImageSameAdapterCopyStrategy::Copy(SharedImageBacking* source_backing,
     d3d_dest_backing->EndAccessD3D11(d3d_dest_backing->texture_d3d11_device_);
   };
 
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> source_texture =
-      d3d_source_backing->d3d11_texture_;
+  D3D11TextureAndArrayIndex source_texture(d3d_source_backing->d3d11_texture_,
+                                           d3d_source_backing->array_slice_);
   Microsoft::WRL::ComPtr<ID3D11Texture2D> dest_texture =
       d3d_dest_backing->d3d11_texture_;
 
-  if (!source_texture || !dest_texture) {
+  if (!source_texture.texture || !dest_texture) {
     return false;
   }
 
-  return CopyD3D11TextureOnSameAdapter(source_texture.Get(),
-                                       dest_texture.Get());
+  return CopyD3D11TextureOnSameAdapter(source_texture, dest_texture.Get());
 }
 
 }  // namespace gpu

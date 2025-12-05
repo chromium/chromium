@@ -1070,18 +1070,24 @@ void GenerateResourceOnSyncTokenReleased(
                                   "Failed to produce video");
 
   auto scoped_read_access = image_representation->BeginScopedReadAccess();
-  Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
+  gpu::D3D11TextureAndArrayIndex input_texture =
       scoped_read_access->GetD3D11Texture();
 
-  // If same device, pass the generated IMFSample directly, otherwise, create a
-  // shared handle for cross-device texture sharing.
-  if (use_same_device) {
+  D3D11_TEXTURE2D_DESC texture_desc;
+  input_texture.texture->GetDesc(&texture_desc);
+  bool is_texture_array = texture_desc.ArraySize > 1;
+  // Array index must be 0 if input is not texture array.
+  CHECK(is_texture_array || !input_texture.array_index);
+
+  // If same device, and input is not texture array, pass the generated
+  // IMFSample directly.
+  if (use_same_device && !is_texture_array) {
     // If this texture is NV12 and going to be fed directly to the encoder,
     // create a copy of it. Hardware encoders are not guaranteed to be done
     // with the texture when ProcessInput returns.
-    ComPtr<IMFSample> sample =
-        CreateSampleFromTexture(shared_d3d11_device, frame, input_texture,
-                                frame->format() == PIXEL_FORMAT_NV12);
+    ComPtr<IMFSample> sample = CreateSampleFromTexture(
+        shared_d3d11_device, frame, input_texture.texture,
+        frame->format() == PIXEL_FORMAT_NV12);
     RETURN_ON_FAILURE_WITH_CALLBACK(sample != nullptr ? S_OK : E_FAIL,
                                     "Failed to create MF sample");
     std::move(sample_available_cb)
@@ -1093,15 +1099,17 @@ void GenerateResourceOnSyncTokenReleased(
   TRACE_EVENT0("media", "CreateSharedHandleOnSyncTokenReleased");
   bool input_texture_has_been_copied = false;
   Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
-  hr = input_texture.As(&dxgi_resource);
+  hr = input_texture.texture.As(&dxgi_resource);
   RETURN_ON_FAILURE_WITH_CALLBACK(hr, "Failed to get DXGI resource");
   HANDLE shared_handle;
-  hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,
-                                         nullptr, &shared_handle);
-  if (FAILED(hr)) {
+
+  // MFVP & HMFT is not expecting texture array as input.
+  if (!is_texture_array) {
+    hr = dxgi_resource->CreateSharedHandle(nullptr, DXGI_SHARED_RESOURCE_READ,
+                                           nullptr, &shared_handle);
+  }
+  if (FAILED(hr) || is_texture_array) {
     TRACE_EVENT0("media", "CopyTextureOnCreateSharedHandleFailed");
-    D3D11_TEXTURE2D_DESC texture_desc;
-    input_texture->GetDesc(&texture_desc);
     texture_desc.Usage = D3D11_USAGE_DEFAULT;
     texture_desc.BindFlags =
         D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
@@ -1129,7 +1137,8 @@ void GenerateResourceOnSyncTokenReleased(
                          static_cast<UINT>(frame->visible_rect().bottom()),
                          1};
     device_context->CopySubresourceRegion(shared_texture.Get(), 0, 0, 0, 0,
-                                          input_texture.Get(), 0, &src_box);
+                                          input_texture.texture.Get(),
+                                          input_texture.array_index, &src_box);
     Microsoft::WRL::ComPtr<IDXGIResource1> shared_dxgi_resource;
     hr = shared_texture.As(&shared_dxgi_resource);
     CHECK(SUCCEEDED(hr));

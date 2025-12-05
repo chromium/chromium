@@ -2086,7 +2086,9 @@ TEST_P(D3DImageBackingFactoryTest, CanProduceVideoForExternalDevice) {
       d3d11_device, mailbox, memory_type_tracker_.get());
   EXPECT_NE(representation, nullptr);
   auto read_access = representation->BeginScopedReadAccess();
-  EXPECT_NE(read_access->GetD3D11Texture(), nullptr);
+  D3D11TextureAndArrayIndex input_texture = read_access->GetD3D11Texture();
+  EXPECT_NE(input_texture.texture, nullptr);
+  EXPECT_EQ(input_texture.array_index, 0u);
 }
 
 INSTANTIATE_TEST_SUITE_P(

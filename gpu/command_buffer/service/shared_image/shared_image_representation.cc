@@ -1133,6 +1133,21 @@ RasterImageRepresentation::BeginScopedWriteAccess(
 ///////////////////////////////////////////////////////////////////////////////
 // VideoImageRepresentation
 
+#if BUILDFLAG(IS_WIN)
+D3D11TextureAndArrayIndex::D3D11TextureAndArrayIndex(
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> texture,
+    size_t array_index)
+    : texture(std::move(texture)), array_index(array_index) {}
+
+D3D11TextureAndArrayIndex::D3D11TextureAndArrayIndex(
+    const D3D11TextureAndArrayIndex& other) = default;
+
+D3D11TextureAndArrayIndex::D3D11TextureAndArrayIndex(
+    D3D11TextureAndArrayIndex&& other) = default;
+
+D3D11TextureAndArrayIndex::~D3D11TextureAndArrayIndex() = default;
+#endif  // BUILDFLAG(IS_WIN)
+
 VideoImageRepresentation::VideoImageRepresentation(SharedImageManager* manager,
                                                    SharedImageBacking* backing,
                                                    MemoryTypeTracker* tracker)
