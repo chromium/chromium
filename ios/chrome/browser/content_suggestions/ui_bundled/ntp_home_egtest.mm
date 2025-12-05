@@ -855,9 +855,17 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
       @"The collection is not scrolled back to its previous position");
 }
 
-// Tests that tapping the fake omnibox and then scrolling defocuses the the
-// omnibox.
+// Tests that tapping the fake omnibox and then scrolling defocuses the omnibox.
 - (void)testTapFakeOmniboxAndScrollDefocuses {
+  if ([ChromeEarlGrey isComposeboxIOSEnabled]) {
+    // TODO(crbug.com/466349961): The collection view needs to be made visible
+    // behind the Composebox view controller first for this test to be able to
+    // pass.
+    EARL_GREY_TEST_DISABLED(
+        @"Composebox not supported yet. The collection view needs to be made "
+        @"visible behind the Composebox view controller first");
+  }
+
   // Clear pasteboard so that omnibox doesn't cover the NTP on focus.
   [ChromeEarlGrey clearPasteboard];
   // Get the collection and its layout.

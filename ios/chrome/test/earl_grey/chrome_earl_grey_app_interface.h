@@ -568,6 +568,9 @@ enum class TipsNotificationType;
 // Returns whether the Enhanced Safe Browsing Infobar Promo feature is enabled.
 + (BOOL)isEnhancedSafeBrowsingInfobarEnabled;
 
+// Returns whether the ComposeboxIOS feature is enabled.
++ (BOOL)isComposeboxIOSEnabled;
+
 // Returns the interface orientation of the scene.
 + (UIInterfaceOrientation)interfaceOrientation;
 

@@ -104,6 +104,9 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Returns whether the Ask Gemini Chip feature is enabled.
 - (BOOL)isAskGeminiChipEnabled;
 
+// Returns whether the ComposeboxIOS feature is enabled.
+- (BOOL)isComposeboxIOSEnabled;
+
 // Returns the interface orientation of the scene.
 - (UIInterfaceOrientation)interfaceOrientation;
 

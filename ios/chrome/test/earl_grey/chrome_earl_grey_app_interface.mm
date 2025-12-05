@@ -1256,6 +1256,10 @@ NSString* GetIdForWebState(web::WebState* web_state) {
       safe_browsing::kEnhancedSafeBrowsingPromo);
 }
 
++ (BOOL)isComposeboxIOSEnabled {
+  return base::FeatureList::IsEnabled(kComposeboxIOS);
+}
+
 + (UIInterfaceOrientation)interfaceOrientation {
   return GetInterfaceOrientation();
 }
