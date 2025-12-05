@@ -815,9 +815,6 @@ class HistorySyncOptinCoordinator
       public signin::IdentityManager::Observer,
       public syncer::SyncServiceObserver {
  public:
-  static constexpr signin_metrics::AccessPoint kHistoryOptinAccessPoint =
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
-
   static HistorySyncOptinCoordinator& GetOrCreateForProfile(Profile& profile) {
     HistorySyncOptinCoordinator* coordinator =
         static_cast<HistorySyncOptinCoordinator*>(
@@ -1036,8 +1033,9 @@ class HistorySyncOptinCoordinator
             signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo ||
         promo_type_.value() ==
             signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
-      base::UmaHistogramEnumeration("Signin.SyncOptIn.IdentityPill.Shown",
-                                    kHistoryOptinAccessPoint);
+      base::UmaHistogramEnumeration(
+          "Signin.SyncOptIn.IdentityPill.Shown",
+          signin::kHistoryOptinAvatarPromoAccessPoint);
     }
     collapse_timer_.Start(FROM_HERE,
                           g_history_sync_optin_duration_for_testing.value_or(
@@ -1142,8 +1140,7 @@ class HistorySyncOptinStateProvider : public StateProvider {
  private:
   void OnButtonClick(bool is_source_accelerator) {
     browser_->GetFeatures().profile_menu_coordinator()->Show(
-        is_source_accelerator,
-        HistorySyncOptinCoordinator::kHistoryOptinAccessPoint);
+        is_source_accelerator, /*from_avatar_promo=*/true);
     coordinator_->PromoUsed();
   }
 

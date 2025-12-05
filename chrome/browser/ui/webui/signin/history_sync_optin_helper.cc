@@ -48,8 +48,6 @@ constexpr char kHistorySyncOptIntAccessPointActionPrefix[] =
     "Signin_HistorySync_";
 constexpr char kOtherManagedProfileCreationHistogramName[] =
     "Signin.ManagedUserProfileCreationConflict";
-constexpr char kAvatarPillPromoAcceptedAtShownCountForHistorySyncHistogram[] =
-    "Signin.AvatarPillPromo.AcceptedAtShownCount.HistorySync";
 
 // LINT.IfChange(FlowEventToString)
 std::string_view GetHistorySyncSkipReasonMetricName(
@@ -109,21 +107,9 @@ void RecordMetricsForHistorySyncUserChoice(
   if (user_choice == HistorySyncOptinHelper::ScreenChoiceResult::kAccepted &&
       access_point == signin_metrics::AccessPoint::
                           kHistorySyncOptinExpansionPillOnStartup) {
-    GaiaId primary_gaia =
-        IdentityManagerFactory::GetForProfile(profile)
-            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-            .gaia;
-    int shown_count = signin::GetShownCountOfAvatarButtonPromoType(
+    signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
         signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
-        *profile->GetPrefs(), primary_gaia);
-
-    base::UmaHistogramExactLinear(
-        kAvatarPillPromoAcceptedAtShownCountForHistorySyncHistogram,
-        shown_count,
-        // Arbitrary number that is higher than the possible show count that
-        // the promo can reach
-        // (`user_education::features::GetNewBadgeShowCount()`: 10).
-        /*exclusive_max=*/30);
+        IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs());
   }
 }
 

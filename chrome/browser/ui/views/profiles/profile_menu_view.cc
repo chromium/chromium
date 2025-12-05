@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/signin/signin_hats_util.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -165,11 +166,11 @@ ProfileMenuView::ProfileMenuView(
     ui::TrackedElement* anchor_element,
     Browser* browser,
     signin::ProfileMenuAvatarButtonPromoInfo promo_info,
-    std::optional<signin_metrics::AccessPoint> explicit_signin_access_point)
+    bool from_avatar_promo)
     : ProfileMenuViewBase(anchor_element, browser),
       browser_(raw_ref<Browser>::from_ptr(browser)),
       promo_info_(promo_info),
-      explicit_signin_access_point_(explicit_signin_access_point) {
+      from_avatar_promo_(from_avatar_promo) {
   set_close_on_deactivate(close_on_deactivate_for_testing_);
 
   // Set the callback to launch a HaTS survey upon menu dismissal.
@@ -536,6 +537,11 @@ void ProfileMenuView::OnYourSavedInfoSettingsButtonClicked() {
 }
 
 void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {
+  OnActionableItemClicked(button_type);
+  if (!perform_menu_actions()) {
+    return;
+  }
+
   BatchUploadService::EntryPoint batch_upload_entry_point;
   switch (button_type) {
     case ActionableItem::kBatchUploadButton:
@@ -544,24 +550,31 @@ void ProfileMenuView::OnBatchUploadButtonClicked(ActionableItem button_type) {
       break;
     case ActionableItem::kBatchUploadAsPrimaryButton:
       batch_upload_entry_point =
-          BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction;
+          from_avatar_promo_
+              ? BatchUploadService::EntryPoint::
+                    kProfileMenuPrimaryButtonActionFromAvatarPromo
+              : BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction;
       break;
     case ActionableItem::kBatchUploadWithBookmarksAsPrimaryButton:
-      batch_upload_entry_point = BatchUploadService::EntryPoint::
-          kProfileMenuPrimaryButtonWithBookmarksAction;
+      batch_upload_entry_point =
+          from_avatar_promo_
+              ? BatchUploadService::EntryPoint::
+                    kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo
+              : BatchUploadService::EntryPoint::
+                    kProfileMenuPrimaryButtonWithBookmarksAction;
       break;
     case ActionableItem::kBatchUploadWindows10DepreciationAsPrimaryButton:
-      batch_upload_entry_point = BatchUploadService::EntryPoint::
-          kProfileMenuPrimaryButtonWithWindows10DepreciationAction;
+      batch_upload_entry_point =
+          from_avatar_promo_
+              ? BatchUploadService::EntryPoint::
+                    kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo
+              : BatchUploadService::EntryPoint::
+                    kProfileMenuPrimaryButtonWithWindows10DepreciationAction;
       break;
     default:
       NOTREACHED() << "This actionable item should not trigger Batch Upload.";
   }
 
-  OnActionableItemClicked(button_type);
-  if (!perform_menu_actions()) {
-    return;
-  }
   BatchUploadServiceFactory::GetForProfile(&profile())
       ->OpenBatchUpload(&browser(), batch_upload_entry_point);
 }
@@ -726,7 +739,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      from_avatar_promo_ ? signin::kHistoryOptinAvatarPromoAccessPoint
+                         : signin_metrics::AccessPoint::kAvatarBubbleSignIn;
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn: {
@@ -742,7 +756,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
       access_point =
           signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
       signin_metrics::LogSignInOffered(
-          explicit_signin_access_point_.value_or(access_point),
+          access_point,
           account_info_for_promos.IsEmpty()
               ? signin_metrics::PromoAction::
                     PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT
@@ -807,8 +821,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             params.button_text = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_SYNC_PROMO_BUTTON_LABEL);
             button_type = ActionableItem::kHistorySyncButton;
-            signin_metrics::LogHistorySyncOptInOffered(
-                explicit_signin_access_point_.value_or(access_point));
+            signin_metrics::LogHistorySyncOptInOffered(access_point);
             break;
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kBatchUploadPromo:
@@ -870,8 +883,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
               l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SYNC_PROMO);
           params.button_text =
               l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
-          signin_metrics::LogSyncOptInOffered(
-              explicit_signin_access_point_.value_or(access_point));
+          signin_metrics::LogSyncOptInOffered(access_point);
         }
       }
       break;
@@ -888,8 +900,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
           syncer::SyncService::UserActionableError::kSignInNeedsUpdate,
           /*support_title_case=*/true));
       params.has_dotted_ring = true;
-      signin_metrics::LogSigninPendingOffered(
-          explicit_signin_access_point_.value_or(access_point));
+      signin_metrics::LogSigninPendingOffered(access_point);
       break;
     case signin_util::SignedInState::kSyncPaused:
       // Sync paused is covered by the sync errors path.
@@ -901,8 +912,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
   if (!params.button_text.empty() && params.button_action.is_null()) {
     params.button_action = base::BindRepeating(
         &ProfileMenuView::OnSigninButtonClicked, base::Unretained(this),
-        account_info_for_signin_action, button_type,
-        explicit_signin_access_point_.value_or(access_point));
+        account_info_for_signin_action, button_type, access_point);
   }
 
   return params;

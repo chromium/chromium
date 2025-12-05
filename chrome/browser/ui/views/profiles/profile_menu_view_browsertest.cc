@@ -44,6 +44,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_promo.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -2821,12 +2822,10 @@ class ProfileMenuSigninAccessPointTest : public SigninBrowserTestBase {
       : delegate_auto_reset_(signin_ui_util::SetSigninUiDelegateForTesting(
             &mock_signin_ui_delegate_)) {}
 
-  void OpenProfileMenuFromCoordinator(
-      std::optional<signin_metrics::AccessPoint> explicit_access_point =
-          std::nullopt) {
+  void OpenProfileMenuFromCoordinator(bool from_avatar_promo = false) {
     auto* coordinator = browser()->GetFeatures().profile_menu_coordinator();
     ASSERT_TRUE(coordinator);
-    coordinator->Show(/*is_source_accelerator=*/false, explicit_access_point);
+    coordinator->Show(/*is_source_accelerator=*/false, from_avatar_promo);
     ASSERT_TRUE(base::test::RunUntil(
         [coordinator]() { return coordinator->IsShowing(); }));
     ASSERT_NO_FATAL_FAILURE(
@@ -2913,16 +2912,16 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
-                       ExplicitSigninAccessPoint) {
+                       SigninAccessPointFromAvatarPromo) {
   base::HistogramTester histogram_tester;
-  const signin_metrics::AccessPoint explicit_access_point =
-      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup;
+  const signin_metrics::AccessPoint history_sync_avatar_promo_access_point =
+      signin::kHistoryOptinAvatarPromoAccessPoint;
   ASSERT_NO_FATAL_FAILURE(
-      OpenProfileMenuFromCoordinator(explicit_access_point));
+      OpenProfileMenuFromCoordinator(/*from_avatar_promo=*/true));
   // `Signin.SignIn.Offered` should NOT be recorded if the sign-in is not
   // directly offered from the profile menu.
   histogram_tester.ExpectUniqueSample("Signin.SignIn.Offered",
-                                      explicit_access_point,
+                                      history_sync_avatar_promo_access_point,
                                       /*expected_bucket_count=*/0);
 
   if (base::FeatureList::IsEnabled(
@@ -2933,12 +2932,12 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
     histogram_tester.ExpectTotalCount("Signin.SyncOptIn.Offered",
                                       /*expected_count=*/0);
     histogram_tester.ExpectUniqueSample("Signin.HistorySyncOptIn.Offered",
-                                        explicit_access_point,
+                                        history_sync_avatar_promo_access_point,
                                         /*expected_bucket_count=*/1);
     EXPECT_CALL(
         mock_signin_ui_delegate_,
         ShowHistorySyncOptinUI(browser()->profile(), account_info_.account_id,
-                               explicit_access_point));
+                               history_sync_avatar_promo_access_point));
     ASSERT_NO_FATAL_FAILURE(ClickSyncButton());
     histogram_tester.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
@@ -2949,14 +2948,15 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
     // offered from the profile menu. `Signin.HistorySyncOptIn.Offered` should
     // not be recorded.
     histogram_tester.ExpectUniqueSample("Signin.SyncOptIn.Offered",
-                                        explicit_access_point,
+                                        history_sync_avatar_promo_access_point,
                                         /*expected_bucket_count=*/1);
     histogram_tester.ExpectTotalCount("Signin.HistorySyncOptIn.Offered",
                                       /*expected_count=*/0);
 
     EXPECT_CALL(
         mock_signin_ui_delegate_,
-        ShowTurnSyncOnUI(browser()->profile(), explicit_access_point,
+        ShowTurnSyncOnUI(browser()->profile(),
+                         history_sync_avatar_promo_access_point,
                          signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
                          account_info_.account_id,
                          TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,

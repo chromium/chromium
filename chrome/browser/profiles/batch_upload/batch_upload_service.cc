@@ -7,6 +7,7 @@
 #include <array>
 #include <map>
 
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
@@ -16,6 +17,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_delegate.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"  // nogncheck
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -65,12 +67,18 @@ std::optional<syncer::DataType> PrimaryTypeFromEntryPoint(
     case BatchUploadService::EntryPoint::kBookmarksManagerPromoCard:
     case BatchUploadService::EntryPoint::
         kProfileMenuPrimaryButtonWithBookmarksAction:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo:
       return syncer::BOOKMARKS;
     case BatchUploadService::EntryPoint::kAccountSettingsPage:
     case BatchUploadService::EntryPoint::kProfileMenuRowButtonAction:
     case BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction:
     case BatchUploadService::EntryPoint::
         kProfileMenuPrimaryButtonWithWindows10DepreciationAction:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonActionFromAvatarPromo:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo:
       return std::nullopt;
   }
 }
@@ -154,14 +162,56 @@ bool HasLocalDataToShow(
       });
 }
 
+void RecordBatchUploadTriggeredMetrics(
+    BatchUploadService::EntryPoint entry_point,
+    signin::IdentityManager& identity_manager,
+    PrefService& prefs) {
+  signin::ProfileMenuAvatarButtonPromoInfo::Type promo_type;
+  switch (entry_point) {
+    case BatchUploadService::EntryPoint::kPasswordManagerSettings:
+    case BatchUploadService::EntryPoint::kPasswordPromoCard:
+    case BatchUploadService::EntryPoint::kBookmarksManagerPromoCard:
+    case BatchUploadService::EntryPoint::kProfileMenuRowButtonAction:
+    case BatchUploadService::EntryPoint::kProfileMenuPrimaryButtonAction:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithBookmarksAction:
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithWindows10DepreciationAction:
+    case BatchUploadService::EntryPoint::kAccountSettingsPage:
+      // Those entry points are not recording any metric related to the
+      // AvatarButton.
+      return;
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonActionFromAvatarPromo:
+      promo_type =
+          signin::ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo;
+      break;
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithBookmarksActionFromAvatarPromo:
+      promo_type = signin::ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadBookmarksPromo;
+      break;
+    case BatchUploadService::EntryPoint::
+        kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo:
+      promo_type = signin::ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo;
+      break;
+  }
+
+  signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
+      promo_type, &identity_manager, prefs);
+}
+
 }  // namespace
 
 BatchUploadService::BatchUploadService(
     signin::IdentityManager* identity_manager,
     syncer::SyncService* sync_service,
+    PrefService* pref_service,
     std::unique_ptr<BatchUploadDelegate> delegate)
-    : identity_manager_(*identity_manager),
-      sync_service_(*sync_service),
+    : identity_manager_(CHECK_DEREF(identity_manager)),
+      sync_service_(CHECK_DEREF(sync_service)),
+      prefs_(CHECK_DEREF(pref_service)),
       delegate_(std::move(delegate)) {}
 
 BatchUploadService::~BatchUploadService() = default;
@@ -187,7 +237,7 @@ void BatchUploadService::OpenBatchUpload(
   }
 
   // Create the state of the dialog that may be shown, in preparation for
-  // showing the dialog once all the local data descriptions are ready in
+  // showing the dialog once all the local data descriptions are in
   // `OnGetLocalDataDescriptionsReady()`. Allows to make sure that while getting
   // the local data descriptions, no other dialog opening is triggered.
   state_.dialog_state_ = std::make_unique<ResettableState::DialogState>();
@@ -242,6 +292,7 @@ void BatchUploadService::OnBatchUploadDialogResult(
         item_ids_to_move) {
   CHECK(state_.dialog_state_);
 
+  // Batch Upload was cancelled.
   if (item_ids_to_move.empty()) {
     std::move(state_.dialog_state_->dialog_closed_callback_).Run();
     ResetDialogState();
@@ -261,6 +312,9 @@ void BatchUploadService::OnBatchUploadDialogResult(
   // The callback has to be called after `TriggerLocalDataMigrationForItems()`
   // so that it reacts to the state after the migration.
   std::move(state_.dialog_state_->dialog_closed_callback_).Run();
+
+  RecordBatchUploadTriggeredMetrics(state_.dialog_state_->entry_point_,
+                                    identity_manager_.get(), prefs_.get());
   ResetDialogState();
 }
 

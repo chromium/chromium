@@ -73,7 +73,8 @@ BatchUploadServiceTestHelper::CreateBatchUploadService(
     signin::IdentityManager* identity_manager,
     std::unique_ptr<BatchUploadDelegate> delegate) {
   return std::make_unique<BatchUploadService>(
-      identity_manager, GetSyncServiceMock(), std::move(delegate));
+      identity_manager, GetSyncServiceMock(), &pref_service_,
+      std::move(delegate));
 }
 
 const syncer::LocalDataDescription&

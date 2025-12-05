@@ -58,8 +58,7 @@ class ProfileMenuView : public ProfileMenuViewBase {
   ProfileMenuView(ui::TrackedElement* anchor_element,
                   Browser* browser,
                   signin::ProfileMenuAvatarButtonPromoInfo promo_info,
-                  std::optional<signin_metrics::AccessPoint>
-                      explicit_signin_access_point = std::nullopt);
+                  bool from_avatar_promo);
   ~ProfileMenuView() override;
 
   ProfileMenuView(const ProfileMenuView&) = delete;
@@ -147,7 +146,8 @@ class ProfileMenuView : public ProfileMenuViewBase {
 
   const raw_ref<Browser> browser_;
   signin::ProfileMenuAvatarButtonPromoInfo promo_info_;
-  std::optional<signin_metrics::AccessPoint> explicit_signin_access_point_;
+  // If the profile menu opening originated from a Promo on the AvatarButton.
+  bool from_avatar_promo_;
 
   std::u16string menu_title_;
   std::u16string menu_subtitle_;
