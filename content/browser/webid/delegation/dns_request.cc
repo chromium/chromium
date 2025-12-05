@@ -4,70 +4,97 @@
 
 #include "content/browser/webid/delegation/dns_request.h"
 
+#include "base/functional/callback.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "net/base/net_errors.h"
-#include "net/dns/public/dns_query_type.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "net/dns/public/dns_protocol.h"
 #include "url/scheme_host_port.h"
 
 namespace content::webid {
 
-DnsRequest::DnsRequest(network::NetworkContextGetter network_context_getter)
-    : network_context_getter_(std::move(network_context_getter)) {}
+namespace {
+void OnDnsResponseParsed(DnsRequest::DnsRequestCallback callback,
+                         FetchStatus fetch_status,
+                         data_decoder::DataDecoder::ValueOrError result) {
+  std::vector<std::string> records;
+
+  bool parse_succeeded = fetch_status.parse_status == ParseStatus::kSuccess;
+  if (!parse_succeeded) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const base::Value::Dict* response = result->GetIfDict();
+  if (!response) {
+    fetch_status.parse_status = ParseStatus::kInvalidResponseError;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  if (response->FindInt("Status").value_or(-1) !=
+      net::dns_protocol::kRcodeNOERROR) {
+    fetch_status.parse_status = ParseStatus::kInvalidResponseError;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  const base::Value::List* answers = response->FindList("Answer");
+  if (!answers) {
+    fetch_status.parse_status = ParseStatus::kInvalidResponseError;
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  for (const auto& answer : *answers) {
+    const base::Value::Dict* answer_dict = answer.GetIfDict();
+    if (!answer_dict) {
+      continue;
+    }
+    if (answer_dict->FindInt("type").value_or(-1) !=
+        net::dns_protocol::kTypeTXT) {
+      // Unexpected because we specifically asked for TXT, but ignore this one.
+      continue;
+    }
+    const std::string* data = answer_dict->FindString("data");
+    if (data) {
+      records.push_back(*data);
+    }
+  }
+  std::move(callback).Run(std::move(records));
+}
+}  // namespace
+
+DnsRequest::DnsRequest(NetworkRequestManagerGetter network_manager_getter)
+    : network_manager_getter_(std::move(network_manager_getter)) {}
 
 DnsRequest::~DnsRequest() = default;
 
 void DnsRequest::SendRequest(const std::string& hostname,
                              DnsRequestCallback callback) {
-  callback_ = std::move(callback);
-
-  network::mojom::ResolveHostParametersPtr parameters =
-      network::mojom::ResolveHostParameters::New();
-  parameters->dns_query_type = net::DnsQueryType::TXT;
-  parameters->cache_usage =
-      network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
-  auto* network_context = network_context_getter_.Run();
-  if (!network_context) {
-    std::move(callback_).Run(std::nullopt);
+  EmailVerifierNetworkRequestManager* request_manager =
+      network_manager_getter_.Run();
+  if (!request_manager) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  network_context->CreateHostResolver(
-      std::nullopt, host_resolver_.BindNewPipeAndPassReceiver());
-
-  host_resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
-                                  net::HostPortPair(hostname, 0)),
-                              net::NetworkAnonymizationKey(),
-                              std::move(parameters),
-                              receiver_.BindNewPipeAndPassRemote());
-}
-
-void DnsRequest::OnComplete(
-    int result,
-    const net::ResolveErrorInfo& resolve_error_info,
-    const net::AddressList& resolved_addresses,
-    const std::vector<net::HostResolverEndpointResult>& alternative_endpoints) {
-  if (result != net::OK) {
-    std::move(callback_).Run(std::nullopt);
+  const std::string& prefix =
+      GetContentClient()->browser()->GetDnsTxtResolverUrlPrefix();
+  if (prefix.empty()) {
+    std::move(callback).Run(std::nullopt);
     return;
   }
+  std::string query_url = base::StrCat(
+      {prefix, base::EscapeQueryParamValue(hostname, /*use_plus=*/true)});
 
-  // If there are text results, OnTextResults is called first, so callback_
-  // will be null because it has already been std::moved and run.
-  // If callback_ is still valid, it means OnTextResults was not called,
-  // so we return an empty vector to indicate that there were no TXT
-  // records.
-  if (callback_) {
-    std::move(callback_).Run(std::vector<std::string>());
-  }
+  request_manager->DownloadAndParseUncredentialedUrl(
+      GURL(query_url),
+      base::BindOnce(OnDnsResponseParsed, std::move(callback)));
 }
-
-void DnsRequest::OnTextResults(const std::vector<std::string>& text_results) {
-  std::move(callback_).Run(text_results);
-}
-
-void DnsRequest::OnHostnameResults(
-    const std::vector<net::HostPortPair>& hosts) {}
 
 }  // namespace content::webid

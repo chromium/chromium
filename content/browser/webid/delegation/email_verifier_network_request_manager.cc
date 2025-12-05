@@ -194,12 +194,8 @@ void EmailVerifierNetworkRequestManager::FetchWellKnown(
   replacements.SetPathStr(kWellKnownPath);
   GURL well_known_url = provider.ReplaceComponents(replacements);
 
-  std::unique_ptr<network::ResourceRequest> resource_request =
-      CreateUncredentialedResourceRequest(well_known_url,
-                                          /*send_origin=*/false,
-                                          /*follow_redirects=*/true);
-  DownloadJsonAndParse(
-      std::move(resource_request), /*url_encoded_post_data=*/std::nullopt,
+  DownloadAndParseUncredentialedUrl(
+      well_known_url,
       base::BindOnce(&OnWellKnownParsed, std::move(callback), well_known_url));
 }
 
@@ -215,6 +211,18 @@ void EmailVerifierNetworkRequestManager::SendTokenRequest(
   DownloadJsonAndParse(
       std::move(resource_request), url_encoded_post_data,
       base::BindOnce(&OnTokenRequestParsed, std::move(callback)));
+}
+
+void EmailVerifierNetworkRequestManager::DownloadAndParseUncredentialedUrl(
+    const GURL& url,
+    ParseJsonCallback callback) {
+  std::unique_ptr<network::ResourceRequest> resource_request =
+      CreateUncredentialedResourceRequest(url,
+                                          /*send_origin=*/false,
+                                          /*follow_redirects=*/true);
+  DownloadJsonAndParse(std::move(resource_request),
+                       /*url_encoded_post_data=*/std::nullopt,
+                       std::move(callback));
 }
 
 }  // namespace content::webid

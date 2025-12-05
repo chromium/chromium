@@ -76,6 +76,9 @@ class CONTENT_EXPORT EmailVerifierNetworkRequestManager
                                 const std::string& url_encoded_post_data,
                                 TokenRequestCallback callback);
 
+  virtual void DownloadAndParseUncredentialedUrl(const GURL& url,
+                                                 ParseJsonCallback callback);
+
  private:
   // NetworkRequestManager.
   net::NetworkTrafficAnnotationTag CreateTrafficAnnotation() override;

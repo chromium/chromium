@@ -10,6 +10,7 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
 #include "content/public/browser/browser_context.h"
@@ -47,10 +48,11 @@ EmailVerificationRequest::EmailVerificationRequest(
     : EmailVerificationRequest(
           EmailVerifierNetworkRequestManager::Create(&render_frame_host),
           std::make_unique<DnsRequest>(base::BindRepeating(
-              [](RenderFrameHost* rfh) -> network::mojom::NetworkContext* {
-                return rfh->GetStoragePartition()->GetNetworkContext();
+              [](EmailVerificationRequest* request)
+                  -> EmailVerifierNetworkRequestManager* {
+                return request->network_manager_.get();
               },
-              &render_frame_host)),
+              this)),
           render_frame_host.GetSafeRef()) {}
 
 EmailVerificationRequest::EmailVerificationRequest(

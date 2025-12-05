@@ -35,12 +35,9 @@ namespace content::webid {
 // Mock DnsRequest for testing
 class MockDnsRequest : public DnsRequest {
  public:
-  explicit MockDnsRequest(network::mojom::NetworkContext* network_context)
+  explicit MockDnsRequest()
       : DnsRequest(base::BindRepeating(
-            [](network::mojom::NetworkContext* network_context) {
-              return network_context;
-            },
-            network_context)) {}
+            []() -> EmailVerifierNetworkRequestManager* { return nullptr; })) {}
   ~MockDnsRequest() override = default;
 
   MOCK_METHOD(void,
@@ -74,14 +71,12 @@ class EmailVerificationRequestTest : public RenderViewHostTestHarness {
   EmailVerificationRequestTest() = default;
 
  protected:
-  network::TestNetworkContext mock_network_context_;
   const url::Origin kRpOrigin =
       url::Origin::Create(GURL("https://rp.example.com"));
 };
 
 TEST_F(EmailVerificationRequestTest, SuccessfulVerification) {
-  auto mock_dns_request_ptr =
-      std::make_unique<NiceMock<MockDnsRequest>>(&mock_network_context_);
+  auto mock_dns_request_ptr = std::make_unique<NiceMock<MockDnsRequest>>();
   NiceMock<MockDnsRequest>* mock_dns_request_ = mock_dns_request_ptr.get();
   auto mock_network_manager_ptr =
       std::make_unique<NiceMock<MockEmailVerifierNetworkRequestManager>>();

@@ -3371,6 +3371,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Returns std::nullopt if there is no overridden value.
   virtual std::optional<bool> GetOverrideValueForStaticStorageQuota(
       BrowserContext* browser_context);
+
+  // Returns a URL prefix for a server that resolves DNS TXT records or the
+  // empty string if this is not supported.
+  // The record to query will be appended to this string (url-escaped). The
+  // returned data must be JSON in the the format described here:
+  // https://developers.google.com/speed/public-dns/docs/doh/json
+  virtual std::string GetDnsTxtResolverUrlPrefix();
 };
 
 }  // namespace content

@@ -2016,5 +2016,8 @@ std::optional<bool> ContentBrowserClient::GetOverrideValueForStaticStorageQuota(
     BrowserContext* browser_context) {
   return std::nullopt;
 }
+std::string ContentBrowserClient::GetDnsTxtResolverUrlPrefix() {
+  return std::string();
+}
 
 }  // namespace content

@@ -5,14 +5,19 @@
 #include "content/browser/webid/delegation/dns_request.h"
 
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
+#include "base/strings/escape.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "base/values.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
+#include "content/browser/webid/network_request_manager.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
+#include "content/public/test/test_utils.h"
 #include "net/base/net_errors.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
-#include "services/network/test/test_network_context.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "net/http/http_status_code.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -25,72 +30,98 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::WithArgs;
 
-class MockHostResolver : public network::mojom::HostResolver {
+using ValueOrError = data_decoder::DataDecoder::ValueOrError;
+
+static constexpr FetchStatus kStatusOk = {ParseStatus::kSuccess, net::HTTP_OK};
+
+class MockNetworkRequestManager : public EmailVerifierNetworkRequestManager {
  public:
-  MOCK_METHOD(
-      void,
-      ResolveHost,
-      (network::mojom::HostResolverHostPtr host,
-       const net::NetworkAnonymizationKey& network_anonymization_key,
-       network::mojom::ResolveHostParametersPtr optional_parameters,
-       mojo::PendingRemote<network::mojom::ResolveHostClient> response_client),
-      (override));
-  MOCK_METHOD(
-      void,
-      MdnsListen,
-      (const net::HostPortPair& host,
-       net::DnsQueryType query_type,
-       mojo::PendingRemote<network::mojom::MdnsListenClient> response_client,
-       MdnsListenCallback callback),
-      (override));
+  MockNetworkRequestManager()
+      : EmailVerifierNetworkRequestManager(url::Origin(),
+                                           nullptr,
+                                           nullptr,
+                                           content::FrameTreeNodeId()) {}
+  MOCK_METHOD(void,
+              DownloadAndParseUncredentialedUrl,
+              (const GURL& url, ParseJsonCallback callback),
+              (override));
 };
 
-class MockNetworkContext : public network::TestNetworkContext {
+ValueOrError ParseJson(std::string_view json) {
+  std::optional<base::Value> val =
+      base::JSONReader::Read(json, base::JSON_PARSE_RFC);
+  CHECK(val);
+  return ValueOrError(std::move(*val));
+}
+
+class TestContentBrowserClient : public ContentBrowserClient {
  public:
-  MOCK_METHOD(void,
-              CreateHostResolver,
-              (const std::optional<net::DnsConfigOverrides>& config_overrides,
-               mojo::PendingReceiver<network::mojom::HostResolver> receiver),
-              (override));
+  TestContentBrowserClient() = default;
+  ~TestContentBrowserClient() override = default;
+
+  std::string GetDnsTxtResolverUrlPrefix() override {
+    return "https://dns.google/resolve?type=txt&do=1&name=";
+  }
 };
 
 }  // namespace
 
 class DnsRequestTest : public testing::Test {
  public:
-  DnsRequestTest() = default;
+  DnsRequestTest() {
+    request_manager_getter_ = base::BindRepeating(
+        [](MockNetworkRequestManager* manager)
+            -> EmailVerifierNetworkRequestManager* { return manager; },
+        &mock_network_request_manager_);
+  }
 
  protected:
+  void SetUp() override {
+    original_client_ = SetBrowserClientForTesting(&test_browser_client_);
+  }
+
+  void TearDown() override { SetBrowserClientForTesting(original_client_); }
+
   base::test::TaskEnvironment task_environment_;
+  MockNetworkRequestManager mock_network_request_manager_;
+  DnsRequest::NetworkRequestManagerGetter request_manager_getter_;
+  TestContentBrowserClient test_browser_client_;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
 };
 
 TEST_F(DnsRequestTest, Success) {
-  MockHostResolver mock_host_resolver;
-  MockNetworkContext mock_network_context;
-  mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
-  EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
-                    mojo::PendingReceiver<network::mojom::HostResolver>
-                        pending_receiver) {
-        receiver.Bind(std::move(pending_receiver));
-      });
-
-  EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
+  EXPECT_CALL(mock_network_request_manager_, DownloadAndParseUncredentialedUrl)
       .WillOnce(
-          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                             response_client) {
-            mojo::Remote<network::mojom::ResolveHostClient> client(
-                std::move(response_client));
-            client->OnTextResults({"iss=record1"});
-            client->OnComplete(net::OK, net::ResolveErrorInfo(net::OK),
-                               net::AddressList(), {});
+          WithArgs<0, 1>([&](const GURL& url, ParseJsonCallback callback) {
+            static constexpr char kResponse[] = R"({
+    "Status": 0,
+    "TC": false,
+    "RD": true,
+    "RA": true,
+    "AD": false,
+    "CD": false,
+    "Question": [{
+      "name":"hostname.",
+      "type":16
+    }],
+    "Answer":
+      [{
+        "name":"hostname.",
+        "type":16,
+        "TTL":21600,
+        "data":"iss=record1"
+        }
+      ],
+    "Comment":"Response from 127.0.0.1."
+    })";
+            EXPECT_EQ(url.spec(),
+                      "https://dns.google/resolve?type=txt&do=1&name=" +
+                          base::EscapeQueryParamValue("hostname",
+                                                      /*use_plus=*/true));
+            std::move(callback).Run(kStatusOk, ParseJson(kResponse));
           }));
 
-  DnsRequest dns_request(base::BindRepeating(
-      [](network::mojom::NetworkContext* network_context) {
-        return network_context;
-      },
-      &mock_network_context));
+  DnsRequest dns_request(request_manager_getter_);
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
@@ -103,33 +134,14 @@ TEST_F(DnsRequestTest, Success) {
 }
 
 TEST_F(DnsRequestTest, NetError) {
-  MockHostResolver mock_host_resolver;
-  MockNetworkContext mock_network_context;
-  mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
-  EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
-                    mojo::PendingReceiver<network::mojom::HostResolver>
-                        pending_receiver) {
-        receiver.Bind(std::move(pending_receiver));
-      });
+  EXPECT_CALL(mock_network_request_manager_, DownloadAndParseUncredentialedUrl)
+      .WillOnce(WithArgs<1>([](ParseJsonCallback callback) {
+        std::move(callback).Run(
+            {ParseStatus::kInvalidResponseError, net::ERR_FAILED},
+            base::unexpected("err"));
+      }));
 
-  EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
-      .WillOnce(
-          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                             response_client) {
-            mojo::Remote<network::mojom::ResolveHostClient> client(
-                std::move(response_client));
-            client->OnComplete(
-                net::ERR_NAME_NOT_RESOLVED,
-                net::ResolveErrorInfo(net::ERR_NAME_NOT_RESOLVED),
-                net::AddressList(), {});
-          }));
-
-  DnsRequest dns_request(base::BindRepeating(
-      [](network::mojom::NetworkContext* network_context) {
-        return network_context;
-      },
-      &mock_network_context));
+  DnsRequest dns_request(request_manager_getter_);
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
@@ -143,7 +155,7 @@ TEST_F(DnsRequestTest, NetError) {
 
 TEST_F(DnsRequestTest, NetworkContextGetterReturnsNull) {
   DnsRequest dns_request(base::BindRepeating(
-      []() -> network::mojom::NetworkContext* { return nullptr; }));
+      []() -> EmailVerifierNetworkRequestManager* { return nullptr; }));
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;
@@ -156,32 +168,40 @@ TEST_F(DnsRequestTest, NetworkContextGetterReturnsNull) {
 }
 
 TEST_F(DnsRequestTest, MultipleTxtRecords) {
-  MockHostResolver mock_host_resolver;
-  MockNetworkContext mock_network_context;
-  mojo::Receiver<network::mojom::HostResolver> receiver(&mock_host_resolver);
-  EXPECT_CALL(mock_network_context, CreateHostResolver(_, _))
-      .WillOnce([&](const std::optional<net::DnsConfigOverrides>&,
-                    mojo::PendingReceiver<network::mojom::HostResolver>
-                        pending_receiver) {
-        receiver.Bind(std::move(pending_receiver));
-      });
+  static constexpr char kResponse[] = R"({
+    "Status": 0,
+    "TC": false,
+    "RD": true,
+    "RA": true,
+    "AD": false,
+    "CD": false,
+    "Question": [{
+      "name":"hostname.",
+      "type":16
+    }],
+    "Answer":
+      [{
+        "name":"hostname.",
+        "type":16,
+        "TTL":21600,
+        "data":"iss=hello.coop"
+       },
+       {
+        "name":"hostname.",
+        "type":16,
+        "TTL":21600,
+        "data":"iss=foo.com"
+       }
+      ],
+    "Comment":"Response from 127.0.0.1."
+    })";
 
-  EXPECT_CALL(mock_host_resolver, ResolveHost(_, _, _, _))
-      .WillOnce(
-          WithArgs<3>([](mojo::PendingRemote<network::mojom::ResolveHostClient>
-                             response_client) {
-            mojo::Remote<network::mojom::ResolveHostClient> client(
-                std::move(response_client));
-            client->OnTextResults({"iss=hello.coop", "iss=foo.com"});
-            client->OnComplete(net::OK, net::ResolveErrorInfo(net::OK),
-                               net::AddressList(), {});
-          }));
+  EXPECT_CALL(mock_network_request_manager_, DownloadAndParseUncredentialedUrl)
+      .WillOnce(WithArgs<1>([](ParseJsonCallback callback) {
+        std::move(callback).Run(kStatusOk, ParseJson(kResponse));
+      }));
 
-  DnsRequest dns_request(base::BindRepeating(
-      [](network::mojom::NetworkContext* network_context) {
-        return network_context;
-      },
-      &mock_network_context));
+  DnsRequest dns_request(request_manager_getter_);
 
   base::RunLoop run_loop;
   base::MockCallback<DnsRequest::DnsRequestCallback> callback;

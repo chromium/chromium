@@ -6,42 +6,31 @@
 #define CONTENT_BROWSER_WEBID_DELEGATION_DNS_REQUEST_H_
 
 #include "base/functional/callback.h"
+#include "content/browser/webid/delegation/email_verifier_network_request_manager.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/bindings/receiver.h"
-#include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/network_context_getter.h"
-#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "url/origin.h"
 
 namespace content::webid {
 
 // Performs a DNS TXT query for a given origin.
-class CONTENT_EXPORT DnsRequest : public network::mojom::ResolveHostClient {
+class CONTENT_EXPORT DnsRequest {
  public:
+  using NetworkRequestManagerGetter =
+      base::RepeatingCallback<EmailVerifierNetworkRequestManager*()>;
   using DnsRequestCallback = base::OnceCallback<void(
       const std::optional<std::vector<std::string>>& text_records)>;
 
-  explicit DnsRequest(network::NetworkContextGetter network_context_getter);
-  ~DnsRequest() override;
+  explicit DnsRequest(
+      NetworkRequestManagerGetter network_request_manager_getter);
+  virtual ~DnsRequest();
 
-  // Sends a DNS TXT request for the given hostname.
+  // Sends a DNS TXT request for the given hostname. The caller must ensure that
+  // the `hostname` provided is valid.
   virtual void SendRequest(const std::string& hostname,
                            DnsRequestCallback callback);
 
  private:
-  // network::mojom::ResolveHostClient:
-  void OnComplete(int result,
-                  const net::ResolveErrorInfo& resolve_error_info,
-                  const net::AddressList& resolved_addresses,
-                  const std::vector<net::HostResolverEndpointResult>&
-                      alternative_endpoints) override;
-  void OnTextResults(const std::vector<std::string>& text_results) override;
-  void OnHostnameResults(const std::vector<net::HostPortPair>& hosts) override;
-
-  network::NetworkContextGetter network_context_getter_;
-  mojo::Remote<network::mojom::HostResolver> host_resolver_;
-  mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
-  DnsRequestCallback callback_;
+  NetworkRequestManagerGetter network_manager_getter_;
 };
 
 }  // namespace content::webid

@@ -8881,3 +8881,9 @@ ChromeContentBrowserClient::GetOverrideValueForStaticStorageQuota(
     return std::nullopt;
   }
 }
+
+std::string ChromeContentBrowserClient::GetDnsTxtResolverUrlPrefix() {
+  static constexpr char kGoogleDnsResolverUrl[] =
+      "https://dns.google/resolve?type=txt&do=1&name=";
+  return kGoogleDnsResolverUrl;
+}
