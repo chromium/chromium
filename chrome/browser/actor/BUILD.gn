@@ -273,9 +273,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "actor_keyed_service_unittest.cc",
+    "actor_metrics_unittest.cc",
     "actor_task_metadata_unittest.cc",
     "aggregated_journal_unittest.cc",
-    "histograms_unittest.cc",
     "safety_list_manager_unittest.cc",
     "safety_list_unittest.cc",
     "shared_types_unittest.cc",

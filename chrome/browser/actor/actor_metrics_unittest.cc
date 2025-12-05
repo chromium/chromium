@@ -30,7 +30,7 @@ void CheckToolRequestVariantNamesImpl(
    ...);
 }
 
-TEST(ActorHistogramsTest, CheckToolRequestVariantNames) {
+TEST(ActorMetricsTest, CheckToolRequestVariantNames) {
   std::optional<base::HistogramVariantsEntryMap> tool_requests =
       base::ReadVariantsFromHistogramsXml("ToolRequest", "actor");
   ASSERT_TRUE(tool_requests.has_value());
@@ -42,7 +42,7 @@ TEST(ActorHistogramsTest, CheckToolRequestVariantNames) {
                           std::variant_size_v<actor::ToolRequestVariant>>{});
 }
 
-TEST(ActorHistogramsTest, CheckActorTaskStateVariantNames) {
+TEST(ActorMetricsTest, CheckActorTaskStateVariantNames) {
   std::optional<base::HistogramVariantsEntryMap> task_states =
       base::ReadVariantsFromHistogramsXml("ActorTaskState", "actor");
   ASSERT_TRUE(task_states.has_value());
