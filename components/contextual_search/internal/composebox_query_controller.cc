@@ -21,6 +21,7 @@
 #include "base/time/time.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_mime_type.h"
 #include "components/lens/lens_payload_construction.h"
 #include "components/lens/lens_request_construction.h"
 #include "components/lens/lens_url_utils.h"
@@ -270,6 +271,8 @@ ComposeboxQueryController::ComposeboxQueryController(
   use_separate_request_ids_for_multi_context_viewport_images_ =
       feature_params
           ->use_separate_request_ids_for_multi_context_viewport_images;
+  prioritize_suggestions_for_the_first_attached_document_ =
+      feature_params->prioritize_suggestions_for_the_first_attached_document;
   create_request_task_runner_ = base::ThreadPool::CreateTaskRunner(
       {base::TaskPriority::USER_VISIBLE,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
@@ -656,11 +659,40 @@ ComposeboxQueryController::CreateSuggestInputs(
   std::unique_ptr<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
       std::make_unique<lens::proto::LensOverlaySuggestInputs>();
 
-  // Only a single file is supported for suggest inputs.
-  if (attached_context_tokens.size() != 1) {
-    return suggest_inputs;
+  FileInfo* file_info = nullptr;
+
+  if (prioritize_suggestions_for_the_first_attached_document_) {
+    // Serve suggestions for the first attached PDF document.
+    for (const auto& token : attached_context_tokens) {
+      FileInfo* attachment_info = GetMutableFileInfo(token);
+      // Skip past failed uploads.
+      if (!attachment_info) {
+        continue;
+      }
+
+      // Fall back to the first element ever added in case BE supports that.
+      if (!file_info) {
+        file_info = attachment_info;
+      }
+
+      // Look for the first PDF/Tab attachment and pick that in the absence over
+      // any other attachment.
+      if (attachment_info->mime_type == lens::MimeType::kPdf ||
+          attachment_info->mime_type == lens::MimeType::kHtml ||
+          attachment_info->mime_type == lens::MimeType::kPlainText ||
+          attachment_info->mime_type == lens::MimeType::kAnnotatedPageContent) {
+        file_info = attachment_info;
+        break;
+      }
+    }
+  } else {
+    // Only a single file is supported for suggest inputs.
+    if (attached_context_tokens.size() != 1) {
+      return suggest_inputs;
+    }
+    file_info = GetMutableFileInfo(attached_context_tokens.at(0));
   }
-  auto* file_info = GetMutableFileInfo(attached_context_tokens.at(0));
+
   if (!file_info) {
     return suggest_inputs;
   }
