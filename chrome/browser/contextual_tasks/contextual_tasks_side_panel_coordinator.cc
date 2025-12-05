@@ -229,7 +229,8 @@ bool ContextualTasksSidePanelCoordinator::IsSidePanelOpen() {
       SidePanelEntry::PanelType::kToolbar);
 }
 
-bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask() {
+bool ContextualTasksSidePanelCoordinator::IsSidePanelOpenForContextualTask()
+    const {
   return browser_window_->GetFeatures()
       .side_panel_ui()
       ->IsSidePanelEntryShowing(

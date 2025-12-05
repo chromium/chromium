@@ -78,7 +78,7 @@ class ContextualTasksSidePanelCoordinator : public TabStripModelObserver,
 
   // Check if the side panel is currently opening for ContextualTask as other
   // feature might also show side panel.
-  bool IsSidePanelOpenForContextualTask();
+  bool IsSidePanelOpenForContextualTask() const;
 
   // Transfer WebContents from tab to side panel.
   // This is called before a tab is converted to the side panel.
