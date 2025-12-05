@@ -141,8 +141,6 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabledAutofill) {
 }
 
 TEST(SyncPolicyHandlerTest, SyncTypesListDisabled_TabsAndSavedTabGroups) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kSyncLinkTabsAndTabGroupsPolicy);
   // Start with prefs enabled so we can sense that they have changed.
   PrefValueMap prefs;
   prefs.SetBoolean(prefs::internal::kSyncTabs, true);
@@ -166,32 +164,7 @@ TEST(SyncPolicyHandlerTest, SyncTypesListDisabled_TabsAndSavedTabGroups) {
   EXPECT_FALSE(enabled);
 }
 
-TEST(SyncPolicyHandlerTest,
-     SyncTypesListDisabled_TabsAndSavedTabGroupsFeatureDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(kSyncLinkTabsAndTabGroupsPolicy);
-  // Start with prefs enabled so we can sense that they have changed.
-  PrefValueMap prefs;
-  prefs.SetBoolean(prefs::internal::kSyncTabs, true);
-  prefs.SetBoolean(prefs::internal::kSyncSavedTabGroups, true);
 
-  // Create a policy that disables tabs.
-  policy::PolicyMap policy;
-  auto disabled_types = base::Value::List().Append("tabs");
-  policy.Set(policy::key::kSyncTypesListDisabled,
-             policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
-             policy::POLICY_SOURCE_CLOUD,
-             base::Value(std::move(disabled_types)), nullptr);
-  SyncPolicyHandler handler;
-  handler.ApplyPolicySettings(policy, &prefs);
-
-  // Only tabs should be disabled.
-  bool enabled;
-  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncTabs, &enabled));
-  EXPECT_FALSE(enabled);
-  ASSERT_TRUE(prefs.GetBoolean(prefs::internal::kSyncSavedTabGroups, &enabled));
-  EXPECT_TRUE(enabled);
-}
 
 TEST(SyncPolicyHandlerTest, SyncTypesListDisabledInvalidEntry) {
   // Start with prefs enabled so we can sense that they have changed.
