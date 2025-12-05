@@ -39,6 +39,10 @@ void OpenUrlInNewTab(content::WebUI* web_ui, const GURL& url) {
 
 std::vector<contextual_tasks::mojom::TabPtr> TabsFromContext(
     std::unique_ptr<contextual_tasks::ContextualTaskContext> context) {
+  if (!context) {
+    return {};
+  }
+
   std::vector<contextual_tasks::mojom::TabPtr> tabs;
 
   for (const auto& attachment : context->GetUrlAttachments()) {
