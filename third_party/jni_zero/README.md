@@ -55,16 +55,18 @@ To add JNI to a class:
    the declaration of the corresponding static methods you wish to have
    implemented.
 2. Call native functions using `${OriginalClassName}Jni.get().${method}()`
-3. In C++ code, #include the header `${OriginalClassName}_jni.h`. (The path will
-   depend on the location of the `generate_jni` BUILD rule that lists your Java
-   source code.)
-
-Note: Include this header from only a single `.cc` file as the header defines
-functions. That `.cc` must implement your native code by defining non-member
-functions named `JNI_${OriginalClassName}_${UpperCamelCaseMethod}` for static
-methods and member functions named
-`${OriginalClassName}::${UpperCamelCaseMethod}` for non-static methods. Member
-functions need be declared in the header file as well.
+3. In C++ code, add: `#include "${OriginalClassName}_jni.h"`
+   * The path will depend on the location of the `generate_jni` build rule
+     that lists your Java source code.
+   * The header should generally be included last, as it must appear after
+     headers that define types used in `@JniType` annotations.
+4. Add `DEFINE_JNI(JavaClassName)` to the bottom of your `.cc` file
+5. Implement the native methods.
+   * If unsure of what the signatures should look like, inspect the generated
+     `_jni.h` file.
+   * The naming scheme is
+     * Non-class methods: `JNI_${ClassName}_${UpperCamelCaseMethod}`
+     * Class methods: `${OriginalClassName}::${UpperCamelCaseMethod}`
 
 #### Example:
 **Java**
@@ -100,6 +102,8 @@ class MyClass {
 **C++**
 ```c++
 #include "third_party/jni_zero/jni_zero.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
 #include "<path to BUILD.gn>/<generate_jni target name>/MyClass_jni.h"
 
 class MyClass {
@@ -107,13 +111,21 @@ public:
   void NonStatic(JNIEnv* env);
 }
 
-// Notice that unlike Java, function names are capitalized in C++.
-// Static function names should follow this format and don't need to be declared.
-void JNI_MyClass_Foo(JNIEnv* env) { ... }
-void JNI_MyClass_Bar(JNIEnv* env, jint a, jint b) { ... }
+namespace { // Can also declare each with `static`
 
-// Member functions need to be declared.
+void JNI_MyClass_Foo(JNIEnv* env) {
+  ...
+}
+
+void JNI_MyClass_Bar(JNIEnv* env, jint a, jint b) {
+  ...
+}
+
+} // namespace
+
 void MyClass::NonStatic(JNIEnv* env) { ... }
+
+DEFINE_JNI(MyClass)
 ```
 
 ### Calling Native -> Java
