@@ -89,7 +89,12 @@ void GlobalFeatures::Init() {
           *g_browser_process, g_browser_process);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  InitCoreFeatures();
+
 #if BUILDFLAG(ENABLE_GLIC)
+  glic::GlicGlobalEnabling::Delegate glic_enabling_delegate;
+  glic_global_enabling_ =
+      std::make_unique<glic::GlicGlobalEnabling>(glic_enabling_delegate);
   if (glic::GlicEnabling::IsEnabledByFlags()) {
     glic_profile_manager_ = std::make_unique<glic::GlicProfileManager>();
     glic_background_mode_manager_ =
@@ -99,8 +104,6 @@ void GlobalFeatures::Init() {
         std::make_unique<glic::GlicSyntheticTrialManager>();
   }
 #endif
-
-  InitCoreFeatures();
 }
 
 void GlobalFeatures::InitCoreFeatures() {
