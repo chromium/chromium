@@ -23,10 +23,6 @@ extern const char kGeneratedSafeBrowsingPref[];
 class GeneratedSafeBrowsingPref
     : public extensions::settings_private::GeneratedPref {
  public:
-  // Returns the default Safe Browsing setting for the given `bundle_setting`.
-  static SafeBrowsingState GetDefault(
-      SecuritySettingsBundleSetting bundle_setting);
-
   explicit GeneratedSafeBrowsingPref(Profile* profile);
 
   // Generated Preference Interface.

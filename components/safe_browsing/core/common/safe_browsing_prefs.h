@@ -407,7 +407,17 @@ enum class SecuritySettingsBundleSetting {
 };
 // LINT.ThenChange(/chrome/browser/resources/settings/privacy_page/security/security_page_v2.ts:SecuritySettingsBundleSetting)
 
+// Returns the user's security-settings-bundle. The user may have changed the
+// settings controlled by the bundle from the bundle defaults.
+SecuritySettingsBundleSetting GetSecurityBundleSetting(
+    const PrefService& prefs);
+
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs);
+
+// Returns the default safe-browsing setting for the passed-in security-bundle
+// type.
+SafeBrowsingState GetDefaultSafeBrowsingState(
+    SecuritySettingsBundleSetting bundle_setting);
 
 // Set the SafeBrowsing prefs.  Records whether ESB was enabled by Tailored
 // Security (through account integration).

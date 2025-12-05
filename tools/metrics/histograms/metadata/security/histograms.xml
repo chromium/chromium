@@ -150,6 +150,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Security.EnhancedBundle.IsEnhancedSelected"
+    enum="BooleanEnabled" expires_after="2026-04-01">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Whether the enhanced-security settings bundle is selected. Recorded for all
+    uma log at upload time by the BundleSettingsMetricsProvider for the main
+    profile only.
+  </summary>
+</histogram>
+
+<histogram
+    name="Security.EnhancedBundle.SafeBrowsingSetting.WasModifiedFromDefault"
+    enum="Boolean" expires_after="2026-04-01">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the user has changed the safe browsing setting from the
+    default for the enhanced-security bundle. Recorded for all uma logs at
+    upload time by the BundleSettingsMetricsProvider for the main profile only.
+  </summary>
+</histogram>
+
 <histogram name="Security.GwpAsan.Activated.{Allocator}.{Process}"
     enum="Boolean" expires_after="2026-04-19">
   <owner>mpdenton@chromium.org</owner>
@@ -832,6 +855,18 @@ chromium-metrics-reviews@google.com.
     The final Site Engagement score (0 to 100) of a URL during a visit to a
     page. Recorded when the user closes the page or initiates a new navigation.
     {SafetyTip}
+  </summary>
+</histogram>
+
+<histogram
+    name="Security.StandardBundle.SafeBrowsingSetting.WasModifiedFromDefault"
+    enum="Boolean" expires_after="2026-04-01">
+  <owner>awado@google.com</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records whether the user has changed the safe browsing setting from the
+    default for the standard bundle. Recorded for all uma logs at upload time by
+    the BundleSettingsMetricsProvider for the main profile only.
   </summary>
 </histogram>
 

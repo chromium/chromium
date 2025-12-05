@@ -19,7 +19,13 @@
 
 using enum safe_browsing::ExtendedReportingLevel;
 
+namespace safe_browsing {
 namespace {
+
+const SafeBrowsingState kStandardSecurityBundleDefault =
+    SafeBrowsingState::STANDARD_PROTECTION;
+const SafeBrowsingState kEnhancedSecurityBundleDefault =
+    SafeBrowsingState::ENHANCED_PROTECTION;
 
 // Update the correct UMA metric based on which pref was changed and which UI
 // the change was made on.
@@ -69,7 +75,15 @@ GURL GetSimplifiedURL(const GURL& url) {
 
 }  // namespace
 
-namespace safe_browsing {
+SecuritySettingsBundleSetting GetSecurityBundleSetting(
+    const PrefService& prefs) {
+  auto security_settings_bundle =
+      prefs.GetInteger(prefs::kSecuritySettingsBundle);
+  return (security_settings_bundle ==
+                  static_cast<int>(SecuritySettingsBundleSetting::ENHANCED)
+              ? SecuritySettingsBundleSetting::ENHANCED
+              : SecuritySettingsBundleSetting::STANDARD);
+}
 
 SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
   if (IsEnhancedProtectionEnabled(prefs)) {
@@ -78,6 +92,16 @@ SafeBrowsingState GetSafeBrowsingState(const PrefService& prefs) {
     return SafeBrowsingState::STANDARD_PROTECTION;
   } else {
     return SafeBrowsingState::NO_SAFE_BROWSING;
+  }
+}
+
+SafeBrowsingState GetDefaultSafeBrowsingState(
+    SecuritySettingsBundleSetting bundle_setting) {
+  switch (bundle_setting) {
+    case SecuritySettingsBundleSetting::STANDARD:
+      return kStandardSecurityBundleDefault;
+    case SecuritySettingsBundleSetting::ENHANCED:
+      return kEnhancedSecurityBundleDefault;
   }
 }
 

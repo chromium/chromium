@@ -13,27 +13,7 @@
 namespace settings_api = extensions::api::settings_private;
 
 namespace safe_browsing {
-namespace {
-
-const SafeBrowsingState kStandardSecurityBundleDefault =
-    SafeBrowsingState::STANDARD_PROTECTION;
-const SafeBrowsingState kEnhancedSecurityBundleDefault =
-    SafeBrowsingState::ENHANCED_PROTECTION;
-
-}  // anonymous namespace
-
 const char kGeneratedSafeBrowsingPref[] = "generated.safe_browsing";
-
-// static
-SafeBrowsingState GeneratedSafeBrowsingPref::GetDefault(
-    SecuritySettingsBundleSetting bundle_setting) {
-  switch (bundle_setting) {
-    case SecuritySettingsBundleSetting::STANDARD:
-      return kStandardSecurityBundleDefault;
-    case SecuritySettingsBundleSetting::ENHANCED:
-      return kEnhancedSecurityBundleDefault;
-  }
-}
 
 GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
     : profile_(profile) {

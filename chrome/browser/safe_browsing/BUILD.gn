@@ -10,6 +10,8 @@ static_library("safe_browsing") {
   sources = [
     "chrome_controller_client.cc",
     "chrome_controller_client.h",
+    "metrics/bundled_settings_metrics_provider.cc",
+    "metrics/bundled_settings_metrics_provider.h",
     "url_checker_delegate_impl.cc",
     "url_checker_delegate_impl.h",
   ]
@@ -641,6 +643,7 @@ source_set("unit_tests") {
     "advanced_protection_status_manager_factory_unittest.cc",
     "advanced_protection_status_manager_unittest.cc",
     "application_advanced_protection_status_detector_unittest.cc",
+    "metrics/bundled_settings_metrics_provider_unittest.cc",
   ]
 
   deps = [

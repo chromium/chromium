@@ -58,6 +58,7 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_metrics_provider.h"
 #include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
+#include "chrome/browser/safe_browsing/metrics/bundled_settings_metrics_provider.h"
 #include "chrome/browser/safe_browsing/metrics/safe_browsing_metrics_provider.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_metrics_provider.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -117,6 +118,7 @@
 #include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/regional_capabilities/regional_capabilities_switches.h"
 #include "components/safe_browsing/buildflags.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync_device_info/device_count_metrics_provider.h"
@@ -861,6 +863,10 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   // TODO(crbug.com/40765618): Add metrics registration for WebView and iOS.
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());
+  if (base::FeatureList::IsEnabled(safe_browsing::kBundledSecuritySettings)) {
+    metrics_service_->RegisterMetricsProvider(
+        std::make_unique<safe_browsing::BundledSettingsMetricsProvider>());
+  }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   metrics_service_->RegisterMetricsProvider(
