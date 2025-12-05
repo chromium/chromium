@@ -18,6 +18,7 @@
 #import "components/sync/test/mock_sync_service.h"
 #import "components/webauthn/core/browser/passkey_sync_bridge.h"
 #import "components/webauthn/core/browser/test_passkey_model.h"
+#import "ios/chrome/browser/credential_provider/model/features.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -168,6 +169,7 @@ class PasswordSettingsMediatorTest : public PlatformTest {
     mediator_ = [[PasswordSettingsMediator alloc]
            initWithReauthenticationModule:reauth_module_
                   savedPasswordsPresenter:presenter_.get()
+                             passkeyModel:passkey_model_
         bulkMovePasswordsToAccountHandler:
             bulk_move_passwords_to_account_handler_
                             exportHandler:export_handler_
@@ -361,3 +363,16 @@ TEST_F(PasswordSettingsMediatorTest, CountsProfileStorePasswordsAsLocal) {
   AddPasskey();
   [[consumer_ verify] setCanBulkMove:NO localPasswordsCount:2];
 }
+
+#if BUILDFLAG(IOS_CREDENTIAL_EXCHANGE_ENABLED)
+// Tests that the export button is enabled/disabled based on passkey presence
+// when the Credential Exchange feature is enabled.
+TEST_F(PasswordSettingsMediatorTest, UpdatesExportStateWhenPasskeysChange) {
+  CreateMediator();
+
+  [[consumer_ verify] setCanExportCredentials:NO];
+
+  AddPasskey();
+  [[consumer_ verify] setCanExportCredentials:YES];
+}
+#endif

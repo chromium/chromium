@@ -194,6 +194,9 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
 
   _reauthModule = password_manager::BuildReauthenticationModule();
 
+  webauthn::PasskeyModel* passkeyModel =
+      IOSPasskeyModelFactory::GetForProfile(self.browser->GetProfile());
+
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           IOSChromeAffiliationServiceFactory::GetForProfile(profile),
@@ -201,7 +204,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
               profile, ServiceAccessType::EXPLICIT_ACCESS),
           IOSChromeAccountPasswordStoreFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          IOSPasskeyModelFactory::GetForProfile(profile));
+          passkeyModel);
 
   _identity =
       AuthenticationServiceFactory::GetForProfile(profile)->GetPrimaryIdentity(
@@ -209,6 +212,7 @@ const NSInteger kErrorUserDismissedUpdateGPMPinFlow = -105;
   _mediator = [[PasswordSettingsMediator alloc]
          initWithReauthenticationModule:_reauthModule
                 savedPasswordsPresenter:_savedPasswordsPresenter.get()
+                           passkeyModel:passkeyModel
       bulkMovePasswordsToAccountHandler:self
                           exportHandler:self
                             prefService:profile->GetPrefs()

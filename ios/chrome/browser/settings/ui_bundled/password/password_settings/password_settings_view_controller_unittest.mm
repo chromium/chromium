@@ -103,7 +103,7 @@ TEST_F(PasswordSettingsViewControllerTest, OrdersSectionsCorrectly) {
   [controller() setCanChangeGPMPin:YES];
   [controller() setOnDeviceEncryptionState:
                     PasswordSettingsOnDeviceEncryptionStateOptedIn];
-  [controller() setCanExportPasswords:YES];
+  [controller() setCanExportCredentials:YES];
   [controller() setCanDeleteAllCredentials:YES];
 
   // Verify the order.
@@ -348,7 +348,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonDisabledWhenUserNotEligible) {
-  [controller() setCanExportPasswords:NO];
+  [controller() setCanExportCredentials:NO];
+
   EXPECT_TRUE(GetTableViewItem(SectionIdentifierExportPasswordsButton,
                                /*item=*/0)
                   .accessibilityTraits &
@@ -357,7 +358,8 @@ TEST_F(PasswordSettingsViewControllerTest,
 
 TEST_F(PasswordSettingsViewControllerTest,
        ExportButtonEnabledWhenUserEligible) {
-  [controller() setCanExportPasswords:YES];
+  [controller() setCanExportCredentials:YES];
+
   EXPECT_FALSE(GetTableViewItem(SectionIdentifierExportPasswordsButton,
                                 /*item=*/0)
                    .accessibilityTraits &

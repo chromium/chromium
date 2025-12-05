@@ -22,6 +22,10 @@ namespace syncer {
 class SyncService;
 }
 
+namespace webauthn {
+class PasskeyModel;
+}
+
 class PrefService;
 class TrustedVaultClientBackend;
 
@@ -48,6 +52,7 @@ struct CredentialCounts {
        initWithReauthenticationModule:(id<ReauthenticationProtocol>)reauthModule
               savedPasswordsPresenter:
                   (password_manager::SavedPasswordsPresenter*)passwordPresenter
+                         passkeyModel:(webauthn::PasskeyModel*)passkeyModel
     bulkMovePasswordsToAccountHandler:
         (id<BulkMoveLocalPasswordsToAccountHandler>)
             bulkMovePasswordsToAccountHandler

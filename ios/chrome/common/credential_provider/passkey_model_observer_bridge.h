@@ -11,6 +11,7 @@
 @protocol PasskeyModelObserverDelegate
 - (void)passKeyModelShuttingDown:(webauthn::PasskeyModel*)passkeyModel;
 - (void)passkeyModelIsReady:(webauthn::PasskeyModel*)passkeyModel;
+- (void)passkeyModelDidChange;
 @end
 
 // This class observes a passkey model which is not ready yet with the sole

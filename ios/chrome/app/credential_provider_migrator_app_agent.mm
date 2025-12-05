@@ -138,6 +138,9 @@ void MigrationCompleteForProfile(
   }
 }
 
+- (void)passkeyModelDidChange {
+}
+
 #pragma mark - Private
 
 // Returns whether multiple profiles have at least one scene connected.
