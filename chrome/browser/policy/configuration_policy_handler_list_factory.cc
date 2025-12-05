@@ -3368,12 +3368,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<StringMappingListPolicyHandler>(
       key::kExtensionAllowedTypes, extensions::pref_names::kAllowedTypes,
       base::BindRepeating(GetExtensionAllowedTypesMap)));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kExtensionUnpublishedAvailability,
       extensions::pref_names::kExtensionUnpublishedAvailability,
       /*min=*/0, /*max=*/1, /*clamp=*/false));
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   handlers->AddHandler(std::make_unique<ExtensionDeveloperModePolicyHandler>());
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
       key::kExtensionInstallCloudPolicyChecksEnabled,
