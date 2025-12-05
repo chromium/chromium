@@ -441,15 +441,14 @@ export class AudioWaveElement extends CrLitElement {
      * added in current frame due to mapping in mapToRange.
      */
 
-    // Start at 0, then ramp up physics during first 40 frames:
-    const startRamp = Math.min(1, this.frame_ / 40);
+    // Start at 0, then ramp up physics during first 80 frames:
+    const startRamp = Math.min(1, this.frame_ / 80);
 
     let ambientSimulatedMotion =  // Fast wave:
         0.01 + (1 + Math.cos(((this.frame_) / 60) * CIRCLE_RAD)) * 0.05;
     ambientSimulatedMotion *=  // Slow wave:
         0.25 +
-        (1 + Math.cos(((this.frame_ + 100) / 400) * CIRCLE_RAD)) * 0.2 *
-            startRamp;
+        (1 + Math.cos(((this.frame_) / 400) * CIRCLE_RAD)) * 0.2 * startRamp;
     // Random noise floor like live mic (random increase):
     ambientSimulatedMotion += 0.01 * Math.random();
     ambientSimulatedMotion *= startRamp;
