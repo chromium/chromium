@@ -10059,3 +10059,6 @@ crbug.com/465812582 external/wpt/storage-access-api/requestStorageAccess-same-si
 
 # Gardener 2025-12-04
 crbug.com/465643000 external/wpt/css/css-masking/clip-path/clip-path-inline-003.html [ Pass Failure ]
+
+# Gardener 2025-12-05
+crbug.com/466134898 http/tests/devtools/sources/debugger-pause/debugger-eval-on-call-frame-inside-iframe.js [ Timeout Pass ]
