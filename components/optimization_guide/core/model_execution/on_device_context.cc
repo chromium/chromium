@@ -119,10 +119,8 @@ bool OnDeviceContext::SetInput(MultimodalMessageReadView request,
       opts_.adapter->ConstructInputString(request, /*want_input_context=*/true);
   if (!input) {
     if (callback_) {
-      std::move(callback_).Run(base::unexpected(
-          OptimizationGuideModelExecutionError::FromModelExecutionError(
-              OptimizationGuideModelExecutionError::ModelExecutionError::
-                  kInvalidRequest)));
+      std::move(callback_).Run(
+          base::unexpected(OnDeviceError::kInvalidRequest));
     }
     return false;
   }

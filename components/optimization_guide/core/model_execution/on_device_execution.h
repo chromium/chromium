@@ -178,11 +178,8 @@ class OnDeviceExecution final
   void FallbackToRemote(Result result);
 
   // Sends an error result and terminates on-device processing as healthy.
-  void CancelPendingResponse(
-      Result result,
-      OptimizationGuideModelExecutionError::ModelExecutionError error =
-          OptimizationGuideModelExecutionError::ModelExecutionError::
-              kCancelled);
+  void CancelPendingResponse(Result result,
+                             OnDeviceError error = OnDeviceError::kCancelled);
 
   // Sends the partial response callback, and does NOT terminate processing.
   void SendPartialResponseCallback(const proto::Any& success_response_metadata);

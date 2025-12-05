@@ -22,7 +22,7 @@
 
 using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
-using ::optimization_guide::OptimizationGuideModelExecutionError;
+using ::optimization_guide::OnDeviceError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using ::optimization_guide::proto::ModelExecutionInfo;
 using ::optimization_guide::proto::ScamDetectionResponse;
@@ -664,11 +664,7 @@ TEST_F(ClientSideDetectionIntelligentScanDelegateDesktopTest,
                   OptimizationGuideModelExecutionResultStreamingCallback
                       callback) {
             callback.Run(OptimizationGuideModelStreamingExecutionResult(
-                base::unexpected(
-                    OptimizationGuideModelExecutionError::
-                        FromModelExecutionError(
-                            OptimizationGuideModelExecutionError::
-                                ModelExecutionError::kGenericFailure)),
+                base::unexpected(OnDeviceError::kGenericFailure),
                 /*provided_by_on_device=*/true,
                 /*execution_info=*/CreateExecutionInfo(/*model_version=*/123)));
           }));

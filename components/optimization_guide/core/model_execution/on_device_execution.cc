@@ -20,8 +20,6 @@ namespace optimization_guide {
 namespace {
 
 using google::protobuf::RepeatedPtrField;
-using ModelExecutionError =
-    OptimizationGuideModelExecutionError::ModelExecutionError;
 
 void LogRequest(OptimizationGuideLogger* logger,
                 const proto::OnDeviceModelServiceRequest& logged_request) {
@@ -241,8 +239,8 @@ void OnDeviceExecution::OnRequestSafetyResult(
     if (features::GetOnDeviceModelRetractUnsafeContent()) {
       CancelPendingResponse(Result::kRequestUnsafe,
                             safety_result.is_unsupported_language
-                                ? ModelExecutionError::kUnsupportedLanguage
-                                : ModelExecutionError::kFiltered);
+                                ? OnDeviceError::kUnsupportedLanguage
+                                : OnDeviceError::kFiltered);
       return;
     }
   }
@@ -299,7 +297,7 @@ void OnDeviceExecution::OnResponse(
       logged_response->set_status(
           proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
       CancelPendingResponse(Result::kResponseHadRepeats,
-                            ModelExecutionError::kResponseLowQuality);
+                            OnDeviceError::kResponseLowQuality);
       return;
     }
 
@@ -393,8 +391,8 @@ void OnDeviceExecution::OnRawOutputSafetyResult(
     if (features::GetOnDeviceModelRetractUnsafeContent()) {
       CancelPendingResponse(Result::kUsedOnDeviceOutputUnsafe,
                             safety_result.is_unsupported_language
-                                ? ModelExecutionError::kUnsupportedLanguage
-                                : ModelExecutionError::kFiltered);
+                                ? OnDeviceError::kUnsupportedLanguage
+                                : OnDeviceError::kFiltered);
 
       return;
     }
@@ -433,13 +431,12 @@ void OnDeviceExecution::OnParsedResponse(
       case ResponseParsingError::kRejectedPii:
         MutableLoggedResponse()->set_status(
             proto::ON_DEVICE_MODEL_SERVICE_RESPONSE_STATUS_RETRACTED);
-        CancelPendingResponse(Result::kContainedPII,
-                              ModelExecutionError::kFiltered);
+        CancelPendingResponse(Result::kContainedPII, OnDeviceError::kFiltered);
         return;
       case ResponseParsingError::kInvalidConfiguration:
       case ResponseParsingError::kFailed:
         CancelPendingResponse(Result::kFailedConstructingResponseMessage,
-                              ModelExecutionError::kGenericFailure);
+                              OnDeviceError::kGenericFailure);
         return;
     }
   }
@@ -476,8 +473,8 @@ void OnDeviceExecution::OnResponseSafetyResult(
     if (features::GetOnDeviceModelRetractUnsafeContent()) {
       CancelPendingResponse(Result::kUsedOnDeviceOutputUnsafe,
                             safety_result.is_unsupported_language
-                                ? ModelExecutionError::kUnsupportedLanguage
-                                : ModelExecutionError::kFiltered);
+                                ? OnDeviceError::kUnsupportedLanguage
+                                : OnDeviceError::kFiltered);
 
       return;
     }
@@ -491,7 +488,7 @@ void OnDeviceExecution::OnResponseSafetyResult(
 }
 
 void OnDeviceExecution::CancelPendingResponse(Result result,
-                                              ModelExecutionError error) {
+                                              OnDeviceError error) {
   TRACE_EVENT("optimization_guide", "OnDeviceExecution::CancelPendingResponse",
               "feature", base::ToString(feature_));
   if (!callback_) {
@@ -500,14 +497,10 @@ void OnDeviceExecution::CancelPendingResponse(Result result,
   if (histogram_logger_) {
     histogram_logger_->set_result(result);
   }
-  OptimizationGuideModelExecutionError og_error =
-      OptimizationGuideModelExecutionError::FromModelExecutionError(error);
-  exec_log_.set_model_execution_error_enum(
-      static_cast<uint32_t>(og_error.error()));
-
+  exec_log_.set_model_execution_error_enum(static_cast<uint32_t>(error));
   auto self = weak_ptr_factory_.GetWeakPtr();
   std::move(callback_).Run(OptimizationGuideModelStreamingExecutionResult(
-      base::unexpected(og_error), /*provided_by_on_device=*/true,
+      base::unexpected(error), /*provided_by_on_device=*/true,
       std::make_unique<proto::ModelExecutionInfo>(std::move(exec_log_))));
   if (self) {
     self->Cleanup(/*healthy=*/true);

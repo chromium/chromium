@@ -708,9 +708,7 @@ TEST_F(OnDeviceModelServiceControllerTest, UpdatingSafetyModelEnablesModels) {
 
   // Compose should run and be rejected as unsafe.
   EXPECT_FALSE(compose_response.GetFinalStatus());
-  EXPECT_EQ(
-      compose_response.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(compose_response.error(), OnDeviceError::kFiltered);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, SessionRequiresSafetyModel) {
@@ -940,9 +938,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session->ExecuteModel(PageUrlRequest("unsafe_url"),
                         response_.GetStreamingCallback());
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kFiltered);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
@@ -1031,9 +1027,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session->ExecuteModel(PageUrlRequest("safe_url"),
                         response_.GetStreamingCallback());
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kFiltered);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
@@ -1170,9 +1164,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   session->ExecuteModel(PageUrlRequest("url_un"),
                         response_.GetStreamingCallback());
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kFiltered);
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
                   ->on_device_model_execution_info()
@@ -1297,9 +1289,7 @@ TEST_F(OnDeviceModelServiceControllerTest, ReturnsErrorOnServiceDisconnect) {
       ExecuteModelResult::kDisconnectAndCancel, 1);
 
   ASSERT_TRUE(response_.error());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kCancelled);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
@@ -1318,9 +1308,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnAddContext) {
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(response_.error());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kCancelled);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
@@ -1335,9 +1323,7 @@ TEST_F(OnDeviceModelServiceControllerTest, CancelsExecuteOnExecute) {
 
   EXPECT_FALSE(resp1.GetFinalStatus());
   EXPECT_TRUE(resp2.GetFinalStatus());
-  EXPECT_EQ(
-      *resp1.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(*resp1.error(), OnDeviceError::kCancelled);
   EXPECT_EQ(*resp2.value(), "execute:bar max:1024");
 }
 
@@ -1820,9 +1806,7 @@ TEST_F(OnDeviceModelServiceControllerTest, RejectedField) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(response_.value());
   ASSERT_TRUE(response_.error());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kFiltered);
   // Although we send an error, we should be sending a log entry back so the
   // filtering can be logged.
   ASSERT_TRUE(response_.model_execution_info());
@@ -1967,8 +1951,7 @@ TEST_F(OnDeviceModelServiceControllerTest, DetectsRepeatsAndCancelsResponse) {
 
   EXPECT_FALSE(response_.value());
   ASSERT_TRUE(response_.error());
-  EXPECT_EQ(*response_.error(), OptimizationGuideModelExecutionError::
-                                    ModelExecutionError::kResponseLowQuality);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kResponseLowQuality);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_GT(response_.model_execution_info()
@@ -2383,9 +2366,7 @@ TEST_F(OnDeviceModelServiceControllerTest, WaitUntilCompleteToCancel) {
 
   // The full output was unsafe so it resulted it in it being filtered.
   EXPECT_FALSE(response_.GetFinalStatus());
-  EXPECT_EQ(
-      response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(response_.error(), OnDeviceError::kFiltered);
 
   const std::vector<std::string> expected_responses = {
       // The first two responses are filtered because their language hasn't been
@@ -3139,8 +3120,7 @@ TEST_F(OnDeviceModelServiceControllerTest, KeepInputOnExtension) {
       .language = &standard_assets_.language,
       .adaptations = {&compose_asset},
   });
-  base::test::TestFuture<
-      base::expected<size_t, OptimizationGuideModelExecutionError>>
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>>
       set_input_future;
 
   auto session = CreateSession(SessionConfigParams{
@@ -3332,9 +3312,7 @@ TEST_F(OnDeviceModelServiceControllerTest,
   clone->ExecuteModel(PageUrlRequest("unsafe_url"),
                       response_.GetStreamingCallback());
   ASSERT_FALSE(response_.GetFinalStatus());
-  EXPECT_EQ(
-      *response_.error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kFiltered);
+  EXPECT_EQ(*response_.error(), OnDeviceError::kFiltered);
 
   ASSERT_TRUE(response_.model_execution_info());
   EXPECT_THAT(response_.model_execution_info()
@@ -3553,9 +3531,7 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallback) {
   ASSERT_TRUE(session);
 
   MultimodalMessage request((UserInputRequest("foo")));
-  base::test::TestFuture<
-      base::expected<size_t, OptimizationGuideModelExecutionError>>
-      future;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
   session->SetInput(std::move(request), future.GetCallback());
   EXPECT_EQ(*future.Get(), std::string("ctx:foo").size());
 
@@ -3574,19 +3550,13 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackCancelled) {
   ASSERT_TRUE(session);
 
   MultimodalMessage request((UserInputRequest("foo")));
-  base::test::TestFuture<
-      base::expected<size_t, OptimizationGuideModelExecutionError>>
-      future1;
-  base::test::TestFuture<
-      base::expected<size_t, OptimizationGuideModelExecutionError>>
-      future2;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future1;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future2;
   session->SetInput(request.Clone(), future1.GetCallback());
   session->SetInput(std::move(request), future2.GetCallback());
 
   // First request is cancelled, second request completes.
-  EXPECT_EQ(
-      future1.Get().error().error(),
-      OptimizationGuideModelExecutionError::ModelExecutionError::kCancelled);
+  EXPECT_EQ(future1.Get().error(), OnDeviceError::kCancelled);
   EXPECT_EQ(*future2.Get(), std::string("ctx:foo").size());
 
   session->ExecuteModel(PageUrlRequest("bar"),
@@ -3604,13 +3574,9 @@ TEST_F(OnDeviceModelServiceControllerTest, SetInputCallbackError) {
   ASSERT_TRUE(session);
 
   MultimodalMessage request((proto::ExampleForTestingRequest()));
-  base::test::TestFuture<
-      base::expected<size_t, OptimizationGuideModelExecutionError>>
-      future;
+  base::test::TestFuture<base::expected<size_t, OnDeviceError>> future;
   session->SetInput(std::move(request), future.GetCallback());
-  EXPECT_EQ(future.Get().error().error(),
-            OptimizationGuideModelExecutionError::ModelExecutionError::
-                kInvalidRequest);
+  EXPECT_EQ(future.Get().error(), OnDeviceError::kInvalidRequest);
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, TokenCounts) {

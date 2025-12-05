@@ -69,7 +69,7 @@ void ResponseHolder::OnStreamingResponse(
     }
   }
   if (!result.response.has_value()) {
-    response_error_ = result.response.error().error();
+    response_error_ = result.response.error();
     final_status_future_.SetValue(false);
     return;
   }

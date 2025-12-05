@@ -29,10 +29,7 @@ OptimizationGuideModelStreamingExecutionResult MockSession::SuccessResult(
 
 OptimizationGuideModelStreamingExecutionResult MockSession::FailResult() {
   return OptimizationGuideModelStreamingExecutionResult(
-      base::unexpected(
-          OptimizationGuideModelExecutionError::FromModelExecutionError(
-              OptimizationGuideModelExecutionError::ModelExecutionError::
-                  kGenericFailure)),
+      base::unexpected(OnDeviceError::kGenericFailure),
       /*provided_by_on_device=*/true,
       /*log_entry*/ nullptr);
 }

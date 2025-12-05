@@ -25,6 +25,27 @@ class OptimizationGuideLogger;
 
 namespace optimization_guide {
 
+// Error during on-device model execution.
+// Recorded in ModelExecutionLogging protos as integers, do not renumber.
+enum class OnDeviceError : int {
+  // The request was invalid.
+  kInvalidRequest = 1,
+  // Other generic failures.
+  kGenericFailure = 4,
+  // Unsupported language.
+  kUnsupportedLanguage = 7,
+  // Request was filtered.
+  kFiltered = 8,
+  // Response was disabled.
+  kDisabled = 9,
+  // The request was cancelled.
+  kCancelled = 10,
+  // The response was low quality.
+  kResponseLowQuality = 11,
+  // Insert new values before this line.
+  kMaxValue = kResponseLowQuality
+};
+
 // A response type used for OnDeviceSession.
 struct StreamingResponse {
   // The response proto. This may be incomplete until `is_complete` is true.
@@ -46,8 +67,7 @@ struct StreamingResponse {
 struct OptimizationGuideModelStreamingExecutionResult {
   OptimizationGuideModelStreamingExecutionResult();
   explicit OptimizationGuideModelStreamingExecutionResult(
-      base::expected<const StreamingResponse,
-                     OptimizationGuideModelExecutionError> response,
+      base::expected<const StreamingResponse, OnDeviceError> response,
       bool provided_by_on_device,
       std::unique_ptr<proto::ModelExecutionInfo> execution_info = nullptr);
 
@@ -55,8 +75,7 @@ struct OptimizationGuideModelStreamingExecutionResult {
   OptimizationGuideModelStreamingExecutionResult(
       OptimizationGuideModelStreamingExecutionResult&& src);
 
-  base::expected<const StreamingResponse, OptimizationGuideModelExecutionError>
-      response;
+  base::expected<const StreamingResponse, OnDeviceError> response;
 
   bool provided_by_on_device = false;
 
@@ -216,8 +235,8 @@ class OnDeviceSession {
   // cancel any ongoing executions and invoke their 'callback' methods with
   // the 'kCancelled' error. `callback` will be called with either the number
   // of tokens processed from `request` or an error.
-  using SetInputCallback = base::OnceCallback<void(
-      base::expected<size_t, OptimizationGuideModelExecutionError>)>;
+  using SetInputCallback =
+      base::OnceCallback<void(base::expected<size_t, OnDeviceError>)>;
   virtual void SetInput(MultimodalMessage request,
                         SetInputCallback callback) = 0;
 

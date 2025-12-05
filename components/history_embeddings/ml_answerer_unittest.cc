@@ -22,7 +22,7 @@ namespace {
 using ::base::test::TestFuture;
 using ::optimization_guide::AnyWrapProto;
 using ::optimization_guide::MockSession;
-using ::optimization_guide::OptimizationGuideModelExecutionError;
+using ::optimization_guide::OnDeviceError;
 using ::optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using ::optimization_guide::proto::HistoryAnswerResponse;
 using ::testing::_;
@@ -139,11 +139,8 @@ TEST_F(HistoryEmbeddingsMlAnswererTest, ComputeAnswerExecutionFailure) {
                 base::BindOnce(
                     std::move(callback),
                     OptimizationGuideModelStreamingExecutionResult(
-                        base::unexpected(
-                            OptimizationGuideModelExecutionError::
-                                FromModelExecutionError(
-                                    OptimizationGuideModelExecutionError::
-                                        ModelExecutionError::kGenericFailure)),
+
+                        base::unexpected(OnDeviceError::kGenericFailure),
                         /*provided_by_on_device=*/true, nullptr)));
           }));
 

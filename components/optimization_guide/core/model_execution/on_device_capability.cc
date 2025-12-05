@@ -89,8 +89,7 @@ OptimizationGuideModelStreamingExecutionResult::
 
 OptimizationGuideModelStreamingExecutionResult::
     OptimizationGuideModelStreamingExecutionResult(
-        base::expected<const StreamingResponse,
-                       OptimizationGuideModelExecutionError> response,
+        base::expected<const StreamingResponse, OnDeviceError> response,
         bool provided_by_on_device,
         std::unique_ptr<proto::ModelExecutionInfo> execution_info)
     : response(response),

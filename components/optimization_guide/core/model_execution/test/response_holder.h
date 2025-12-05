@@ -61,11 +61,7 @@ class ResponseHolder {
   const std::vector<std::string>& partials() const {
     return partial_responses_;
   }
-  const std::optional<
-      OptimizationGuideModelExecutionError::ModelExecutionError>&
-  error() const {
-    return response_error_;
-  }
+  const std::optional<OnDeviceError>& error() const { return response_error_; }
   const std::optional<bool>& provided_by_on_device() const {
     return provided_by_on_device_;
   }
@@ -86,8 +82,7 @@ class ResponseHolder {
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
   std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
-  std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
-      response_error_;
+  std::optional<OnDeviceError> response_error_;
   size_t input_token_count_ = 0;
   size_t output_token_count_ = 0;
   base::WeakPtrFactory<ResponseHolder> weak_ptr_factory_;

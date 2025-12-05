@@ -194,8 +194,7 @@ void AISummarizer::ModelExecutionCallback(
 
   if (!result.response.has_value()) {
     AIUtils::SendStreamingStatus(
-        responder,
-        AIUtils::ConvertModelExecutionError(result.response.error().error()));
+        responder, AIUtils::ConvertOnDeviceError(result.response.error()));
     return;
   }
 

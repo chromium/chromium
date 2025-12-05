@@ -18,8 +18,7 @@
 
 namespace history_embeddings {
 
-using ModelExecutionError = optimization_guide::
-    OptimizationGuideModelExecutionError::ModelExecutionError;
+using optimization_guide::OnDeviceError;
 using optimization_guide::OnDeviceSession;
 using optimization_guide::OptimizationGuideModelStreamingExecutionResult;
 using optimization_guide::SessionConfigParams;
@@ -196,8 +195,8 @@ class MlAnswerer::SessionManager {
     }
     if (!result.response.has_value()) {
       ComputeAnswerStatus status = ComputeAnswerStatus::kExecutionFailure;
-      auto error = result.response.error().error();
-      if (error == ModelExecutionError::kFiltered) {
+      auto error = result.response.error();
+      if (error == OnDeviceError::kFiltered) {
         status = ComputeAnswerStatus::kFiltered;
       }
       FinishCallback(AnswererResult(status, query_, Answer(),
