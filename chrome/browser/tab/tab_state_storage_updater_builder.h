@@ -27,10 +27,14 @@ class TabStateStorageUpdaterBuilder {
  public:
   TabStateStorageUpdaterBuilder(StorageIdMapping& mapping,
                                 TabStoragePackager* packager);
+  ~TabStateStorageUpdaterBuilder();
+
   TabStateStorageUpdaterBuilder(const TabStateStorageUpdaterBuilder&) = delete;
   TabStateStorageUpdaterBuilder& operator=(
       const TabStateStorageUpdaterBuilder&) = delete;
-  ~TabStateStorageUpdaterBuilder();
+
+  TabStateStorageUpdaterBuilder(TabStateStorageUpdaterBuilder&&);
+  TabStateStorageUpdaterBuilder& operator=(TabStateStorageUpdaterBuilder&&);
 
   void SaveNode(StorageId id,
                 std::string window_tag,

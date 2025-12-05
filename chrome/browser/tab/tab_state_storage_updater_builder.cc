@@ -30,6 +30,11 @@ TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder(
 
 TabStateStorageUpdaterBuilder::~TabStateStorageUpdaterBuilder() = default;
 
+TabStateStorageUpdaterBuilder::TabStateStorageUpdaterBuilder(
+    TabStateStorageUpdaterBuilder&&) = default;
+TabStateStorageUpdaterBuilder& TabStateStorageUpdaterBuilder::operator=(
+    TabStateStorageUpdaterBuilder&&) = default;
+
 bool TabStateStorageUpdaterBuilder::ContainsUpdateWithAnyType(
     StorageId id,
     std::initializer_list<UnitType> types) {

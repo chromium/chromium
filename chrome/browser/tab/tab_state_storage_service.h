@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_TAB_TAB_STATE_STORAGE_SERVICE_H_
 
 #include <memory>
+#include <optional>
 #include <string_view>
 #include <vector>
 
@@ -13,6 +14,8 @@
 #include "base/android/token_android.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
@@ -22,6 +25,7 @@
 #include "chrome/browser/tab/tab_group_collection_data.h"
 #include "chrome/browser/tab/tab_state_storage_backend.h"
 #include "chrome/browser/tab/tab_state_storage_database.h"
+#include "chrome/browser/tab/tab_state_storage_updater_builder.h"
 #include "chrome/browser/tab/tab_storage_packager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/tabs/public/tab_collection.h"
@@ -47,6 +51,11 @@ class TabStateStorageService : public KeyedService,
   using LoadDataCallback =
       base::OnceCallback<void(std::unique_ptr<StorageLoadedData>)>;
 
+  // A scoped helper to batch storage operations. All operations performed on
+  // the service while this object is alive will be batched and committed
+  // when all ScopedBatches are destroyed.
+  using ScopedBatch = base::ScopedClosureRunner;
+
   TabStateStorageService(const base::FilePath& profile_path,
                          std::unique_ptr<TabStoragePackager> packager,
                          TabCanonicalizer tab_canonicalizer,
@@ -67,6 +76,10 @@ class TabStateStorageService : public KeyedService,
   // calling this method are flushed to the database. There is no guarantee
   // that future operations will complete prior to the callback being invoked.
   void WaitForAllPendingOperations(base::OnceClosure on_idle);
+
+  // Creates a scoped batch. Operations are batched and committed when all open
+  // ScopedBatches are destroyed.
+  ScopedBatch CreateScopedBatch();
 
   void Save(const TabInterface* tab);
   void Save(const TabCollection* collection);
@@ -93,9 +106,31 @@ class TabStateStorageService : public KeyedService,
       TabStateStorageService* tab_state_storage_service);
 
  private:
+  using UpdateOperation =
+      base::FunctionRef<void(TabStateStorageUpdaterBuilder&)>;
+
+  // Tracks active batches and the associated builder. Operations are executed
+  // immediately if no batches are open.
+  struct OpenBatches {
+    OpenBatches(TabStateStorageService& service, TabStoragePackager* packager);
+    ~OpenBatches();
+
+    TabStateStorageUpdaterBuilder builder;
+    int batch_cnt = 0;
+  };
+
   void OnTabCreated(StorageId storage_id, const TabInterface* tab);
   void OnCollectionCreated(StorageId storage_id,
                            const TabCollection* collection);
+
+  // Commits the current batch of updates.
+  void CommitCurrentBatch();
+
+  void OnScopedBatchDestroyed();
+
+  // Using function refs here is safe since operations are executed
+  // synchronously.
+  void ApplyUpdate(UpdateOperation operation);
 
   TabStateStorageBackend tab_backend_;
   std::unique_ptr<TabStoragePackager> packager_;
@@ -107,6 +142,8 @@ class TabStateStorageService : public KeyedService,
   // do not have this guarantee. Track them separately.
   absl::flat_hash_map<int32_t, StorageId> tab_handle_to_storage_id_;
   absl::flat_hash_map<int32_t, StorageId> collection_handle_to_storage_id_;
+
+  std::optional<OpenBatches> open_batches_;
 
   base::WeakPtrFactory<TabStateStorageService> weak_ptr_factory_{this};
 };
