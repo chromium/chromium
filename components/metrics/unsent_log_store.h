@@ -149,20 +149,18 @@ class UnsentLogStore : public LogStore {
   void TrimAndPersistUnsentLogs(bool overwrite_in_memory_store) override;
   void LoadPersistedUnsentLogs() override;
 
-  // Adds a log to the list. |log_metadata| refers to metadata associated with
-  // the log. Before being stored, the data will be compressed, and a hash and
-  // signature will be computed.
-  // TODO(crbug.com/40119012): Remove this function, and use StoreLogInfo()
-  // everywhere instead.
+  // Creates a LogInfo from the passed `log_data` (by compressing, hashing, and
+  // signing it) and stores it (see StoreLogInfo() below). `log_metadata` refers
+  // to metadata associated with the log.
   void StoreLog(const std::string& log_data,
                 const LogMetadata& log_metadata,
                 MetricsLogsEventManager::CreateReason reason);
 
-  // Adds a log to the list, represented by a LogInfo object. This is useful
-  // if the LogInfo instance needs to be created outside the main thread
-  // (since creating a LogInfo from log data requires heavy work). Note that we
-  // also pass the size of the log data before being compressed. This is simply
-  // for calculating and emitting some metrics, and is otherwise unused.
+  // Adds a log to the store, represented by a LogInfo object. Calling this
+  // directly is particularly useful if the LogInfo instance needs to be created
+  // outside the main thread (since creating a LogInfo from log data requires
+  // heavy work). Note that `uncompressed_log_size` is only used for metrics
+  // purposes.
   void StoreLogInfo(std::unique_ptr<LogInfo> log_info,
                     size_t uncompressed_log_size,
                     MetricsLogsEventManager::CreateReason reason);
