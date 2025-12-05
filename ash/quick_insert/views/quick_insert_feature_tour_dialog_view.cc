@@ -6,6 +6,7 @@
 
 #include "ash/quick_insert/resources/grit/quick_insert_resources.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/close_button.h"
 #include "base/check_op.h"
 #include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -19,6 +20,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/highlight_border.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -37,6 +40,8 @@ constexpr auto kFeatureTourDialogIllustrationCornerRadii =
                          /*upper_right=*/kFeatureTourDialogCornerRadius,
                          /*lower_right=*/0,
                          /*lower_left=*/0);
+
+constexpr auto kCloseButtonInsets = gfx::Insets::TLBR(8, 0, 0, 8);
 
 std::u16string GetHeadingText(
     QuickInsertFeatureTourDialogView::EditorStatus editor_status) {
@@ -95,11 +100,32 @@ QuickInsertFeatureTourDialogView::QuickInsertFeatureTourDialogView(
       .SetCancelButtonText(l10n_util::GetStringUTF16(
           IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL))
       .SetCancelCallback(std::move(learn_more_callback))
-      .SetTopContentView(views::Builder<views::ImageView>()
-                             .SetBackground(views::CreateRoundedRectBackground(
-                                 cros_tokens::kCrosSysIlloColor12,
-                                 kFeatureTourDialogIllustrationCornerRadii))
-                             .SetImage(GetIllustration()))
+      .SetTopContentView(
+          views::Builder<views::View>()
+              .SetUseDefaultFillLayout(true)
+              .AddChildren(
+                  views::Builder<views::ImageView>()
+                      .SetBackground(views::CreateRoundedRectBackground(
+                          cros_tokens::kCrosSysIlloColor12,
+                          kFeatureTourDialogIllustrationCornerRadii))
+                      .SetImage(GetIllustration()),
+                  views::Builder<views::BoxLayoutView>()
+                      .SetOrientation(
+                          views::BoxLayout::Orientation::kHorizontal)
+                      .SetMainAxisAlignment(
+                          views::BoxLayout::MainAxisAlignment::kEnd)
+                      .SetCrossAxisAlignment(
+                          views::BoxLayout::CrossAxisAlignment::kStart)
+                      .SetInsideBorderInsets(kCloseButtonInsets)
+                      .AddChild(
+                          views::Builder<views::Button>(
+                              std::make_unique<CloseButton>(
+                                  base::BindOnce(
+                                      &QuickInsertFeatureTourDialogView::
+                                          CloseWidget,
+                                      weak_ptr_factory_.GetWeakPtr()),
+                                  CloseButton::Type::kLargeFloating))
+                              .CopyAddressTo(&close_button_for_testing_))))
       .SetModalType(ui::mojom::ModalType::kSystem)
       .BuildChildren();
 
@@ -127,6 +153,17 @@ QuickInsertFeatureTourDialogView::learn_more_button_for_testing() const {
 const views::Button*
 QuickInsertFeatureTourDialogView::complete_button_for_testing() const {
   return GetAcceptButtonForTesting();  // IN-TEST
+}
+
+const views::Button*
+QuickInsertFeatureTourDialogView::close_button_for_testing() const {
+  return close_button_for_testing_;  // IN-TEST
+}
+
+void QuickInsertFeatureTourDialogView::CloseWidget() {
+  if (views::Widget* widget = GetWidget()) {
+    widget->Close();
+  }
 }
 
 BEGIN_METADATA(QuickInsertFeatureTourDialogView)

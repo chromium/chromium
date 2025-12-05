@@ -128,6 +128,17 @@ const views::Button* QuickInsertFeatureTour::complete_button_for_testing()
              : nullptr;
 }
 
+const views::Button* QuickInsertFeatureTour::close_button_for_testing() const {
+  if (!widget_) {
+    return nullptr;
+  }
+  auto* feature_tour_dialog = static_cast<QuickInsertFeatureTourDialogView*>(
+      widget_->GetContentsView());
+  return feature_tour_dialog != nullptr
+             ? feature_tour_dialog->close_button_for_testing()  // IN-TEST
+             : nullptr;
+}
+
 views::Widget* QuickInsertFeatureTour::widget_for_testing() {
   return widget_.get();
 }

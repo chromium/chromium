@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/style/system_dialog_delegate_view.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/views/metadata/view_factory.h"
 
 namespace ui {
@@ -39,6 +40,16 @@ class ASH_EXPORT QuickInsertFeatureTourDialogView
   const views::Button* learn_more_button_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
+  // Returns the button to close the tour.
+  const views::Button* close_button_for_testing() const;
+
+ private:
+  void CloseWidget();
+
+  raw_ptr<views::Button> close_button_for_testing_ = nullptr;
+
+  base::WeakPtrFactory<QuickInsertFeatureTourDialogView> weak_ptr_factory_{
+      this};
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT,

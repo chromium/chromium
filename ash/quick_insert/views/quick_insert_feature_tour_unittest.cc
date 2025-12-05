@@ -113,6 +113,25 @@ TEST_F(QuickInsertFeatureTourTest,
   EXPECT_FALSE(completed_future.IsReady());
 }
 
+TEST_F(QuickInsertFeatureTourTest,
+       PressingCloseButtonClosesWidgetWithoutTriggeringCallback) {
+  QuickInsertFeatureTour feature_tour;
+  base::test::TestFuture<void> completed_future;
+  feature_tour.MaybeShowForFirstUse(
+      pref_service(), QuickInsertFeatureTour::EditorStatus::kEligible,
+      base::DoNothing(), completed_future.GetRepeatingCallback());
+  views::test::WidgetVisibleWaiter(feature_tour.widget_for_testing()).Wait();
+  ASSERT_TRUE(feature_tour.widget_for_testing()->IsVisible());
+
+  const views::Button* button = feature_tour.close_button_for_testing();
+  ASSERT_NE(button, nullptr);
+  LeftClickOn(button);
+
+  views::test::WidgetDestroyedWaiter(feature_tour.widget_for_testing()).Wait();
+  EXPECT_EQ(feature_tour.widget_for_testing(), nullptr);
+  EXPECT_FALSE(completed_future.IsReady());
+}
+
 TEST_F(QuickInsertFeatureTourTest, ShouldNotShowDialogSecondTime) {
   QuickInsertFeatureTour feature_tour;
   feature_tour.MaybeShowForFirstUse(

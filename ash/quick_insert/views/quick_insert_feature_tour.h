@@ -69,6 +69,8 @@ class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
   const views::Button* learn_more_button_for_testing() const;
   // Returns the button to complete the tour.
   const views::Button* complete_button_for_testing() const;
+  // Returns the button to close the tour.
+  const views::Button* close_button_for_testing() const;
   // Returns the title of the feature tour.
   std::u16string_view GetTitleTextForTesting() const;
   // Returns the description of the feature tour.
