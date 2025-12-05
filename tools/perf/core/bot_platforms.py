@@ -918,7 +918,8 @@ LINUX_R350 = PerfPlatform('linux-r350-perf',
                           30,
                           'linux',
                           executables=_LINUX_EXECUTABLE_CONFIGS,
-                          crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+                          crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                          | {_devtools_frontend_crossbench()})
 LINUX_FALCON_RAK_5070 = PerfPlatform('linux-falcon-rak-5070-perf',
                                      'Linux Falcon RAK 5070',
                                      _FALCON_BENCHMARK_CONFIGS,
@@ -942,7 +943,7 @@ MAC_M1_MINI_2020 = PerfPlatform(
     28,
     'mac',
     executables=_MAC_M1_MINI_2020_EXECUTABLE_CONFIGS,
-    crossbench=_CROSSBENCH_BENCHMARKS_ALL)
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL | {_devtools_frontend_crossbench()})
 MAC_M1_MINI_2020_PGO = PerfPlatform('mac-m1_mini_2020-perf-pgo',
                                     'Mac M1 Mini 2020',
                                     _MAC_M1_MINI_2020_PGO_BENCHMARK_CONFIGS,
@@ -1020,14 +1021,16 @@ WIN_10_AMD_LAPTOP_PGO = PerfPlatform('win-10_amd_laptop-perf-pgo',
                                      3,
                                      'win',
                                      pinpoint_only=True)
-WIN_11 = PerfPlatform('win-11-perf',
-                      'Windows Dell PowerEdge R350',
-                      _WIN_11_BENCHMARK_CONFIGS,
-                      20,
-                      'win',
-                      executables=_WIN_11_EXECUTABLE_CONFIGS,
-                      crossbench=_CROSSBENCH_BENCHMARKS_ALL
-                      | {_speedometer3_a11y_crossbench()})
+WIN_11 = PerfPlatform(
+    'win-11-perf',
+    'Windows Dell PowerEdge R350',
+    _WIN_11_BENCHMARK_CONFIGS,
+    20,
+    'win',
+    executables=_WIN_11_EXECUTABLE_CONFIGS,
+    crossbench=_CROSSBENCH_BENCHMARKS_ALL
+    | {_speedometer3_a11y_crossbench(),
+       _devtools_frontend_crossbench()})
 WIN_11_PGO = PerfPlatform('win-11-perf-pgo',
                           'Windows Dell PowerEdge R350',
                           _WIN_11_BENCHMARK_CONFIGS,
@@ -1233,8 +1236,8 @@ LINUX_PERF_FYI = PerfPlatform('linux-perf-fyi',
                               _LINUX_PERF_FYI_BENCHMARK_CONFIGS,
                               1,
                               'linux',
-                              crossbench=_CROSSBENCH_BENCHMARKS_ALL.union(
-                                  [_devtools_frontend_crossbench()]),
+                              crossbench=_CROSSBENCH_BENCHMARKS_ALL
+                              | {_devtools_frontend_crossbench()},
                               is_fyi=True)
 
 ALL_PLATFORMS = {
