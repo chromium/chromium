@@ -56,6 +56,7 @@
 #include "pdf/pdf_caret.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_transform.h"
+#include "pdf/pdf_utils/text_util.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_document.h"
@@ -258,29 +259,13 @@ void FormatStringForOS(std::u16string* text) {
 #endif
 }
 
-// Returns true if `cur` is a character to break on.
-// For double clicks, look for work breaks.
+// Returns true if `ch` is a character to break on.
+// For double clicks, look for word breaks.
 // For triple clicks, look for line breaks.
 // The actual algorithm used in Blink is much more complicated, so do a simple
 // approximation.
-bool FindMultipleClickBoundary(bool is_double_click, uint32_t cur) {
-  if (!is_double_click) {
-    return cur == '\n';
-  }
-
-  // Deal with ASCII characters.
-  if (base::IsAsciiAlpha(cur) || base::IsAsciiDigit(cur) || cur == '_') {
-    return false;
-  }
-  if (cur < 128) {
-    return true;
-  }
-
-  if (cur == kZeroWidthSpace) {
-    return true;
-  }
-
-  return false;
+bool FindMultipleClickBoundary(bool is_double_click, uint32_t ch) {
+  return is_double_click ? IsWordBoundary(ch) : ch == '\n';
 }
 
 #if defined(PDF_ENABLE_V8)
