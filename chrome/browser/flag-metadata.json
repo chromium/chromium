@@ -6254,11 +6254,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ios-manage-account-storage",
-    "owners": [ "olivierrobin@google.com", "bling-squid-squad@google.com" ],
-    "expiry_milestone": 140
-  },
-  {
     "name": "ios-one-tap-mini-map-remove-section-breaks",
     "owners": [ "olivierrobin@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 145

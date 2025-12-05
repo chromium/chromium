@@ -21,7 +21,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/account_picker/ui_bundled:account_picker_logger",
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/authentication/ui_bundled/signin:signin_headers",
-    "//ios/chrome/browser/drive/model:manage_storage_url_util",
     "//ios/chrome/browser/photos/model",
     "//ios/chrome/browser/photos/model:metrics",
     "//ios/chrome/browser/photos/model:photos_service_factory",

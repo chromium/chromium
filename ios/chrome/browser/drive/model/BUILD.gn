@@ -120,18 +120,6 @@ source_set("drive_service_factory") {
   ]
 }
 
-source_set("manage_storage_url_util") {
-  sources = [
-    "manage_storage_url_util.h",
-    "manage_storage_url_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//net",
-    "//url",
-  ]
-}
-
 source_set("metrics") {
   sources = [
     "drive_metrics.h",

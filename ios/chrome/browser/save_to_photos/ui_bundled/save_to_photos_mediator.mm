@@ -19,7 +19,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/account_picker/ui_bundled/account_picker_configuration.h"
-#import "ios/chrome/browser/drive/model/manage_storage_url_util.h"
 #import "ios/chrome/browser/google_one/shared/google_one_entry_point.h"
 #import "ios/chrome/browser/photos/model/photos_metrics.h"
 #import "ios/chrome/browser/photos/model/photos_service.h"
@@ -246,21 +245,10 @@ NSString* const kGooglePhotosAppURLScheme = @"googlephotos";
   base::RecordAction(
       base::UserMetricsAction("MobileSaveToPhotosManageStorage"));
 
-  if (base::FeatureList::IsEnabled(kIOSManageAccountStorage)) {
-    // At this point nothing should be presented.
-    [_googleOneHandler
-        showGoogleOneForIdentity:identity
-                      entryPoint:GoogleOneEntryPoint::kSaveToPhotosAlert
-              baseViewController:nil];
-  } else {
-    // The uploading identity's user email is used to switch to the uploading
-    // account before loading the "Manage Storage" web page.
-    GURL manageStorageURL = GenerateManageDriveStorageUrl(
-        base::SysNSStringToUTF8(identity.userEmail));
-    OpenNewTabCommand* newTabCommand =
-        [OpenNewTabCommand commandWithURLFromChrome:manageStorageURL];
-    [_applicationHandler openURLInNewTab:newTabCommand];
-  }
+  [_googleOneHandler
+      showGoogleOneForIdentity:identity
+                    entryPoint:GoogleOneEntryPoint::kSaveToPhotosAlert
+            baseViewController:nil];
   base::UmaHistogramEnumeration(
       kSaveToPhotosActionsHistogram,
       SaveToPhotosActions::kFailureOutOfStorageDidManageStorage);

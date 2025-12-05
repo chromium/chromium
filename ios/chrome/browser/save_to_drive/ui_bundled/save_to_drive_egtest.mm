@@ -164,16 +164,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
         "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
   }
   if ([self isRunningTest:@selector(testDriveFullStorage)]) {
-    configuration.features_disabled.push_back(kIOSManageAccountStorage);
-    const std::string commandLineSwitch =
-        std::string(kTestDriveFileUploaderCommandLineSwitch);
-    const std::string commandLineValue =
-        std::string(kTestDriveFileUploaderCommandLineSwitchFullStorage);
-    configuration.additional_args.push_back(base::StringPrintf(
-        "--%s=%s", commandLineSwitch.c_str(), commandLineValue.c_str()));
-  }
-  if ([self isRunningTest:@selector(testDriveFullStorageG1)]) {
-    configuration.features_enabled.push_back(kIOSManageAccountStorage);
     const std::string commandLineSwitch =
         std::string(kTestDriveFileUploaderCommandLineSwitch);
     const std::string commandLineValue =
@@ -308,44 +298,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                                               kWaitForDownloadTimeout];
 }
 
-// Tests that if the storage is full, an alert is displayed and user can open a
-// tab to manage their storage.
-- (void)testDriveFullStorage {
-  // Sign-in.
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  // Load a page with a download button and tap the download button.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
-  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
-  // Check that the "Drive" button is presented and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
-  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
-      performAction:grey_tap()];
-  // Wait for the account picker to appear, select "Drive" and tap "Save".
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:FileDestinationDriveButton()];
-  [[EarlGrey selectElementWithMatcher:FileDestinationDriveButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:AccountPickerPrimaryButton()]
-      performAction:grey_tap()];
-
-  // Wait for the alert to appear and tap it.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:ManageStorageButton()];
-  [[EarlGrey selectElementWithMatcher:ManageStorageButton()]
-      performAction:grey_tap()];
-
-  // Wait for the account picker to disappear and a new tab to be opened.
-  // Note: this will open an external URL, so just ignore the result as soon
-  // as the tab is created.
-  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:AccountPicker()];
-  [ChromeEarlGrey waitForMainTabCount:2];
-}
-
 // Tests that if the storage is full, an alert is displayed and user can open G1
 // settings to manage their storage.
-- (void)testDriveFullStorageG1 {
+- (void)testDriveFullStorage {
   [GoogleOneAppInterface overrideGoogleOneController];
   // Sign-in.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

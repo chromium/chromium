@@ -473,9 +473,6 @@ BASE_DECLARE_FEATURE(kIOSDownloadNoUIUpdateInBackground);
 // Feature flag enabling the client folder implementation of Save to Drive.
 BASE_DECLARE_FEATURE(kIOSSaveToDriveClientFolder);
 
-// Feature flag enabling account storage management.
-BASE_DECLARE_FEATURE(kIOSManageAccountStorage);
-
 // Feature flag to enable feed background refresh.
 // Use IsFeedBackgroundRefreshEnabled() instead of this constant directly.
 BASE_DECLARE_FEATURE(kEnableFeedBackgroundRefresh);
@@ -488,7 +485,6 @@ extern const char kContentPushNotificationsExperimentType[];
 
 // Feature flag to enable the content notifications.
 BASE_DECLARE_FEATURE(kContentPushNotifications);
-
 
 // Feature flag to enable Content Notification Provisional without any
 // conditions.

@@ -795,10 +795,6 @@ const char kIOSKeyboardAccessoryTwoBubbleDescription[] =
     "When enabled, the two-bubble design is used for the Keyboard Accessory "
     "view.";
 
-const char kIOSManageAccountStorageName[] = "Allow managing Account storage.";
-const char kIOSManageAccountStorageDescription[] =
-    "Add entry points to manage Google One account storage.";
-
 const char kIOSOmniboxAimServerEligibilityEnName[] =
     "AIM Server Eligibility EN locales";
 const char kIOSOmniboxAimServerEligibilityEnDescription[] =

@@ -481,9 +481,6 @@ extern const char kIOSKeyboardAccessoryDefaultViewDescription[];
 extern const char kIOSKeyboardAccessoryTwoBubbleName[];
 extern const char kIOSKeyboardAccessoryTwoBubbleDescription[];
 
-extern const char kIOSManageAccountStorageName[];
-extern const char kIOSManageAccountStorageDescription[];
-
 extern const char kIOSOmniboxAimServerEligibilityEnName[];
 extern const char kIOSOmniboxAimServerEligibilityEnDescription[];
 

@@ -499,16 +499,13 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   [model addItem:item
       toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
-  if (base::FeatureList::IsEnabled(kIOSManageAccountStorage)) {
-    // Manage account storage item.
-    item = [[TableViewTextItem alloc] initWithType:ManageAccountStorageType];
-    item.text =
-        GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM);
-    item.textColor = [UIColor colorNamed:kBlueColor];
-    item.accessibilityTraits |= UIAccessibilityTraitButton;
-    [model addItem:item
-        toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
-  }
+  // Manage account storage item.
+  item = [[TableViewTextItem alloc] initWithType:ManageAccountStorageType];
+  item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_STORAGE_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
+  [model addItem:item
+      toSectionWithIdentifier:ManageAndSignOutSectionIdentifier];
 
   // Manage accounts on this device item.
   item = [[TableViewTextItem alloc] initWithType:ManageAccountsItemType];
