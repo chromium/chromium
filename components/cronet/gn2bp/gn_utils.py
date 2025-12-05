@@ -531,7 +531,10 @@ class GnParser:
       return target
 
     target.testonly = desc.get('testonly', False)
-
+    if target.type == "executable" and desc.get("crate_root", None):
+      # Find a more decisive way to figure out that this is a rust executable.
+      # TODO: Add a metadata to the executable from Chromium side.
+      target.type = "rust_executable"
     deps = desc.get("deps", [])
     build_only_deps = []
     if custom_processor is not None:
@@ -547,10 +550,6 @@ class GnParser:
           _remove_out_prefix(output) for output in desc['outputs'])
       target.arch[arch].args = desc['args']
     elif target.type == 'source_set':
-      target.arch[arch].sources.update(source
-                                       for source in desc.get('sources', [])
-                                       if not source.startswith("//out"))
-    elif target.type == "rust_executable":
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])
                                        if not source.startswith("//out"))
@@ -684,7 +683,7 @@ class GnParser:
       # targets above), are bubbled upward without creating an equivalent
       # GN target.
       pass
-    elif target.type in ["rust_library", "rust_proc_macro"]:
+    elif target.type in ["rust_library", "rust_proc_macro", "rust_executable"]:
       target.arch[arch].sources.update(source
                                        for source in desc.get('sources', [])
                                        if not source.startswith("//out"))
@@ -716,10 +715,7 @@ class GnParser:
     target.arch[arch].rust_flags.extend(
         self.build_script_outputs.get(label_without_toolchain(gn_target_name),
                                       {}).get(chromium_arch, list()))
-    if target.type == "executable" and target.crate_root:
-      # Find a more decisive way to figure out that this is a rust executable.
-      # TODO: Add a metadata to the executable from Chromium side.
-      target.type = "rust_executable"
+
     if "-frtti" in target.arch[arch].cflags:
       target.rtti = True
 
