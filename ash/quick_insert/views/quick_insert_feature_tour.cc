@@ -49,6 +49,42 @@
 namespace ash {
 namespace {
 
+class QuickInsertFeatureTourDialogView : public SystemDialogDelegateView {
+  METADATA_HEADER(QuickInsertFeatureTourDialogView, SystemDialogDelegateView)
+
+ public:
+  QuickInsertFeatureTourDialogView() {
+    AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
+  }
+
+  // SystemDialogDelegateView:
+  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
+    DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
+    if (views::Widget* widget = GetWidget()) {
+      widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
+      // Don't propagate.
+      return true;
+    }
+    return false;
+  }
+};
+
+BEGIN_METADATA(QuickInsertFeatureTourDialogView)
+END_METADATA
+
+BEGIN_VIEW_BUILDER(/*no export*/,
+                   QuickInsertFeatureTourDialogView,
+                   SystemDialogDelegateView)
+END_VIEW_BUILDER
+
+}  // namespace
+}  // namespace ash
+
+DEFINE_VIEW_BUILDER(/* no export */, ash::QuickInsertFeatureTourDialogView)
+
+namespace ash {
+namespace {
+
 constexpr auto kFeatureTourDialogBorderInsets =
     gfx::Insets::TLBR(0, 32, 28, 32);
 
@@ -100,7 +136,7 @@ std::unique_ptr<views::Widget> CreateWidget(
     base::OnceClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   auto feature_tour_dialog =
-      views::Builder<SystemDialogDelegateView>()
+      views::Builder<QuickInsertFeatureTourDialogView>()
           .SetBorder(views::CreatePaddedBorder(
               std::make_unique<views::HighlightBorder>(
                   kFeatureTourDialogCornerRadius,
