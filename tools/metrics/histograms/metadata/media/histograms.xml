@@ -2792,6 +2792,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.ContentAudioDecoder.CreateReaderSuccess"
+    enum="BooleanSuccess" expires_after="2026-12-05">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records whether creating an AudioFileReader for processing WebAudio was
+    successful.
+  </summary>
+</histogram>
+
+<histogram name="Media.ContentAudioDecoder.DecodeTimePerFrame" units="ms"
+    expires_after="2026-12-05">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the average amount of time per frame required to decode an audio
+    file provided to the WebAudio API.
+  </summary>
+</histogram>
+
+<histogram name="Media.ContentAudioDecoder.Duration" units="ms"
+    expires_after="2026-12-05">
+  <owner>jophba@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Records the file duration calculated during decoding an audio file provided
+    to the WebAudio API.
+  </summary>
+</histogram>
+
 <histogram name="Media.Controls.CTR{MediaControlsElements}"
     enum="MediaControlsCTREvent" expires_after="2025-01-05">
   <owner>steimel@chromium.org</owner>
