@@ -29,6 +29,8 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/functional/callback.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
+#include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/mock_touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/autofill/autofill_save_card_delegate_android.h"
@@ -187,6 +189,10 @@ class ChromePaymentsAutofillClientTest
     ChromeRenderViewHostTestHarness::SetUp();
 
     ChromeAutofillClient::CreateForWebContents(web_contents());
+#if BUILDFLAG(IS_ANDROID)
+    MockPaymentMethodAccessoryController::GetOrCreate(web_contents())
+        ->RegisterFillingSourceObserver(mock_filling_source_observer_.Get());
+#endif
     auto mock_virtual_card_bubble_controller =
         std::make_unique<MockVirtualCardEnrollBubbleController>(web_contents());
     const auto* user_data_key =
@@ -289,6 +295,10 @@ class ChromePaymentsAutofillClientTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
+#if BUILDFLAG(IS_ANDROID)
+  base::MockCallback<AccessoryController::FillingSourceObserver>
+      mock_filling_source_observer_;
+#endif
 };
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePaymentsAutofillClientTest,

@@ -81,6 +81,7 @@
 #include "chrome/browser/android/preferences/autofill/settings_navigation_helper.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller_impl.h"
+#include "chrome/browser/keyboard_accessory/android/payment_method_accessory_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_controller.h"
 #include "chrome/browser/touch_to_fill/autofill/android/touch_to_fill_payment_method_view_impl.h"
 #include "chrome/browser/ui/android/autofill/autofill_cvc_save_message_delegate.h"
@@ -481,6 +482,18 @@ void ChromePaymentsAutofillClient::OnCardDataAvailable(
                ? AutofillSnackbarType::kVirtualCard
                : AutofillSnackbarType::kCardInfoRetrieval;
   }
+
+  // Credit card manual filling sheet should always be created on the Java side.
+  // This happens after the first time `PaymentMethodAccessoryControllerImpl`
+  // pushes data to the Java keyboard accessory. Before that, credit card manual
+  // filling sheet doesn't exist on the java side. The data is pushed
+  // asynchronously in `ManualFillingViewAndroid::OnItemsAvailable`. Manually
+  // refresh credit card suggestions before the snackbar is shown so that the
+  // credit card manual filling sheet can be opened from the snackbar.
+  // TODO(crbug.com/430575808): Consider adding a synchronous version of the
+  // `RefreshSuggestions` so that the race condition is removed completely.
+  PaymentMethodAccessoryController::GetOrCreate(web_contents())
+      ->RefreshSuggestions();
 
   client_->GetAutofillSnackbarController()->ShowPaymentsSnackbar(
       type, options.filled_card,
