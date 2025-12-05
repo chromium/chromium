@@ -29,11 +29,12 @@ suite('SpeechController', () => {
 
   // TODO: crbug.com/440400392- Move all tests relying on chrome.readingMode
   // for text segmentation to use TestReadAloudModelBrowserProxy instead.
-  function onPlayPauseToggle(text: string) {
+  function onPlayPauseToggle(text: string): HTMLElement {
     setContent(text, readAloudModel);
     const element = document.createElement('p');
     element.textContent = text;
     speechController.onPlayPauseToggle(element);
+    return element;
   }
 
   setup(() => {
@@ -572,6 +573,48 @@ suite('SpeechController', () => {
         chrome.readingMode.contentFinishedStopSource,
         await metrics.whenCalled('recordSpeechStopSource'));
   });
+
+  test(
+      'resume after audio ends but before speech onend restarts speech',
+      async () => {
+        const text = 'You caught me unaware, now my fate is tied with yours.';
+        setContent(text, readAloudModel);
+
+        // Simulate reaching the end of speech as soon as moveSpeechForward is
+        // called.
+        readAloudModel.moveSpeechForward = () => {
+          readAloudModel.setCurrentTextSegments([]);
+        };
+
+        readAloudModel.resetSpeechToBeginning = () => {
+          setContent(text, readAloudModel);
+        };
+
+        // Start playing speech.
+        const element = onPlayPauseToggle(text);
+        let spoken = await speech.whenCalled('speak');
+        spoken.onstart(new SpeechSynthesisEvent('start', {utterance: spoken}));
+
+        // Fire a word boundary event at the very end.
+        spoken.onboundary(createWordBoundaryEvent(spoken, text.length - 1, 1));
+        assertTrue(wordBoundaries.hasBoundaries());
+        speech.reset();
+
+        // Pause speech.
+        speechController.onPlayPauseToggle(element);
+        assertFalse(speechController.isSpeechActive());
+        assertEquals(1, speech.getCallCount('pause'));
+        speech.reset();
+
+        // Resume speech. This should cause speech to restart from the
+        // beginning of the utterance.
+        speechController.onPlayPauseToggle(element);
+
+        // Speech should restart from the beginning.
+        spoken = await speech.whenCalled('speak');
+        assertEquals(text, spoken.text);
+        assertTrue(speechController.isSpeechActive());
+      });
 
   test('onNextGranularityClick propagates change', () => {
     speechController.onNextGranularityClick();
