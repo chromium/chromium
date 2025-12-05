@@ -1949,6 +1949,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ignoredSelection() {
+        performHtmlTest("ignored-selection.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_imgEmptyAlt() {
         performHtmlTest("img-empty-alt.html");
     }

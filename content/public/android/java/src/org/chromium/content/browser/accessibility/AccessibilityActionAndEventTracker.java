@@ -188,9 +188,22 @@ public class AccessibilityActionAndEventTracker {
                     builder.append("]");
                     break;
                 }
-                // For text selection/traversal, track the To and From indices.
-            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
+
+            // For text selection, track the To and From indices if they are available.
             case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED:
+                {
+                    if (event.getFromIndex() != -1 && event.getToIndex() != -1) {
+                        builder.append(" - [");
+                        builder.append(event.getFromIndex());
+                        builder.append(", ");
+                        builder.append(event.getToIndex());
+                        builder.append("]");
+                    }
+                    break;
+                }
+
+            // For text traversal, track the To and From indices.
+            case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY:
                 {
                     builder.append(" - [");
                     builder.append(event.getFromIndex());

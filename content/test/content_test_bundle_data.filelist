@@ -4261,6 +4261,7 @@ data/accessibility/html/ignored-selection-between-text-expected-mac.txt
 data/accessibility/html/ignored-selection-between-text-expected-uia-win.txt
 data/accessibility/html/ignored-selection-between-text-expected-win.txt
 data/accessibility/html/ignored-selection-between-text.html
+data/accessibility/html/ignored-selection-expected-android-external.txt
 data/accessibility/html/ignored-selection-expected-android.txt
 data/accessibility/html/ignored-selection-expected-auralinux.txt
 data/accessibility/html/ignored-selection-expected-blink.txt

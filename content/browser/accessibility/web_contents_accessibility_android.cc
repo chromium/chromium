@@ -42,8 +42,11 @@
 #include "ui/accessibility/accessibility_prefs.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
+#include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/one_shot_accessibility_tree_search.h"
 #include "ui/events/android/motion_event_android.h"
 
@@ -519,6 +522,33 @@ ScopedJavaLocalRef<jobject> ToJavaStringRangesMap(
       base::BindRepeating(&base::android::ConvertUTF16ToJavaString,
                           base::Unretained(env)),
       ranges_count);
+}
+
+// Calculates the number of characters from the beginning of the first leaf
+// descendent of the `ancestor` to the beginning of `descendent`.
+int CalculateOffsetInAncestor(ui::BrowserAccessibility* ancestor,
+                              ui::BrowserAccessibility* descendent) {
+  // Expected to be called only when ancestor and node are different.
+  CHECK_NE(ancestor, descendent);
+
+  // First descendent is acquired through `node()` since ancestor has no child
+  // from platform's point of view.
+  ui::AXNode* node = ancestor->node();
+  while (node->GetFirstChild()) {
+    node = node->GetFirstChild();
+  }
+  ui::BrowserAccessibility* first_leaf_descendant =
+      ancestor->manager()->GetFromAXNode(node);
+
+  ui::BrowserAccessibility::AXPosition start =
+      first_leaf_descendant->CreatePositionForSelectionAt(0);
+  ui::BrowserAccessibility::AXPosition end =
+      descendent->CreatePositionForSelectionAt(0);
+  if (start->IsNullPosition() || end->IsNullPosition()) {
+    return 0;
+  }
+  ui::BrowserAccessibility::AXRange range(std::move(start), std::move(end));
+  return range.GetText().length();
 }
 
 }  // anonymous namespace
@@ -1666,6 +1696,69 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
         /* selectionStart= */ node->GetSelectionStart(),
         /* selectionEnd= */ node->GetSelectionEnd());
   }
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAccessibilityExtendedSelection)) {
+    return;
+  }
+
+  BrowserAccessibilityManagerAndroid* root_manager =
+      static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  if (!root_manager) {
+    return;
+  }
+
+  // Set the extended selection only on the frame roots.
+  if (node != root_manager->GetBrowserAccessibilityRoot()) {
+    return;
+  }
+
+  ui::AXSelection selection = root_manager->ax_tree()->GetUnignoredSelection();
+  ui::AXNodeID anchor_id = ui::kAXAndroidInvalidViewId;
+  ui::AXNodeID focus_id = ui::kAXAndroidInvalidViewId;
+  int anchor_offset = selection.anchor_offset;
+  int focus_offset = selection.focus_offset;
+
+  if (selection.anchor_object_id != ui::kInvalidAXNodeID &&
+      selection.focus_object_id != ui::kInvalidAXNodeID) {
+    ui::BrowserAccessibility* anchor_node =
+        root_manager->GetFromID(selection.anchor_object_id);
+    ui::BrowserAccessibility* focus_node =
+        root_manager->GetFromID(selection.focus_object_id);
+
+    if (!anchor_node || !focus_node) {
+      return;
+    }
+
+    // Update nodes if they don't exist in Android accessibility tree.
+    // TODO(crbug.com/443078007): Ensure nodes have actual text before trying to
+    // update offset.
+    ui::BrowserAccessibility* platform_ancestor =
+        anchor_node->PlatformGetLowestPlatformAncestor();
+    if (platform_ancestor != anchor_node) {
+      anchor_offset +=
+          CalculateOffsetInAncestor(platform_ancestor, anchor_node);
+      anchor_node = platform_ancestor;
+    }
+
+    // TODO(crbug.com/443078007): Adjust the node downward to the last leaf node
+    // (not the first) and add more test coverage. e.g. where the selection
+    // lands on ignored nodes at the anchor, focus, or both. Also, perhaps a
+    // more deeply nested ignored structure.
+    platform_ancestor = focus_node->PlatformGetLowestPlatformAncestor();
+    if (platform_ancestor != focus_node) {
+      focus_offset += CalculateOffsetInAncestor(platform_ancestor, focus_node);
+      focus_node = platform_ancestor;
+    }
+
+    anchor_id =
+        static_cast<BrowserAccessibilityAndroid*>(anchor_node)->GetUniqueId();
+    focus_id =
+        static_cast<BrowserAccessibilityAndroid*>(focus_node)->GetUniqueId();
+  }
+
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoExtendedSelectionAttrs(
+      env, obj, info, anchor_id, anchor_offset, focus_id, focus_offset);
 }
 
 jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
@@ -1744,11 +1837,18 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
       break;
     }
     case ANDROID_ACCESSIBILITY_EVENT_TEXT_SELECTION_CHANGED: {
-      std::u16string text = node->GetTextContentUTF16();
-      Java_WebContentsAccessibilityImpl_setAccessibilityEventSelectionAttrs(
-          env, obj, event, node->GetSelectionStart(), node->GetSelectionEnd(),
-          node->GetEditableTextLength(),
-          base::android::ConvertUTF16ToJavaString(env, text));
+      // Selection details are set as an extended selection on the node's root
+      // when `kAccessibilityExtendedSelection` is enabled. For backward
+      // compatibility, they are also set as event properties for editable nodes
+      if (!base::FeatureList::IsEnabled(
+              features::kAccessibilityExtendedSelection) ||
+          node->IsTextField()) {
+        std::u16string text = node->GetTextContentUTF16();
+        Java_WebContentsAccessibilityImpl_setAccessibilityEventSelectionAttrs(
+            env, obj, event, node->GetSelectionStart(), node->GetSelectionEnd(),
+            node->GetEditableTextLength(),
+            base::android::ConvertUTF16ToJavaString(env, text));
+      }
       break;
     }
     default:

@@ -252,6 +252,8 @@ public final class AccessibilityNodeInfoUtils {
             builder.append(" partiallyChecked");
         }
 
+        // TODO(crbug.com/443078007): Add extended selection to the expected text.
+
         // Child objects - print for non-null cases.
         if (node.getCollectionInfo() != null) {
             builder.append(" CollectionInfo:").append(toString(node.getCollectionInfo()));

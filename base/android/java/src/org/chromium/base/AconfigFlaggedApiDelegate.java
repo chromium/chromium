@@ -241,4 +241,29 @@ public interface AconfigFlaggedApiDelegate {
     default boolean setSortDirectionContentChangeType(AccessibilityEvent event) {
         return false;
     }
+
+    /**
+     * Calls {@link android.view.accessibility.AccessibilityNodeInfoCompat#setSelection(@Nullable
+     * SelectionCompat selection)} if supported.
+     *
+     * @param info The node to which the selection is assigned.
+     * @param view The view whose virtual descendant is associated with the selection position.
+     * @param startVirtualDescendantId The ID of the virtual descendant within {@code view}'s
+     *     virtual subtree that contains the start selection position. Passing {@code View.NO_ID}
+     *     will clear the selection.
+     * @param startOffset The offset for a selection position within the start virtual descendant's
+     *     text content.
+     * @param endVirtualDescendantId The ID of the virtual descendant within {@code view}'s virtual
+     *     subtree that contains the end selection position. Passing {@code View.NO_ID} will clear
+     *     the selection.
+     * @param endOffset The offset for a selection position within the end virtual descendant's text
+     *     content.
+     */
+    default void setSelection(
+            AccessibilityNodeInfoCompat info,
+            android.view.View view,
+            int startVirtualDescendantId,
+            int startOffset,
+            int endVirtualDescendantId,
+            int endOffset) {}
 }

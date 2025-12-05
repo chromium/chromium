@@ -704,6 +704,25 @@ public class AccessibilityNodeInfoBuilder {
     }
 
     @CalledByNative
+    protected void setAccessibilityNodeInfoExtendedSelectionAttrs(
+            AccessibilityNodeInfoCompat node,
+            int startVirtualViewId,
+            int startOffset,
+            int endVirtualViewId,
+            int endOffset) {
+        var aconfigFlaggedApiDelegate = AconfigFlaggedApiDelegate.getInstance();
+        if (aconfigFlaggedApiDelegate != null) {
+            aconfigFlaggedApiDelegate.setSelection(
+                    node,
+                    mDelegate.getView(),
+                    startVirtualViewId,
+                    startOffset,
+                    endVirtualViewId,
+                    endOffset);
+        }
+    }
+
+    @CalledByNative
     protected void setAccessibilityNodeInfoImageData(
             AccessibilityNodeInfoCompat info, byte[] imageData) {
         info.getExtras().putByteArray(EXTRAS_KEY_IMAGE_DATA, imageData);
