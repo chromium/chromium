@@ -265,10 +265,14 @@ android_library("main_autofill_java") {
     "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/PaymentsPayload.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/AttributeInstance.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/AttributeType.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/EntityType.java",
   ]
   srcjar_deps = [
     ":autofill_core_browser_java_enums",
     ":main_autofill_jni_headers",
+    "//components/autofill/core/browser:autofill_ai_core_browser_java_enums",
   ]
   resources_package = "org.chromium.components.autofill"
 }
@@ -285,6 +289,9 @@ generate_jni("main_autofill_jni_headers") {
     "java/src/org/chromium/components/autofill/LoyaltyCard.java",
     "java/src/org/chromium/components/autofill/PaymentsPayload.java",
     "java/src/org/chromium/components/autofill/SubKeyRequester.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/AttributeInstance.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/AttributeType.java",
+    "java/src/org/chromium/components/autofill/autofill_ai/EntityType.java",
   ]
 }
 

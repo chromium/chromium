@@ -62,8 +62,10 @@ def generate_cpp_enums(schema):
       for entity in schema
       for attribute in entity['attributes']
   )
+  yield f'// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
   yield f'enum class EntityTypeName {{ {", ".join(add_kMaxValue(entities))} }};'
   yield ''
+  yield f'// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai'
   yield f'enum class AttributeTypeName {{ {", ".join(add_kMaxValue(attributes))} }};'
 
 

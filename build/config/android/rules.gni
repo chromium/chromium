@@ -209,7 +209,11 @@ if (!is_robolectric && enable_java_templates) {
   #   }
   template("java_cpp_enum") {
     action_with_pydeps(target_name) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "sources" ])
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "sources",
+                                   "deps",
+                                 ])
 
       # The sources aren't compiled so don't check their dependencies.
       check_includes = false

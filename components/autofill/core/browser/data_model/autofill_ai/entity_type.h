@@ -43,6 +43,7 @@ class EntityTable;
 class AttributeType final {
  public:
   // The underlying representation of the data stored in this attribute.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill.autofill_ai
   enum class DataType {
     kCountry,
     kDate,
