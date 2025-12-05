@@ -52,10 +52,11 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
         {
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicURLConfig,
-             {{features::kGlicGuestURL.name, "about:blank"}}},
+             { {features::kGlicGuestURL.name, "about:blank"} }},
 #endif
             {features::kGlicActor, {}},
             {features::kGlicHandoffButtonHiddenClientControl, {}},
+            {features::kGlicHandoffButtonShowInImmersiveMode, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiHandoffButtonName, "true"}}},
 #if BUILDFLAG(IS_MAC)
@@ -77,7 +78,7 @@ class ActorUiHandoffButtonControllerInteractiveUiTest
   }
 
 #if BUILDFLAG(IS_MAC)
-  auto EnterImmersiveFullscreen() {
+  auto ToggleImmersiveFullscreen() {
     return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
   }
 
@@ -183,13 +184,19 @@ IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
 // This test is only for Mac where we have immersive fullscreen.
 #if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(ActorUiHandoffButtonControllerInteractiveUiTest,
-                       ButtonHidesInImmersiveFullscreen) {
+                       ButtonReappearsAfterFullscreenToggle) {
   StartActingOnTab();
-  RunTestSequence(ClearOmniboxFocus(), Do(EnterImmersiveFullscreen()),
-                  Check(IsInImmersiveFullscreen()),
-                  // Verify the button does not show.
-                  InAnyContext(EnsureNotPresent(
-                      HandoffButtonController::kHandoffButtonElementId)));
+  RunTestSequence(
+      ClearOmniboxFocus(),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
+      Do(ToggleImmersiveFullscreen()), Check(IsInImmersiveFullscreen()),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)),
+      // Exit fullscreen.
+      Do(ToggleImmersiveFullscreen()),
+      InAnyContext(
+          WaitForShow(HandoffButtonController::kHandoffButtonElementId)));
 }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -246,16 +253,13 @@ class ActorUiHandoffButtonVisibleInBothStatesInteractiveUiTest
         {
 #if BUILDFLAG(ENABLE_GLIC)
             {features::kGlicURLConfig,
-             {{features::kGlicGuestURL.name, "about:blank"}}},
+             { {features::kGlicGuestURL.name, "about:blank"} }},
             {features::kGlic, {}},
             {features::kTabstripComboButton, {}},
 #endif
             {features::kGlicActor, {}},
             {features::kGlicActorUi,
              {{features::kGlicActorUiHandoffButtonName, "true"}}},
-#if BUILDFLAG(IS_MAC)
-            {features::kImmersiveFullscreen, {}},
-#endif
         },
         /*disabled_features=*/{
 #if BUILDFLAG(ENABLE_GLIC)

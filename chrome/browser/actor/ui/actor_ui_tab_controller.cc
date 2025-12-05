@@ -227,32 +227,9 @@ void ActorUiTabController::OnWebContentsAttached() {
   UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError, "OnWebContentsAttached"));
 }
 
-void ActorUiTabController::InitializeImmersiveModeObserver() {
-  if (immersive_mode_observer_.IsObserving()) {
-    return;
-  }
-  immersive_mode_observer_.Observe(
-      ImmersiveModeController::From(tab_->GetBrowserWindowInterface()));
-}
-
-void ActorUiTabController::OnImmersiveFullscreenEntered() {
-  if (!actor_keyed_service_->GetTaskFromTab(*tab_)) {
-    return;
-  }
-  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
-                          "OnImmersiveFullscreenEntered"));
-}
-
-void ActorUiTabController::OnImmersiveFullscreenExited() {
-  if (!actor_keyed_service_->GetTaskFromTab(*tab_)) {
-    return;
-  }
-  UpdateUi(base::BindOnce(&LogAndIgnoreCallbackError,
-                          "OnImmersiveFullscreenExited"));
-}
-
-void ActorUiTabController::OnImmersiveModeControllerDestroyed() {
-  immersive_mode_observer_.Reset();
+void ActorUiTabController::OnImmersiveModeChanged() {
+  UpdateUi(
+      base::BindOnce(&LogAndIgnoreCallbackError, "OnImmersiveModeChanged"));
 }
 
 void ActorUiTabController::SetBorderGlowVisibility(base::OnceClosure callback) {
@@ -278,21 +255,29 @@ bool ActorUiTabController::ComputeHandoffButtonVisibility() {
   // BrowserView exists, we can check if ActorUiWindowController has been
   // created, since its creation relies on a valid BrowserView. Once those tests
   // are cleaned up, this null checks on the window controller can be removed.
-  if (!ActorUiWindowController::From(tab_->GetBrowserWindowInterface())) {
+  auto* window_controller =
+      ActorUiWindowController::From(tab_->GetBrowserWindowInterface());
+  if (!window_controller) {
     return false;
   }
-  InitializeImmersiveModeObserver();
-  if (ImmersiveModeController::From(tab_->GetBrowserWindowInterface())
-          ->IsEnabled()) {
-    return false;
+  if (window_controller->IsImmersiveModeEnabled()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kGlicHandoffButtonShowInImmersiveMode)) {
+      return false;
+    }
+    // Still hide the button in the specific scenario where the toolbar is
+    // revealed temporarily but not pinned.
+    if (window_controller->IsToolbarRevealed() &&
+        !window_controller->IsToolbarPinned()) {
+      return false;
+    }
   }
   UpdateOmniboxTabHelperObserver();
   if (is_focusing_omnibox_) {
     return false;
   }
 
-  // Only visible when:
-  // 1. Its state is active and the associated tab is selected.
+  // Only visible when its state is active and the associated tab is selected.
   return tab_->IsSelected() && current_ui_tab_state_.handoff_button.is_active;
 }
 
@@ -320,8 +305,8 @@ void ActorUiTabController::SetActorTaskResume() {
   }
 }
 
-// TODO(crbug.com/447624564): After migrating the Handoff button off the TDM and
-// onto contents container, investigate removing debouncing on the tab
+// TODO(crbug.com/447624564): After migrating the Handoff button off the TDM
+// and onto contents container, investigate removing debouncing on the tab
 // controller side and handle it on the ui component side.
 void ActorUiTabController::UpdateScrimBackground() {
   bool should_show_scrim_background =

@@ -13,7 +13,9 @@ namespace actor::ui {
 
 class MockHandoffButtonController : public HandoffButtonController {
  public:
-  explicit MockHandoffButtonController(views::View* anchor_view);
+  explicit MockHandoffButtonController(
+      views::View* anchor_view,
+      ActorUiWindowController* window_controller);
   ~MockHandoffButtonController() override;
 
   MOCK_METHOD(void,

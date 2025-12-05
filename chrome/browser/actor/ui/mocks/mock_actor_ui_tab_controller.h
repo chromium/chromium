@@ -58,6 +58,8 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
   MOCK_METHOD(UiTabState, GetCurrentUiTabState, (), (const, override));
 
+  MOCK_METHOD(void, OnImmersiveModeChanged, (), (override));
+
   using ActorOverlayStateChangeCallback =
       base::RepeatingCallback<void(bool, ActorOverlayState, base::OnceClosure)>;
   MOCK_METHOD(base::ScopedClosureRunner,

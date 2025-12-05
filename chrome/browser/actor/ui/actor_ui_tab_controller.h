@@ -10,7 +10,6 @@
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
-#include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
@@ -20,7 +19,6 @@ class ActorKeyedService;
 namespace actor::ui {
 
 class ActorUiTabController : public ActorUiTabControllerInterface,
-                             public ImmersiveModeController::Observer,
                              public OmniboxTabHelper::Observer {
  public:
   ActorUiTabController(tabs::TabInterface& tab,
@@ -42,17 +40,14 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
       HandoffButtonController* controller) override;
   UiTabState GetCurrentUiTabState() const override;
 
-  // ImmersiveModeController::Observer
-  void OnImmersiveFullscreenEntered() override;
-  void OnImmersiveFullscreenExited() override;
-  void OnImmersiveModeControllerDestroyed() override;
-
   // OmniboxTabHelper::Observer:
   void OnOmniboxInputStateChanged() override {}
   void OnOmniboxInputInProgress(bool in_progress) override {}
   void OnOmniboxFocusChanged(OmniboxFocusState state,
                              OmniboxFocusChangeReason reason) override;
   void OnOmniboxPopupVisibilityChanged(bool popup_is_open) override {}
+
+  void OnImmersiveModeChanged() override;
 
   base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() override;
 
@@ -146,11 +141,6 @@ class ActorUiTabController : public ActorUiTabControllerInterface,
   base::RetainingOneShotTimer update_scrim_background_debounce_timer_;
 
   ::ui::ScopedUnownedUserData<ActorUiTabController> scoped_unowned_user_data_;
-
-  // Observer to get notifications when the immersive mode reveal state changes.
-  base::ScopedObservation<ImmersiveModeController,
-                          ImmersiveModeController::Observer>
-      immersive_mode_observer_{this};
 
   // Observer to get notifications when the omnibox is focused.
   base::ScopedObservation<OmniboxTabHelper, OmniboxTabHelper::Observer>

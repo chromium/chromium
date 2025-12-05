@@ -10,6 +10,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/ui/actor_ui_window_controller.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view_observer.h"
@@ -55,7 +56,8 @@ class HandoffButtonWidget : public views::Widget {
 
 class HandoffButtonController : public views::ViewObserver {
  public:
-  explicit HandoffButtonController(views::View* anchor_view);
+  explicit HandoffButtonController(views::View* anchor_view,
+                                   ActorUiWindowController* window_controller);
   ~HandoffButtonController() override;
 
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kHandoffButtonElementId);
@@ -98,17 +100,22 @@ class HandoffButtonController : public views::ViewObserver {
   virtual void CloseButton(views::Widget::ClosedReason reason);
   virtual ActorUiTabControllerInterface* GetTabController();
   virtual void UpdateBounds();
+
   void OnWidgetDestroying(views::Widget::ClosedReason reason);
 
   bool is_visible_ = false;
   bool is_hovering_ = false;
   bool is_focused_ = false;
+  bool was_immersive_ = false;
+  bool was_toolbar_pinned_ = false;
+
   base::ScopedObservation<views::View, views::ViewObserver> view_observer_{
       this};
   HandoffButtonState::ControlOwnership ownership_ =
       HandoffButtonState::ControlOwnership::kActor;
 
   raw_ptr<views::View> anchor_view_ = nullptr;
+  raw_ptr<ActorUiWindowController> window_controller_ = nullptr;
   raw_ptr<tabs::TabInterface> tab_interface_ = nullptr;
 
   base::WeakPtrFactory<HandoffButtonController> weak_ptr_factory_{this};

@@ -139,7 +139,7 @@ class ActorUiTabControllerTest : public content::RenderViewHostTestHarness {
 
     mock_handoff_button_controller_ =
         std::make_unique<MockHandoffButtonController>(
-            /*anchor_view=*/nullptr);
+            /*anchor_view=*/nullptr, /*window_controller*/ nullptr);
     handoff_button_controller_registration_ =
         actor_ui_tab_controller_->RegisterHandoffButtonController(
             mock_handoff_button_controller_.get());
@@ -357,20 +357,6 @@ TEST_F(ActorUiTabControllerTest, BorderGlowChangesOnUiTabStateChange) {
   ON_CALL(mock_tab(), IsSelected).WillByDefault(Return(false));
   EXPECT_CALL(callback, Call(&mock_tab(), false));
   tab_controller()->OnUiTabStateChange(ui_tab_state_glow_on, base::DoNothing());
-}
-
-TEST_F(ActorUiTabControllerTest, HandoffButtonHidesWhenInImmersiveMode) {
-  EXPECT_CALL(*handoff_button_controller(),
-              UpdateState(_, /*is_visible=*/false, _));
-
-  ON_CALL(*immersive_mode_controller(), IsEnabled())
-      .WillByDefault(Return(true));
-  HandoffButtonState handoff_button_state(
-      true, HandoffButtonState::ControlOwnership::kActor);
-  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
-  base::test::TestFuture<bool> future;
-  tab_controller()->OnUiTabStateChange(ui_tab_state, future.GetCallback());
-  EXPECT_TRUE(future.Get());
 }
 
 TEST_F(ActorUiTabControllerTest,
