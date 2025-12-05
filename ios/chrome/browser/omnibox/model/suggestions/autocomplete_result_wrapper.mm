@@ -13,7 +13,6 @@
 #import "components/omnibox/browser/omnibox_client.h"
 #import "components/omnibox/browser/omnibox_field_trial.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/aim/model/aim_availability.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_match_formatter.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_result_wrapper_delegate.h"
 #import "ios/chrome/browser/omnibox/model/suggestions/autocomplete_suggestion.h"

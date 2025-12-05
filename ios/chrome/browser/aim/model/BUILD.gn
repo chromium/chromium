@@ -4,8 +4,6 @@
 
 source_set("aim_availability") {
   sources = [
-    "aim_availability.h",
-    "aim_availability.mm",
     "ios_chrome_aim_eligibility_service.h",
     "ios_chrome_aim_eligibility_service.mm",
     "ios_chrome_aim_eligibility_service_factory.h",
