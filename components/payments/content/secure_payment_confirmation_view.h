@@ -22,6 +22,7 @@ class SecurePaymentConfirmationModel;
 class SecurePaymentConfirmationView {
  public:
   using VerifyCallback = base::OnceCallback<void()>;
+  using AnotherWayCallback = base::OnceCallback<void()>;
   using CancelCallback = base::OnceCallback<void()>;
   using OptOutCallback = base::OnceCallback<void()>;
 
@@ -33,6 +34,7 @@ class SecurePaymentConfirmationView {
   virtual void ShowDialog(content::WebContents* web_contents,
                           base::WeakPtr<SecurePaymentConfirmationModel> model,
                           VerifyCallback verify_callback,
+                          AnotherWayCallback another_way_callback,
                           CancelCallback cancel_callback,
                           OptOutCallback opt_out_callback) = 0;
   virtual void OnModelUpdated() = 0;
