@@ -77,6 +77,7 @@ source_set("eg_app_support+eg2") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
+    "CALayer+EGResetInfiniteDuration.mm",
     "accessibility_util.h",
     "accessibility_util.mm",
     "chrome_actions_app_interface.h",
