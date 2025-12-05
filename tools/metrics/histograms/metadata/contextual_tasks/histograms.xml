@@ -169,6 +169,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.WebUI.UserAction{ActionType}" enum="Boolean"
+    expires_after="2026-03-22">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded every time the user interacted with the contextual tasks web UI
+    directly. {ActionType} Always recorded as true.
+  </summary>
+  <token key="ActionType">
+    <variant name=".CloseSidePanel" summary="The user closed the side panel."/>
+    <variant name=".OpenHelp" summary="The user opened the help page."/>
+    <variant name=".OpenInNewTab"
+        summary="The user opened the task in a new tab."/>
+    <variant name=".OpenMyActivity"
+        summary="The user opened the My Activity page."/>
+    <variant name=".OpenNewThread" summary="The user opened a new thread."/>
+    <variant name=".OpenThreadHistory"
+        summary="The user opened the thread history."/>
+    <variant name=".TabFromSourcesMenuClicked"
+        summary="The user clicked on a tab from the sources menu."/>
+  </token>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
