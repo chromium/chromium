@@ -71,7 +71,7 @@ struct CONTENT_EXPORT PermissionResult {
                             std::optional<PermissionSetting>
                                 retrieved_permission_data = std::nullopt);
   PermissionResult(const PermissionResult& other);
-  PermissionResult& operator=(PermissionResult& other);
+  PermissionResult& operator=(const PermissionResult& other);
   PermissionResult(PermissionResult&&);
   PermissionResult& operator=(PermissionResult&&);
   ~PermissionResult();
