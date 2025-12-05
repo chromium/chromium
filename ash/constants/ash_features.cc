@@ -693,9 +693,6 @@ BASE_FEATURE(kFastPairHandshakeLongTermRefactor,
 // Enables prototype support for Fast Pair for keyboards.
 BASE_FEATURE(kFastPairKeyboards, base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables Saved Devices nicknames logic for Fast Pair.
-BASE_FEATURE(kFastPairSavedDevicesNicknames, base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The amount of minutes we should wait before allowing notifications for a
 // recently lost device.
 const base::FeatureParam<double> kFastPairDeviceLostNotificationTimeoutMinutes{
@@ -2661,10 +2658,6 @@ bool IsFastPairHandshakeLongTermRefactorEnabled() {
 
 bool IsFastPairKeyboardsEnabled() {
   return base::FeatureList::IsEnabled(kFastPairKeyboards);
-}
-
-bool IsFastPairSavedDevicesNicknamesEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSavedDevicesNicknames);
 }
 
 bool IsFastPairPwaCompanionEnabled() {
