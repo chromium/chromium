@@ -6,6 +6,7 @@
 #define ASH_QUICK_INSERT_VIEWS_QUICK_INSERT_FEATURE_TOUR_H_
 
 #include "ash/ash_export.h"
+#include "ash/quick_insert/views/quick_insert_feature_tour_dialog_view.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -33,10 +34,7 @@ namespace ash {
 
 class ASH_EXPORT QuickInsertFeatureTour : public wm::ActivationChangeObserver {
  public:
-  enum class EditorStatus {
-    kEligible,
-    kNotEligible,
-  };
+  using EditorStatus = QuickInsertFeatureTourDialogView::EditorStatus;
 
   QuickInsertFeatureTour();
   QuickInsertFeatureTour(const QuickInsertFeatureTour&) = delete;

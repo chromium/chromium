@@ -10,153 +10,32 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/quick_insert/resources/grit/quick_insert_resources.h"
-#include "ash/strings/grit/ash_strings.h"
-#include "ash/style/pill_button.h"
-#include "ash/style/system_dialog_delegate_view.h"
+#include "ash/quick_insert/views/quick_insert_feature_tour_dialog_view.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/branding_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/image_model.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_types.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
-#include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/geometry/rounded_corners_f.h"
-#include "ui/views/background.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/highlight_border.h"
-#include "ui/views/metadata/view_factory.h"
-#include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_delegate.h"
 #include "ui/wm/public/activation_client.h"
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-
 namespace ash {
 namespace {
-
-class QuickInsertFeatureTourDialogView : public SystemDialogDelegateView {
-  METADATA_HEADER(QuickInsertFeatureTourDialogView, SystemDialogDelegateView)
-
- public:
-  QuickInsertFeatureTourDialogView() {
-    AddAccelerator(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
-  }
-
-  // SystemDialogDelegateView:
-  bool AcceleratorPressed(const ui::Accelerator& accelerator) override {
-    DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
-    if (views::Widget* widget = GetWidget()) {
-      widget->CloseWithReason(views::Widget::ClosedReason::kEscKeyPressed);
-      // Don't propagate.
-      return true;
-    }
-    return false;
-  }
-};
-
-BEGIN_METADATA(QuickInsertFeatureTourDialogView)
-END_METADATA
-
-BEGIN_VIEW_BUILDER(/*no export*/,
-                   QuickInsertFeatureTourDialogView,
-                   SystemDialogDelegateView)
-END_VIEW_BUILDER
-
-}  // namespace
-}  // namespace ash
-
-DEFINE_VIEW_BUILDER(/* no export */, ash::QuickInsertFeatureTourDialogView)
-
-namespace ash {
-namespace {
-
-constexpr auto kFeatureTourDialogBorderInsets =
-    gfx::Insets::TLBR(0, 32, 28, 32);
-
-constexpr int kFeatureTourDialogCornerRadius = 20;
-constexpr auto kFeatureTourDialogIllustrationCornerRadii =
-    gfx::RoundedCornersF(/*upper_left=*/kFeatureTourDialogCornerRadius,
-                         /*upper_right=*/kFeatureTourDialogCornerRadius,
-                         /*lower_right=*/0,
-                         /*lower_left=*/0);
-
-std::u16string GetHeadingText(
-    QuickInsertFeatureTour::EditorStatus editor_status) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  switch (editor_status) {
-    case QuickInsertFeatureTour::EditorStatus::kEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_HEADING_TEXT);
-    case QuickInsertFeatureTour::EditorStatus::kNotEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_HEADING_TEXT);
-  }
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-std::u16string GetBodyText(QuickInsertFeatureTour::EditorStatus editor_status) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  switch (editor_status) {
-    case QuickInsertFeatureTour::EditorStatus::kEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITH_EDITOR_BODY_TEXT);
-    case QuickInsertFeatureTour::EditorStatus::kNotEligible:
-      return l10n_util::GetStringUTF16(
-          IDS_PICKER_FEATURE_TOUR_WITHOUT_EDITOR_BODY_TEXT);
-  }
-#else
-  return u"";
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
-}
-
-ui::ImageModel GetIllustration() {
-  return ui::ResourceBundle::GetSharedInstance().GetThemedLottieImageNamed(
-      IDR_QUICK_INSERT_FEATURE_TOUR_ILLUSTRATION);
-}
 
 std::unique_ptr<views::Widget> CreateWidget(
     QuickInsertFeatureTour::EditorStatus editor_status,
     base::OnceClosure learn_more_callback,
     base::OnceClosure completion_callback) {
   auto feature_tour_dialog =
-      views::Builder<QuickInsertFeatureTourDialogView>()
-          .SetBorder(views::CreatePaddedBorder(
-              std::make_unique<views::HighlightBorder>(
-                  kFeatureTourDialogCornerRadius,
-                  views::HighlightBorder::Type::kHighlightBorderOnShadow),
-              kFeatureTourDialogBorderInsets))
-          .SetTitleText(GetHeadingText(editor_status))
-          .SetDescription(GetBodyText(editor_status))
-          .SetAcceptButtonText(l10n_util::GetStringUTF16(
-              IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL))
-          .SetAcceptCallback(std::move(completion_callback))
-          .SetCancelButtonText(l10n_util::GetStringUTF16(
-              IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL))
-          .SetCancelCallback(std::move(learn_more_callback))
-          .SetTopContentView(
-              views::Builder<views::ImageView>()
-                  .SetBackground(views::CreateRoundedRectBackground(
-                      cros_tokens::kCrosSysIlloColor12,
-                      kFeatureTourDialogIllustrationCornerRadii))
-                  .SetImage(GetIllustration()))
-          .SetModalType(ui::mojom::ModalType::kSystem)
+      views::Builder<QuickInsertFeatureTourDialogView>(
+          std::make_unique<QuickInsertFeatureTourDialogView>(
+              editor_status, std::move(learn_more_callback),
+              std::move(completion_callback)))
           .Build();
 
   views::Widget::InitParams params(
@@ -229,10 +108,10 @@ const views::Button* QuickInsertFeatureTour::learn_more_button_for_testing()
     return nullptr;
   }
 
-  auto* feature_tour_dialog =
-      static_cast<SystemDialogDelegateView*>(widget_->GetContentsView());
+  auto* feature_tour_dialog = static_cast<QuickInsertFeatureTourDialogView*>(
+      widget_->GetContentsView());
   return feature_tour_dialog != nullptr
-             ? feature_tour_dialog->GetCancelButtonForTesting()  // IN-TEST
+             ? feature_tour_dialog->learn_more_button_for_testing()  // IN-TEST
              : nullptr;
 }
 
@@ -242,10 +121,10 @@ const views::Button* QuickInsertFeatureTour::complete_button_for_testing()
     return nullptr;
   }
 
-  auto* feature_tour_dialog =
-      static_cast<SystemDialogDelegateView*>(widget_->GetContentsView());
+  auto* feature_tour_dialog = static_cast<QuickInsertFeatureTourDialogView*>(
+      widget_->GetContentsView());
   return feature_tour_dialog != nullptr
-             ? feature_tour_dialog->GetAcceptButtonForTesting()  // IN-TEST
+             ? feature_tour_dialog->complete_button_for_testing()  // IN-TEST
              : nullptr;
 }
 

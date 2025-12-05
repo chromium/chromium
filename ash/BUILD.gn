@@ -1154,6 +1154,8 @@ component("ash") {
     "quick_insert/views/quick_insert_emoji_item_view.h",
     "quick_insert/views/quick_insert_feature_tour.cc",
     "quick_insert/views/quick_insert_feature_tour.h",
+    "quick_insert/views/quick_insert_feature_tour_dialog_view.cc",
+    "quick_insert/views/quick_insert_feature_tour_dialog_view.h",
     "quick_insert/views/quick_insert_focus_indicator.cc",
     "quick_insert/views/quick_insert_focus_indicator.h",
     "quick_insert/views/quick_insert_gif_view.cc",
