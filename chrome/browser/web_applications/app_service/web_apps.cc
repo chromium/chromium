@@ -17,6 +17,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -203,8 +204,14 @@ void WebApps::GetMenuModel(const std::string& app_id,
   } else if (can_close) {
     // Isolated web apps can only be launched in new window.
     if (web_app->isolation_data().has_value()) {
-      apps::AddCommandItem(ash::LAUNCH_NEW,
-                           IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      // Isolated Web Apps with focus-existing or navigate-existing do not need
+      // a new window button.
+      if (!web_app->launch_handler()
+               .value_or(LaunchHandler{})
+               .TargetsExistingClients()) {
+        apps::AddCommandItem(ash::LAUNCH_NEW,
+                             IDS_APP_LIST_CONTEXT_MENU_NEW_WINDOW, menu_items);
+      }
     } else {
       apps::CreateOpenNewSubmenu(
           publisher_helper().GetWindowMode(app_id) == apps::WindowMode::kBrowser
