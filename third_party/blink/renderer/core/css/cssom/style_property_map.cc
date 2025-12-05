@@ -65,7 +65,8 @@ const CSSValue* StyleValueToCSSValue(
   // TODO(https://crbug.com/545324): Move this into a method on
   // CSSProperty when there are more of these cases.
   switch (property_id) {
-    case CSSPropertyID::kAnchorScope: {
+    case CSSPropertyID::kAnchorScope:
+    case CSSPropertyID::kTriggerScope: {
       // The 'all' keyword is tree-scoped.
       if (const auto* ident =
               DynamicTo<CSSIdentifierValue>(style_value.ToCSSValue());

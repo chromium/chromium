@@ -53,9 +53,11 @@
 #include "third_party/blink/renderer/core/style/scroll_marker_group.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_anchor_scope.h"
+#include "third_party/blink/renderer/core/style/style_name_scope.h"
 #include "third_party/blink/renderer/core/style/style_offset_rotation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_reflection.h"
+#include "third_party/blink/renderer/core/style/style_trigger_scope.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_group.h"
 #include "third_party/blink/renderer/core/style/style_view_transition_name.h"
 #include "third_party/blink/renderer/core/style/text_overflow_data.h"
@@ -265,6 +267,7 @@ class StyleBuilderConverter {
                                                       const CSSValue& value);
   static ScopedCSSNameList* ConvertAnchorName(StyleResolverState&,
                                               const CSSValue&);
+  static StyleNameScope ConvertNameScope(StyleResolverState&, const CSSValue&);
   static StyleAnchorScope ConvertAnchorScope(StyleResolverState&,
                                              const CSSValue&);
   static StyleInitialLetter ConvertInitialLetter(StyleResolverState&,
@@ -453,6 +456,9 @@ class StyleBuilderConverter {
 
   static ScopedCSSNameList* ConvertTimelineTriggerName(StyleResolverState&,
                                                        const CSSValue&);
+
+  static StyleTriggerScope ConvertTriggerScope(StyleResolverState&,
+                                               const CSSValue&);
 };
 
 template <typename T>

@@ -431,6 +431,7 @@ transition-duration: 0s
 transition-property: all
 transition-timing-function: ease
 translate: none
+trigger-scope: none
 unicode-bidi: normal
 user-select: auto
 vector-effect: none

@@ -1215,7 +1215,21 @@
       // Animation properites are never incremental.
       supports_incremental_style: false,
     },
-
+    {
+      name: "trigger-scope",
+      property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
+      include_paths: ["third_party/blink/renderer/core/style/style_trigger_scope.h"],
+      type_name: "StyleTriggerScope",
+      default_value: "StyleTriggerScope()",
+      field_group: "*",
+      field_template: "external",
+      converter: "ConvertTriggerScope",
+      keywords: ["none", "all"],
+      runtime_flag: "AnimationTrigger",
+      typedom_types: ["Keyword"],
+      invalidate: ["layout"],
+      valid_for_permission_element: true,
+    },
     // High Priority and all other font properties.
     // Other properties can depend upon high priority properties
     // (e.g. font-size / ems)

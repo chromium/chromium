@@ -460,6 +460,7 @@ class CORE_EXPORT ComputedStyleUtils {
       CSSValuePhase value_phase);
   static std::unique_ptr<CrossThreadStyleValue>
   CrossThreadStyleValueFromCSSStyleValue(CSSStyleValue* style_value);
+  static CSSValue* ValueForNameScope(const StyleNameScope& name_scope);
 
   // Returns the computed CSSValue of the given property from the style,
   // which may different than the resolved value returned by

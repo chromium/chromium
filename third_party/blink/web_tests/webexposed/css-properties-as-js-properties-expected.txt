@@ -565,6 +565,7 @@ transitionDuration
 transitionProperty
 transitionTimingFunction
 translate
+triggerScope
 types
 unicodeBidi
 unicodeRange

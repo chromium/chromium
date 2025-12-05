@@ -465,6 +465,7 @@ All changes to this list should go through Blink's feature review process: http:
     transition-property
     transition-timing-function
     translate
+    trigger-scope
     unicode-bidi
     user-select
     vector-effect

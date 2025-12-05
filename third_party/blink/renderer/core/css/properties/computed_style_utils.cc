@@ -5174,4 +5174,21 @@ CSSValueList* ComputedStyleUtils::ValuesForGridLanesShorthand(
       grid_lanes_direction_values, grid_lanes_fill_values);
 }
 
+CSSValue* ComputedStyleUtils::ValueForNameScope(
+    const StyleNameScope& name_scope) {
+  if (name_scope.IsNone()) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  if (name_scope.IsAll()) {
+    return CSSIdentifierValue::Create(CSSValueID::kAll);
+  }
+  CHECK(name_scope.Names());
+  CSSValueList* list = CSSValueList::CreateCommaSeparated();
+  for (const Member<const ScopedCSSName>& name :
+       name_scope.Names()->GetNames()) {
+    list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(*name));
+  }
+  return list;
+}
+
 }  // namespace blink

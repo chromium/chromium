@@ -890,6 +890,10 @@ CSSValue* ConsumeFitText(CSSParserTokenStream&, const CSSParserContext&);
 
 CSSValue* ConsumeTextOverflow(CSSParserTokenStream&);
 
+CSSValue* ConsumeNameScope(CSSParserTokenStream& stream,
+                           const CSSParserContext& context,
+                           const CSSParserLocalContext&);
+
 // If the stream starts with “!important”, consumes it and returns true.
 // If the stream is at EOF, returns false.
 // If parse error, also returns false, but the stream position is unchanged

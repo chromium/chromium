@@ -9506,6 +9506,22 @@ CSSValue* ConsumeProgressType(CSSParserTokenStream& stream,
                                                           easing_function);
 }
 
+CSSValue* ConsumeNameScope(CSSParserTokenStream& stream,
+                           const CSSParserContext& context,
+                           const CSSParserLocalContext&) {
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(stream)) {
+    return value;
+  }
+  if (CSSValue* value =
+          css_parsing_utils::ConsumeScopedKeywordValue<CSSValueID::kAll>(
+              stream)) {
+    return value;
+  }
+  return css_parsing_utils::ConsumeCommaSeparatedList(
+      css_parsing_utils::ConsumeDashedIdent, stream, context);
+}
+
 bool ContainsSafeAreaInsetBottom(CSSParserTokenStream& stream) {
   while (!stream.AtEnd()) {
     if (stream.Peek().GetBlockType() == CSSParserToken::kBlockStart) {

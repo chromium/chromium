@@ -962,6 +962,7 @@ enum CSSSampleId {
     kRowRuleInteriorEndInset = 898,
     kTimelineTriggerRange = 899,
     kTimelineTriggerExitRange = 900,
+    kTriggerScope = 901,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

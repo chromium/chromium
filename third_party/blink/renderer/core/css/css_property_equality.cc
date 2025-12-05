@@ -836,6 +836,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.TransformBox() == b.TransformBox();
     case CSSPropertyID::kTransformStyle:
       return a.TransformStyle3D() == b.TransformStyle3D();
+    case CSSPropertyID::kTriggerScope:
+      return a.TriggerScope() == b.TriggerScope();
     case CSSPropertyID::kUserSelect:
       return a.UserSelect() == b.UserSelect();
     case CSSPropertyID::kVectorEffect:

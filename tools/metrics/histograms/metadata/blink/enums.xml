@@ -8194,6 +8194,7 @@ Called by update_use_counter_css.py.-->
   <int value="898" label="row-rule-interior-end-inset"/>
   <int value="899" label="timeline-trigger-range"/>
   <int value="900" label="timeline-trigger-exit-range"/>
+  <int value="901" label="trigger-scope"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/css_property_id.mojom:CSSSampleId) -->
