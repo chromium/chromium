@@ -4,7 +4,11 @@
 
 package org.chromium.chrome.browser.tab;
 
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.SmallTest;
 
@@ -31,15 +35,18 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.content_public.browser.test.util.DOMUtils;
+import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link Tab.MediaState}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     MediaSwitches.AUTOPLAY_NO_GESTURE_REQUIRED_POLICY,
+    ContentSwitches.USE_FAKE_DEVICE_FOR_MEDIA_STREAM,
     "enable-features=EnableAudioMonitoringOnAndroid",
 })
 @Batch(Batch.PER_CLASS)
@@ -52,12 +59,15 @@ public class TabMediaIndicatorTest {
 
     private static final String TEST_PATH = "/chrome/test/data/media/tab_media_indicator.html";
     private static final String VIDEO_ID = "video";
-    private static final long RECENTLY_AUDIBLE_TIMEOUT = 3000;
+    private static final String MUTE_VIDEO_ID = "mute";
+    private static final String UNMUTE_VIDEO_ID = "unmute";
+    private static final String REQUEST_MIC_ID = "request-mic";
+    private static final String REQUEST_CAM_ID = "request-cam";
+    private static final long WAIT = 2000;
 
     public TabModel mTabModel;
     public Tab mTab;
 
-    // TODO(crbug.com/454045510): Add tests for the other media states (recording, sharing).
     @Before
     public void setUp() throws Exception {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
@@ -71,7 +81,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateAudible() throws Exception {
+    public void testMediaStateAudible() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
         waitForMediaState(Tab.MediaState.AUDIBLE);
@@ -79,7 +89,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateMuted() throws Exception {
+    public void testMediaStateMuted() throws TimeoutException {
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
@@ -88,7 +98,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateMutedThenUnmute() throws Exception {
+    public void testMediaStateMutedThenUnmute() throws TimeoutException {
         setMuteState(true);
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
@@ -99,7 +109,7 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
-    public void testMediaStateAudibleThenMute() throws Exception {
+    public void testMediaStateAudibleThenMute() throws TimeoutException {
         DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
         DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
         waitForMediaState(Tab.MediaState.AUDIBLE);
@@ -119,7 +129,7 @@ public class TabMediaIndicatorTest {
         DOMUtils.waitForMediaPauseBeforeEnd(mTab.getWebContents(), VIDEO_ID);
 
         // Wait for recently audible to update.
-        Thread.sleep(RECENTLY_AUDIBLE_TIMEOUT);
+        Thread.sleep(WAIT);
         waitForMediaState(Tab.MediaState.NONE);
 
         // Mute video.
@@ -140,16 +150,56 @@ public class TabMediaIndicatorTest {
         waitForMediaState(Tab.MediaState.AUDIBLE);
 
         // Mute video element.
-        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "muteButton");
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), MUTE_VIDEO_ID);
 
         // Wait for recently audible to update.
-        Thread.sleep(RECENTLY_AUDIBLE_TIMEOUT);
+        Thread.sleep(WAIT);
         Assert.assertFalse(DOMUtils.isMediaPaused(mTab.getWebContents(), VIDEO_ID));
         waitForMediaState(Tab.MediaState.NONE);
 
         // Unmute video element.
-        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "unmuteButton");
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), UNMUTE_VIDEO_ID);
         waitForMediaState(Tab.MediaState.AUDIBLE);
+    }
+
+    @Test
+    @SmallTest
+    public void testMediaStateRecordingMic() throws InterruptedException {
+        requestRecording(REQUEST_MIC_ID);
+        waitForMediaState(Tab.MediaState.RECORDING);
+    }
+
+    @Test
+    @SmallTest
+    public void testMediaStateRecordingCam() throws InterruptedException {
+        requestRecording(REQUEST_CAM_ID);
+        waitForMediaState(Tab.MediaState.RECORDING);
+    }
+
+    @Test
+    @SmallTest
+    public void testMediaStatePriority() throws Exception {
+        Assert.assertEquals(Tab.MediaState.NONE, mTab.getMediaState());
+
+        // MUTED
+        setMuteState(true);
+        DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
+        DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
+        waitForMediaState(Tab.MediaState.MUTED);
+
+        // AUDIBLE
+        setMuteState(false);
+        waitForMediaState(Tab.MediaState.AUDIBLE);
+
+        // RECORDING
+        requestRecording(REQUEST_MIC_ID);
+        waitForMediaState(Tab.MediaState.RECORDING);
+    }
+
+    private void requestRecording(String id) throws InterruptedException {
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), id);
+        Thread.sleep(WAIT);
+        onViewWaiting(withText("Allow this time")).perform(click());
     }
 
     private void waitForMediaState(@Tab.MediaState int expectedState) {
