@@ -1539,9 +1539,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          autofill::features::debug::kAutofillShowTypePredictions)},
-    {"sign-in-button-no-avatar", flag_descriptions::kSignInButtonNoAvatarName,
-     flag_descriptions::kSignInButtonNoAvatarDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(kSignInButtonNoAvatar)},
     {"ntp-background-customization",
      flag_descriptions::kNTPBackgroundCustomizationName,
      flag_descriptions::kNTPBackgroundCustomizationDescription,

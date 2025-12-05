@@ -976,12 +976,6 @@ BASE_DECLARE_FEATURE(kNotificationCollisionManagement);
 // providesAppNotificationSettings.
 BASE_DECLARE_FEATURE(kIOSProvidesAppNotificationSettings);
 
-// Feature flag for enabling the sign-in button without avatar.
-BASE_DECLARE_FEATURE(kSignInButtonNoAvatar);
-
-// Returns whether the sign-in button without avatar is enabled.
-bool IsSignInButtonNoAvatarEnabled();
-
 // Feature flag to enable background customization on the NTP.
 BASE_DECLARE_FEATURE(kNTPBackgroundCustomization);
 

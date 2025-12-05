@@ -800,17 +800,13 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     UIImage* icon = DefaultSymbolTemplateWithPointSize(
         kPencilSymbol,
-        IsSignInButtonNoAvatarEnabled()
-            ? ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar
-            : ntp_home::kCustomizationMenuIconSize);
+        ntp_home::kCustomizationMenuIconSizeWhenSignInButtonHasNoAvatar);
     configuration.image = icon;
     configuration.background.cornerRadius =
         ntp_home::kCustomizationMenuButtonCornerRadius;
     customizationMenuButton.configuration = configuration;
 
-    UIColor* unthemedTintColor = [UIColor
-        colorNamed:(IsSignInButtonNoAvatarEnabled() ? kBlue600Color
-                                                    : kTextSecondaryColor)];
+    UIColor* unthemedTintColor = [UIColor colorNamed:kBlue600Color];
     customizationMenuButton.configurationUpdateHandler =
         CreateThemedButtonConfigurationUpdateHandler(
             unthemedTintColor, ^UIColor*(NewTabPageColorPalette* palette) {
@@ -820,11 +816,6 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
               return [UIColor colorWithDynamicProvider:^UIColor*(
                                   UITraitCollection* traits) {
-                if (!IsSignInButtonNoAvatarEnabled()) {
-                  return [[UIColor
-                      colorNamed:@"fake_omnibox_solid_background_color"]
-                      colorWithAlphaComponent:0.8];
-                }
                 return traits.userInterfaceStyle == UIUserInterfaceStyleDark
                            ? [UIColor
                                  colorNamed:kTabGroupFaviconBackgroundColor]

@@ -40,8 +40,6 @@ class NewTabPageHeaderViewControllerUnitTest : public PlatformTest {
 
 // Tests the header view when the user is signed out.
 TEST_F(NewTabPageHeaderViewControllerUnitTest, TestSignedOut) {
-  base::test::ScopedFeatureList feature_list(kSignInButtonNoAvatar);
-
   [view_controller_ loadViewIfNeeded];
 
   EXPECT_NE(nil, view_controller_.identityDiscButton);

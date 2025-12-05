@@ -944,9 +944,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kShowTabGroupInGridOnStartName[];
 extern const char kShowTabGroupInGridOnStartDescription[];
 
-extern const char kSignInButtonNoAvatarName[];
-extern const char kSignInButtonNoAvatarDescription[];
-
 extern const char kSkipDefaultBrowserPromoInFirstRunName[];
 extern const char kSkipDefaultBrowserPromoInFirstRunDescription[];
 

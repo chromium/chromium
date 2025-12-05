@@ -1574,11 +1574,6 @@ const char kShowTabGroupInGridOnStartDescription[] =
     "Show tab group in grid on start if the last activation is within a "
     "specific time interval";
 
-const char kSignInButtonNoAvatarName[] =
-    "Display sign-in button without avatar";
-const char kSignInButtonNoAvatarDescription[] =
-    "When enabled, the sign-in button is shown without an avatar on the NTP.";
-
 const char kSkipDefaultBrowserPromoInFirstRunName[] =
     "Skip the FRE Default Browser Promo in EEA";
 const char kSkipDefaultBrowserPromoInFirstRunDescription[] =

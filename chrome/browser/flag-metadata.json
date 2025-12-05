@@ -9563,14 +9563,6 @@
     "expiry_milestone" : 150
   },
   {
-    "name": "sign-in-button-no-avatar",
-    "owners": [
-      "pabouchard@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "signature-based-sri",
     "owners": [ "mkwst@chromium.org" ],
     "expiry_milestone": 150
@@ -9967,14 +9959,6 @@
     "name": "tabstrip-combo-button",
     "owners": [ "emshack@chromium.org", "top-chrome-desktop-ui@google.com" ],
     "expiry_milestone": 150
-  },
-  {
-    "name": "tailored-non-modal-db-promo",
-    "owners": [
-      "pabouchard@google.com",
-      "bling-mony-pod@google.com"
-    ],
-    "expiry_milestone": 141
   },
   {
     "name": "taiyaki",
