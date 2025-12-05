@@ -1008,6 +1008,26 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="NewTabPage.Incognito.OmniboxAutofocus.OnFocus.ZeroSuggestSuppressed"
+    enum="Boolean" expires_after="2026-05-01">
+  <owner>kalinino@google.com</owner>
+  <owner>polonium@google.com</owner>
+  <summary>
+    Records when a Zero-Prefix Suggestions (ZPS) request is suppressed on the
+    Incognito New Tab Page due to the Omnibox autofocus being activated.
+
+    This is a boolean histogram that only records `true` values. A `true` value
+    is recorded when a ZPS request is suppressed. Such requests occur on initial
+    focus or when the user deletes all typed text.
+
+    Note that recording is debounced by 100ms. This prevents logging of
+    transient states, as a single user action can trigger suggestion updates
+    multiple times in a short period. Debouncing ensures that only the final,
+    settled state is logged.
+  </summary>
+</histogram>
+
+<histogram
     name="NewTabPage.Incognito.OmniboxAutofocus.{FocusEvent}.NtpTextContentNoPaddingsBehindKeyboardHeightPercentage"
     units="Percents" expires_after="2026-05-01">
   <owner>kalinino@google.com</owner>

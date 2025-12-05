@@ -54,6 +54,10 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
 
+    @VisibleForTesting
+    public static final String HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP =
+            "NewTabPage.Incognito.OmniboxAutofocus.OnFocus.ZeroSuggestSuppressed";
+
     public static final String HISTOGRAM_FOCUS_TO_IME_ANIMATION_START =
             "Android.Omnibox.SuggestionList.FocusToImeAnimationStart";
 
@@ -395,6 +399,12 @@ public class OmniboxMetrics {
      */
     public static TimingMetric recordTimeFromFocusToImeAnimation() {
         return TimingMetric.shortUptime(HISTOGRAM_FOCUS_TO_IME_ANIMATION_START);
+    }
+
+    /** Records whether zero-prefix suggestions were suppressed on the Incognito NTP. */
+    public static void recordZeroSuggestSuppressedOnIncognitoNtp(boolean suppressed) {
+        RecordHistogram.recordBooleanHistogram(
+                HISTOGRAM_ZERO_SUGGEST_SUPPRESSED_ON_INCOGNITO_NTP, suppressed);
     }
 
     /**

@@ -92,6 +92,8 @@ class AutocompleteMediator
     // Delay triggering the omnibox results upon key press to allow the location bar to repaint
     // with the new characters.
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
+    // Delay recording ZPS suppression to allow subsequent suggestion updates to arrive.
+    private static final long ZPS_SUPPRESSION_METRIC_DEBOUNCE_MS = 100;
 
     private final Context mContext;
     private final AutocompleteDelegate mDelegate;
@@ -153,6 +155,11 @@ class AutocompleteMediator
     private boolean mIsExecutingAutocompleteAction;
     // Whether user scrolled the suggestions list.
     private boolean mSuggestionsListScrolled;
+    // The value of the last ZPS suppress metric recorded for the current ZPS session.
+    // The value is reset to null for each new ZPS session.
+    private @Nullable Boolean mLastRecordedZpsSuppressionValue;
+    // Runnable to record the ZPS suppression metric. Used to debounce rapid updates.
+    private @Nullable Runnable mRecordZpsSuppressionRunnable;
 
     /**
      * The text shown in the URL bar (user text + inline autocomplete) after the most recent set of
@@ -364,12 +371,14 @@ class AutocompleteMediator
      * <p>Note: the only supported page context right now is the ANDROID_SEARCH_WIDGET.
      */
     void startCachedZeroSuggest() {
-        // Do not show cached zero suggest results when omnibox autofocus feature enabled and
-        // Incognito NTP visible.
         boolean disableZps =
                 ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtpNoZeroSuggest.getValue();
 
+        // Do not show zero suggest results when omnibox autofocus is active on the Incognito NTP.
+        // This suppresses all zero suggest requests before they are made, because it is unknown if
+        // any zero suggest results would have been shown.
         if (disableZps && isOmniboxAutofocusOnIncognitoNtpActive()) {
+            recordZeroSuggestSuppressionMetric(true);
             return;
         }
 
@@ -890,6 +899,13 @@ class AutocompleteMediator
                     mAutocomplete.resetSession();
                 }
                 mNewOmniboxEditSessionTimestamp = SystemClock.elapsedRealtime();
+            } else {
+                // Start a new ZPS session by resetting values.
+                mLastRecordedZpsSuppressionValue = null;
+                if (mRecordZpsSuppressionRunnable != null) {
+                    mHandler.removeCallbacks(mRecordZpsSuppressionRunnable);
+                    mRecordZpsSuppressionRunnable = null;
+                }
             }
         }
 
@@ -1135,8 +1151,7 @@ class AutocompleteMediator
                 () -> {
                     if (mAutocomplete != null) {
                         final AutocompleteInput input = new AutocompleteInput();
-                        input.setPageClassification(
-                                mDataProvider.getPageClassification(true));
+                        input.setPageClassification(mDataProvider.getPageClassification(true));
                         input.setPageUrl(mDataProvider.getCurrentGurl());
                         input.setPageTitle(mDataProvider.getTitle());
                         mAutocomplete.startPrefetch(input, webContents);
@@ -1595,5 +1610,31 @@ class AutocompleteMediator
     private boolean isOmniboxAutofocusOnIncognitoNtpActive() {
         return ChromeFeatureList.sOmniboxAutofocusOnIncognitoNtp.isEnabled()
                 && mDataProvider.getNewTabPageDelegate().isIncognitoNewTabPageCurrentlyVisible();
+    }
+
+    /**
+     * Records metric about zero-prefix suggestions suppression on the Incognito NTP.
+     *
+     * @param suppressed Whether zero-prefix suggestions were suppressed.
+     */
+    private void recordZeroSuggestSuppressionMetric(boolean suppressed) {
+        // Do not record if a metric has already been recorded for current ZPS session.
+        if (mLastRecordedZpsSuppressionValue != null) {
+            return;
+        }
+
+        // Cancel any pending recording to reset the debounce timer.
+        if (mRecordZpsSuppressionRunnable != null) {
+            mHandler.removeCallbacks(mRecordZpsSuppressionRunnable);
+        }
+
+        mRecordZpsSuppressionRunnable =
+                () -> {
+                    OmniboxMetrics.recordZeroSuggestSuppressedOnIncognitoNtp(suppressed);
+                    mLastRecordedZpsSuppressionValue = suppressed;
+                    mRecordZpsSuppressionRunnable = null;
+                };
+
+        mHandler.postDelayed(mRecordZpsSuppressionRunnable, ZPS_SUPPRESSION_METRIC_DEBOUNCE_MS);
     }
 }
