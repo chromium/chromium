@@ -1108,46 +1108,64 @@ public class MultiInstanceManagerApi31UnitTest {
         final String normalTabMessage = "Normal tab count does not match";
         final String incognitoTabMessage = "Normal tab count does not match";
         triggerAddTab(tabModelObserver, mTab1); // normal tab added
-        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                1,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 0,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
 
         triggerAddTab(tabModelObserver, mTab2); // normal tab added
-        assertEquals(normalTabMessage, 2, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                2,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 0,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
 
         triggerAddTab(tabModelObserver, mTab3); // incognito tab added
-        assertEquals(normalTabMessage, 2, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                2,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 1,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
 
         triggerOnFinishingTabClosure(tabModelObserver, mTab1);
-        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                1,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 1,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
 
         triggerTabRemoved(tabModelObserver, mTab3);
-        assertEquals(normalTabMessage, 1, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                1,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 0,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
 
         triggerTabRemoved(tabModelObserver, mTab2);
-        assertEquals(normalTabMessage, 0, MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+        assertEquals(
+                normalTabMessage,
+                0,
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertEquals(
                 incognitoTabMessage,
                 0,
-                MultiInstanceManagerApi31.readIncognitoTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readIncognitoTabCount(INSTANCE_ID_1));
     }
 
     @Test
@@ -1213,7 +1231,7 @@ public class MultiInstanceManagerApi31UnitTest {
         assertEquals(
                 "Tab count should be zero",
                 0,
-                MultiInstanceManagerApi31.readTabCount(INSTANCE_ID_1));
+                MultiInstancePersistentStore.readNormalTabCount(INSTANCE_ID_1));
         assertTrue(
                 "Title was not cleared",
                 TextUtils.isEmpty(MultiInstanceManagerApi31.readTitle(INSTANCE_ID_1)));
@@ -1272,12 +1290,9 @@ public class MultiInstanceManagerApi31UnitTest {
         ChromeSharedPreferences.getInstance().writeString(titleKey, "");
         String customTitleKey = MultiInstanceManagerApi31.customTitleKey(index);
         ChromeSharedPreferences.getInstance().writeString(customTitleKey, "");
-        String tabCountKey = MultiInstanceManagerApi31.tabCountKey(index);
-        ChromeSharedPreferences.getInstance().writeInt(tabCountKey, 1);
-        String tabCountForRelaunch = MultiInstanceManagerApi31.tabCountForRelaunchKey(index);
-        ChromeSharedPreferences.getInstance().writeInt(tabCountForRelaunch, 1);
-        String incognitoTabCountKey = MultiInstanceManagerApi31.incognitoTabCountKey(index);
-        ChromeSharedPreferences.getInstance().writeInt(incognitoTabCountKey, 1);
+        MultiInstancePersistentStore.writeTabCount(
+                index, /* normalTabCount= */ 1, /* incognitoTabCount= */ 1);
+        MultiInstancePersistentStore.writeTabCountForRelaunchSync(index, /* tabCount= */ 2);
         String incognitoSelectedKey = MultiInstanceManagerApi31.incognitoSelectedKey(index);
         ChromeSharedPreferences.getInstance().writeBoolean(incognitoSelectedKey, false);
         String lastAccessedTimeKey = MultiInstanceManagerApi31.lastAccessedTimeKey(index);
@@ -1303,15 +1318,18 @@ public class MultiInstanceManagerApi31UnitTest {
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(customTitleKey));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(tabCountKey));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(tabCountForRelaunch));
-        assertFalse(
-                "Shared preference key should be removed.",
-                ChromeSharedPreferences.getInstance().contains(incognitoTabCountKey));
+        assertEquals(
+                "Persistent store should be updated.",
+                0,
+                MultiInstancePersistentStore.readNormalTabCount(index));
+        assertEquals(
+                "Persistent store should be updated.",
+                0,
+                MultiInstancePersistentStore.readTabCountForRelaunch(index));
+        assertEquals(
+                "Persistent store should be updated.",
+                0,
+                MultiInstancePersistentStore.readIncognitoTabCount(index));
         assertFalse(
                 "Shared preference key should be removed.",
                 ChromeSharedPreferences.getInstance().contains(incognitoSelectedKey));
@@ -1387,8 +1405,8 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Store minimal data to get the instance recognized.
         MultiInstanceManagerApi31.writeUrl(instanceId, "url" + instanceId);
-        ChromeSharedPreferences.getInstance()
-                .writeInt(MultiInstanceManagerApi31.tabCountKey(index), 1);
+        MultiInstancePersistentStore.writeTabCount(
+                instanceId, /* normalTabCount= */ 1, /* incognitoTabCount= */ 0);
         return instanceId;
     }
 

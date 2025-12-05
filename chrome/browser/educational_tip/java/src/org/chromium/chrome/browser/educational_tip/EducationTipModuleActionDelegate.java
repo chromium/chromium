@@ -50,7 +50,7 @@ public interface EducationTipModuleActionDelegate {
 
     /**
      * Returns the total number of tabs for relaunch across both regular and incognito browsing
-     * modes through shared preference key.
+     * modes from persisted state.
      */
-    int getTabCountForRelaunchFromSharedPrefs();
+    int getTabCountForRelaunchFromPersistentStore();
 }

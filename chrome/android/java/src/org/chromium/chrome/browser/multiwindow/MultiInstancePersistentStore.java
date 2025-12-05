@@ -18,7 +18,7 @@ import java.util.Map;
  * by the user.
  */
 @NullMarked
-public class MultiInstancePersistentStore {
+class MultiInstancePersistentStore {
     private static @MonotonicNonNull SharedPreferencesManager sPrefsManager;
 
     private MultiInstancePersistentStore() {}
@@ -46,7 +46,51 @@ public class MultiInstancePersistentStore {
         getManager().removeKey(taskIdKey(instanceId));
     }
 
+    static void writeTabCount(int instanceId, int normalTabCount, int incognitoTabCount) {
+        getManager().writeInt(normalTabCountKey(instanceId), normalTabCount);
+        getManager().writeInt(incognitoTabCountKey(instanceId), incognitoTabCount);
+    }
+
+    static void removeTabCount(int instanceId) {
+        getManager().removeKey(normalTabCountKey(instanceId));
+        getManager().removeKey(incognitoTabCountKey(instanceId));
+    }
+
+    static int readNormalTabCount(int instanceId) {
+        return getManager().readInt(normalTabCountKey(instanceId));
+    }
+
+    static int readIncognitoTabCount(int instanceId) {
+        return getManager().readInt(incognitoTabCountKey(instanceId));
+    }
+
+    static int readTabCountForRelaunch(int instanceId) {
+        return getManager().readInt(tabCountForRelaunchKey(instanceId));
+    }
+
+    static void writeTabCountForRelaunchSync(int instanceId, int tabCount) {
+        getManager().writeIntSync(tabCountForRelaunchKey(instanceId), tabCount);
+    }
+
+    static void removeTabCountForRelaunch(int instanceId) {
+        getManager().removeKey(tabCountForRelaunchKey(instanceId));
+    }
+
     private static String taskIdKey(int instanceId) {
         return ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP.createKey(String.valueOf(instanceId));
+    }
+
+    private static String normalTabCountKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(instanceId));
+    }
+
+    private static String incognitoTabCountKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
+                String.valueOf(instanceId));
+    }
+
+    private static String tabCountForRelaunchKey(int instanceId) {
+        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
+                String.valueOf(instanceId));
     }
 }

@@ -16,7 +16,6 @@ import android.app.ActivityManager.AppTask;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -93,7 +92,6 @@ import java.util.function.Supplier;
 @NullMarked
 public class MultiWindowUtils implements ActivityStateListener {
     public static final int INVALID_TASK_ID = MultiInstanceManager.INVALID_TASK_ID;
-    private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
             "Android.MultiInstance.NumActivities.DesktopWindow";
@@ -545,7 +543,7 @@ public class MultiWindowUtils implements ActivityStateListener {
     }
 
     static boolean isRestorableInstance(int index) {
-        return MultiInstanceManagerApi31.readTabCount(index) != 0
+        return MultiInstancePersistentStore.readNormalTabCount(index) != 0
                 || MultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
     }
 
@@ -1123,39 +1121,17 @@ public class MultiWindowUtils implements ActivityStateListener {
                 }
             }
         }
-
-        SharedPreferences.Editor editor = ChromeSharedPreferences.getInstance().getEditor();
-        String tabCountForRelaunchKey = getTabCountForRelaunchKey(windowId);
-        editor.putInt(tabCountForRelaunchKey, totalCount);
-        // The ChromeSharedPreferences.getInstance().writeInt() method uses editor.apply() instead
-        // of editor.commit(). The editor.apply() method writes data to memory and returns
-        // immediately, while the actual disk write occurs asynchronously in a background thread. On
-        // the other hand, editor.commit() writes data directly to disk and waits for the operation
-        // to complete. Since apply() is asynchronous, if the program is forcibly closed right after
-        // calling it (e.g., in our case where Chrome is closed and then relaunched), the disk write
-        // may not finish in time, potentially resulting in data loss. Therefore, editor.commit() is
-        // used here to ensure data is reliably saved.
-        editor.commit();
+        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId, totalCount);
     }
 
     /**
      * Returns the total number of tabs for relaunch across both regular and incognito browsing
-     * modes through shared preference key.
+     * modes from persisted state.
      *
      * @param windowId The id of the window.
      */
-    public static int getTabCountForRelaunchFromSharedPrefs(int windowId) {
-        String tabCountForRelaunchKey = getTabCountForRelaunchKey(windowId);
-        return ChromeSharedPreferences.getInstance()
-                .readInt(
-                        tabCountForRelaunchKey, /* defaultValue= */ DEFAULT_TAB_COUNT_FOR_RELAUNCH);
-    }
-
-    /** Returns the tab count for relaunch key. */
-    @VisibleForTesting
-    static String getTabCountForRelaunchKey(int windowId) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT_FOR_RELAUNCH.createKey(
-                String.valueOf(windowId));
+    public static int getTabCountForRelaunchFromPersistentStore(int windowId) {
+        return MultiInstancePersistentStore.readTabCountForRelaunch(windowId);
     }
 
     /**

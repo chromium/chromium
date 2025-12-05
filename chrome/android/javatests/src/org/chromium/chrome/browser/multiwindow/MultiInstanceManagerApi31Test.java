@@ -19,6 +19,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -111,6 +112,38 @@ public class MultiInstanceManagerApi31Test {
                             mMultiInstanceManager.closeWindow(
                                     activity.getWindowIdForTesting(), CloseWindowAppSource.OTHER));
         }
+    }
+
+    @Test
+    @SmallTest
+    public void testTabModelSelectorObserverOnTabStateInitialized() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+
+        // Get the original value of |mCreatedTabOnStartup|.
+        boolean createdTabOnStartup = activity.getCreatedTabOnStartupForTesting();
+
+        // Reset the values of |mCreatedTabOnStartup| and |MultiInstanceManager.mTabModelObserver|.
+        // This tab model selector observer should be registered in MultiInstanceManager on tab
+        // state initialization irrespective of the value of |mCreatedTabOnStartup|.
+        activity.setCreatedTabOnStartupForTesting(false);
+        activity.getMultiInstanceMangerForTesting().setTabModelObserverForTesting(null);
+
+        var tabModelSelectorObserver = activity.getTabModelSelectorObserverForTesting();
+        ThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
+        Assert.assertEquals(
+                "Regular tab count should be written to persistent store after tab state"
+                        + " initialization.",
+                1,
+                MultiInstancePersistentStore.readNormalTabCount(activity.getWindowIdForTesting()));
+        Assert.assertEquals(
+                "Incognito tab count should be written to persistent store after tab state"
+                        + " initialization.",
+                0,
+                MultiInstancePersistentStore.readIncognitoTabCount(
+                        activity.getWindowIdForTesting()));
+
+        // Restore the original value of |mCreatedTabOnStartup|.
+        activity.setCreatedTabOnStartupForTesting(createdTabOnStartup);
     }
 
     // Initial state: max limit = 4, active tasks = 4, inactive tasks = 0.

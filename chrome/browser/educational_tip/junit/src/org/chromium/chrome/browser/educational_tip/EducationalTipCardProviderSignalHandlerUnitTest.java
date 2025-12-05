@@ -278,13 +278,13 @@ public class EducationalTipCardProviderSignalHandlerUnitTest {
         // Test cases when tab state is not initialized.
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
 
-        when(mActionDelegate.getTabCountForRelaunchFromSharedPrefs()).thenReturn(10);
+        when(mActionDelegate.getTabCountForRelaunchFromPersistentStore()).thenReturn(10);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);
         assertEquals(10, inputContext.getEntryValue("number_of_tabs").floatValue, 0.01);
 
-        when(mActionDelegate.getTabCountForRelaunchFromSharedPrefs()).thenReturn(15);
+        when(mActionDelegate.getTabCountForRelaunchFromPersistentStore()).thenReturn(15);
         inputContext =
                 EducationalTipCardProviderSignalHandler.createInputContext(
                         ModuleType.TAB_GROUP_PROMO, mActionDelegate, mProfile, mTracker);

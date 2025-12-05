@@ -3218,8 +3218,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             }
 
             @Override
-            public int getTabCountForRelaunchFromSharedPrefs() {
-                return MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(mWindowId);
+            public int getTabCountForRelaunchFromPersistentStore() {
+                return MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(mWindowId);
             }
         };
     }
@@ -3322,15 +3322,15 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
         if (startIncognito) mTabModelSelector.selectModel(true);
     }
 
-    TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
+    public TabModelSelectorObserver getTabModelSelectorObserverForTesting() {
         return mTabModelSelectorObserver;
     }
 
-    boolean getCreatedTabOnStartupForTesting() {
+    public boolean getCreatedTabOnStartupForTesting() {
         return mCreatedTabOnStartup;
     }
 
-    void setCreatedTabOnStartupForTesting(boolean createdTabOnStartup) {
+    public void setCreatedTabOnStartupForTesting(boolean createdTabOnStartup) {
         mCreatedTabOnStartup = createdTabOnStartup;
     }
 

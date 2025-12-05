@@ -60,8 +60,6 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowApp
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -230,41 +228,6 @@ public class ChromeTabbedActivityTest {
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> mActivity.getLayoutManager().animationsEnabled());
         Assert.assertEquals(animationsEnabled, DeviceClassManager.enableAnimations());
-    }
-
-    @Test
-    @SmallTest
-    @MinAndroidSdkLevel(VERSION_CODES.S)
-    public void testTabModelSelectorObserverOnTabStateInitialized() {
-        // Get the original value of |mCreatedTabOnStartup|.
-        boolean createdTabOnStartup = mActivity.getCreatedTabOnStartupForTesting();
-
-        // Reset the values of |mCreatedTabOnStartup| and |MultiInstanceManager.mTabModelObserver|.
-        // This tab model selector observer should be registered in MultiInstanceManager on tab
-        // state initialization irrespective of the value of |mCreatedTabOnStartup|.
-        mActivity.setCreatedTabOnStartupForTesting(false);
-        mActivity.getMultiInstanceMangerForTesting().setTabModelObserverForTesting(null);
-
-        var tabModelSelectorObserver = mActivity.getTabModelSelectorObserverForTesting();
-        ThreadUtils.runOnUiThreadBlocking(tabModelSelectorObserver::onTabStateInitialized);
-        Assert.assertTrue(
-                "Regular tab count should be written to SharedPreferences after tab state"
-                        + " initialization.",
-                ChromeSharedPreferences.getInstance()
-                                .readIntsWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT)
-                                .size()
-                        > 0);
-        Assert.assertTrue(
-                "Incognito tab count should be written to SharedPreferences after tab state"
-                        + " initialization.",
-                ChromeSharedPreferences.getInstance()
-                                .readIntsWithPrefix(
-                                        ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT)
-                                .size()
-                        > 0);
-
-        // Restore the original value of |mCreatedTabOnStartup|.
-        mActivity.setCreatedTabOnStartupForTesting(createdTabOnStartup);
     }
 
     @Test

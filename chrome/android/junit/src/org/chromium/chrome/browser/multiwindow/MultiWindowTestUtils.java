@@ -22,8 +22,8 @@ public class MultiWindowTestUtils {
     public static void createInstance(int instanceId, String url, int tabCount, int taskId) {
         MultiInstanceManagerApi31.writeUrl(instanceId, url);
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
-        prefs.writeInt(MultiInstanceManagerApi31.tabCountKey(instanceId), tabCount);
+        MultiInstancePersistentStore.writeTabCount(
+                instanceId, tabCount, /* incognitoTabCount= */ 0);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
     }
 

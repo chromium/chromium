@@ -54,8 +54,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.UiUtils.NameWindowDialogSource;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -684,8 +682,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             assumeNonNull(readUrl(i)),
                             assumeNonNull(readTitle(i)),
                             readCustomTitle(i),
-                            readTabCount(i),
-                            readIncognitoTabCount(i),
+                            MultiInstancePersistentStore.readNormalTabCount(i),
+                            MultiInstancePersistentStore.readIncognitoTabCount(i),
                             readIncognitoSelected(i),
                             readLastAccessedTime(i),
                             readClosedByUser(i)));
@@ -1298,38 +1296,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         ChromeSharedPreferences.getInstance().writeString(customTitleKey(index), customTitle);
     }
 
-    @VisibleForTesting
-    static String tabCountKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static String tabCountForRelaunchKey(int index) {
-        return MultiWindowUtils.getTabCountForRelaunchKey(index);
-    }
-
-    static int readTabCount(int index) {
-        return ChromeSharedPreferences.getInstance().readInt(tabCountKey(index));
-    }
-
-    @VisibleForTesting
-    static String incognitoTabCountKey(int index) {
-        return ChromePreferenceKeys.MULTI_INSTANCE_INCOGNITO_TAB_COUNT.createKey(
-                String.valueOf(index));
-    }
-
-    @VisibleForTesting
-    static int readIncognitoTabCount(int index) {
-        return ChromeSharedPreferences.getInstance().readInt(incognitoTabCountKey(index));
-    }
-
-    @VisibleForTesting
-    static void writeTabCount(int index, TabModelSelector selector) {
+    private static void writeTabCount(int index, TabModelSelector selector) {
         if (!selector.isTabStateInitialized()) return;
-        SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         int tabCount = selector.getModel(false).getCount();
-        prefs.writeInt(tabCountKey(index), tabCount);
-        prefs.writeInt(incognitoTabCountKey(index), selector.getModel(true).getCount());
+        int incognitoTabCount = selector.getModel(true).getCount();
+        // TODO (crbug.com/466168444): Explore extracting tab count from TabModelSelector for both
+        // active and inactive instances given that we support headless tab models now.
+        MultiInstancePersistentStore.writeTabCount(index, tabCount, incognitoTabCount);
         if (tabCount == 0) {
             writeUrl(index, EMPTY_DATA);
             writeTitle(index, EMPTY_DATA);
@@ -1663,9 +1636,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         SharedPreferencesManager prefs = ChromeSharedPreferences.getInstance();
         prefs.removeKey(urlKey(index));
         prefs.removeKey(titleKey(index));
-        prefs.removeKey(tabCountKey(index));
-        prefs.removeKey(tabCountForRelaunchKey(index));
-        prefs.removeKey(incognitoTabCountKey(index));
+        MultiInstancePersistentStore.removeTabCount(index);
+        MultiInstancePersistentStore.removeTabCountForRelaunch(index);
         prefs.removeKey(incognitoSelectedKey(index));
         prefs.removeKey(lastAccessedTimeKey(index));
         prefs.removeKey(profileTypeKey(index));

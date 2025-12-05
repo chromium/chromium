@@ -84,12 +84,11 @@ import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
+import org.chromium.chrome.browser.multiwindow.MultiWindowTestUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.pdf.PdfPage;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -365,10 +364,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         BaseRobolectricTestRule.runAllBackgroundAndUi();
         mTabbedAppMenuPropertiesDelegate = Mockito.spy(delegate);
 
-        ChromeSharedPreferences.getInstance()
-                .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_URL);
-        ChromeSharedPreferences.getInstance()
-                .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
+        MultiWindowTestUtils.resetInstanceInfo();
 
         CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
@@ -1463,7 +1459,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .instanceSwitcherWithMultiInstanceEnabled();
 
-        createInstance(0, "https://url0");
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0,
+                /* url= */ "https://url0",
+                /* tabCount= */ 1,
+                /* taskId= */ 123);
 
         // On phone, we do not show 'New Window'.
         mIsTabletScreen = false;
@@ -1485,7 +1485,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         assertTrue(isMenuVisible(modelList, R.id.new_window_menu_id));
 
         for (int i = 0; i < MultiWindowUtils.getMaxInstances(); ++i) {
-            createInstance(i, "https://url" + i);
+            MultiWindowTestUtils.createInstance(
+                    /* instanceId= */ i,
+                    /* url= */ "https://url" + i,
+                    /* tabCount= */ 1,
+                    /* taskId= */ i);
         }
 
         MVCListAdapter.ModelList modelList2 = createMenuForMultiWindow();
@@ -1515,12 +1519,14 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                 .when(mTabbedAppMenuPropertiesDelegate)
                 .instanceSwitcherWithMultiInstanceEnabled();
 
-        createInstance(0, "https://url0");
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 0, /* url= */ "https://url0", /* tabCount= */ 1, /* taskId= */ 0);
 
         MVCListAdapter.ModelList modelList = createMenuForMultiWindow();
         assertFalse(isMenuVisible(modelList, R.id.manage_all_windows_menu_id));
 
-        createInstance(1, "https://url1");
+        MultiWindowTestUtils.createInstance(
+                /* instanceId= */ 1, /* url= */ "https://url1", /* tabCount= */ 1, /* taskId= */ 1);
 
         MVCListAdapter.ModelList modelList2 = createMenuForMultiWindow();
         assertTrue(isMenuVisible(modelList2, R.id.manage_all_windows_menu_id));
@@ -1892,7 +1898,11 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
             boolean isInMultiDisplayMode,
             boolean isMultiInstanceRunning) {
         for (int i = 0; i < currentWindowInstances; ++i) {
-            createInstance(i, "https://url" + i);
+            MultiWindowTestUtils.createInstance(
+                    /* instanceId= */ i,
+                    /* url= */ "https://url" + i,
+                    /* tabCount= */ 1,
+                    /* taskId= */ i);
         }
         mShadowPackageManager.setSystemFeature(PackageManager.FEATURE_AUTOMOTIVE, isAutomotive);
         doReturn(isInstanceSwitcherEnabled)
@@ -2711,18 +2721,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
                     .append(item.model.get(AppMenuItemProperties.MENU_ITEM_ID));
         }
         return items.toString();
-    }
-
-    private static void createInstance(int index, String url) {
-        String urlKey = ChromePreferenceKeys.MULTI_INSTANCE_URL.createKey(String.valueOf(index));
-        ChromeSharedPreferences.getInstance().writeString(urlKey, url);
-        String tabCountKey =
-                ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT.createKey(String.valueOf(index));
-        ChromeSharedPreferences.getInstance().writeInt(tabCountKey, 1);
-        String accessTimeKey =
-                ChromePreferenceKeys.MULTI_INSTANCE_LAST_ACCESSED_TIME.createKey(
-                        String.valueOf(index));
-        ChromeSharedPreferences.getInstance().writeLong(accessTimeKey, System.currentTimeMillis());
     }
 
     /** Options for tests that control how Menu is being rendered. */

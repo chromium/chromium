@@ -156,7 +156,7 @@ public class EducationalTipCardProviderSignalHandler {
             return normalModel.getCount() + incognitoModel.getCount();
         }
 
-        return actionDelegate.getTabCountForRelaunchFromSharedPrefs();
+        return actionDelegate.getTabCountForRelaunchFromPersistentStore();
     }
 
     /** Returns a value of 1.0f if a synced tab group exists. Otherwise, it returns 0.0f. */

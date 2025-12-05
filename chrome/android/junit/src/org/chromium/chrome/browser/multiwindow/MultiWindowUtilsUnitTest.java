@@ -760,12 +760,12 @@ public class MultiWindowUtilsUnitTest {
     public void testGetTabCountForRelaunchFromSharedPrefs() {
         int windowId1 = 0;
         int windowId2 = 1;
-        ChromeSharedPreferences.getInstance()
-                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId1), 10);
-        ChromeSharedPreferences.getInstance()
-                .writeInt(MultiWindowUtils.getTabCountForRelaunchKey(windowId2), 15);
-        assertEquals(10, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId1), 0.01);
-        assertEquals(15, MultiWindowUtils.getTabCountForRelaunchFromSharedPrefs(windowId2), 0.01);
+        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId1, /* tabCount= */ 10);
+        MultiInstancePersistentStore.writeTabCountForRelaunchSync(windowId2, /* tabCount= */ 15);
+        assertEquals(
+                10, MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(windowId1), 0.01);
+        assertEquals(
+                15, MultiWindowUtils.getTabCountForRelaunchFromPersistentStore(windowId2), 0.01);
     }
 
     @Test
@@ -1103,8 +1103,6 @@ public class MultiWindowUtilsUnitTest {
     }
 
     private void testRecordTabCountForRelaunchWhenActivityPausedImpl(int windowId) {
-        String tabCountForRelaunchKey = MultiWindowUtils.getTabCountForRelaunchKey(windowId);
-
         List<TabModel> models = Arrays.asList(mNormalTabModel, mIncognitoTabModel);
         when(mTabModelSelector.getModels()).thenReturn(models);
         when(mIncognitoTabModel.getCount()).thenReturn(0);
@@ -1122,8 +1120,7 @@ public class MultiWindowUtilsUnitTest {
         when(mNormalTabModel.iterator()).thenAnswer(inv -> List.of(mTab1, mTab2).iterator());
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 2,
-                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+                /* expected= */ 2, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
 
         // Test the case of adding a non-NTP tab to the tab model.
         when(mNormalTabModel.getCount()).thenReturn(3);
@@ -1133,25 +1130,21 @@ public class MultiWindowUtilsUnitTest {
         when(mTab3.getUrl()).thenReturn(TEST_GURL);
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 3,
-                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+                /* expected= */ 3, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
 
         // Test the case of adding a NTP tab to the tab model.
         when(mTab3.isNativePage()).thenReturn(true);
         when(mTab3.getUrl()).thenReturn(NTP_GURL);
         MultiWindowUtils.recordTabCountForRelaunchWhenActivityPaused(mTabModelSelector, windowId);
         Assert.assertEquals(
-                /* expected= */ 2,
-                ChromeSharedPreferences.getInstance().readInt(tabCountForRelaunchKey));
+                /* expected= */ 2, MultiInstancePersistentStore.readTabCountForRelaunch(windowId));
     }
 
     private void writeInstanceInfo(
             int instanceId, String url, int tabCount, int incognitoTabCount, int taskId) {
         MultiInstanceManagerApi31.writeUrl(instanceId, url);
-        when(mNormalTabModel.getCount()).thenReturn(tabCount);
-        when(mIncognitoTabModel.getCount()).thenReturn(incognitoTabCount);
         MultiInstanceManagerApi31.writeLastAccessedTime(instanceId);
-        MultiInstanceManagerApi31.writeTabCount(instanceId, mTabModelSelector);
+        MultiInstancePersistentStore.writeTabCount(instanceId, tabCount, incognitoTabCount);
         MultiInstancePersistentStore.writeTaskId(instanceId, taskId);
     }
 }
