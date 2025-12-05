@@ -22,6 +22,24 @@ using endpoint_fetcher::HttpMethod;
 
 namespace lens {
 
+MockLensOverlayQueryController::MockLensOverlayQueryController(
+    lens::LensOverlayGen204Controller* gen204_controller)
+    : LensOverlayQueryController(
+          /*full_image_callback=*/base::DoNothing(),
+          /*url_callback=*/base::DoNothing(),
+          /*interaction_callback=*/base::DoNothing(),
+          /*suggest_inputs_callback=*/base::DoNothing(),
+          /*thumbnail_created_callback=*/base::DoNothing(),
+          /*page_content_upload_progress_callback=*/base::DoNothing(),
+          /*variations_client=*/nullptr,
+          /*identity_manager=*/nullptr,
+          /*profile=*/nullptr,
+          lens::LensOverlayInvocationSource::kAppMenu,
+          /*use_dark_mode=*/false,
+          gen204_controller) {}
+
+MockLensOverlayQueryController::~MockLensOverlayQueryController() = default;
+
 constexpr char kPdfMimeType[] = "application/pdf";
 constexpr char kPlainTextMimeType[] = "text/plain";
 constexpr char kHtmlMimeType[] = "text/html";

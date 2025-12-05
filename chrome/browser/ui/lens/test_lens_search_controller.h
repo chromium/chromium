@@ -5,13 +5,32 @@
 #ifndef CHROME_BROWSER_UI_LENS_TEST_LENS_SEARCH_CONTROLLER_H_
 #define CHROME_BROWSER_UI_LENS_TEST_LENS_SEARCH_CONTROLLER_H_
 
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
+#include "chrome/browser/ui/lens/lens_search_contextualization_controller.h"
 #include "chrome/browser/ui/lens/lens_search_controller.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace variations {
 class VariationsClient;
 }  // namespace variations
 
 namespace lens {
+
+class MockLensSearchController : public LensSearchController {
+ public:
+  explicit MockLensSearchController(tabs::TabInterface* tab);
+  ~MockLensSearchController() override;
+
+  MOCK_METHOD(lens::LensOverlayQueryController*,
+              lens_overlay_query_controller,
+              (),
+              (override));
+
+  MOCK_METHOD(lens::LensSearchContextualizationController*,
+              lens_search_contextualization_controller,
+              (),
+              (override));
+};
 
 class TestLensSearchController : public LensSearchController {
  public:
