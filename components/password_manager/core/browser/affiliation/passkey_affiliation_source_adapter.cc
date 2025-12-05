@@ -54,7 +54,9 @@ void PasskeyAffiliationSourceAdapter::GetFacets(
   }
 
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      passkey_model_->GetAllPasskeys();
+      passkey_model_->GetPasskeys(
+          webauthn::PasskeyModel::AnyRp(),
+          webauthn::PasskeyModel::ShadowedCredentials::kInclude);
   std::vector<FacetURI> result;
   result.reserve(passkeys.size());
   for (const sync_pb::WebauthnCredentialSpecifics& passkey : passkeys) {

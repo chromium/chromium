@@ -179,7 +179,11 @@ syncer::SyncService* PasskeyUnlockManager::sync_service() {
 }
 
 void PasskeyUnlockManager::UpdateHasPasskeys() {
-  has_passkeys_ = !passkey_model()->GetAllPasskeys().empty();
+  has_passkeys_ =
+      !passkey_model()
+           ->GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                         webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+           .empty();
 }
 
 void PasskeyUnlockManager::UpdateSyncState() {
@@ -286,8 +290,12 @@ void PasskeyUnlockManager::MaybeRecordDelayedPasskeyCountHistogram() {
 }
 
 void PasskeyUnlockManager::RecordPasskeyCountHistogram() {
-  base::UmaHistogramCounts1000("WebAuthentication.PasskeyCount",
-                               passkey_model()->GetAllPasskeys().size());
+  base::UmaHistogramCounts1000(
+      "WebAuthentication.PasskeyCount",
+      passkey_model()
+          ->GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                        webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+          .size());
 }
 
 void PasskeyUnlockManager::MaybeRecordDelayedPasskeyReadinessHistogram() {

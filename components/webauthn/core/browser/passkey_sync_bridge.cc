@@ -311,14 +311,6 @@ PasskeySyncBridge::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
   return std::nullopt;
 }
 
-std::vector<sync_pb::WebauthnCredentialSpecifics>
-PasskeySyncBridge::GetAllPasskeys() const {
-  std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys;
-  std::ranges::transform(data_, std::back_inserter(passkeys),
-                         [](const auto& pair) { return pair.second; });
-  return passkeys;
-}
-
 std::optional<sync_pb::WebauthnCredentialSpecifics>
 PasskeySyncBridge::GetPasskeyByCredentialId(
     const std::string& rp_id,

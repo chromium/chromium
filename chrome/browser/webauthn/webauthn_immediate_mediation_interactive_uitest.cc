@@ -252,7 +252,12 @@ IN_PROC_BROWSER_TEST_F(
                         &cred_id2_base64);
   AddPasskey(kUser2, cred_id2);
 
-  ASSERT_EQ(passkey_model().GetAllPasskeys().size(), 2u);
+  ASSERT_EQ(
+      passkey_model()
+          .GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                       webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+          .size(),
+      2u);
 
   RunTestSequence(
       GetStepsUntilButtonClick(kGetImmediateButton),

@@ -2271,7 +2271,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
 
   EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
   EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
-  EXPECT_THAT(passkey_model->GetAllPasskeys(), SizeIs(1));
+  EXPECT_THAT(passkey_model->GetPasskeys(
+                  webauthn::PasskeyModel::AnyRp(),
+                  webauthn::PasskeyModel::ShadowedCredentials::kInclude),
+              SizeIs(1));
 
   ExpectAuthentication(delegate, /*successful=*/true);
   base::MockCallback<base::OnceCallback<void(bool)>> callback;
@@ -2280,7 +2283,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllData) {
   task_environment()->RunUntilIdle();
   EXPECT_THAT(profile_store_->stored_passwords(), testing::IsEmpty());
   EXPECT_THAT(account_store_->stored_passwords(), testing::IsEmpty());
-  EXPECT_THAT(passkey_model->GetAllPasskeys(), testing::IsEmpty());
+  EXPECT_THAT(passkey_model->GetPasskeys(
+                  webauthn::PasskeyModel::AnyRp(),
+                  webauthn::PasskeyModel::ShadowedCredentials::kInclude),
+              IsEmpty());
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest,
@@ -2332,7 +2338,10 @@ TEST_F(PasswordsPrivateDelegateImplTest, DeleteAllDataWithReauthFailed) {
   task_environment()->RunUntilIdle();
   EXPECT_THAT(profile_store_->stored_passwords(), testing::SizeIs(1));
   EXPECT_THAT(account_store_->stored_passwords(), testing::SizeIs(1));
-  EXPECT_THAT(passkey_model->GetAllPasskeys(), SizeIs(1));
+  EXPECT_THAT(passkey_model->GetPasskeys(
+                  webauthn::PasskeyModel::AnyRp(),
+                  webauthn::PasskeyModel::ShadowedCredentials::kInclude),
+              SizeIs(1));
 }
 #endif
 

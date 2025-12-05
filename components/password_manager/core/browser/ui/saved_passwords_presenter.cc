@@ -678,8 +678,10 @@ void SavedPasswordsPresenter::MaybeGroupCredentials(
   std::vector<PasskeyCredential> passkeys;
 #if !BUILDFLAG(IS_ANDROID)
   if (passkey_store_) {
-    passkeys = PasskeyCredential::FromCredentialSpecifics(
-        passkey_store_->GetAllPasskeys());
+    passkeys =
+        PasskeyCredential::FromCredentialSpecifics(passkey_store_->GetPasskeys(
+            webauthn::PasskeyModel::AnyRp(),
+            webauthn::PasskeyModel::ShadowedCredentials::kInclude));
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

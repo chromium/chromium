@@ -1603,7 +1603,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
   passkey_model().RemoveObserver(&passkey_model_observer);
   EXPECT_TRUE(passkey_model_observer.did_update);
-  auto passkeys = passkey_model().GetAllPasskeys();
+  auto passkeys = passkey_model().GetPasskeys(
+      webauthn::PasskeyModel::AnyRp(),
+      webauthn::PasskeyModel::ShadowedCredentials::kInclude);
   ASSERT_EQ(passkeys.size(), 1u);
   // The update time should be in the last 10 minutes.
   EXPECT_LT((base::Time::Now() -
@@ -4179,7 +4181,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   ASSERT_TRUE(queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"largeblob true\"");
 
-  const auto passkeys = passkey_model().GetAllPasskeys();
+  const auto passkeys = passkey_model().GetPasskeys(
+      webauthn::PasskeyModel::AnyRp(),
+      webauthn::PasskeyModel::ShadowedCredentials::kInclude);
   ASSERT_EQ(passkeys.size(), 1u);
   const std::string cred_id_b64 =
       base::Base64Encode(passkeys[0].credential_id());

@@ -90,11 +90,6 @@ TestPasskeyModel::GetPasskey(std::variant<AnyRp, std::string_view> rp_id,
   return std::nullopt;
 }
 
-std::vector<sync_pb::WebauthnCredentialSpecifics>
-TestPasskeyModel::GetAllPasskeys() const {
-  return credentials_;
-}
-
 std::optional<sync_pb::WebauthnCredentialSpecifics>
 TestPasskeyModel::GetPasskeyByCredentialId(
     const std::string& rp_id,

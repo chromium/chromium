@@ -1107,7 +1107,11 @@ TEST_F(SavedPasswordsPresenterTest, DeleteAllDataWithPasskey) {
   EXPECT_CALL(completion_callback, Run(true)).Times(1);
   presenter().DeleteAllData(completion_callback.Get());
   RunUntilIdle();
-  EXPECT_TRUE(passkey_store().GetAllPasskeys().empty());
+  EXPECT_TRUE(
+      passkey_store()
+          .GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                       webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+          .empty());
   EXPECT_TRUE(store().IsEmpty());
 }
 

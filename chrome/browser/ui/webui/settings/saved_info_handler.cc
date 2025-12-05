@@ -100,12 +100,16 @@ base::Value::Dict SavedInfoHandler::GetPasswordCounts() {
   base::Value::Dict dict;
   auto* passwords_presenter = password_observation_.GetSource();
   if (passwords_presenter) {
-    size_t password_count = passwords_presenter->GetSavedPasswords().size();
+    const size_t password_count = passwords_presenter->GetSavedPasswords().size();
     dict.Set("passwordCount", static_cast<int>(password_count));
   }
   auto* passkey_model = passkey_observation_.GetSource();
   if (passkey_model) {
-    size_t passkey_count = passkey_model->GetAllPasskeys().size();
+    const size_t passkey_count =
+        passkey_model
+            ->GetPasskeys(webauthn::PasskeyModel::AnyRp(),
+                          webauthn::PasskeyModel::ShadowedCredentials::kInclude)
+            .size();
     dict.Set("passkeyCount", static_cast<int>(passkey_count));
   }
   return dict;

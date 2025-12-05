@@ -32,6 +32,8 @@ using ::password_manager::PasswordForm;
 using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::SizeIs;
+using AnyRp = ::webauthn::PasskeyModel::AnyRp;
+using ShadowedCredentials = ::webauthn::PasskeyModel::ShadowedCredentials;
 
 NSData* StringToData(std::string str) {
   return [NSData dataWithBytes:str.data() length:str.length()];
@@ -190,7 +192,7 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
 
   // Verify that the credential is migrated.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      test_passkey_model_.GetAllPasskeys();
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].sync_id(), expected.sync_id());
   EXPECT_EQ(passkeys[0].credential_id(), expected.credential_id());
@@ -237,7 +239,8 @@ TEST_F(CredentialProviderMigratorTest, PasskeyMigration) {
 
   // Verify that we still have only 1 passkey and that its last used time was
   // updated.
-  passkeys = test_passkey_model_.GetAllPasskeys();
+  passkeys =
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].last_used_time_windows_epoch_micros(),
             credential.lastUsedTime);
@@ -292,7 +295,9 @@ TEST_F(CredentialProviderMigratorTest, InvalidPasskeyMigration) {
   EXPECT_EQ(store.credentials.count, 0u);
 
   // Verify that the credential is not migrated.
-  EXPECT_THAT(test_passkey_model_.GetAllPasskeys(), IsEmpty());
+  EXPECT_THAT(
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude),
+      IsEmpty());
 }
 
 class CredentialProviderMigratorWithSignalAPITest
@@ -343,7 +348,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Verify the passkey was migrated and is not hidden.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      test_passkey_model_.GetAllPasskeys();
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_FALSE(passkeys[0].hidden());
   EXPECT_FALSE(passkeys[0].has_hidden_time());
@@ -382,7 +387,8 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
   EXPECT_EQ(store.credentials.count, 0u);
 
   // Verify we still have only 1 passkey, but it's hidden now.
-  passkeys = test_passkey_model_.GetAllPasskeys();
+  passkeys =
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_TRUE(passkeys[0].hidden());
   EXPECT_EQ(passkeys[0].hidden_time(), kJan1st2024);
@@ -421,7 +427,7 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Verify the passkey was migrated and has the initial names.
   std::vector<sync_pb::WebauthnCredentialSpecifics> passkeys =
-      test_passkey_model_.GetAllPasskeys();
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].user_name(), "username");
   EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");
@@ -461,7 +467,8 @@ TEST_F(CredentialProviderMigratorWithSignalAPITest,
 
   // Verify there is still 1 passkey, but with an updated username and the same
   // user display name.
-  passkeys = test_passkey_model_.GetAllPasskeys();
+  passkeys =
+      test_passkey_model_.GetPasskeys(AnyRp(), ShadowedCredentials::kInclude);
   EXPECT_THAT(passkeys, SizeIs(1));
   EXPECT_EQ(passkeys[0].user_name(), "newUsername");
   EXPECT_EQ(passkeys[0].user_display_name(), "userDisplayName");

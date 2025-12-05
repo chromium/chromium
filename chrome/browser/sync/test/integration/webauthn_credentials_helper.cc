@@ -94,7 +94,11 @@ bool LocalPasskeysMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
   *os << "Waiting for local passkeys to match: ";
   testing::StringMatchResultListener result_listener;
   const bool matches = testing::ExplainMatchResult(
-      matcher_, GetModel(profile_).GetAllPasskeys(), &result_listener);
+      matcher_,
+      GetModel(profile_).GetPasskeys(
+          webauthn::PasskeyModel::AnyRp(),
+          webauthn::PasskeyModel::ShadowedCredentials::kInclude),
+      &result_listener);
   *os << result_listener.str();
   return matches;
 }
