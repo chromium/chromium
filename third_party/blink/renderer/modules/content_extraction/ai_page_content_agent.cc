@@ -2045,9 +2045,6 @@ void AIPageContentAgent::ContentBuilder::AddNodeInteractionInfo(
   if (auto* element = DynamicTo<Element>(object.GetNode())) {
     AddClickabilityReasons(*element, *attributes.aria_role,
                            *node_interaction_info);
-    // TODO(khushalsagar): Remove is_clickability.
-    node_interaction_info->is_clickable =
-        !node_interaction_info->clickability_reasons.empty();
     node_interaction_info->is_focusable =
         element->IsFocusable(Element::UpdateBehavior::kAssertNoLayoutUpdates);
   }

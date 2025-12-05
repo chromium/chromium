@@ -276,8 +276,6 @@ void ConvertNodeInteractionInfo(
     ConvertScrollerInfo(*mojom_node_interaction_info.scroller_info,
                         proto_interaction_info->mutable_scroller_info());
   }
-  proto_interaction_info->set_is_clickable(
-      mojom_node_interaction_info.is_clickable);
   proto_interaction_info->set_is_focusable(
       mojom_node_interaction_info.is_focusable);
 
@@ -287,10 +285,6 @@ void ConvertNodeInteractionInfo(
   }
 
   for (const auto& reason : mojom_node_interaction_info.clickability_reasons) {
-    // TODO(khushalsagar): Remove this once consumers move to the new field.
-    proto_interaction_info->add_debug_clickability_reasons(
-        ConvertClickabilityReason(reason));
-
     proto_interaction_info->add_clickability_reasons(
         ConvertClickabilityReason(reason));
   }

@@ -348,7 +348,6 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
     EXPECT_EQ(content_attributes.attribute_type(),
               optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT);
     EXPECT_TRUE(content_attributes.has_interaction_info());
-    EXPECT_FALSE(content_attributes.interaction_info().is_clickable());
 
     const auto& html = page_content.root_node().children_nodes().at(0);
     const auto& body = html.children_nodes().at(0);
@@ -356,7 +355,6 @@ IN_PROC_BROWSER_TEST_F(AiDataKeyedServiceBrowserTest, AIPageContent) {
     ASSERT_EQ(body.children_nodes().size(), 1);
     const auto& child = body.children_nodes().at(0);
     EXPECT_TRUE(child.content_attributes().has_interaction_info());
-    EXPECT_TRUE(child.content_attributes().interaction_info().is_clickable());
   }
 }
 

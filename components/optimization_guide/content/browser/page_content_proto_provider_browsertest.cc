@@ -411,9 +411,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
   const auto& input = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_THAT(
-      input.content_attributes()
-          .interaction_info()
-          .debug_clickability_reasons(),
+      input.content_attributes().interaction_info().clickability_reasons(),
       testing::UnorderedElementsAre(
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
 
@@ -421,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, ForLabel) {
   ASSERT_TRUE(label.content_attributes().has_interaction_info());
   EXPECT_TRUE(label.content_attributes()
                   .interaction_info()
-                  .debug_clickability_reasons()
+                  .clickability_reasons()
                   .empty());
   EXPECT_EQ(label.content_attributes().label_for_dom_node_id(),
             input.content_attributes().common_ancestor_dom_node_id());
@@ -437,23 +435,6 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
 
   const auto& button_node = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button_node.content_attributes().has_interaction_info());
-  EXPECT_THAT(
-      button_node.content_attributes()
-          .interaction_info()
-          .debug_clickability_reasons(),
-      testing::UnorderedElementsAre(
-          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL,
-          optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER,
-          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_EVENTS,
-          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER,
-          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK,
-          optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS,
-          optimization_guide::proto::CLICKABILITY_REASON_EDITABLE,
-          optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER,
-          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE,
-          optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP,
-          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX,
-          optimization_guide::proto::CLICKABILITY_REASON_HOVER_PSEUDO_CLASS));
   EXPECT_THAT(
       button_node.content_attributes()
           .interaction_info()
@@ -500,9 +481,7 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   const auto& input = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(input.content_attributes().has_interaction_info());
   EXPECT_THAT(
-      input.content_attributes()
-          .interaction_info()
-          .debug_clickability_reasons(),
+      input.content_attributes().interaction_info().clickability_reasons(),
       testing::UnorderedElementsAre(
           optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
 
@@ -522,11 +501,10 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, AriaRole) {
   EXPECT_EQ(ActionableContentRootNode().children_nodes().size(), 1);
   const auto& button = ActionableContentRootNode().children_nodes()[0];
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
-  EXPECT_THAT(button.content_attributes()
-                  .interaction_info()
-                  .debug_clickability_reasons(),
-              testing::UnorderedElementsAre(
-                  optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
+  EXPECT_THAT(
+      button.content_attributes().interaction_info().clickability_reasons(),
+      testing::UnorderedElementsAre(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
   EXPECT_EQ(button.content_attributes().aria_role(),
             optimization_guide::proto::AXRole::AX_ROLE_BUTTON);
 }
@@ -1941,10 +1919,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest, DisabledButton) {
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
   EXPECT_TRUE(button.content_attributes()
                   .interaction_info()
-                  .debug_clickability_reasons()
+                  .clickability_reasons()
                   .empty());
   EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
-  EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
 }
 
 IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
@@ -1960,10 +1937,9 @@ IN_PROC_BROWSER_TEST_F(PageContentProtoProviderBrowserTest,
   ASSERT_TRUE(button.content_attributes().has_interaction_info());
   EXPECT_TRUE(button.content_attributes()
                   .interaction_info()
-                  .debug_clickability_reasons()
+                  .clickability_reasons()
                   .empty());
   EXPECT_TRUE(button.content_attributes().interaction_info().is_disabled());
-  EXPECT_FALSE(button.content_attributes().interaction_info().is_clickable());
 }
 
 // Popups may be rendered as native OS-level widgets on Android, MacOS, and iOS.

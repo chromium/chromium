@@ -201,10 +201,6 @@ struct AIPageContentNodeInteractionInfo {
   // Whether the content node is focusable.
   bool is_focusable;
 
-  // [Deprecated] Use `clickability_reasons` instead.
-  // Indicates whether the node is actionable.
-  bool is_clickable;
-
   // The z-order of the content node relative to other nodes in the same
   // Document. A higher value means the node is in front of other nodes with
   // lower values.
