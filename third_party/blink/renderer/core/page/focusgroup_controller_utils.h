@@ -188,6 +188,11 @@ class CORE_EXPORT FocusgroupControllerUtils {
   // subtree is the nearest ancestor (or self) with focusgroup="none".
   static const Element* GetOptedOutSubtreeRoot(const Element* element);
 
+  // Returns true if the element has the focusgroup-entry-priority attribute.
+  // This boolean attribute marks an element as the preferred entry point when
+  // entering a focusgroup segment via sequential focus navigation.
+  static bool HasFocusgroupEntryPriority(const Element& element);
+
   static GridFocusgroupStructureInfo*
   CreateGridFocusgroupStructureInfoForGridRoot(const Element* root);
 };

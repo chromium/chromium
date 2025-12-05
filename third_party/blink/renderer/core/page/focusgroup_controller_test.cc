@@ -2059,4 +2059,56 @@ TEST_F(FocusgroupControllerTest, ReadingFlowComplexPartialReordering) {
       /*expect_wrap=*/true);
 }
 
+// Tests for focusgroup-entry-priority attribute helpers.
+
+TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttribute) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1">Button 1</button>
+      <button id="btn2" focusgroup-entry-priority>Button 2</button>
+      <button id="btn3">Button 3</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+  auto* btn3 = GetElementById("btn3");
+
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
+  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn2));
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn3));
+}
+
+TEST_F(FocusgroupControllerTest, HasFocusgroupEntryPriorityAttributeDynamic) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id="fg" focusgroup="toolbar">
+      <button id="btn1">Button 1</button>
+      <button id="btn2">Button 2</button>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* btn1 = GetElementById("btn1");
+  auto* btn2 = GetElementById("btn2");
+
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn2));
+
+  // Add attribute dynamically to btn1.
+  btn1->setAttribute(html_names::kFocusgroupEntryPriorityAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn1));
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn2));
+
+  // Remove attribute from btn1 and add to btn2.
+  btn1->removeAttribute(html_names::kFocusgroupEntryPriorityAttr);
+  btn2->setAttribute(html_names::kFocusgroupEntryPriorityAttr, g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_FALSE(utils::HasFocusgroupEntryPriority(*btn1));
+  EXPECT_TRUE(utils::HasFocusgroupEntryPriority(*btn2));
+}
+
 }  // namespace blink

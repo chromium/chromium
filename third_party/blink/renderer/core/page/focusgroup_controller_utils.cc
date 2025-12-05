@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table.h"
 #include "third_party/blink/renderer/core/layout/table/layout_table_cell.h"
@@ -789,6 +790,12 @@ const Element* FocusgroupControllerUtils::GetOptedOutSubtreeRoot(
     current = FlatTreeTraversal::ParentElement(*current);
   }
   return nullptr;
+}
+
+// static
+bool FocusgroupControllerUtils::HasFocusgroupEntryPriority(
+    const Element& element) {
+  return element.FastHasAttribute(html_names::kFocusgroupEntryPriorityAttr);
 }
 
 }  // namespace blink
