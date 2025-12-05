@@ -47,8 +47,10 @@ void OmniboxAimPopupWebUIContent::OnWidgetClosed() {
 void OmniboxAimPopupWebUIContent::OnClosedWithInput(
     const std::string& input) {
   location_bar_view()->GetOmniboxView()->RevertAll();
-  location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
-                                                     /*update_popup=*/false);
+  if (!input.empty()) {
+    location_bar_view()->GetOmniboxView()->SetUserText(base::UTF8ToUTF16(input),
+                                                       /*update_popup=*/false);
+  }
 }
 
 void OmniboxAimPopupWebUIContent::CloseUI() {
