@@ -41,8 +41,13 @@ The tables are parsed in this file as critical user journeys. Lines are consider
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | check_menu_button_pending_update(NotExpanded) |  check_app_title(Standalone, StandaloneUpdated) |
 | WMLC | install_policy_app(Standalone, ShortcutOptions::All, Windowed, WebApp) | launch(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, Red) | check_menu_button_pending_update(NotExpanded) |  check_app_icon(Standalone, Red) |
 
-# TODO(crbug.com/456097293): Add tests verifying manifest updates for apps that launch in a browser tab regardless of display mode.
+# Verify icon diff updates of <10% image diffs.
 | WMLC | install_by_user(Standalone) | check_app_icon(Standalone, Green) | manifest_update_icon(Standalone, GreenSmallDiff) | check_menu_button_pending_update(NotExpanded) | check_app_icon(Standalone, GreenSmallDiff) |
+
+# Verify that manifest updates also work for apps that are open in a browser tab (both security sensitive and non-security sensitive ones).
+| WMLC | install_by_user(StandaloneNestedA) | maybe_close_pwa | navigate_browser(Standalone) | check_launch_icon_not_shown | manifest_update_scope_to(StandaloneNestedA, Standalone) | navigate_browser(Standalone) | check_launch_icon_shown
+| WMLC | install_by_user(Standalone) | maybe_close_pwa | navigate_browser(Standalone) | manifest_update_title(Standalone, StandaloneUpdated) | launch | check_menu_button_pending_update(ExpandedUpdateAvailable) |
+| WMLC | install_by_user(Standalone) | maybe_close_pwa | navigate_browser(Standalone) | manifest_update_icon(Standalone, Red) | launch | check_menu_button_pending_update(ExpandedUpdateAvailable) |
 
 ## Run on OS Login
 | #Platforms | Test -> | | | | | | | | | | | | | | | | |

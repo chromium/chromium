@@ -2284,8 +2284,6 @@ void WebAppIntegrationTestDriver::ManifestUpdateIcon(Site site,
 
   ASSERT_EQ(Site::kStandalone, site)
       << "Only site mode of 'Standalone' is supported";
-  ASSERT_NE(app_browser(), nullptr)
-      << " manifest updates require the app browser to be launched!";
 
   std::string manifest_query_param;
   switch (update_color) {
@@ -2328,8 +2326,6 @@ void WebAppIntegrationTestDriver::ManifestUpdateTitle(Site site, Title title) {
       << "Only site mode of 'Standalone' is supported";
   ASSERT_EQ(Title::kStandaloneUpdated, title)
       << "Only site mode of 'kStandaloneUpdated' is supported";
-  ASSERT_NE(app_browser(), nullptr)
-      << " manifest updates require the app browser to be launched!";
 
   auto relative_url_path = GetSiteConfiguration(site).relative_url;
   GURL url = GetUrlForSite(site, "?manifest=manifest_title.json");
@@ -2349,8 +2345,6 @@ void WebAppIntegrationTestDriver::ManifestUpdateDisplay(Site site,
     return;
   }
 
-  ASSERT_NE(app_browser(), nullptr)
-      << " manifest updates require the app browser to be launched!";
   std::string relative_url_path = GetSiteConfiguration(site).relative_url;
   std::string manifest_url_param =
       GetDisplayUpdateConfiguration(display).manifest_url_param;
@@ -2366,8 +2360,6 @@ void WebAppIntegrationTestDriver::ManifestUpdateScopeTo(Site app, Site scope) {
     return;
   }
 
-  ASSERT_NE(app_browser(), nullptr)
-      << " manifest updates require the app browser to be launched!";
   // The `scope_mode` would be changing the scope set in the manifest file. For
   // simplicity, right now only Standalone is supported, so that is just
   // hardcoded in manifest_scope_Standalone.json, which is specified in the URL.
@@ -4460,11 +4452,19 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
     const GURL& app_url_with_manifest_param,
     bool wait_for_pending_updates_to_arrive) {
   active_app_id_ = GetAppIdBySiteMode(site);
-  EXPECT_TRUE(
-      ui_test_utils::NavigateToURL(app_browser(), app_url_with_manifest_param));
-  AwaitManifestUpdateStartedPostNavigation();
-  MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
-      .Await();
+  if (app_browser()) {
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(app_browser(),
+                                             app_url_with_manifest_param));
+    AwaitManifestUpdateStartedPostNavigation();
+    MenuButtonUpdateListener(*app_browser(), wait_for_pending_updates_to_arrive)
+        .Await();
+  } else {
+    LOG(INFO) << "Manifest update triggered from an app opening in a browser "
+                 "tab might not end up actually updating the manifest";
+    EXPECT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), app_url_with_manifest_param));
+    AwaitManifestUpdateStartedPostNavigation();
+  }
   post_update_start_urls_[site] = app_url_with_manifest_param;
 }
 
