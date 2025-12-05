@@ -803,10 +803,6 @@ class TabStrip::TabDragContextImpl : public TabDragContext,
     }
   }
 
-  views::ScrollView* GetScrollView() override {
-    return views::ScrollView::GetScrollViewForContents(tab_strip_);
-  }
-
  private:
   // Animates tabs after a drag has ended, then hands them back to
   // `tab_container_`.

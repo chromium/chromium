@@ -42,7 +42,6 @@ class MockTabDragContext : public TabDragContext {
               OwnDragController,
               (std::unique_ptr<TabDragController> controller),
               (override));
-  MOCK_METHOD(views::ScrollView*, GetScrollView, (), (override));
   MOCK_METHOD(std::unique_ptr<TabDragController>,
               ReleaseDragController,
               (),
