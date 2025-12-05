@@ -1387,6 +1387,9 @@ inline constexpr char kGlicPanelResetSizeAndLocationName[] =
     "Glic Panel Reset Size and Location";
 inline constexpr char kGlicPanelResetSizeAndLocationDescription[] =
     "Enables resetting the panel size and position on every open.";
+inline constexpr char kGlicPrintMenuItemName[] = "Glic Print Menu Item";
+inline constexpr char kGlicPrintMenuItemDescription[] =
+    "Enables showing the Glic print contextual menu item.";
 inline constexpr char kGlicWarmingName[] = "Glic Pre-Warming";
 inline constexpr char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";

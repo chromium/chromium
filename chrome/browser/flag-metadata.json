@@ -5695,6 +5695,14 @@
     "owners": [ "carlosk@chromium.org", "vollick@chromium.org", "//chrome/browser/glic/OWNERS" ],
     "expiry_milestone": 146
   },
+    {
+    "name": "glic-print-menu-item",
+    "owners": [
+      "basiaz@google.com",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 149
+  },
   {
     "name": "glic-side-panel",
     "owners": [

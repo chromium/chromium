@@ -41,6 +41,11 @@ gfx::Size GlicFloatingUi::GetDefaultSize() {
   return {features::kGlicMultiInstanceFloatyWidth.Get(),
           features::kGlicMultiInstanceFloatyHeight.Get()};
 }
+
+gfx::Size GlicFloatingUi::GetCompositeViewDefaultSize() {
+  return {features::kGlicCompositeViewWidth.Get(),
+          features::kGlicCompositeViewHeight.Get()};
+}
 // end static
 
 GlicFloatingUi::GlicFloatingUi(Profile* profile,
@@ -392,7 +397,14 @@ GlicFloatingUi::GetWebContentsModalDialogHost(
 }
 
 gfx::Size GlicFloatingUi::GetMaximumDialogSize() {
-  return GetGlicWidget()->GetClientAreaBoundsInScreen().size();
+  // Print preview might be the widest model dialog we support for now, use its
+  // min size if FLoaty is smaller than that.
+  gfx::Size floaty_size = GetGlicWidget()->GetClientAreaBoundsInScreen().size();
+  gfx::Size default_size = GetCompositeViewDefaultSize();
+  if (floaty_size.width() >= default_size.width()) {
+    return floaty_size;
+  }
+  return default_size;
 }
 
 gfx::NativeView GlicFloatingUi::GetHostView() const {

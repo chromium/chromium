@@ -52,6 +52,7 @@ class GlicFloatingUi : public GlicUiEmbedder,
   ~GlicFloatingUi() override;
 
   static gfx::Size GetDefaultSize();
+  static gfx::Size GetCompositeViewDefaultSize();
 
   // GlicUiEmbedder:
   void OnClientReady() override;
