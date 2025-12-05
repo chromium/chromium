@@ -86,14 +86,6 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   void CreateTabStripController(BrowserView* browser_view);
 
-  // These methods provide the toolbar height and exclusion width, before the
-  // layout of this view, for use in calculating positioning of child views. If
-  // an exclusion width is provided, nothing can be rendered within the
-  // rectangle defined by `(exclusion_width, toolbar_height)` that is aligned to
-  // the leading, top corner.
-  void SetToolbarHeightForLayout(const int toolbar_height);
-  void SetExclusionWidthForLayout(const int exclusion_width);
-
  private:
   views::View* SetTabStripView(std::unique_ptr<views::View> view);
 
