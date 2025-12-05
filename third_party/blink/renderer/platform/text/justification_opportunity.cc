@@ -17,6 +17,37 @@ std::pair<bool, bool> CheckJustificationOpportunity(
     TextJustify method,
     UChar32 ch,
     bool& is_after_opportunity) {
+  switch (method) {
+    // https://drafts.csswg.org/css-text-4/#valdef-text-justify-none
+    case TextJustify::kNone:
+      is_after_opportunity = false;
+      return {false, false};
+
+    // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-character
+    case TextJustify::kInterCharacter:
+      if (Character::IsDefaultIgnorable(ch)) {
+        return {false, false};
+      }
+      is_after_opportunity = true;
+      return {false, true};
+
+    // https://drafts.csswg.org/css-text-4/#valdef-text-justify-inter-word
+    case TextJustify::kInterWord:
+      if (Character::TreatAsSpace(ch)) {
+        is_after_opportunity = true;
+        return {false, true};
+      }
+      if (Character::IsDefaultIgnorable(ch)) {
+        return {false, false};
+      }
+      is_after_opportunity = false;
+      return {false, false};
+
+    // https://drafts.csswg.org/css-text-4/#valdef-text-justify-auto
+    case TextJustify::kAuto:
+      // See below.
+      break;
+  }
   bool treat_as_space = Character::TreatAsSpace(ch);
   if (treat_as_space && ch != uchar::kNoBreakSpace) {
     ch = uchar::kSpace;

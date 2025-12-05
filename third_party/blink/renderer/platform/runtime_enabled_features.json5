@@ -1715,7 +1715,7 @@
     {
       // crbug.com/40321528
       name: "CssTextJustify",
-      status: "test",
+      status: "experimental",
       depends_on: ["JustifyWithoutLineText"],
     },
     {
