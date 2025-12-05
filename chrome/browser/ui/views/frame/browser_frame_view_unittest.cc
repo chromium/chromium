@@ -83,8 +83,8 @@ TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
   const gfx::Rect frame_bounds = frame_view_->bounds();
 
   gfx::RectF tabstrip_bounds_in_frame_coords(
-      frame_view_->browser_view()->tabstrip()->GetLocalBounds());
-  views::View::ConvertRectToTarget(frame_view_->browser_view()->tabstrip(),
+      frame_view_->GetBrowserView()->tabstrip()->GetLocalBounds());
+  views::View::ConvertRectToTarget(frame_view_->GetBrowserView()->tabstrip(),
                                    frame_view_,
                                    &tabstrip_bounds_in_frame_coords);
   const gfx::Rect tabstrip_bounds =
@@ -101,7 +101,7 @@ TEST_F(BrowserFrameViewTabbedTest, MAYBE_HitTestTabstrip) {
   // first tab).
   EXPECT_TRUE(frame_view_->HitTestRect(gfx::Rect(
       tabstrip_bounds.x() + 10, tabstrip_bounds.bottom() - 10, 1, 1)));
-  EXPECT_TRUE(frame_view_->browser_view()->HitTestRect(gfx::Rect(
+  EXPECT_TRUE(frame_view_->GetBrowserView()->HitTestRect(gfx::Rect(
       tabstrip_bounds.x() + 10, tabstrip_bounds.bottom() - 10, 1, 1)));
 
 // Tabs extend to the top of the tabstrip everywhere in this test context on

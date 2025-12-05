@@ -1077,10 +1077,12 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureBrowserFrameViewTest,
 
   // The window title for the document picture-in-picture window should use the
   // title from the opener page.
-  EXPECT_EQ(
-      u"Document Picture-in-Picture",
-      pip_frame_view()->browser_view()->browser()->GetWindowTitleForCurrentTab(
-          /*include_app_name=*/false));
+  EXPECT_EQ(u"Document Picture-in-Picture",
+            pip_frame_view()
+                ->GetBrowserView()
+                ->browser()
+                ->GetWindowTitleForCurrentTab(
+                    /*include_app_name=*/false));
 }
 
 #if BUILDFLAG(IS_LINUX)
@@ -1551,7 +1553,7 @@ IN_PROC_BROWSER_TEST_F(PiPIndicatorsBrowsertest, TestMediaBlockedIndicators) {
       SetUpDocumentPIP({}, kPictureInPictureDocumentPipPage));
 
   content::WebContents* pip_web_contents = pip_frame_view()
-                                               ->browser_view()
+                                               ->GetBrowserView()
                                                ->browser()
                                                ->tab_strip_model()
                                                ->GetActiveWebContents();

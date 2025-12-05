@@ -43,7 +43,6 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
-#include "ui/views/view_observer.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -110,34 +109,6 @@ BEGIN_METADATA(ShowBrowserFrameRegionsView)
 END_METADATA
 }  // namespace
 
-// Tracks the browser view and clears out the pointer when it is destroyed.
-// Because of the way widgets are torn down, there will be a brief moment where
-// the frame exists but the contents view does not, so maintaining a reference
-// from the frame to the contents view that is never cleared is unsafe.
-//
-// Dereferences of `BrowserFrameView::browser_view()` would have previously
-// been UAFs in this situation; now they will be explicit null dereferences
-// (which is safer).
-//
-// See https://crbug.com/465209325 for an example of this happening.
-class BrowserFrameView::BrowserViewWatcher : public views::ViewObserver {
- public:
-  BrowserViewWatcher(BrowserFrameView& frame, BrowserView* browser_view)
-      : frame_(frame) {
-    observation_.Observe(browser_view);
-  }
-  ~BrowserViewWatcher() override = default;
-
-  void OnViewIsDeleting(View* observed_view) override {
-    frame_->browser_view_ = nullptr;
-    observation_.Reset();
-  }
-
- private:
-  const raw_ref<BrowserFrameView> frame_;
-  base::ScopedObservation<views::View, views::ViewObserver> observation_{this};
-};
-
 gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
   gfx::RectF temp = bounds;
   temp.Outset(margins);
@@ -146,10 +117,7 @@ gfx::Rect BrowserFrameView::BoundsAndMargins::ToEnclosingRect() const {
 
 BrowserFrameView::BrowserFrameView(BrowserWidget* browser_widget,
                                    BrowserView* browser_view)
-    : browser_widget_(browser_widget),
-      browser_view_(browser_view),
-      browser_view_watcher_(
-          std::make_unique<BrowserViewWatcher>(*this, browser_view)) {
+    : browser_widget_(browser_widget), browser_view_(browser_view) {
   DCHECK(browser_widget_);
   DCHECK(browser_view_);
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -186,6 +154,11 @@ BrowserLayoutParams BrowserFrameView::GetBrowserLayoutParams() const {
         caption_bounds.margins.bottom();
   }
   return params;
+}
+
+BrowserView* BrowserFrameView::GetBrowserView() const {
+  return const_cast<BrowserView*>(
+      static_cast<const BrowserView*>(browser_view_.view()));
 }
 
 void BrowserFrameView::OnBrowserViewInitViewsComplete() {
@@ -228,7 +201,7 @@ bool BrowserFrameView::IsFrameCondensed() const {
 
 bool BrowserFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
-  DCHECK(browser_view_->GetSupportsTabStrip());
+  DCHECK(GetBrowserView()->GetSupportsTabStrip());
 
   const bool active = ShouldPaintAsActiveForState(active_state);
   const std::optional<int> bg_id = GetCustomBackgroundId(active_state);
@@ -246,7 +219,7 @@ bool BrowserFrameView::HasVisibleBackgroundTabShapes(
     // Inactive tab background images are copied from the active ones, so in the
     // inactive case, check the active image as well.
     if (!active) {
-      const int active_id = browser_view_->GetIncognito()
+      const int active_id = GetBrowserView()->GetIncognito()
                                 ? IDR_THEME_TAB_BACKGROUND_INCOGNITO
                                 : IDR_THEME_TAB_BACKGROUND;
       if (tp->HasCustomImage(active_id)) {
@@ -285,7 +258,7 @@ SkColor BrowserFrameView::GetFrameColor(
 std::optional<int> BrowserFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
-  const bool incognito = browser_view_->GetIncognito();
+  const bool incognito = GetBrowserView()->GetIncognito();
   const bool active = ShouldPaintAsActiveForState(active_state);
   const int active_id =
       incognito ? IDR_THEME_TAB_BACKGROUND_INCOGNITO : IDR_THEME_TAB_BACKGROUND;
@@ -376,7 +349,8 @@ gfx::ImageSkia BrowserFrameView::GetFrameImage(
 
 gfx::ImageSkia BrowserFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
-  if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType()) {
+  if (GetBrowserView()->GetIncognito() ||
+      !GetBrowserView()->GetIsNormalType()) {
     return gfx::ImageSkia();
   }
 
@@ -430,7 +404,7 @@ void BrowserFrameView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 int BrowserFrameView::GetSystemMenuY() const {
-  if (!browser_view()->GetTabStripVisible()) {
+  if (!GetBrowserView()->GetTabStripVisible()) {
     return GetTopInset(false);
   }
 
@@ -438,7 +412,7 @@ int BrowserFrameView::GetSystemMenuY() const {
   // position when in vertical tabs mode since the top element will now be the
   // toolbar instead of the tabstrip.
   return GetBoundsForTabStripRegion(
-             browser_view()->tab_strip_view()->GetMinimumSize())
+             GetBrowserView()->tab_strip_view()->GetMinimumSize())
              .bottom() -
          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
 }

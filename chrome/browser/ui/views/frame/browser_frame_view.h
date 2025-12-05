@@ -18,6 +18,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/window/frame_view.h"
 
 class BrowserView;
@@ -61,7 +62,11 @@ class BrowserFrameView : public views::FrameView {
   BrowserFrameView& operator=(const BrowserFrameView&) = delete;
   ~BrowserFrameView() override;
 
-  BrowserView* browser_view() const { return browser_view_; }
+  // Returns the browser view, or null if it does not exist. The browser view is
+  // destructed before the frame, so any methods which might be called during
+  // teardown should check for null.
+  BrowserView* GetBrowserView() const;
+
   BrowserWidget* browser_widget() const { return browser_widget_; }
 
   // Called after BrowserView has initialized its child views. This is a useful
@@ -260,9 +265,7 @@ class BrowserFrameView : public views::FrameView {
 
   // The BrowserView hosted within `frame_`. Have to watch to reset this so it
   // doesn't dangle.
-  raw_ptr<BrowserView> browser_view_ = nullptr;
-  class BrowserViewWatcher;
-  std::unique_ptr<BrowserViewWatcher> browser_view_watcher_;
+  views::ViewTracker browser_view_;
 
   // Subscription to receive notifications when the frame's PaintAsActive state
   // changes.

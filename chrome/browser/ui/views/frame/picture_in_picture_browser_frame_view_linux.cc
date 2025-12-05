@@ -134,7 +134,7 @@ void PictureInPictureBrowserFrameViewLinux::OnPaint(gfx::Canvas* canvas) {
     frame_background_->set_theme_image(GetFrameImage());
 
     frame_background_->set_theme_image_inset(
-        browser_view()->GetThemeOffsetFromBrowserView());
+        GetBrowserView()->GetThemeOffsetFromBrowserView());
     frame_background_->set_theme_overlay_image(GetFrameOverlayImage());
     frame_background_->set_top_area_height(GetTopAreaHeight());
     PaintRestoredFrameBorderLinux(

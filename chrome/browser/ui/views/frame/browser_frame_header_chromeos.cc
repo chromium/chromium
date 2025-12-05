@@ -164,7 +164,7 @@ void BrowserFrameHeaderChromeOS::UpdateFrameColors() {
   auto* browser_frame_view = static_cast<BrowserFrameViewChromeOS*>(view());
 
   web_app::AppBrowserController* app_browser_controller =
-      browser_frame_view->browser_view()->browser()->app_controller();
+      browser_frame_view->GetBrowserView()->browser()->app_controller();
 
   // Please note, `app_browser_controller` may be null for non-PWA windows.
   if (!app_browser_controller ||
