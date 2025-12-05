@@ -71,6 +71,10 @@ int GetMinimumAllowableDistilledContentLength() {
              : 0;
 }
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+BASE_FEATURE(kReaderModeSupportNewFonts, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
 BASE_FEATURE(kReaderModeDistillInApp, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -81,7 +85,7 @@ namespace android {
 static jlong JNI_DomDistillerFeatureMap_GetNativeMap(JNIEnv* env) {
   static const base::Feature* const kFeaturesExposedToJava[] = {
       &kReaderModeDistillInApp, &kReaderModeImprovements,
-      &kReaderModeUseReadability};
+      &kReaderModeSupportNewFonts, &kReaderModeUseReadability};
   static base::NoDestructor<base::android::FeatureMap> kFeatureMap(
       kFeaturesExposedToJava);
   return reinterpret_cast<jlong>(kFeatureMap.get());

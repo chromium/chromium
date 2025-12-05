@@ -15271,6 +15271,7 @@ from previous Chrome versions.
   <int value="363997248" label="UseXpsForPrinting:enabled"/>
   <int value="364245820"
       label="OnDeviceNotificationContentDetectionModel:disabled"/>
+  <int value="364359720" label="ReaderModeSupportNewFonts:enabled"/>
   <int value="364481315" label="CCTAuthTabDisableAllExternalIntents:enabled"/>
   <int value="364899966"
       label="AutofillUpstreamUseAlternateSecureDataType:disabled"/>
@@ -17057,6 +17058,7 @@ from previous Chrome versions.
   <int value="996701528" label="SystemKeyboardLock:enabled"/>
   <int value="996987392" label="SearchNavigationPrefetch:disabled"/>
   <int value="997264173" label="MacLoopbackAudioForCast:disabled"/>
+  <int value="997319533" label="ReaderModeSupportNewFonts:disabled"/>
   <int value="998317588"
       label="SegmentationPlatformEphemeralCardRanker:disabled"/>
   <int value="998748600" label="SyncErrorInfoBarAndroid:disabled"/>

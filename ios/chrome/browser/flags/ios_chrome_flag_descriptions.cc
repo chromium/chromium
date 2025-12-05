@@ -1455,6 +1455,10 @@ const char kReaderModeReadabilityHeuristicName[] =
 const char kReaderModeReadabilityHeuristicDescription[] =
     "Enables Readability heuristic for Reader Mode UI.";
 
+const char kReaderModeSupportNewFontsName[] = "Reader Mode support new fonts";
+const char kReaderModeSupportNewFontsDescription[] =
+    "Enables new accessible font options in Reader Mode.";
+
 const char kReaderModeTranslationName[] = "Enables Reader Mode Translation";
 const char kReaderModeTranslationDescription[] =
     "Enables translation of web pages in Reader Mode.";

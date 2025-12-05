@@ -27,6 +27,11 @@ int GetReadabilityHeuristicMinContentLength();
 COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
 int GetMinimumAllowableDistilledContentLength();
 
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)
+BASE_DECLARE_FEATURE(kReaderModeSupportNewFonts);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // Feature declarations below -- alphabetical order.
 COMPONENT_EXPORT(DOM_DISTILLER_FEATURES)

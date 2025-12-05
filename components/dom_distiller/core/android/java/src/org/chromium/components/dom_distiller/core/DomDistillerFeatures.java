@@ -38,9 +38,15 @@ public class DomDistillerFeatures {
                 && sReaderModeUseReadabilityUseHeuristic.getValue();
     }
 
+    /** Returns whether to provide new accessible font options in the bottom sheet. */
+    public static boolean shouldShowNewAccessibleFontOptions() {
+        return sReaderModeDistillInApp.isEnabled() && sReaderModeSupportNewFonts.isEnabled();
+    }
+
     // Feature names -- alphabetical ordering.
     public static final String READER_MODE_DISTILL_IN_APP = "ReaderModeDistillInApp";
     public static final String READER_MODE_IMPROVEMENTS = "ReaderModeImprovements";
+    public static final String READER_MODE_SUPPORT_NEW_FONTS = "ReaderModeSupportNewFonts";
     public static final String READER_MODE_USE_READABILITY = "ReaderModeUseReadability";
 
     // Feature flags -- alphabetical ordering.
@@ -48,6 +54,8 @@ public class DomDistillerFeatures {
             newMutableFlagWithSafeDefault(READER_MODE_DISTILL_IN_APP, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeImprovements =
             newMutableFlagWithSafeDefault(READER_MODE_IMPROVEMENTS, /* defaultValue= */ false);
+    public static final MutableFlagWithSafeDefault sReaderModeSupportNewFonts =
+            newMutableFlagWithSafeDefault(READER_MODE_SUPPORT_NEW_FONTS, /* defaultValue= */ false);
     public static final MutableFlagWithSafeDefault sReaderModeUseReadability =
             newMutableFlagWithSafeDefault(READER_MODE_USE_READABILITY, /* defaultValue= */ false);
 

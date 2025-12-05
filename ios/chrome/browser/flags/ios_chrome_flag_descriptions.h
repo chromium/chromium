@@ -871,6 +871,9 @@ extern const char kReaderModeReadabilityDistillerDescription[];
 extern const char kReaderModeReadabilityHeuristicName[];
 extern const char kReaderModeReadabilityHeuristicDescription[];
 
+extern const char kReaderModeSupportNewFontsName[];
+extern const char kReaderModeSupportNewFontsDescription[];
+
 extern const char kReaderModeTranslationName[];
 extern const char kReaderModeTranslationDescription[];
 

@@ -5678,6 +5678,11 @@ inline constexpr char kReaderModeImprovementsName[] =
     "Reader Mode improvements";
 inline constexpr char kReaderModeImprovementsDescription[] =
     "Collection of improvements to reader mode for android.";
+inline constexpr char kReaderModeSupportNewFontsName[] =
+    "Reader Mode support new fonts";
+inline constexpr char kReaderModeSupportNewFontsDescription[] =
+    "Enables new accessible font options in Reader Mode.";
+
 inline constexpr char kReaderModeUseReadabilityName[] =
     "Reader Mode use readability";
 inline constexpr char kReaderModeUseReadabilityDescription[] =

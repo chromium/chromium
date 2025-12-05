@@ -8900,6 +8900,11 @@
     "expiry_milestone": 150
   },
   {
+    "name" : "reader-mode-support-new-fonts",
+    "owners": ["wylieb@google.com", "fernandex@google.com", "evanluo@google.com", "chrome-reader-mode-team@google.com", "bling-flags@google.com"],
+    "expiry_milestone": 150
+  },
+  {
     "name": "reader-mode-translation-enabled",
     "owners": ["fernandex@google.com", "qpubert@google.com", "bling-flags@google.com"],
     "expiry_milestone": 150
