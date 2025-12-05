@@ -93,6 +93,9 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
+      base::BindRepeating(&ReadAnythingSidePanelController::TabBackgrounded,
+                          weak_factory_.GetWeakPtr())));
   Observe(tab_->GetContents());
   if (features::IsReadAnythingOmniboxChipEnabled() &&
       base::FeatureList::IsEnabled(features::kPageActionsMigration)) {
@@ -314,6 +317,16 @@ bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
 void ReadAnythingSidePanelController::TabForegrounded(tabs::TabInterface* tab) {
   UpdateIphVisibility();
   CheckIfGoodCandidateForReadingMode();
+}
+
+void ReadAnythingSidePanelController::TabBackgrounded(tabs::TabInterface* tab) {
+  if (iph_response_timer_ && iph_response_timer_->IsRunning()) {
+    iph_response_timer_->Stop();
+    RecordOpenedAfterPromo();
+  }
+  if (page_dwell_timer_ && page_dwell_timer_->IsRunning()) {
+    page_dwell_timer_->Stop();
+  }
 }
 
 void ReadAnythingSidePanelController::TabWillDetach(

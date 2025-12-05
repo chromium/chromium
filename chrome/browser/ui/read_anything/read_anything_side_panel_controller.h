@@ -119,6 +119,9 @@ class ReadAnythingSidePanelController
   // Called when the associated tab enters the foreground.
   void TabForegrounded(tabs::TabInterface* tab);
 
+  // Called when the associated tab enters the background.
+  void TabBackgrounded(tabs::TabInterface* tab);
+
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);

@@ -369,6 +369,25 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterTabSwitch) {
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest,
+                       LogRmNotOpenedAfterOmniboxIphShownAndTabSwitch) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      NavigateWebContents(kFirstTab, non_distillable_url_),
+      AddInstrumentedTab(kSecondTab, distillable_url_),
+      SelectTab(kTabStripElementId, 1),
+      WaitForPromo(feature_engagement::kIPHReadingModePageActionLabelFeature),
+      SelectTab(kTabStripElementId, 0),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      Do([this]() {
+        histogram_tester().ExpectUniqueSample(
+            "Accessibility.ReadAnything.OpenedAfterOmniboxIPH", false, 1);
+      }));
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingOmniboxTest, ShowAndHideIphAfterNavigation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kActiveTab);
   RunTestSequence(
