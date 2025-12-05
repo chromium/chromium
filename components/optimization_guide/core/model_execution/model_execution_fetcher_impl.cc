@@ -312,6 +312,45 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
     case ModelBasedCapabilityKey::kHistorySearch:
       // On-device only feature.
       NOTREACHED();
+    case ModelBasedCapabilityKey::kScamDetection:
+      return net::DefineNetworkTrafficAnnotation(
+          "scam_detection_model_execution",
+          R"(
+    semantics {
+      sender: "Safe Browsing Scam Detection"
+      description:
+        "Uses server-side AI model to extract the brand and intent of the page "
+        "from a web page to determine if the page is scammy."
+      trigger:
+        "User navigates to a suspicious web page."
+      destination: GOOGLE_OWNED_SERVICE
+      data:
+        "The text content of the suspicious page."
+      internal {
+        contacts {
+          email: "xinghuilu@chromium.org"
+        }
+        contacts {
+          email: "chrome-counter-abuse-alerts@google.com"
+        }
+      }
+      user_data {
+        type: WEB_CONTENT
+      }
+      last_reviewed: "2025-12-04"
+    }
+    policy {
+      cookies_allowed: NO
+      setting:
+        "Users can enable this feature via the enhanced protection setting "
+        "in Chrome Settings > Privacy and security > Security > Safe Browsing."
+        "This feature is disabled by default."
+      chrome_policy {
+        SafeBrowsingProtectionLevel {
+          SafeBrowsingProtectionLevel: 1
+        }
+      }
+    })");
   }
 }
 
@@ -352,6 +391,8 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(
           features::kOptimizationGuideBypassFormsClassificationAuth);
+    case ModelBasedCapabilityKey::kScamDetection:
+      return false;
   }
 }
 
