@@ -616,6 +616,7 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature("V8Flag_incremental_marking_always_user_visible"),
         Flag.baseFeature("V8Flag_large_page_pool"),
         Flag.baseFeature("V8Flag_late_heap_limit_check"),
+        Flag.baseFeature("V8Flag_managed_zone_memory"),
         Flag.baseFeature("V8Flag_minor_gc_task_with_lower_priority"),
         Flag.baseFeature("V8Flag_scavenger_updates_allocation_limit"),
         Flag.baseFeature("V8Flag_new_old_generation_heap_size"),
