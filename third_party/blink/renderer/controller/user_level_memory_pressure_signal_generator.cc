@@ -12,8 +12,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/system/sys_info.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/time/default_tick_clock.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_user_level_memory_pressure_signal_generator.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
@@ -61,22 +59,24 @@ UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
           std::move(task_runner),
           kDefaultInertInterval,
           kDefaultMinimumInterval,
-          base::DefaultTickClock::GetInstance(),
           ThreadScheduler::Current()->ToMainThreadScheduler()) {}
 
 UserLevelMemoryPressureSignalGenerator::UserLevelMemoryPressureSignalGenerator(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::TimeDelta inert_interval,
     base::TimeDelta minimum_interval,
-    const base::TickClock* clock,
     MainThreadScheduler* main_thread_scheduler)
     : task_runner_(std::move(task_runner)),
       inert_interval_(inert_interval),
       minimum_interval_(minimum_interval),
-      clock_(clock),
-      main_thread_scheduler_(main_thread_scheduler) {
+      main_thread_scheduler_(main_thread_scheduler),
+      timer_(task_runner_,
+             this,
+             &UserLevelMemoryPressureSignalGenerator::OnTimerFired) {
+  CHECK(task_runner_);
   CHECK(!inert_interval_.is_negative());
   CHECK(minimum_interval_.is_positive());
+  CHECK(main_thread_scheduler_);
   main_thread_scheduler->AddRAILModeObserver(this);
   DCHECK(!g_instance);
   g_instance = this;
@@ -89,116 +89,102 @@ UserLevelMemoryPressureSignalGenerator::
   g_instance = nullptr;
 }
 
+void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal() {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  // Check if there is already a pending request, while ensuring the timestamp
+  // of the most recent request is saved.
+  const bool has_pending_request = last_requested_.has_value();
+  last_requested_ = now;
+  if (has_pending_request) {
+    return;
+  }
+
+  if (is_loading_) {
+    // Still loading. Can't know when to generate the signal until loading
+    // finishes.
+    return;
+  }
+
+  // Calculate the next valid timestamp for signal generation, accounting for
+  // inert and minimum intervals.
+  base::TimeTicks inert_interval_expiry =
+      last_loaded_.value_or(base::TimeTicks::Min()) + inert_interval_;
+  base::TimeTicks minimum_interval_expiry =
+      last_generated_.value_or(base::TimeTicks::Min()) + minimum_interval_;
+  base::TimeTicks next_valid_timestamp =
+      std::max(inert_interval_expiry, minimum_interval_expiry);
+
+  // If that timestamp has already passed, generate immediately. Else start the
+  // timer.
+  if (next_valid_timestamp <= now) {
+    Generate(now);
+  } else {
+    timer_.StartOneShot(next_valid_timestamp - now, FROM_HERE);
+  }
+}
+
 void UserLevelMemoryPressureSignalGenerator::OnRAILModeChanged(
     RAILMode rail_mode) {
   bool was_loading = is_loading_;
   is_loading_ = rail_mode == RAILMode::kLoad;
 
-  if (!is_loading_) {
-    if (!was_loading) {
-      return;
-    }
-
-    // Loading is finished because rail_mode changes another mode from kLoad.
-    last_loaded_ = clock_->NowTicks();
-    if (has_pending_request_) {
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          BindOnce(&UserLevelMemoryPressureSignalGenerator::OnTimerFired,
-                   UnretainedWrapper(this)),
-          inert_interval_);
-    }
+  // State did not change.
+  if (is_loading_ == was_loading) {
+    return;
   }
-}
 
-void UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal() {
-  base::TimeTicks now = clock_->NowTicks();
-
-  last_requested_ = now;
-
-  // Wait |inert_interval_| after loading is finished.
-
-  // If still loading, make |has_pending_request_| true and do not dispatch
-  // any pressure signals now.
   if (is_loading_) {
-    has_pending_request_ = true;
+    // Just started loading. The timer must be stopped so the signal is not
+    // generated. However, if there is a pending request, it is *not* cancelled.
+    // A signal could still be generated if loading finishes quickly enough.
+    timer_.Stop();
     return;
   }
 
-  // Since loading is finished, we will see if |inert_interval_| has passed.
-  base::TimeDelta elapsed = !last_loaded_.has_value()
-                                ? inert_interval_
-                                : (now - last_loaded_.value());
+  // Loading just ended.
+  CHECK(!timer_.IsActive());
+  base::TimeTicks now = base::TimeTicks::Now();
+  last_loaded_ = now;
 
-  // If |inert_interval_| has not passed yet, do not dispatch any memory
-  // pressure signals now.
-  if (elapsed < inert_interval_) {
-    // If |has_pending_request_| = true, we will dispatch memory pressure
-    // signal when |inert_interval_ - elapsed| passes.
-
-    // Since we may have already started the timer, i.e.
-    // - start at OnRAILModeChanged(),
-    // - RequestMemoryPressureSignal() was invoked but still waiting
-    // |inert_interval_|. in the case, |has_pending_request_| is true.
-    if (!has_pending_request_) {
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          BindOnce(&UserLevelMemoryPressureSignalGenerator::OnTimerFired,
-                   UnretainedWrapper(this)),
-          inert_interval_ - elapsed);
-    }
-    has_pending_request_ = true;
+  // If there is no pending request, nothing left to do.
+  if (!last_requested_) {
     return;
   }
 
-  // - if inert_interval_ < 0, dispatch memory pressure signal now.
-  // - if loading is finished and >= |inert_interval_| passes after loading,
-  //   dispatch memory pressure signal now.
-  Generate(now);
+  // We want to honor the pending request, but only if the signal would be
+  // generated in a timely matter. If not, the request is cancelled.
+  base::TimeTicks inert_interval_expiry = now + inert_interval_;
+  base::TimeTicks request_expiry = last_requested_.value() + minimum_interval_;
+
+  if (inert_interval_expiry > request_expiry) {
+    // Cancel the request.
+    last_requested_ = std::nullopt;
+    return;
+  }
+
+  timer_.StartOneShot(inert_interval_, FROM_HERE);
 }
 
 void UserLevelMemoryPressureSignalGenerator::Generate(base::TimeTicks now) {
-  // If |minimum_interval_| has not passed yet since the last generated time,
-  // does not generate any signals to avoid too many signals.
-  if (!last_generated_.has_value() ||
-      (now - last_generated_.value()) >= minimum_interval_) {
-    base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
-        base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-    last_generated_ = now;
-  }
-  has_pending_request_ = false;
+  last_generated_ = now;
+  last_requested_ = std::nullopt;
+  base::MemoryPressureListenerRegistry::NotifyMemoryPressureFromAnyThread(
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
 }
 
-void UserLevelMemoryPressureSignalGenerator::OnTimerFired() {
-  base::TimeTicks now = clock_->NowTicks();
-
-  DCHECK(has_pending_request_);
-
-  // If still loading, skip generating memory pressure signals. After loading
-  // is finished, start |signal_dispatch_timer_|.
-  if (is_loading_) {
-    // |has_pending_request_| must be kept true to know that memory pressure
-    // signal was requested when loading is finished.
-    return;
-  }
-
-  // If the inert interval has not passed yet, skip generating memory pressure
-  // signals. A new delayed task is posted and it will be executed at the end
-  // of inert interval.
-  if ((now - last_loaded_.value()) < inert_interval_) {
-    return;
-  }
-
-  // UserLevelMemoryPressureSignalGenerator will start monitoring if
-  // |minimum_interval_| passes after requesting memory pressure signals.
-  // So if we cannot dispatch pressure signals for kMinimumInterval (because
-  // of loading), we will wait for another request. If TotalPMF is still
-  // large, UserLevelMemoryPressureSignalGenerator will request pressure
-  // signals soon.
-  if ((now - last_requested_) > minimum_interval_) {
-    has_pending_request_ = false;
-    return;
-  }
+void UserLevelMemoryPressureSignalGenerator::OnTimerFired(TimerBase*) {
+  CHECK(last_requested_);
+  CHECK(!is_loading_);
+  base::TimeTicks now = base::TimeTicks::Now();
+  // The inert interval is definitely passed.
+  CHECK(!last_loaded_.has_value() ||
+        now - last_loaded_.value() >= inert_interval_);
+  // The minimum interval is also passed since the last generated signal.
+  CHECK(!last_generated_.has_value() ||
+        now - last_generated_.value() >= minimum_interval_);
+  // No expired requests.
+  CHECK_LE(now - last_requested_.value(), minimum_interval_);
 
   Generate(now);
 }
@@ -210,7 +196,7 @@ void RequestUserLevelMemoryPressureSignal() {
   // So renderer processes do not initialize user-level memory pressure
   // siginal generators but the browser code expects they have already been
   // initialized. So when requesting memory pressure signals, g_instance is
-  // nullptr and g_instance->clock_ will crash.
+  // nullptr and will crash.
   if (UserLevelMemoryPressureSignalGenerator* generator =
           UserLevelMemoryPressureSignalGenerator::Instance()) {
     generator->RequestMemoryPressureSignal();

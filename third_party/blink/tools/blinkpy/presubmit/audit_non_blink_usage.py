@@ -2497,6 +2497,15 @@ _CONFIG = [
     },
     {
         'paths': [
+            'third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.cc',
+        ],
+        'allowed': [
+            'base::MEMORY_PRESSURE_LEVEL_CRITICAL',
+            'base::MemoryPressureListenerRegistry',
+        ]
+    },
+    {
+        'paths': [
             'third_party/blink/renderer/controller/blink_shutdown.cc',
         ],
         'allowed': [

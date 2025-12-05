@@ -12,21 +12,14 @@
 #include "base/time/time.h"
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
+#include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/rail_mode_observer.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
-namespace base {
-class TickClock;
-}
-
 namespace blink {
 
 class MainThreadScheduler;
-
-namespace user_level_memory_pressure_signal_generator_test {
-class MockUserLevelMemoryPressureSignalGenerator;
-}  // namespace user_level_memory_pressure_signal_generator_test
 
 // Generates extra memory pressure signals (on top of the OS generated ones)
 // when the memory usage goes over a threshold.
@@ -41,42 +34,48 @@ class CONTROLLER_EXPORT UserLevelMemoryPressureSignalGenerator
   static void Initialize(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
-  void RequestMemoryPressureSignal();
-
- private:
-  friend class user_level_memory_pressure_signal_generator_test::
-      MockUserLevelMemoryPressureSignalGenerator;
-
   explicit UserLevelMemoryPressureSignalGenerator(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   UserLevelMemoryPressureSignalGenerator(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       base::TimeDelta inert_interval,
       base::TimeDelta minimum_interval,
-      const base::TickClock* clock,
       MainThreadScheduler* main_thread_scheduler);
 
   ~UserLevelMemoryPressureSignalGenerator() override;
 
+  void RequestMemoryPressureSignal();
+
   // RAILModeObserver:
   void OnRAILModeChanged(RAILMode rail_mode) override;
 
-  // This is only virtual to override in tests.
-  virtual void Generate(base::TimeTicks now);
+ private:
+  void Generate(base::TimeTicks now);
 
-  void OnTimerFired();
+  void OnTimerFired(TimerBase*);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   base::TimeDelta inert_interval_;
   base::TimeDelta minimum_interval_;
-  raw_ptr<const base::TickClock> clock_;
+  raw_ptr<MainThreadScheduler> main_thread_scheduler_;
 
+  // Indicates if the RAILMode is currently kLoad.
   bool is_loading_ = false;
+
+  // The timestamp at which the RAILMode last became kLoad. If nullopt, the
+  // RAILMode never became kLoad.
   std::optional<base::TimeTicks> last_loaded_;
-  bool has_pending_request_ = false;
-  base::TimeTicks last_requested_;
+
+  // The timestamp of the pending request. If nullopt, there are no pending
+  // request.
+  std::optional<base::TimeTicks> last_requested_;
+
+  // The timestamp of the last generated signal. If nullopt, no signal was
+  // generated yet.
   std::optional<base::TimeTicks> last_generated_;
-  raw_ptr<MainThreadScheduler> main_thread_scheduler_ = nullptr;
+
+  // Timer that tracks when the next signal can be generated.
+  TaskRunnerTimer<UserLevelMemoryPressureSignalGenerator> timer_;
 };
 
 }  // namespace blink

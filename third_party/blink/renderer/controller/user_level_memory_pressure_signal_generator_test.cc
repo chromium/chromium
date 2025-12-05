@@ -5,13 +5,9 @@
 #include "third_party/blink/renderer/controller/user_level_memory_pressure_signal_generator.h"
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/test/test_mock_time_task_runner.h"
-#include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
-#include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
-#include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink::user_level_memory_pressure_signal_generator_test {
@@ -25,82 +21,6 @@ base::TimeDelta kMinimumInterval = base::Minutes(10);
 
 }  // namespace
 
-class MockUserLevelMemoryPressureSignalGenerator
-    : public UserLevelMemoryPressureSignalGenerator {
- public:
-  explicit MockUserLevelMemoryPressureSignalGenerator(
-      scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner,
-      base::TimeDelta inert_interval,
-      base::TimeDelta minimum_interval,
-      MainThreadScheduler* main_thread_scheduler)
-      : UserLevelMemoryPressureSignalGenerator(
-            mock_time_task_runner,
-            inert_interval,
-            minimum_interval,
-            mock_time_task_runner->GetMockTickClock(),
-            main_thread_scheduler) {
-    ON_CALL(*this, Generate(_))
-        .WillByDefault(testing::Invoke(
-            this, &MockUserLevelMemoryPressureSignalGenerator::RealGenerate));
-  }
-  ~MockUserLevelMemoryPressureSignalGenerator() override = default;
-
-  MOCK_METHOD1(Generate, void(base::TimeTicks));
-
-  void RealGenerate(base::TimeTicks) {
-    UserLevelMemoryPressureSignalGenerator::Generate(clock_->NowTicks());
-  }
-
-  using UserLevelMemoryPressureSignalGenerator::OnRAILModeChanged;
-};
-
-class DummyMainThreadScheduler : public MainThreadScheduler {
- public:
-  std::unique_ptr<RendererPauseHandle> PauseScheduler() override {
-    return nullptr;
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> NonWakingTaskRunner() override {
-    return nullptr;
-  }
-  AgentGroupScheduler* CreateAgentGroupScheduler() override { return nullptr; }
-  AgentGroupScheduler* GetCurrentAgentGroupScheduler() override {
-    return nullptr;
-  }
-
-  void AddRAILModeObserver(RAILModeObserver*) override {}
-  void RemoveRAILModeObserver(RAILModeObserver const* observer) override {}
-
-  void ForEachMainThreadIsolate(
-      base::FunctionRef<void(v8::Isolate* isolate)>) override {}
-
-  v8::Isolate* Isolate() override { return nullptr; }
-
-  void Shutdown() override {}
-  bool ShouldYieldForHighPriorityWork() override { return false; }
-  void PostIdleTask(const base::Location&, Thread::IdleTask) override {}
-  void PostDelayedIdleTask(const base::Location&,
-                           base::TimeDelta,
-                           Thread::IdleTask) override {}
-  void RemoveCancelledIdleTasks() override {}
-  scoped_refptr<base::SingleThreadTaskRunner> V8TaskRunner() override {
-    return nullptr;
-  }
-  scoped_refptr<base::SingleThreadTaskRunner> CleanupTaskRunner() override {
-    return nullptr;
-  }
-  base::TimeTicks MonotonicallyIncreasingVirtualTime() override {
-    return base::TimeTicks();
-  }
-  void AddTaskObserver(base::TaskObserver*) override {}
-  void RemoveTaskObserver(base::TaskObserver*) override {}
-  void SetV8Isolate(v8::Isolate*) override {}
-  void ExecuteAfterCurrentTaskForTesting(
-      base::OnceClosure on_completion_task,
-      ExecuteAfterCurrentTaskRestricted) override {}
-  void StartIdlePeriodForTesting() override {}
-  void SetRendererBackgroundedForTesting(bool) override {}
-};
-
 class UserLevelMemoryPressureSignalGeneratorTest
     : public testing::Test,
       public base::MemoryPressureListener {
@@ -109,52 +29,41 @@ class UserLevelMemoryPressureSignalGeneratorTest
   ~UserLevelMemoryPressureSignalGeneratorTest() override = default;
 
   void SetUp() override {
-    test_task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
-
-    // Use sync OnMemoryPressure() to count the number of generated memory
-    // pressure signals, because SetUpBlinkTestEnvironment() doesn't
-    // make async OnMemoryPressure() available.
-    // If SequencedTaskRunner::HasCurrentDefault() returns true, async
-    // OnMemoryPressure() is available, but the test environment seems not
-    // to initialize it.
     memory_pressure_listener_registration_ =
         std::make_unique<base::SyncMemoryPressureListenerRegistration>(
             base::MemoryPressureListenerTag::kTest, this);
     base::MemoryPressureListener::SetNotificationsSuppressed(false);
-    memory_pressure_count_ = 0;
   }
 
   void TearDown() override { memory_pressure_listener_registration_.reset(); }
 
-  void AdvanceClock(base::TimeDelta delta) {
+  // base::MemoryPressureListener:
+  MOCK_METHOD(void, OnMemoryPressure, (base::MemoryPressureLevel), (override));
+
+  void FastForwardBy(base::TimeDelta delta) {
     DCHECK(!delta.is_negative());
-    test_task_runner_->FastForwardBy(delta);
+    task_environment_.FastForwardBy(delta);
   }
 
-  base::TimeTicks NowTicks() { return test_task_runner_->NowTicks(); }
+  base::TimeTicks NowTicks() { return task_environment_.NowTicks(); }
 
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator>
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator>
   CreateUserLevelMemoryPressureSignalGenerator(base::TimeDelta inert_interval) {
-    return std::make_unique<MockUserLevelMemoryPressureSignalGenerator>(
-        test_task_runner_, inert_interval, kMinimumInterval, &dummy_scheduler_);
+    return std::make_unique<UserLevelMemoryPressureSignalGenerator>(
+        task_environment_.GetMainThreadTaskRunner(), inert_interval,
+        kMinimumInterval, task_environment_.main_thread_scheduler());
   }
 
  protected:
-  scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  DummyMainThreadScheduler dummy_scheduler_;
+  blink::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<base::SyncMemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
-  unsigned memory_pressure_count_ = 0;
-
- private:
-  void OnMemoryPressure(base::MemoryPressureLevel) override {
-    ++memory_pressure_count_;
-  }
 };
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateImmediatelyNotLoading) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //            <-1s->
@@ -164,19 +73,18 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //            Request  Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal();
-  EXPECT_EQ(1u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateImmediatelyInertIntervalAfterFinishLoading) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                    | inert |
@@ -187,23 +95,22 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //                      Request  Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(kInertInterval);
+  FastForwardBy(kInertInterval);
 
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   generator->RequestMemoryPressureSignal();
-  EXPECT_EQ(1u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateInertIntervalAfterFinishLoadingIfRequestedWhileLoading) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                             | inert  |
@@ -214,32 +121,31 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //         Request                    Signal
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while loading.
   generator->RequestMemoryPressureSignal();
   base::TimeTicks requested_time = NowTicks();
 
-  AdvanceClock(kInertInterval);
+  FastForwardBy(kInertInterval);
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(kInertInterval - base::Seconds(1));
+  FastForwardBy(kInertInterval - base::Seconds(1));
 
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
   // kInertInterval has passed after loading was finished.
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   EXPECT_LE(NowTicks() - requested_time, kMinimumInterval);
-  EXPECT_EQ(1u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateInertIntervalAfterFinishLoadingIfRequestedWhileInert) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                      |        inert       |
@@ -250,36 +156,34 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   //                        Request   Request  Signal(once)
   // (*) inert interval = 5m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while inert duration.
   generator->RequestMemoryPressureSignal();
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while inert duration.
   generator->RequestMemoryPressureSignal();
 
-  AdvanceClock(kInertInterval - base::Minutes(2) - base::Seconds(1));
+  FastForwardBy(kInertInterval - base::Minutes(2) - base::Seconds(1));
 
   // Now kInertInterval has passed after loading was finished.
   // Only 1 Generate() is invoked.
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  AdvanceClock(base::Seconds(1));
-
-  EXPECT_EQ(1u, memory_pressure_count_);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  FastForwardBy(base::Seconds(1));
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        GenerateIfLoadingIsRestarted) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                      | inert |                    |inert |
@@ -292,42 +196,41 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while inert duration.
   generator->RequestMemoryPressureSignal();
   base::TimeTicks requested_time = NowTicks();
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Now start loading.
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(3));
+  FastForwardBy(base::Minutes(3));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(kInertInterval - base::Seconds(1));
+  FastForwardBy(kInertInterval - base::Seconds(1));
 
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   // Confirm that the request is not expired.
   EXPECT_LE(NowTicks() - requested_time, kMinimumInterval);
-  EXPECT_EQ(1u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        NoPressureSignalsIfRequestIsExpired) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                      | inert |                    |inert |
@@ -340,36 +243,35 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while inert duration.
   generator->RequestMemoryPressureSignal();
   base::TimeTicks requested_time = NowTicks();
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Now start loading.
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(5));
+  FastForwardBy(base::Minutes(5));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(kInertInterval);
+  FastForwardBy(kInertInterval);
 
   EXPECT_GT(NowTicks() - requested_time, kMinimumInterval);
-  EXPECT_EQ(0u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest, TwoRequestsAndOneIsExpired) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                      |inert |                     |inert |
@@ -382,20 +284,20 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, TwoRequestsAndOneIsExpired) {
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   // Request while inert duration.
   generator->RequestMemoryPressureSignal();
   base::TimeTicks first_requested_time = NowTicks();
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->RequestMemoryPressureSignal();
   base::TimeTicks second_requested_time = NowTicks();
@@ -403,28 +305,27 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest, TwoRequestsAndOneIsExpired) {
   // Now start loading.
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(5));
+  FastForwardBy(base::Minutes(5));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
   // The first request is expired after more than |kMinimumInterval| passes.
   base::TimeDelta time_to_expire =
       (first_requested_time + kMinimumInterval) - NowTicks();
-  AdvanceClock(time_to_expire);
+  FastForwardBy(time_to_expire);
 
   // |kInertInterval| passes after loading is finished, memory pressure
   // signal caused by the second request is generated.
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  AdvanceClock(kInertInterval - time_to_expire);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  FastForwardBy(kInertInterval - time_to_expire);
 
   // Confirm that the second request is not expired.
   EXPECT_LE(NowTicks() - second_requested_time, kMinimumInterval);
-  EXPECT_EQ(1u, memory_pressure_count_);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        TwoRequestsCauseSignalsAtTheSameTime) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //              |   minimum interval          |
@@ -437,36 +338,31 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->RequestMemoryPressureSignal();
 
-  AdvanceClock(kMinimumInterval - kInertInterval);
+  FastForwardBy(kMinimumInterval - kInertInterval);
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  test_task_runner_->PostDelayedTask(
+  task_environment_.GetMainThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       BindOnce(
           &UserLevelMemoryPressureSignalGenerator::RequestMemoryPressureSignal,
           UnretainedWrapper(generator.get())),
       kInertInterval);
 
-  EXPECT_CALL(*generator, Generate(_)).Times(2);
-
-  AdvanceClock(kInertInterval);
-
-  // Generate() has been invoked twice, but only one memory pressure signal
-  // must be generated.
-  EXPECT_EQ(1u, memory_pressure_count_);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  FastForwardBy(kInertInterval);
 }
 
 TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
        DoesNotGenerateSignalDuringInertInterval) {
-  std::unique_ptr<MockUserLevelMemoryPressureSignalGenerator> generator(
+  std::unique_ptr<UserLevelMemoryPressureSignalGenerator> generator(
       CreateUserLevelMemoryPressureSignalGenerator(kInertInterval));
 
   //                                      PostTask
@@ -479,31 +375,29 @@ TEST_F(UserLevelMemoryPressureSignalGeneratorTest,
   // (*) inert interval = 5m
   //     minimum interval = 10m
 
-  EXPECT_CALL(*generator, Generate(_)).Times(0);
+  EXPECT_CALL(*this, OnMemoryPressure(_)).Times(0);
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Minutes(1));
+  FastForwardBy(base::Minutes(1));
 
   generator->RequestMemoryPressureSignal();
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   generator->OnRAILModeChanged(RAILMode::kLoad);
 
-  AdvanceClock(base::Seconds(1));
+  FastForwardBy(base::Seconds(1));
 
   generator->OnRAILModeChanged(RAILMode::kDefault);
 
-  AdvanceClock(kInertInterval - base::Seconds(2));
+  FastForwardBy(kInertInterval - base::Seconds(2));
 
-  EXPECT_CALL(*generator, Generate(_)).Times(1);
-  AdvanceClock(base::Seconds(2));
-
-  EXPECT_EQ(1u, memory_pressure_count_);
+  EXPECT_CALL(*this, OnMemoryPressure(base::MEMORY_PRESSURE_LEVEL_CRITICAL));
+  FastForwardBy(base::Seconds(2));
 }
 
 }  // namespace blink::user_level_memory_pressure_signal_generator_test
