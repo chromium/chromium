@@ -202,6 +202,15 @@ export class CrTooltipElement extends CrLitElement {
     this.$.tooltip.hidden = false;
     this.$.tooltip.classList.remove('fade-out-animation');
     this.updatePosition();
+
+    // Final size (e.g. shrink-to-fit width) is resolved next frame. Reposition
+    // once more in rAF before the fade-in animation becomes visible.
+    requestAnimationFrame(() => {
+      if (this.isConnected && this.showing_) {
+        this.updatePosition();
+      }
+    });
+
     this.animationPlaying_ = true;
     this.$.tooltip.classList.add('fade-in-animation');
   }

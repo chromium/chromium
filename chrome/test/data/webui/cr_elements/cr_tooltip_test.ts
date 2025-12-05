@@ -186,7 +186,60 @@ suite('cr-tooltip', function() {
         expectedTop,
         (tooltip.computedStyleMap().get('top') as CSSUnitValue).value);
   });
+
+  test('positions correctly after next frame layout', async () => {
+    const text = parent.shadowRoot.querySelector<HTMLElement>('#tooltip-text');
+    assertTrue(!!text);
+    tooltip.for = 'test-for';
+    await microtasksFinished();
+
+    // Initial short text → small tooltip.
+    text.textContent = 'x';
+    tooltip.show();
+    // Wait for any microtasks triggered by show().
+    await microtasksFinished();
+
+    const initialLeft =
+        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value;
+    const initialTop =
+        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value;
+    assertFalse(Number.isNaN(initialLeft));
+    assertFalse(Number.isNaN(initialTop));
+
+    // Change text to longer content → tooltip width changes.
+    text.textContent = 'a very long tooltip text to force width change';
+    await microtasksFinished();
+
+    // Wait for next animation frame so the rAF reposition runs.
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    // And flush microtasks after the rAF callback.
+    await microtasksFinished();
+
+    const parentRect = parent.getBoundingClientRect();
+    const target = parent.shadowRoot.querySelector('#test-for');
+    assertTrue(!!target);
+    const targetRect = target.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+
+    const expectedLeft = (targetRect.left - parentRect.left) +
+        (targetRect.width - tooltipRect.width) / 2;
+    const expectedTop =
+        (targetRect.top - parentRect.top) + targetRect.height + tooltip.offset;
+
+    const finalLeft =
+        (tooltip.computedStyleMap().get('left') as CSSUnitValue).value;
+    const finalTop =
+        (tooltip.computedStyleMap().get('top') as CSSUnitValue).value;
+
+    assertFalse(
+        initialLeft === finalLeft && initialTop === finalTop,
+        'Tooltip should reposition after width changes before rAF');
+    // Verify that the rAF reposition produced correct final coordinates.
+    assertEquals(expectedLeft, finalLeft);
+    assertEquals(expectedTop, finalTop);
+  });
 });
+
 
 suite('cr-tooltip in dialog', function() {
   let tooltip: CrTooltipElement;
