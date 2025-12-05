@@ -157,8 +157,14 @@ IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
 }
 
 // End-to-end test that document rules can cause prefetch on mouse hover.
+// TODO(crbug.com/462761508): Flaky on TSan bots.
+#ifdef THREAD_SANITIZER
+#define MAYBE_MouseHoverPrefetch DISABLED_MouseHoverPrefetch
+#else
+#define MAYBE_MouseHoverPrefetch MouseHoverPrefetch
+#endif
 IN_PROC_BROWSER_TEST_F(AnchorElementInteractionBrowserTest,
-                       MouseHoverPrefetch) {
+                       MAYBE_MouseHoverPrefetch) {
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   ASSERT_TRUE(ExecJs(shell()->web_contents(),
