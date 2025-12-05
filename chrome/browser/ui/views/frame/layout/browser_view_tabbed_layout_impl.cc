@@ -99,8 +99,8 @@ BrowserViewTabbedLayoutImpl::GetMinimumTabStripSize() const {
       return std::make_pair(gfx::Size(),
                             views().tab_strip_region_view->GetMinimumSize());
     case TabStripType::kVertical: {
-      auto result = views().vertical_tab_strip_container->GetMinimumSize();
-      result.set_width(std::max(result.width(), kMinVerticalTabStripWidth));
+      const auto result =
+          views().vertical_tab_strip_container->GetMinimumSize();
       return std::make_pair(result, gfx::Size());
     }
     case TabStripType::kWebUi:
@@ -263,17 +263,36 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
                    views().browser_view)) {
     gfx::Rect vertical_tab_strip_bounds;
     if (tab_strip_type == TabStripType::kVertical) {
-      const int vertical_tab_strip_width = std::max(
-          kMinVerticalTabStripWidth,
-          views().vertical_tab_strip_container->GetPreferredSize().width());
+      // TODO(https://crbug.com/466106626): Handle collapsed vertical tabstrip.
+      const int min_normal_vertical_tab_strip_width = base::ClampCeil(
+          params.leading_exclusion.ContentWithPadding().width());
+      const int preferred_vertical_tab_strip_width =
+          views().vertical_tab_strip_container->GetPreferredSize().width();
       vertical_tab_strip_bounds = gfx::Rect(
           params.visual_client_area.x(), params.visual_client_area.y(),
-          vertical_tab_strip_width, params.visual_client_area.height());
-      params.Inset(gfx::Insets::TLBR(0, vertical_tab_strip_width, 0, 0));
+          std::max(min_normal_vertical_tab_strip_width,
+                   preferred_vertical_tab_strip_width),
+          params.visual_client_area.height());
+      params.Inset(
+          gfx::Insets::TLBR(0, vertical_tab_strip_bounds.width(), 0, 0));
     }
     layout.AddChild(views().vertical_tab_strip_container,
                     vertical_tab_strip_bounds,
                     tab_strip_type == TabStripType::kVertical);
+  }
+
+  // When the tabstrip isn't at the top, the top container is laid out before
+  // all side panels.
+  if (tab_strip_type != TabStripType::kHorizontal &&
+      IsParentedTo(views().top_container, views().browser_view)) {
+    auto& top_container_layout =
+        layout.AddChild(views().top_container, gfx::Rect());
+    const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(
+        top_container_layout,
+        params.InLocalCoordinates(params.visual_client_area), needs_exclusion);
+    top_container_layout.bounds =
+        GetTopContainerBoundsInParent(top_container_local_bounds, params);
+    params.SetTop(top_container_layout.bounds.bottom());
   }
 
   // Figure out whether the toolbar-height side panel should show and by how
@@ -368,8 +387,10 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   layout.AddChild(views().main_shadow_overlay, params.visual_client_area,
                   show_shadow_overlay);
 
-  // Lay out top container.
-  if (IsParentedTo(views().top_container, views().browser_view)) {
+  // Lay out top container. The top container is laid out after the
+  // toolbar-height side panel with a horizontal tabstrip.
+  if (tab_strip_type == TabStripType::kHorizontal &&
+      IsParentedTo(views().top_container, views().browser_view)) {
     auto& top_container_layout =
         layout.AddChild(views().top_container, gfx::Rect());
     const gfx::Rect top_container_local_bounds = CalculateTopContainerLayout(

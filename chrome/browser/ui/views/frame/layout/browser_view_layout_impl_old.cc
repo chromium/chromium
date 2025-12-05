@@ -31,6 +31,12 @@
 
 namespace {
 
+// The width of the vertical tab strip.
+//
+// TODO(https://crbug.com/439961053): This shouldn't be hard-coded and should
+// be reported by the vertical tabstrip itself.
+static constexpr int kMinVerticalTabStripWidth = 240;
+
 // The number of pixels the constrained window should overlap the bottom
 // of the omnibox.
 const int kConstrainedWindowOverlap = 3;

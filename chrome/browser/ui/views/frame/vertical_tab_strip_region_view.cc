@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 
+#include <algorithm>
+
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -100,6 +102,21 @@ void VerticalTabStripRegionView::Layout(PassKey) {
   // layout.
   resize_area_->SetBoundsRect(gfx::Rect(bounds().right() - kResizeAreaWidth, 0,
                                         kResizeAreaWidth, bounds().height()));
+}
+
+gfx::Size VerticalTabStripRegionView::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  // TODO(https://crbug.com/439961053): Preferred size when not collapsed should
+  // be based on user preference, but hard-code for now.
+  constexpr int kNonCollapsedSize = 240;
+
+  gfx::Size preferred_size =
+      AccessiblePaneView::CalculatePreferredSize(available_size);
+  if (!state_controller_->IsCollapsed()) {
+    preferred_size.set_width(
+        std::max(preferred_size.width(), kNonCollapsedSize));
+  }
+  return preferred_size;
 }
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,

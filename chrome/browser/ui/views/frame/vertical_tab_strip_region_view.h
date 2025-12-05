@@ -78,6 +78,8 @@ class VerticalTabStripRegionView final : public views::AccessiblePaneView,
 
   // views::View:
   void Layout(PassKey) override;
+  gfx::Size CalculatePreferredSize(
+      const views::SizeBounds& available_size) const override;
 
   // views::ResizeAreaDelegate:
   void OnResize(int resize_amount, bool done_resizing) override;
