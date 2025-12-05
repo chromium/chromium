@@ -570,7 +570,9 @@ void MemoryCache::OnMemoryPressure(base::MemoryPressureLevel level) {
 }
 
 void MemoryCache::OnReleaseMemory() {
-  PruneStrongReferences();
+  if (base::FeatureList::IsEnabled(features::kMemoryCacheStrongReference)) {
+    PruneStrongReferences();
+  }
 }
 
 void MemoryCache::OnUpdateMemoryLimit() {

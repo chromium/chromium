@@ -15951,7 +15951,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "MemoryCoordinatorLastChanceGC"
+                        "MemoryCoordinatorLastResortGC"
                     ]
                 }
             ]

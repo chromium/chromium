@@ -39,6 +39,9 @@ class RendererMemoryCoordinatorPolicyTest : public testing::Test {
 
 TEST_F(RendererMemoryCoordinatorPolicyTest,
        MemoryCoordinatorLastResortGC_Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kMemoryCoordinatorLastResortGC);
+
   // Create the consumer with the `ReleaseGCReferences::kYes` trait.
   base::RegisteredMockMemoryConsumer consumer(
       "Consumer", {.release_gc_references =
