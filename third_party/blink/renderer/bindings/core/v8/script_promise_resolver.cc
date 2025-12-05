@@ -184,7 +184,9 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
       v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto resolver = resolver_.Get(script_state_->GetIsolate());
   if (state_ == kResolving) {
-    CHECK(!script_state_->GetIsolate()->HasPendingException());
+    // TODO(462010740): clean up call sites with pending exceptions.
+    CHECK(!script_state_->GetIsolate()->HasPendingException(),
+          base::NotFatalUntil::M150);
     std::ignore = resolver->Resolve(script_state_->GetContext(),
                                     value_.Get(script_state_->GetIsolate()));
   } else {
