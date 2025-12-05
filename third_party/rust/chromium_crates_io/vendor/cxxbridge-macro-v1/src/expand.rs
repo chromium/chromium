@@ -1656,19 +1656,13 @@ fn expand_rust_box(
     types: &Types,
     conditional_impl: &ConditionalImpl,
 ) -> TokenStream {
-    let ident = key.rust;
-    let resolve = types.resolve(ident);
-    let link_prefix = format!("cxxbridge1$box${}$", resolve.name.to_symbol());
+    let link_prefix = format!("cxxbridge1$box${}$", key.symbol);
     let link_alloc = format!("{}alloc", link_prefix);
     let link_dealloc = format!("{}dealloc", link_prefix);
     let link_drop = format!("{}drop", link_prefix);
 
-    let local_prefix = format_ident!("{}__box_", ident);
-    let local_alloc = format_ident!("{}alloc", local_prefix);
-    let local_dealloc = format_ident!("{}dealloc", local_prefix);
-    let local_drop = format_ident!("{}drop", local_prefix);
-
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
     let cfg = conditional_impl.cfg.into_attr();
     let begin_span = conditional_impl
@@ -1678,18 +1672,19 @@ fn expand_rust_box(
         .explicit_impl
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
-    let prevent_unwind_drop_label = format!("::{} as Drop>::drop", ident);
+    let prevent_unwind_drop_label =
+        format!("::{} as Drop>::drop", generics::local_type(key.inner).rust);
 
-    quote_spanned! {end_span=>
+    quote_spanned!(end_span=> {
         #cfg
         #[automatically_derived]
         #[doc(hidden)]
-        #unsafe_token impl #impl_generics ::cxx::private::ImplBox for #ident #ty_generics {}
+        #unsafe_token impl #impl_generics ::cxx::private::ImplBox for #inner_with_generics {}
 
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_alloc)]
-        unsafe extern "C" fn #local_alloc #impl_generics() -> *mut ::cxx::core::mem::MaybeUninit<#ident #ty_generics> {
+        unsafe extern "C" fn __alloc #impl_generics() -> *mut ::cxx::core::mem::MaybeUninit<#inner_with_generics> {
             // No prevent_unwind: the global allocator is not allowed to panic.
             //
             // TODO: replace with Box::new_uninit when stable.
@@ -1701,7 +1696,7 @@ fn expand_rust_box(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_dealloc)]
-        unsafe extern "C" fn #local_dealloc #impl_generics(ptr: *mut ::cxx::core::mem::MaybeUninit<#ident #ty_generics>) {
+        unsafe extern "C" fn __dealloc #impl_generics(ptr: *mut ::cxx::core::mem::MaybeUninit<#inner_with_generics>) {
             // No prevent_unwind: the global allocator is not allowed to panic.
             let _ = unsafe { ::cxx::alloc::boxed::Box::from_raw(ptr) };
         }
@@ -1709,11 +1704,11 @@ fn expand_rust_box(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_drop)]
-        unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::alloc::boxed::Box<#ident #ty_generics>) {
+        unsafe extern "C" fn __drop #impl_generics(this: *mut ::cxx::alloc::boxed::Box<#inner_with_generics>) {
             let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(__fn, || unsafe { ::cxx::core::ptr::drop_in_place(this) });
         }
-    }
+    })
 }
 
 fn expand_rust_vec(
@@ -1721,9 +1716,7 @@ fn expand_rust_vec(
     types: &Types,
     conditional_impl: &ConditionalImpl,
 ) -> TokenStream {
-    let elem = key.rust;
-    let resolve = types.resolve(elem);
-    let link_prefix = format!("cxxbridge1$rust_vec${}$", resolve.name.to_symbol());
+    let link_prefix = format!("cxxbridge1$rust_vec${}$", key.symbol);
     let link_new = format!("{}new", link_prefix);
     let link_drop = format!("{}drop", link_prefix);
     let link_len = format!("{}len", link_prefix);
@@ -1733,17 +1726,8 @@ fn expand_rust_vec(
     let link_set_len = format!("{}set_len", link_prefix);
     let link_truncate = format!("{}truncate", link_prefix);
 
-    let local_prefix = format_ident!("{}__vec_", elem);
-    let local_new = format_ident!("{}new", local_prefix);
-    let local_drop = format_ident!("{}drop", local_prefix);
-    let local_len = format_ident!("{}len", local_prefix);
-    let local_capacity = format_ident!("{}capacity", local_prefix);
-    let local_data = format_ident!("{}data", local_prefix);
-    let local_reserve_total = format_ident!("{}reserve_total", local_prefix);
-    let local_set_len = format_ident!("{}set_len", local_prefix);
-    let local_truncate = format_ident!("{}truncate", local_prefix);
-
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
     let cfg = conditional_impl.cfg.into_attr();
     let begin_span = conditional_impl
@@ -1753,18 +1737,19 @@ fn expand_rust_vec(
         .explicit_impl
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
-    let prevent_unwind_drop_label = format!("::{} as Drop>::drop", elem);
+    let prevent_unwind_drop_label =
+        format!("::{} as Drop>::drop", generics::local_type(key.inner).rust);
 
-    quote_spanned! {end_span=>
+    quote_spanned!(end_span=> {
         #cfg
         #[automatically_derived]
         #[doc(hidden)]
-        #unsafe_token impl #impl_generics ::cxx::private::ImplVec for #elem #ty_generics {}
+        #unsafe_token impl #impl_generics ::cxx::private::ImplVec for #inner_with_generics {}
 
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_new)]
-        unsafe extern "C" fn #local_new #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>) {
+        unsafe extern "C" fn __new #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>) {
             // No prevent_unwind: cannot panic.
             unsafe {
                 ::cxx::core::ptr::write(this, ::cxx::private::RustVec::new());
@@ -1774,7 +1759,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_drop)]
-        unsafe extern "C" fn #local_drop #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>) {
+        unsafe extern "C" fn __drop #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>) {
             let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(
                 __fn,
@@ -1785,7 +1770,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_len)]
-        unsafe extern "C" fn #local_len #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> ::cxx::core::primitive::usize {
+        unsafe extern "C" fn __len #impl_generics(this: *const ::cxx::private::RustVec<#inner_with_generics>) -> ::cxx::core::primitive::usize {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).len() }
         }
@@ -1793,7 +1778,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_capacity)]
-        unsafe extern "C" fn #local_capacity #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> ::cxx::core::primitive::usize {
+        unsafe extern "C" fn __capacity #impl_generics(this: *const ::cxx::private::RustVec<#inner_with_generics>) -> ::cxx::core::primitive::usize {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).capacity() }
         }
@@ -1801,7 +1786,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_data)]
-        unsafe extern "C" fn #local_data #impl_generics(this: *const ::cxx::private::RustVec<#elem #ty_generics>) -> *const #elem #ty_generics {
+        unsafe extern "C" fn __data #impl_generics(this: *const ::cxx::private::RustVec<#inner_with_generics>) -> *const #inner_with_generics {
             // No prevent_unwind: cannot panic.
             unsafe { (*this).as_ptr() }
         }
@@ -1809,7 +1794,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_reserve_total)]
-        unsafe extern "C" fn #local_reserve_total #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, new_cap: ::cxx::core::primitive::usize) {
+        unsafe extern "C" fn __reserve_total #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>, new_cap: ::cxx::core::primitive::usize) {
             // No prevent_unwind: the global allocator is not allowed to panic.
             unsafe {
                 (*this).reserve_total(new_cap);
@@ -1819,7 +1804,7 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_set_len)]
-        unsafe extern "C" fn #local_set_len #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: ::cxx::core::primitive::usize) {
+        unsafe extern "C" fn __set_len #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>, len: ::cxx::core::primitive::usize) {
             // No prevent_unwind: cannot panic.
             unsafe {
                 (*this).set_len(len);
@@ -1829,14 +1814,14 @@ fn expand_rust_vec(
         #cfg
         #[doc(hidden)]
         #[unsafe(export_name = #link_truncate)]
-        unsafe extern "C" fn #local_truncate #impl_generics(this: *mut ::cxx::private::RustVec<#elem #ty_generics>, len: ::cxx::core::primitive::usize) {
+        unsafe extern "C" fn __truncate #impl_generics(this: *mut ::cxx::private::RustVec<#inner_with_generics>, len: ::cxx::core::primitive::usize) {
             let __fn = ::cxx::core::concat!("<", ::cxx::core::module_path!(), #prevent_unwind_drop_label);
             ::cxx::private::prevent_unwind(
                 __fn,
                 || unsafe { (*this).truncate(len) },
             );
         }
-    }
+    })
 }
 
 fn expand_unique_ptr(
@@ -1844,10 +1829,7 @@ fn expand_unique_ptr(
     types: &Types,
     conditional_impl: &ConditionalImpl,
 ) -> TokenStream {
-    let ident = key.rust;
-    let name = ident.to_string();
-    let resolve = types.resolve(ident);
-    let prefix = format!("cxxbridge1$unique_ptr${}$", resolve.name.to_symbol());
+    let prefix = format!("cxxbridge1$unique_ptr${}$", key.symbol);
     let link_null = format!("{}null", prefix);
     let link_uninit = format!("{}uninit", prefix);
     let link_raw = format!("{}raw", prefix);
@@ -1855,9 +1837,11 @@ fn expand_unique_ptr(
     let link_release = format!("{}release", prefix);
     let link_drop = format!("{}drop", prefix);
 
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let name = generics::concise_rust_name(key.inner);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
-    let can_construct_from_value = types.is_maybe_trivial(ident);
+    let can_construct_from_value = types.is_maybe_trivial(key.inner);
     let new_method = if can_construct_from_value {
         Some(quote! {
             fn __new(value: Self) -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {
@@ -1867,7 +1851,7 @@ fn expand_unique_ptr(
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
-                    __uninit(&raw mut repr).cast::<#ident #ty_generics>().write(value);
+                    __uninit(&raw mut repr).cast::<#inner_with_generics>().write(value);
                 }
                 repr
             }
@@ -1888,7 +1872,7 @@ fn expand_unique_ptr(
     quote_spanned! {end_span=>
         #cfg
         #[automatically_derived]
-        #unsafe_token impl #impl_generics ::cxx::memory::UniquePtrTarget for #ident #ty_generics {
+        #unsafe_token impl #impl_generics ::cxx::memory::UniquePtrTarget for #inner_with_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
             }
@@ -1947,10 +1931,7 @@ fn expand_shared_ptr(
     types: &Types,
     conditional_impl: &ConditionalImpl,
 ) -> TokenStream {
-    let ident = key.rust;
-    let name = ident.to_string();
-    let resolve = types.resolve(ident);
-    let prefix = format!("cxxbridge1$shared_ptr${}$", resolve.name.to_symbol());
+    let prefix = format!("cxxbridge1$shared_ptr${}$", key.symbol);
     let link_null = format!("{}null", prefix);
     let link_uninit = format!("{}uninit", prefix);
     let link_raw = format!("{}raw", prefix);
@@ -1958,9 +1939,11 @@ fn expand_shared_ptr(
     let link_get = format!("{}get", prefix);
     let link_drop = format!("{}drop", prefix);
 
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let name = generics::concise_rust_name(key.inner);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
-    let can_construct_from_value = types.is_maybe_trivial(ident);
+    let can_construct_from_value = types.is_maybe_trivial(key.inner);
     let new_method = if can_construct_from_value {
         Some(quote! {
             unsafe fn __new(value: Self, new: *mut ::cxx::core::ffi::c_void) {
@@ -1969,7 +1952,7 @@ fn expand_shared_ptr(
                     fn __uninit(new: *mut ::cxx::core::ffi::c_void) -> *mut ::cxx::core::ffi::c_void;
                 }
                 unsafe {
-                    __uninit(new).cast::<#ident #ty_generics>().write(value);
+                    __uninit(new).cast::<#inner_with_generics>().write(value);
                 }
             }
         })
@@ -1985,12 +1968,16 @@ fn expand_shared_ptr(
         .explicit_impl
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
-    let not_destructible_err = format!("{} is not destructible", display_namespaced(resolve.name));
+
+    let not_destructible_err = format!(
+        "{} is not destructible",
+        generics::concise_cxx_name(key.inner, types),
+    );
 
     quote_spanned! {end_span=>
         #cfg
         #[automatically_derived]
-        #unsafe_token impl #impl_generics ::cxx::memory::SharedPtrTarget for #ident #ty_generics {
+        #unsafe_token impl #impl_generics ::cxx::memory::SharedPtrTarget for #inner_with_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
             }
@@ -2048,17 +2035,16 @@ fn expand_weak_ptr(
     types: &Types,
     conditional_impl: &ConditionalImpl,
 ) -> TokenStream {
-    let ident = key.rust;
-    let name = ident.to_string();
-    let resolve = types.resolve(ident);
-    let prefix = format!("cxxbridge1$weak_ptr${}$", resolve.name.to_symbol());
+    let prefix = format!("cxxbridge1$weak_ptr${}$", key.symbol);
     let link_null = format!("{}null", prefix);
     let link_clone = format!("{}clone", prefix);
     let link_downgrade = format!("{}downgrade", prefix);
     let link_upgrade = format!("{}upgrade", prefix);
     let link_drop = format!("{}drop", prefix);
 
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let name = generics::concise_rust_name(key.inner);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
     let cfg = conditional_impl.cfg.into_attr();
     let begin_span = conditional_impl
@@ -2072,7 +2058,7 @@ fn expand_weak_ptr(
     quote_spanned! {end_span=>
         #cfg
         #[automatically_derived]
-        #unsafe_token impl #impl_generics ::cxx::memory::WeakPtrTarget for #ident #ty_generics {
+        #unsafe_token impl #impl_generics ::cxx::memory::WeakPtrTarget for #inner_with_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
             }
@@ -2130,10 +2116,7 @@ fn expand_cxx_vector(
     conditional_impl: &ConditionalImpl,
     types: &Types,
 ) -> TokenStream {
-    let elem = key.rust;
-    let name = elem.to_string();
-    let resolve = types.resolve(elem);
-    let prefix = format!("cxxbridge1$std$vector${}$", resolve.name.to_symbol());
+    let prefix = format!("cxxbridge1$std$vector${}$", key.symbol);
     let link_new = format!("{}new", prefix);
     let link_size = format!("{}size", prefix);
     let link_capacity = format!("{}capacity", prefix);
@@ -2141,17 +2124,16 @@ fn expand_cxx_vector(
     let link_reserve = format!("{}reserve", prefix);
     let link_push_back = format!("{}push_back", prefix);
     let link_pop_back = format!("{}pop_back", prefix);
-    let unique_ptr_prefix = format!(
-        "cxxbridge1$unique_ptr$std$vector${}$",
-        resolve.name.to_symbol(),
-    );
+    let unique_ptr_prefix = format!("cxxbridge1$unique_ptr$std$vector${}$", key.symbol);
     let link_unique_ptr_null = format!("{}null", unique_ptr_prefix);
     let link_unique_ptr_raw = format!("{}raw", unique_ptr_prefix);
     let link_unique_ptr_get = format!("{}get", unique_ptr_prefix);
     let link_unique_ptr_release = format!("{}release", unique_ptr_prefix);
     let link_unique_ptr_drop = format!("{}drop", unique_ptr_prefix);
 
-    let (impl_generics, ty_generics) = generics::split_for_impl(key, conditional_impl, resolve);
+    let name = generics::concise_rust_name(key.inner);
+    let (impl_generics, inner_with_generics) =
+        generics::split_for_impl(key, conditional_impl, types);
 
     let cfg = conditional_impl.cfg.into_attr();
     let begin_span = conditional_impl
@@ -2162,7 +2144,7 @@ fn expand_cxx_vector(
         .map_or(key.end_span, |explicit| explicit.brace_token.span.join());
     let unsafe_token = format_ident!("unsafe", span = begin_span);
 
-    let can_pass_element_by_value = types.is_maybe_trivial(elem);
+    let can_pass_element_by_value = types.is_maybe_trivial(key.inner);
     let by_value_methods = if can_pass_element_by_value {
         Some(quote_spanned! {end_span=>
             unsafe fn __push_back(
@@ -2172,7 +2154,7 @@ fn expand_cxx_vector(
                 unsafe extern "C" {
                     #[link_name = #link_push_back]
                     fn __push_back #impl_generics(
-                        this: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#elem #ty_generics>>,
+                        this: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#inner_with_generics>>,
                         value: *mut ::cxx::core::ffi::c_void,
                     );
                 }
@@ -2190,7 +2172,7 @@ fn expand_cxx_vector(
                 unsafe extern "C" {
                     #[link_name = #link_pop_back]
                     fn __pop_back #impl_generics(
-                        this: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#elem #ty_generics>>,
+                        this: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#inner_with_generics>>,
                         out: *mut ::cxx::core::ffi::c_void,
                     );
                 }
@@ -2208,34 +2190,34 @@ fn expand_cxx_vector(
 
     let not_move_constructible_err = format!(
         "{} is not move constructible",
-        display_namespaced(resolve.name),
+        generics::concise_cxx_name(key.inner, types),
     );
 
     quote_spanned! {end_span=>
         #cfg
         #[automatically_derived]
-        #unsafe_token impl #impl_generics ::cxx::vector::VectorElement for #elem #ty_generics {
+        #unsafe_token impl #impl_generics ::cxx::vector::VectorElement for #inner_with_generics {
             fn __typename(f: &mut ::cxx::core::fmt::Formatter<'_>) -> ::cxx::core::fmt::Result {
                 f.write_str(#name)
             }
             fn __vector_new() -> *mut ::cxx::CxxVector<Self> {
                 unsafe extern "C" {
                     #[link_name = #link_new]
-                    fn __vector_new #impl_generics() -> *mut ::cxx::CxxVector<#elem #ty_generics>;
+                    fn __vector_new #impl_generics() -> *mut ::cxx::CxxVector<#inner_with_generics>;
                 }
                 unsafe { __vector_new() }
             }
             fn __vector_size(v: &::cxx::CxxVector<Self>) -> ::cxx::core::primitive::usize {
                 unsafe extern "C" {
                     #[link_name = #link_size]
-                    fn __vector_size #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> ::cxx::core::primitive::usize;
+                    fn __vector_size #impl_generics(_: &::cxx::CxxVector<#inner_with_generics>) -> ::cxx::core::primitive::usize;
                 }
                 unsafe { __vector_size(v) }
             }
             fn __vector_capacity(v: &::cxx::CxxVector<Self>) -> ::cxx::core::primitive::usize {
                 unsafe extern "C" {
                     #[link_name = #link_capacity]
-                    fn __vector_capacity #impl_generics(_: &::cxx::CxxVector<#elem #ty_generics>) -> ::cxx::core::primitive::usize;
+                    fn __vector_capacity #impl_generics(_: &::cxx::CxxVector<#inner_with_generics>) -> ::cxx::core::primitive::usize;
                 }
                 unsafe { __vector_capacity(v) }
             }
@@ -2243,7 +2225,7 @@ fn expand_cxx_vector(
                 unsafe extern "C" {
                     #[link_name = #link_get_unchecked]
                     fn __get_unchecked #impl_generics(
-                        v: *mut ::cxx::CxxVector<#elem #ty_generics>,
+                        v: *mut ::cxx::CxxVector<#inner_with_generics>,
                         pos: ::cxx::core::primitive::usize,
                     ) -> *mut ::cxx::core::ffi::c_void;
                 }
@@ -2253,7 +2235,7 @@ fn expand_cxx_vector(
                 unsafe extern "C" {
                     #[link_name = #link_reserve]
                     fn __reserve #impl_generics(
-                        v: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#elem #ty_generics>>,
+                        v: ::cxx::core::pin::Pin<&mut ::cxx::CxxVector<#inner_with_generics>>,
                         new_cap: ::cxx::core::primitive::usize,
                     ) -> ::cxx::core::primitive::bool;
                 }
@@ -2276,7 +2258,7 @@ fn expand_cxx_vector(
             unsafe fn __unique_ptr_raw(raw: *mut ::cxx::CxxVector<Self>) -> ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void> {
                 unsafe extern "C" {
                     #[link_name = #link_unique_ptr_raw]
-                    fn __unique_ptr_raw #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>, raw: *mut ::cxx::CxxVector<#elem #ty_generics>);
+                    fn __unique_ptr_raw #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>, raw: *mut ::cxx::CxxVector<#inner_with_generics>);
                 }
                 let mut repr = ::cxx::core::mem::MaybeUninit::uninit();
                 unsafe {
@@ -2287,14 +2269,14 @@ fn expand_cxx_vector(
             unsafe fn __unique_ptr_get(repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<Self> {
                 unsafe extern "C" {
                     #[link_name = #link_unique_ptr_get]
-                    fn __unique_ptr_get #impl_generics(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<#elem #ty_generics>;
+                    fn __unique_ptr_get #impl_generics(this: *const ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *const ::cxx::CxxVector<#inner_with_generics>;
                 }
                 unsafe { __unique_ptr_get(&raw const repr) }
             }
             unsafe fn __unique_ptr_release(mut repr: ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<Self> {
                 unsafe extern "C" {
                     #[link_name = #link_unique_ptr_release]
-                    fn __unique_ptr_release #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<#elem #ty_generics>;
+                    fn __unique_ptr_release #impl_generics(this: *mut ::cxx::core::mem::MaybeUninit<*mut ::cxx::core::ffi::c_void>) -> *mut ::cxx::CxxVector<#inner_with_generics>;
                 }
                 unsafe { __unique_ptr_release(&raw mut repr) }
             }
@@ -2419,7 +2401,7 @@ fn expand_extern_return_type(
     quote!(-> #ty)
 }
 
-fn display_namespaced(name: &Pair) -> impl Display + '_ {
+pub(crate) fn display_namespaced(name: &Pair) -> impl Display + '_ {
     struct Namespaced<'a>(&'a Pair);
 
     impl<'a> Display for Namespaced<'a> {

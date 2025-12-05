@@ -1090,25 +1090,6 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
     }
 
     let ty = parse_type(&self_ty)?;
-    let ty_generics = match &ty {
-        Type::RustBox(ty)
-        | Type::RustVec(ty)
-        | Type::UniquePtr(ty)
-        | Type::SharedPtr(ty)
-        | Type::WeakPtr(ty)
-        | Type::CxxVector(ty) => match &ty.inner {
-            Type::Ident(ident) => ident.generics.clone(),
-            _ => Lifetimes::default(),
-        },
-        Type::Ident(_)
-        | Type::Ref(_)
-        | Type::Ptr(_)
-        | Type::Str(_)
-        | Type::Fn(_)
-        | Type::Void(_)
-        | Type::SliceRef(_)
-        | Type::Array(_) => Lifetimes::default(),
-    };
 
     let negative = negative_token.is_some();
     let brace_token = imp.brace_token;
@@ -1120,7 +1101,6 @@ fn parse_impl(cx: &mut Errors, imp: ItemImpl) -> Result<Api> {
         impl_generics,
         negative,
         ty,
-        ty_generics,
         brace_token,
         negative_token,
     }))

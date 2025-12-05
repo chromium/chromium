@@ -68,11 +68,6 @@ impl<'a> OutFile<'a> {
         self.content.get_mut().set_namespace(namespace);
     }
 
-    pub(crate) fn write_fmt(&self, args: Arguments) {
-        let content = &mut *self.content.borrow_mut();
-        Write::write_fmt(content, args).unwrap();
-    }
-
     pub(crate) fn content(&mut self) -> Vec<u8> {
         self.flush();
 
@@ -232,5 +227,27 @@ impl<'a> BlockBoundary<'a> {
             BlockBoundary::Begin(block) => BlockBoundary::End(block),
             BlockBoundary::End(block) => BlockBoundary::Begin(block),
         }
+    }
+}
+
+pub(crate) trait InfallibleWrite {
+    fn write_fmt(&mut self, args: Arguments);
+}
+
+impl InfallibleWrite for String {
+    fn write_fmt(&mut self, args: Arguments) {
+        Write::write_fmt(self, args).unwrap();
+    }
+}
+
+impl<'a> InfallibleWrite for Content<'a> {
+    fn write_fmt(&mut self, args: Arguments) {
+        Write::write_fmt(self, args).unwrap();
+    }
+}
+
+impl<'a> InfallibleWrite for OutFile<'a> {
+    fn write_fmt(&mut self, args: Arguments) {
+        InfallibleWrite::write_fmt(self.content.get_mut(), args);
     }
 }

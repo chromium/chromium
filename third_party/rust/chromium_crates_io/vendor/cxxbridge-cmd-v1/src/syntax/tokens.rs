@@ -227,7 +227,6 @@ impl ToTokens for Impl {
             impl_generics,
             negative: _,
             ty,
-            ty_generics: _,
             brace_token,
             negative_token,
         } = self;

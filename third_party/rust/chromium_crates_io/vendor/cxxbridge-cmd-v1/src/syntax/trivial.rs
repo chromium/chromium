@@ -1,6 +1,7 @@
 use crate::syntax::cfg::ComputedCfg;
 use crate::syntax::instantiate::ImplKey;
 use crate::syntax::map::{OrderedMap, UnorderedMap};
+use crate::syntax::resolve::Resolution;
 use crate::syntax::set::{OrderedSet as Set, UnorderedSet};
 use crate::syntax::types::ConditionalImpl;
 use crate::syntax::{Api, Enum, ExternFn, NamedType, Pair, SliceRef, Struct, Type, TypeAlias};
@@ -34,6 +35,7 @@ pub(crate) fn required_trivial_reasons<'a>(
     cxx: &UnorderedSet<&'a Ident>,
     aliases: &UnorderedMap<&'a Ident, &'a TypeAlias>,
     impls: &OrderedMap<ImplKey<'a>, ConditionalImpl<'a>>,
+    resolutions: &UnorderedMap<&Ident, Resolution>,
 ) -> UnorderedMap<&'a Ident, Vec<TrivialReason<'a>>> {
     let mut required_trivial = UnorderedMap::new();
 
@@ -83,7 +85,7 @@ pub(crate) fn required_trivial_reasons<'a>(
             Type::RustBox(ty1) => {
                 if let Type::Ident(ident) = &ty1.inner {
                     let local = !aliases.contains_key(&ident.rust)
-                        || impls.contains_key(&ty.impl_key().unwrap());
+                        || impls.contains_key(&ty.impl_key(resolutions).unwrap());
                     let reason = TrivialReason::BoxTarget { local };
                     insist_extern_types_are_trivial(ident, reason);
                 }
@@ -91,7 +93,7 @@ pub(crate) fn required_trivial_reasons<'a>(
             Type::RustVec(ty1) => {
                 if let Type::Ident(ident) = &ty1.inner {
                     let local = !aliases.contains_key(&ident.rust)
-                        || impls.contains_key(&ty.impl_key().unwrap());
+                        || impls.contains_key(&ty.impl_key(resolutions).unwrap());
                     let reason = TrivialReason::VecElement { local };
                     insist_extern_types_are_trivial(ident, reason);
                 }

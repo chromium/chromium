@@ -1,65 +1,92 @@
+use crate::expand::display_namespaced;
 use crate::syntax::instantiate::NamedImplKey;
-use crate::syntax::resolve::Resolution;
 use crate::syntax::types::ConditionalImpl;
-use crate::syntax::{Impl, Lifetimes};
+use crate::syntax::{Lifetimes, NamedType, Type, Types};
 use proc_macro2::TokenStream;
 use quote::ToTokens;
 use syn::{Lifetime, Token};
 
-pub(crate) struct ImplGenerics<'a> {
-    explicit_impl: Option<&'a Impl>,
-    resolve: Resolution<'a>,
+pub(crate) struct ResolvedGenericType<'a> {
+    ty: &'a Type,
+    explicit_impl: bool,
+    types: &'a Types<'a>,
 }
 
-pub(crate) struct TyGenerics<'a> {
-    key: &'a NamedImplKey<'a>,
-    explicit_impl: Option<&'a Impl>,
-    resolve: Resolution<'a>,
-}
-
+/// Gets `(impl_generics, inner_with_generics)` pair that can be used when
+/// generating an `impl` for a generic type:
+///
+/// ```ignore
+/// quote! { impl #impl_generics SomeTrait for #inner_with_generics }
+/// ```
 pub(crate) fn split_for_impl<'a>(
-    key: &'a NamedImplKey<'a>,
+    key: &NamedImplKey<'a>,
     conditional_impl: &ConditionalImpl<'a>,
-    resolve: Resolution<'a>,
-) -> (ImplGenerics<'a>, TyGenerics<'a>) {
-    let impl_generics = ImplGenerics {
-        explicit_impl: conditional_impl.explicit_impl,
-        resolve,
+    types: &'a Types<'a>,
+) -> (&'a Lifetimes, ResolvedGenericType<'a>) {
+    let impl_generics = if let Some(explicit_impl) = conditional_impl.explicit_impl {
+        &explicit_impl.impl_generics
+    } else {
+        types.resolve(local_type(key.inner)).generics
     };
-    let ty_generics = TyGenerics {
-        key,
-        explicit_impl: conditional_impl.explicit_impl,
-        resolve,
+    let ty_generics = ResolvedGenericType {
+        ty: key.inner,
+        explicit_impl: conditional_impl.explicit_impl.is_some(),
+        types,
     };
     (impl_generics, ty_generics)
 }
 
-impl<'a> ToTokens for ImplGenerics<'a> {
+impl<'a> ToTokens for ResolvedGenericType<'a> {
     fn to_tokens(&self, tokens: &mut TokenStream) {
-        if let Some(imp) = self.explicit_impl {
-            imp.impl_generics.to_tokens(tokens);
-        } else {
-            self.resolve.generics.to_tokens(tokens);
+        match self.ty {
+            Type::Ident(named_type) => {
+                named_type.rust.to_tokens(tokens);
+                if self.explicit_impl {
+                    named_type.generics.to_tokens(tokens);
+                } else {
+                    let resolve = self.types.resolve(named_type);
+                    if !resolve.generics.lifetimes.is_empty() {
+                        let span = named_type.rust.span();
+                        named_type
+                            .generics
+                            .lt_token
+                            .unwrap_or_else(|| Token![<](span))
+                            .to_tokens(tokens);
+                        resolve.generics.lifetimes.to_tokens(tokens);
+                        named_type
+                            .generics
+                            .gt_token
+                            .unwrap_or_else(|| Token![>](span))
+                            .to_tokens(tokens);
+                    }
+                }
+            }
+            _ => unreachable!("syntax/check.rs should reject other types"),
         }
     }
 }
 
-impl<'a> ToTokens for TyGenerics<'a> {
-    fn to_tokens(&self, tokens: &mut TokenStream) {
-        if let Some(imp) = self.explicit_impl {
-            imp.ty_generics.to_tokens(tokens);
-        } else if !self.resolve.generics.lifetimes.is_empty() {
-            let span = self.key.rust.span();
-            self.key
-                .lt_token
-                .unwrap_or_else(|| Token![<](span))
-                .to_tokens(tokens);
-            self.resolve.generics.lifetimes.to_tokens(tokens);
-            self.key
-                .gt_token
-                .unwrap_or_else(|| Token![>](span))
-                .to_tokens(tokens);
+pub(crate) fn local_type(ty: &Type) -> &NamedType {
+    match ty {
+        Type::Ident(named_type) => named_type,
+        _ => unreachable!("syntax/check.rs should reject other types"),
+    }
+}
+
+pub(crate) fn concise_rust_name(ty: &Type) -> String {
+    match ty {
+        Type::Ident(named_type) => named_type.rust.to_string(),
+        _ => unreachable!("syntax/check.rs should reject other types"),
+    }
+}
+
+pub(crate) fn concise_cxx_name(ty: &Type, types: &Types) -> String {
+    match ty {
+        Type::Ident(named_type) => {
+            let res = types.resolve(&named_type.rust);
+            display_namespaced(res.name).to_string()
         }
+        _ => unreachable!("syntax/check.rs should reject other types"),
     }
 }
 

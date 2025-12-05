@@ -185,8 +185,6 @@ pub(crate) struct Impl {
     #[expect(dead_code)]
     pub negative: bool,
     pub ty: Type,
-    #[cfg_attr(not(proc_macro), expect(dead_code))]
-    pub ty_generics: Lifetimes,
     pub brace_token: Brace,
     pub negative_token: Option<Token![!]>,
 }

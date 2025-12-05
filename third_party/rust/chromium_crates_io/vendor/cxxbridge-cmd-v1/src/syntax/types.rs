@@ -209,33 +209,14 @@ impl<'a> Types<'a> {
                 }
                 Api::Impl(imp) => {
                     visit(&mut all, &imp.ty, &imp.cfg);
-                    if let Some(key) = imp.ty.impl_key() {
-                        impls.insert(key, ConditionalImpl::from(imp));
-                    }
                 }
             }
         }
 
-        for (ty, cfg) in &all {
-            let Some(impl_key) = ty.impl_key() else {
-                continue;
-            };
-            let implicit_impl = match &impl_key {
-                ImplKey::RustBox(ident)
-                | ImplKey::RustVec(ident)
-                | ImplKey::UniquePtr(ident)
-                | ImplKey::SharedPtr(ident)
-                | ImplKey::WeakPtr(ident)
-                | ImplKey::CxxVector(ident) => {
-                    Atom::from(ident.rust).is_none() && !aliases.contains_key(ident.rust)
-                }
-            };
-            if implicit_impl {
-                match impls.entry(impl_key) {
-                    Entry::Vacant(entry) => {
-                        entry.insert(ConditionalImpl::from(cfg.clone()));
-                    }
-                    Entry::Occupied(mut entry) => entry.get_mut().cfg.merge_or(cfg.clone()),
+        for api in apis {
+            if let Api::Impl(imp) = api {
+                if let Some(key) = imp.ty.impl_key(&resolutions) {
+                    impls.insert(key, ConditionalImpl::from(imp));
                 }
             }
         }
@@ -244,8 +225,16 @@ impl<'a> Types<'a> {
         // we check that this is permissible. We do this _after_ scanning all
         // the APIs above, in case some function or struct references a type
         // which is declared subsequently.
-        let required_trivial =
-            trivial::required_trivial_reasons(apis, &all, &structs, &enums, &cxx, &aliases, &impls);
+        let required_trivial = trivial::required_trivial_reasons(
+            apis,
+            &all,
+            &structs,
+            &enums,
+            &cxx,
+            &aliases,
+            &impls,
+            &resolutions,
+        );
 
         let required_unpin =
             unpin::required_unpin_reasons(apis, &all, &structs, &enums, &cxx, &aliases);
@@ -268,6 +257,20 @@ impl<'a> Types<'a> {
         };
 
         types.toposorted_structs = toposort::sort(cx, apis, &types);
+
+        for (ty, cfg) in &types.all {
+            let Some(impl_key) = ty.impl_key(&types.resolutions) else {
+                continue;
+            };
+            if impl_key.is_implicit_impl_ok(&types) {
+                match types.impls.entry(impl_key) {
+                    Entry::Vacant(entry) => {
+                        entry.insert(ConditionalImpl::from(cfg.clone()));
+                    }
+                    Entry::Occupied(mut entry) => entry.get_mut().cfg.merge_or(cfg.clone()),
+                }
+            }
+        }
 
         let mut unresolved_structs = types.structs.keys();
         let mut new_information = true;
@@ -326,10 +329,17 @@ impl<'a> Types<'a> {
 
     // Types which we need to assume could possibly exist by value on the Rust
     // side.
-    pub(crate) fn is_maybe_trivial(&self, ty: &Ident) -> bool {
-        self.structs.contains_key(ty)
-            || self.enums.contains_key(ty)
-            || self.aliases.contains_key(ty)
+    pub(crate) fn is_maybe_trivial(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(named_type) => {
+                let ident = &named_type.rust;
+                self.structs.contains_key(ident)
+                    || self.enums.contains_key(ident)
+                    || self.aliases.contains_key(ident)
+            }
+            Type::CxxVector(_) => false,
+            _ => unreachable!("syntax/check.rs should reject other types"),
+        }
     }
 
     pub(crate) fn contains_elided_lifetime(&self, ty: &Type) -> bool {
@@ -351,6 +361,33 @@ impl<'a> Types<'a> {
             Type::SliceRef(ty) => ty.lifetime.is_none() || self.contains_elided_lifetime(&ty.inner),
             Type::Array(ty) => self.contains_elided_lifetime(&ty.inner),
             Type::Fn(_) | Type::Void(_) => false,
+        }
+    }
+
+    /// Whether the current module is responsible for generic type
+    /// instantiations pertaining to the given type.
+    pub(crate) fn is_local(&self, ty: &Type) -> bool {
+        match ty {
+            Type::Ident(ident) => {
+                Atom::from(&ident.rust).is_none() && !self.aliases.contains_key(&ident.rust)
+            }
+            Type::RustBox(_) => {
+                // TODO: We should treat Box<LocalType> as local.
+                // https://doc.rust-lang.org/reference/items/implementations.html#r-items.impl.trait.fundamental
+                false
+            }
+            Type::Array(_)
+            | Type::CxxVector(_)
+            | Type::Fn(_)
+            | Type::Void(_)
+            | Type::RustVec(_)
+            | Type::UniquePtr(_)
+            | Type::SharedPtr(_)
+            | Type::WeakPtr(_)
+            | Type::Ref(_)
+            | Type::Ptr(_)
+            | Type::Str(_)
+            | Type::SliceRef(_) => false,
         }
     }
 }

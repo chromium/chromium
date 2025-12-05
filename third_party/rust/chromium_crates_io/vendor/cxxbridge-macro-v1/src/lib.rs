@@ -12,6 +12,7 @@
     clippy::needless_lifetimes,
     clippy::needless_pass_by_value,
     clippy::nonminimal_bool,
+    clippy::precedence,
     clippy::redundant_else,
     clippy::ref_option,
     clippy::similar_names,
