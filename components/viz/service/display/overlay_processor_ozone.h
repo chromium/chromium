@@ -69,8 +69,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
   void InsertPrimaryPlane(OverlayCandidate primary_plane,
                           OverlayCandidateList& candidates) override;
 
-  bool ShouldCreatePrimaryPlane() const override;
-
  private:
   // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|
   // based on |mailbox|. |is_primary| should be true if this is the primary

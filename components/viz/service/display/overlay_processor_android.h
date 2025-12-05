@@ -63,8 +63,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorAndroid
   void InsertPrimaryPlane(OverlayCandidate primary_plane,
                           OverlayCandidateList& candidates) override;
 
-  bool ShouldCreatePrimaryPlane() const override;
-
  private:
   // OverlayProcessor needs to send overlay candidate information to the gpu
   // thread. These two methods are scheduled on the gpu thread to setup and

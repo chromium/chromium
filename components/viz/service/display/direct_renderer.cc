@@ -292,6 +292,27 @@ void DirectRenderer::DrawFrame(
         output_surface_->GetDisplayTransform());
     overlay_processor_->SetViewportSize(device_viewport_size);
 
+    // Before ProcessForOverlay calls into the hardware to ask about whether the
+    // overlay setup can be handled, we need to set up the primary plane.
+    std::optional<OverlayCandidate> primary_plane;
+    if (output_surface_->capabilities().renderer_allocates_images) {
+      primary_plane = overlay_processor_->ProcessOutputSurfaceAsOverlay(
+          device_viewport_size, surface_resource_size, frame_si_format,
+          frame_color_space,
+          current_frame()->root_render_pass->has_transparent_background,
+          1.0f /*opacity*/, GetPrimaryPlaneOverlayTestingMailbox());
+
+      if (current_frame()->display_color_spaces.SupportsHDR() &&
+          current_frame()->root_render_pass->content_color_usage ==
+              gfx::ContentColorUsage::kHDR) {
+        primary_plane->hdr_metadata.extended_range.emplace();
+        // TODO(crbug.com/40263227): Track the actual brightness of the
+        // content. For now, assume that all HDR content is 1,000 nits.
+        primary_plane->hdr_metadata.extended_range->desired_headroom =
+            gfx::HdrMetadataExtendedRange::kDefaultHdrHeadroom;
+      }
+    }
+
     // Attempt to replace some or all of the quads of the root render pass with
     // overlays.
     base::ElapsedTimer overlay_processing_timer;
@@ -299,25 +320,8 @@ void DirectRenderer::DrawFrame(
         resource_provider_, render_passes_in_draw_order,
         output_surface_->color_matrix(), render_pass_filters_,
         render_pass_backdrop_filters_, std::move(surface_damage_rect_list),
-        OverlayProcessorInterface::PrimaryPlaneParams{
-            .viewport_size = device_viewport_size,
-            .resource_size_in_pixels = surface_resource_size,
-            .supports_hdr =
-                current_frame()->display_color_spaces.SupportsHDR() &&
-                render_passes_in_draw_order->back()->content_color_usage ==
-                    gfx::ContentColorUsage::kHDR,
-            .is_opaque = !render_passes_in_draw_order->back()
-                              ->has_transparent_background,
-#if BUILDFLAG(IS_OZONE)
-            .si_format = frame_si_format,
-            .color_space = frame_color_space,
-            .overlay_testing_mailbox =
-                output_surface_->capabilities().renderer_allocates_images
-                    ? GetPrimaryPlaneOverlayTestingMailbox()
-                    : gpu::Mailbox(),
-#endif
-        },
-        &current_frame()->overlay_list, &current_frame()->root_damage_rect,
+        primary_plane, &current_frame()->overlay_list,
+        &current_frame()->root_damage_rect,
         &current_frame()->root_content_bounds);
     auto overlay_processing_time = overlay_processing_timer.Elapsed();
 
@@ -1222,10 +1226,8 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
   return gfx::Rect();
 }
 
-#if BUILDFLAG(IS_OZONE)
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
   NOTREACHED();
 }
-#endif
 
 }  // namespace viz

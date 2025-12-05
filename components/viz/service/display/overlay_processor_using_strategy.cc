@@ -363,13 +363,15 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     SurfaceDamageRectList surface_damage_rect_list,
-    const PrimaryPlaneParams& primary_plane_params,
+    std::optional<OverlayCandidate>& primary_plane,
     CandidateList* candidates,
     gfx::Rect* damage_rect,
     std::vector<gfx::Rect>* content_bounds) {
 #if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/181974042):  Remove when color space is plumbed.
-  primary_plane_color_space_ = primary_plane_params.color_space;
+  if (primary_plane) {
+    primary_plane_color_space_ = primary_plane->color_space;
+  }
 #endif
   TRACE_EVENT0("viz", "OverlayProcessorUsingStrategy::ProcessForOverlays");
   DCHECK(candidates->empty());
@@ -392,10 +394,6 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
   // contents.
   bool skip_because_copy_request = BlockForCopyRequests(render_pass);
 
-  std::optional<OverlayCandidate> primary_plane;
-  if (ShouldCreatePrimaryPlane()) {
-    primary_plane = CreatePrimaryPlane(primary_plane_params);
-  }
   if (!skip_because_copy_request && !disable_overlay()) {
     success = AttemptWithStrategies(
         output_color_matrix, render_pass_filters, render_pass_backdrop_filters,
@@ -453,10 +451,6 @@ void OverlayProcessorUsingStrategy::InsertPrimaryPlane(
     OverlayCandidateList& candidates) {
   // Other platforms respect plane_z_order so the list order doesn't matter.
   candidates.push_back(std::move(primary_plane));
-}
-
-bool OverlayProcessorUsingStrategy::ShouldCreatePrimaryPlane() const {
-  return true;
 }
 
 void OverlayProcessorUsingStrategy::ClearOverlayCombinationCache() {

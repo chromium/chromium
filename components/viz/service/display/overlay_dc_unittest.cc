@@ -2594,6 +2594,8 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     overlay_processor_->SetViewportSize(gfx::Size(256, 256));
 
     EXPECT_TRUE(overlay_processor_->IsOverlaySupported());
+
+    output_surface_plane_ = GetDefaultPrimaryPlane(gfx::Size(256, 256));
   }
 
   void TearDown() override {
@@ -2601,16 +2603,14 @@ class OverlayProcessorWinTest : public OverlayProcessorTestBase {
     OverlayProcessorTestBase::TearDown();
   }
 
-  OverlayProcessorInterface::PrimaryPlaneParams GetDefaultPrimaryPlane(
+  std::optional<OverlayCandidate> GetDefaultPrimaryPlane(
       const gfx::Size& primary_plane_size) {
-    return OverlayProcessorInterface::PrimaryPlaneParams{
-        .viewport_size = primary_plane_size,
-        .resource_size_in_pixels = primary_plane_size,
-        .supports_hdr = false,
-        .is_opaque = true,
-    };
+    return overlay_processor_->ProcessOutputSurfaceAsOverlay(
+        primary_plane_size, primary_plane_size, SinglePlaneFormat::kBGRA_8888,
+        gfx::ColorSpace::CreateSRGB(), false, 1.0, gpu::Mailbox());
   }
 
+  std::optional<OverlayCandidate> output_surface_plane_;
   std::unique_ptr<OverlayProcessorWin> overlay_processor_;
   gfx::Rect damage_rect_;
   std::vector<gfx::Rect> content_bounds_;
@@ -2752,11 +2752,12 @@ class OverlayProcessorWinSurfacePlaneTest
                                                      &damage_rect_);
     }
 
+    output_surface_plane_ =
+        GetDefaultPrimaryPlane(render_passes->back()->output_rect.size());
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), render_passes, SkM44(),
         std::move(surface_damage_rect_list_in_root_space),
-        GetDefaultPrimaryPlane(render_passes->back()->output_rect.size()),
-        candidates, &damage_rect_, &content_bounds_);
+        output_surface_plane_, candidates, &damage_rect_, &content_bounds_);
   }
 
  private:
@@ -3075,6 +3076,10 @@ TEST_P(OverlayProcessorWinSurfacePlaneFullScreenTest,
   EXPECT_THAT(overlays, testing::ElementsAreArray({
                             test::OverlayIsFullScreen(),
                         }));
+
+  // Check that the next call to `AdjustOutputSurfaceOverlay` clears the primary
+  // plane.
+  EXPECT_FALSE(output_surface_plane_.has_value());
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -3130,6 +3135,12 @@ class OverlayProcessorWinDelegatedCompositingTest
   DelegationResult TryProcessForDelegatedOverlays(
       AggregatedRenderPassList& pass_list,
       SurfaceDamageRectList surface_damage_rect_list = {}) {
+    if (!output_surface_plane_) {
+      // Reset the output surface plane in case we're calling
+      // |TryProcessForDelegatedOverlays| multiple times.
+      output_surface_plane_ = OverlayCandidate();
+    }
+
     const gfx::Rect original_root_surface_damage =
         pass_list.back()->damage_rect;
 
@@ -3150,9 +3161,8 @@ class OverlayProcessorWinDelegatedCompositingTest
     overlay_processor_->ProcessForOverlays(
         resource_provider_.get(), &pass_list, GetIdentityColorMatrix(),
         render_pass_filters, render_pass_backdrop_filters,
-        std::move(surface_damage_rect_list),
-        GetDefaultPrimaryPlane(pass_list.back()->output_rect.size()),
-        &candidates, &damage_rect_, &content_bounds_);
+        std::move(surface_damage_rect_list), output_surface_plane_, &candidates,
+        &damage_rect_, &content_bounds_);
 
     const bool delegation_succeeded = std::ranges::none_of(
         candidates,
