@@ -735,10 +735,7 @@ void GlicWindowControllerImpl::GlicLoadedAndReadyToDisplay() {
   // be visible now.
   SetWindowState(State::kOpen);
 
-  // Whenever the glic window is shown, it should have focus. The following line
-  // of code appears to be necessary but not sufficient and there are still some
-  // edge cases.
-  // TODO(crbug.com/390637019): Fully fix and remove this comment.
+  // Whenever the glic window is shown, it should have focus.
   GetGlicView()->GetWebContents()->Focus();
 
   window_event_observer_->SetDraggingAreasAndWatchForMouseEvents();
