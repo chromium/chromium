@@ -883,7 +883,7 @@ if (is_clang_or_gcc) {
       shim_headers += [
         "shim/allocator_shim_override_apple_default_zone.h",
         "shim/allocator_shim_override_apple_symbols.h",
-        "shim/early_zone_registration_constants.h",
+        "shim/early_zone_registration_utils_apple.h",
         "shim/allocator_interception_apple.h",
         "shim/malloc_zone_functions_apple.h",
       ]

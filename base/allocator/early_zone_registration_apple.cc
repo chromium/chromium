@@ -13,7 +13,7 @@
 #include <malloc/malloc.h>
 
 #include "partition_alloc/buildflags.h"
-#include "partition_alloc/shim/early_zone_registration_constants.h"
+#include "partition_alloc/shim/early_zone_registration_utils_apple.h"
 
 // BASE_EXPORT tends to be defined as soon as anything from //base is included.
 #if defined(BASE_EXPORT)
@@ -29,31 +29,6 @@ void AllowDoublePartitionAllocZoneRegistration() {}
 
 #else
 
-extern "C" {
-// abort_report_np() records the message in a special section that both the
-// system CrashReporter and Crashpad collect in crash reports. See also in
-// chrome_exe_main_mac.cc.
-void abort_report_np(const char* fmt, ...);
-}
-
-namespace {
-
-malloc_zone_t* GetDefaultMallocZone() {
-  // malloc_default_zone() does not return... the default zone, but the
-  // initial one. The default one is the first element of the default zone
-  // array.
-  unsigned int zone_count = 0;
-  vm_address_t* zones = nullptr;
-  kern_return_t result = malloc_get_all_zones(
-      mach_task_self(), /*reader=*/nullptr, &zones, &zone_count);
-  if (result != KERN_SUCCESS) {
-    abort_report_np("Cannot enumerate malloc() zones");
-  }
-  return reinterpret_cast<malloc_zone_t*>(zones[0]);
-}
-
-}  // namespace
-
 void EarlyMallocZoneRegistration() {
   // Must have static storage duration, as raw pointers are passed to
   // libsystem_malloc.
@@ -64,7 +39,7 @@ void EarlyMallocZoneRegistration() {
   // Make sure that the default zone is instantiated.
   malloc_zone_t* purgeable_zone = malloc_default_purgeable_zone();
 
-  g_default_zone = GetDefaultMallocZone();
+  g_default_zone = allocator_shim::GetDefaultMallocZoneOrDie();
 
   // The delegating zone:
   // - Forwards all allocations to the existing default zone
@@ -220,7 +195,7 @@ void EarlyMallocZoneRegistration() {
   g_delegating_zone.introspect = &g_delegating_zone_introspect;
   // This name is used in PartitionAlloc's initialization to determine whether
   // it should replace the delegating zone.
-  g_delegating_zone.zone_name = allocator_shim::kDelegatingZoneName;
+  g_delegating_zone.zone_name = allocator_shim::kDelegatingZoneName.data();
 
   // Register puts the new zone at the end, unregister swaps the new zone with
   // the last one.
@@ -242,27 +217,19 @@ void EarlyMallocZoneRegistration() {
   // |g_delegating_zone|...|g_default_zone|purgeable_zone|
 
   // Sanity check.
-  if (GetDefaultMallocZone() != &g_delegating_zone) {
+  if (allocator_shim::GetDefaultMallocZoneOrDie() != &g_delegating_zone) {
     abort_report_np("Failed to install the delegating zone as default.");
   }
 }
 
 void AllowDoublePartitionAllocZoneRegistration() {
-  unsigned int zone_count = 0;
-  vm_address_t* zones = nullptr;
-  kern_return_t result = malloc_get_all_zones(
-      mach_task_self(), /*reader=*/nullptr, &zones, &zone_count);
-  if (result != KERN_SUCCESS) {
-    abort_report_np("Cannot enumerate malloc() zones");
-  }
-
   // If PartitionAlloc is one of the zones, *change* its name so that
   // registration can happen multiple times. This works because zone
   // registration only keeps a pointer to the struct, it does not copy the data.
-  for (unsigned int i = 0; i < zone_count; i++) {
-    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
+  const auto zones = allocator_shim::GetMallocZonesOrDie();
+  for (auto* zone : zones) {
     if (zone->zone_name &&
-        strcmp(zone->zone_name, allocator_shim::kPartitionAllocZoneName) == 0) {
+        zone->zone_name == allocator_shim::kPartitionAllocZoneName) {
       zone->zone_name = "RenamedPartitionAlloc";
       break;
     }
@@ -270,4 +237,5 @@ void AllowDoublePartitionAllocZoneRegistration() {
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
 }  // namespace partition_alloc

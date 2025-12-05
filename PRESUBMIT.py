@@ -942,7 +942,11 @@ _BANNED_CPP_FUNCTIONS: Sequence[BanRule] = (
             # Test base::span<> compatibility against std::span<>.
             r'base/containers/span_unittest.cc',
             # //base/numerics can't use base or absl. So it uses std.
-            r'base/numerics/.*'
+            r'base/numerics/.*',
+
+            # The early zone registration can't use base or absl. So it uses
+            # std.
+            r'base/allocator/partition_allocator/src/partition_alloc/shim/early_zone_registration_utils_apple.h',
 
             # Needed to use QUICHE API.
             r'net/third_party/quiche/overrides/quiche_platform_impl/quiche_stack_trace_impl\.*',

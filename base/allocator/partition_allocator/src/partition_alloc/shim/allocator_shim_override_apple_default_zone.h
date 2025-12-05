@@ -19,7 +19,7 @@
 #endif
 
 #include <atomic>
-#include <cstring>
+#include <string_view>
 #include <tuple>
 
 #include "partition_alloc/buildflags.h"
@@ -29,7 +29,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_root.h"
-#include "partition_alloc/shim/early_zone_registration_constants.h"
+#include "partition_alloc/shim/early_zone_registration_utils_apple.h"
 
 namespace allocator_shim {
 
@@ -211,74 +211,6 @@ void MallocZoneTryFreeDefault(malloc_zone_t* zone, void* ptr) {
 malloc_introspection_t g_mac_malloc_introspection{};
 malloc_zone_t g_mac_malloc_zone{};
 
-malloc_zone_t* GetDefaultMallocZone() {
-  // malloc_default_zone() does not return... the default zone, but the initial
-  // one. The default one is the first element of the default zone array.
-  unsigned int zone_count = 0;
-  vm_address_t* zones = nullptr;
-  kern_return_t result =
-      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  PA_MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
-  return reinterpret_cast<malloc_zone_t*>(zones[0]);
-}
-
-bool IsAlreadyRegistered() {
-  // HACK: This should really only be called once, but it is not.
-  //
-  // This function is a static constructor of its binary. If it is included in a
-  // dynamic library, then the same process may end up executing this code
-  // multiple times, once per library. As a consequence, each new library will
-  // add its own allocator as the default zone. Aside from splitting the heap
-  // further, the main issue arises if/when the last library to be loaded
-  // (dlopen()-ed) gets dlclose()-ed.
-  //
-  // See crbug.com/1271139 for details.
-  //
-  // In this case, subsequent free() will be routed by libmalloc to the deleted
-  // zone (since its code has been unloaded from memory), and crash inside
-  // libsystem's free(). This in practice happens as soon as dlclose() is
-  // called, inside the dynamic linker (dyld).
-  //
-  // Since we are talking about different library, and issues inside the dynamic
-  // linker, we cannot use a global static variable (which would be
-  // per-library), or anything from pthread.
-  //
-  // The solution used here is to check whether the current default zone is
-  // already ours, in which case we are not the first dynamic library here, and
-  // should do nothing. This is racy, and hacky.
-  vm_address_t* zones = nullptr;
-  unsigned int zone_count = 0;
-  // *Not* using malloc_default_zone(), as it seems to be hardcoded to return
-  // something else than the default zone. See the difference between
-  // malloc_default_zone() and inline_malloc_default_zone() in Apple's malloc.c
-  // (in libmalloc).
-  kern_return_t result =
-      malloc_get_all_zones(mach_task_self(), nullptr, &zones, &zone_count);
-  PA_MACH_CHECK(result == KERN_SUCCESS, result) << "malloc_get_all_zones";
-  // Checking all the zones, in case someone registered their own zone on top of
-  // our own.
-  for (unsigned int i = 0; i < zone_count; i++) {
-    malloc_zone_t* zone = reinterpret_cast<malloc_zone_t*>(zones[i]);
-
-    // strcmp() and not a pointer comparison, as the zone was registered from
-    // another library, the pointers don't match.
-    if (zone->zone_name &&
-        (strcmp(zone->zone_name, kPartitionAllocZoneName) == 0)) {
-      // This zone is provided by PartitionAlloc, so this function has been
-      // called from another library (or the main executable), nothing to do.
-      //
-      // This should be a crash, ideally, but callers do it, so only warn, for
-      // now.
-      PA_RAW_LOG(ERROR,
-                 "Trying to load the allocator multiple times. This is *not* "
-                 "supported.");
-      return true;
-    }
-  }
-
-  return false;
-}
-
 void InitializeZone() {
   g_mac_malloc_introspection.enumerator = MallocIntrospectionEnumerator;
   g_mac_malloc_introspection.good_size = MallocIntrospectionGoodSize;
@@ -311,7 +243,7 @@ void InitializeZone() {
   //   version >= 12: introspect.task_statistics is supported
   //   version >= 13: try_free_default is supported
   g_mac_malloc_zone.version = kZoneVersion;
-  g_mac_malloc_zone.zone_name = kPartitionAllocZoneName;
+  g_mac_malloc_zone.zone_name = kPartitionAllocZoneName.data();
   g_mac_malloc_zone.introspect = &g_mac_malloc_introspection;
   g_mac_malloc_zone.size = MallocZoneSize;
   g_mac_malloc_zone.malloc = MallocZoneMalloc;
@@ -357,7 +289,33 @@ static std::atomic<bool> g_initialization_is_done;
 // receives an address allocated by the system allocator.
 __attribute__((constructor(0))) void
 InitializeDefaultMallocZoneWithPartitionAlloc() {
-  if (IsAlreadyRegistered()) {
+  // HACK: This should really only be called once, but it is not.
+  //
+  // This function is a static constructor of its binary. If it is included in a
+  // dynamic library, then the same process may end up executing this code
+  // multiple times, once per library. As a consequence, each new library will
+  // add its own allocator as the default zone. Aside from splitting the heap
+  // further, the main issue arises if/when the last library to be loaded
+  // (dlopen()-ed) gets dlclose()-ed.
+  //
+  // See crbug.com/1271139 for details.
+  //
+  // In this case, subsequent free() will be routed by libmalloc to the deleted
+  // zone (since its code has been unloaded from memory), and crash inside
+  // libsystem's free(). This in practice happens as soon as dlclose() is
+  // called, inside the dynamic linker (dyld).
+  //
+  // Since we are talking about different library, and issues inside the dynamic
+  // linker, we cannot use a global static variable (which would be
+  // per-library), or anything from pthread.
+  //
+  // The solution used here is to check whether the current default zone is
+  // already ours, in which case we are not the first dynamic library here, and
+  // should do nothing. This is racy, and hacky.
+  if (IsZoneAlreadyRegistered(kPartitionAllocZoneName)) {
+    PA_RAW_LOG(ERROR,
+               "Trying to load the allocator multiple times. This is *not* "
+               "supported.");
     return;
   }
 
@@ -373,8 +331,8 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   // Create our own malloc zone.
   InitializeZone();
 
-  malloc_zone_t* system_default_zone = GetDefaultMallocZone();
-  if (strcmp(system_default_zone->zone_name, kDelegatingZoneName) == 0) {
+  malloc_zone_t* system_default_zone = GetDefaultMallocZoneOrDie();
+  if (system_default_zone->zone_name == kDelegatingZoneName) {
     // The first zone is our zone, we can unregister it, replacing it with the
     // new one. This relies on a precise zone setup, done in
     // |EarlyMallocZoneRegistration()|.
@@ -404,7 +362,7 @@ InitializeDefaultMallocZoneWithPartitionAlloc() {
   malloc_zone_register(system_default_zone);
 
   // Confirm that our own zone is now the default zone.
-  PA_CHECK(GetDefaultMallocZone() == &g_mac_malloc_zone);
+  PA_CHECK(GetDefaultMallocZoneOrDie() == &g_mac_malloc_zone);
   g_initialization_is_done.store(true, std::memory_order_release);
 }
 
