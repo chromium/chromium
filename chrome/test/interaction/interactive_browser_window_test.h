@@ -418,6 +418,11 @@ class InteractiveBrowserWindowTestApi
   [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
                                            const DeepQuery& where);
 
+  // Waits for the element to render and then scrolls it into view.
+  [[nodiscard]] MultiStep WaitForAndScrollToElement(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where);
+
   // Waits until the intersection of the element's bounds and the window bounds
   // are nonempty.
   [[nodiscard]] MultiStep WaitForElementVisible(

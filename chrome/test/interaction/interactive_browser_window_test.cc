@@ -787,6 +787,16 @@ InteractiveBrowserWindowTestApi::ScrollIntoView(
 }
 
 InteractiveBrowserWindowTestApi::MultiStep
+InteractiveBrowserWindowTestApi::WaitForAndScrollToElement(
+    ui::ElementIdentifier web_contents,
+    const DeepQuery& where) {
+  auto steps = Steps(WaitForElementVisible(web_contents, where),
+                     ScrollIntoView(web_contents, where));
+  AddDescriptionPrefix(steps, __func__);
+  return steps;
+}
+
+InteractiveBrowserWindowTestApi::MultiStep
 InteractiveBrowserWindowTestApi::WaitForElementVisible(
     ui::ElementIdentifier web_contents,
     const DeepQuery& where) {
