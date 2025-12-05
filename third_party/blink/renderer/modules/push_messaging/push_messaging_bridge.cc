@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_bridge.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/webcodecs/webcodecs_logger.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 
 namespace blink {

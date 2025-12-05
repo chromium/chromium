@@ -15,7 +15,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
-#include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/gpu_command_buffer_client_export.h"
 #include "gpu/command_buffer/client/internal/mappable_buffer.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -29,6 +28,10 @@
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer_handle.h"
+
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
 
 namespace base::trace_event {
 class ProcessMemoryDump;

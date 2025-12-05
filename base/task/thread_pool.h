@@ -16,7 +16,6 @@
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/post_task_and_reply_with_result_internal.h"
-#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_runner.h"
@@ -26,6 +25,8 @@
 #include "build/build_config.h"
 
 namespace base {
+
+class SequencedTaskRunner;
 
 // This is the interface to post tasks to base's thread pool.
 //

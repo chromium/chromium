@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/html/html_source_element.h"
 
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_list.h"

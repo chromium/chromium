@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "media/audio/audio_manager.h"
 #include "remoting/host/chromeos/audio_helper_chromeos.h"

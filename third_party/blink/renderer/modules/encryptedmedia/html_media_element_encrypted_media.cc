@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/eme_constants.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"

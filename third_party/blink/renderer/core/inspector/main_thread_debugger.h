@@ -33,6 +33,7 @@
 
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/inspector/thread_debugger_common_impl.h"

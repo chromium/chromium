@@ -37,6 +37,7 @@
 #include <utility>
 
 #include "base/numerics/checked_math.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/logging_override_if_enabled.h"
 #include "media/base/stream_parser_buffer.h"
 #include "partition_alloc/partition_alloc.h"
