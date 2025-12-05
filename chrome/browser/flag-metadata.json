@@ -9410,6 +9410,14 @@
     "expiry_milestone": 170
   },
   {
+    "name": "shimless-rma-hide-google-sku",
+    "owners": [
+      "jeffulin@google.com",
+      "cros-shimless-tpe-eng@google.com"
+    ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "shimless-rma-hw-validation-skip",
     "owners": [
       "jeffulin@google.com",

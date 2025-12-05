@@ -1869,6 +1869,10 @@ BASE_FEATURE(kShimlessRMADynamicDeviceInfoInputs,
 BASE_FEATURE(kShimlessRMAFlexibleSerialNumberName,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables or disables the option to hide Google SKU on the device information
+// page.
+BASE_FEATURE(kShimlessRMAHideGoogleSKU, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, system shortcuts will utilize state machiens instead of
 // keeping track of entire history of keys pressed.
 BASE_FEATURE(kShortcutStateMachines, base::FEATURE_ENABLED_BY_DEFAULT);
@@ -3358,6 +3362,10 @@ bool IsShimlessRMADynamicDeviceInfoInputsEnabled() {
 
 bool IsShimlessRMAFlexibleSerialNumberNameEnabled() {
   return base::FeatureList::IsEnabled(kShimlessRMAFlexibleSerialNumberName);
+}
+
+bool IsShimlessRMAHideGoogleSKUEnabled() {
+  return base::FeatureList::IsEnabled(kShimlessRMAHideGoogleSKU);
 }
 
 bool IsShowSharingUserInLauncherContinueSectionEnabled() {

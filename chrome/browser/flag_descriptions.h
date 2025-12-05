@@ -7711,6 +7711,11 @@ inline constexpr char kShimlessRMAFlexibleSerialNumberNameName[] =
 inline constexpr char kShimlessRMAFlexibleSerialNumberNameDescription[] =
     "Turns on Customized Serial Number Namings in Shimless RMA";
 
+inline constexpr char kShimlessRMAHideGoogleSKUName[] =
+    "Hide Google SKU in Shimless RMA";
+inline constexpr char kShimlessRMAHideGoogleSKUDescription[] =
+    "Turns on hide Google SKU in Shimless RMA";
+
 inline constexpr char kSchedulerConfigurationName[] = "Scheduler Configuration";
 inline constexpr char kSchedulerConfigurationDescription[] =
     "Instructs the OS to use a specific scheduler configuration setting.";

@@ -14416,6 +14416,7 @@ from previous Chrome versions.
   <int value="62808713" label="TemplateUrlReconciliation:disabled"/>
   <int value="63187126" label="DownloadsAutoResumptionNative:enabled"/>
   <int value="63693157" label="cast-streaming-force-disable-hardware-h264"/>
+  <int value="63801483" label="ShimlessRMAHideGoogleSKU:disabled"/>
   <int value="64016368" label="SafeBrowsingSeparateNetworkContexts:enabled"/>
   <int value="64404303" label="HubBackButton:disabled"/>
   <int value="64547625" label="ScanningAppJelly:disabled"/>
@@ -17230,6 +17231,7 @@ from previous Chrome versions.
   <int value="1051252858" label="ClearIdentityInCanMakePaymentEvent:enabled"/>
   <int value="1051797561" label="OngoingProcesses:enabled"/>
   <int value="1051962433" label="AutoPictureInPictureAndroid:disabled"/>
+  <int value="1052395429" label="ShimlessRMAHideGoogleSKU:enabled"/>
   <int value="1052550677"
       label="BlockRootWindowAccessibleNameChangeEvent:enabled"/>
   <int value="1053593250" label="UnicornChromeActivityReporting:enabled"/>
