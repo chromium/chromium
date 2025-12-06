@@ -199,7 +199,7 @@ public class WebappIntentDataProvider extends BrowserServicesIntentDataProvider 
             // forcefully installed via app menu. In this case display mode should resolve to the
             // first supported display mode in the "fullscreen -> standalone -> minimal-ui ->
             // browser" fallback chain.
-            if (WebAppHeaderUtils.isMinimalUiFlagEnabled()) {
+            if (WebAppHeaderUtils.isMinimalUiEnabled()) {
                 return DisplayMode.MINIMAL_UI;
             } else {
                 return DisplayMode.STANDALONE;

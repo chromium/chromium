@@ -39,12 +39,10 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
@@ -219,7 +217,6 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testDesktopWindowingModeMinUi_SetBrowserDefaultTheme() {
         // prepare web app in desktop windowing
@@ -246,7 +243,6 @@ public class CustomTabToolbarColorControllerUnitTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public void testFullscreenModeMinUi_SetThemeFromProvider() {
         // prepare a web app in min ui mode

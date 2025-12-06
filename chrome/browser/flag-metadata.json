@@ -3020,14 +3020,6 @@
     "expiry_milestone": 155
   },
   {
-    "name": "enable-android-mininal-ui-large-screen",
-    "owners": [
-      "vkorotkevich@google.com",
-      "lt-web-apps-team@google.com"
-    ],
-    "expiry_milestone": 145
-  },
-  {
     "name": "enable-android-new-media-picker",
     "owners": [ "edcourtney@chromium.org", "lt-web-apps-team@google.com" ],
     "expiry_milestone": 150

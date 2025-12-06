@@ -1860,7 +1860,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (displayMode instanceof TrustedWebActivityDisplayMode.BrowserMode) {
             return !isDisplayOverride;
         }
-        if (WebAppHeaderUtils.isMinimalUiFlagEnabled()
+        if (WebAppHeaderUtils.isMinimalUiEnabled()
                 && displayMode instanceof TrustedWebActivityDisplayMode.MinimalUiMode) {
             return true;
         }
@@ -1905,7 +1905,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         boolean shouldUseMinimalUi =
                 displayMode instanceof TrustedWebActivityDisplayMode.MinimalUiMode
                         || displayMode instanceof TrustedWebActivityDisplayMode.BrowserMode;
-        if (WebAppHeaderUtils.isMinimalUiFlagEnabled() && shouldUseMinimalUi) {
+        if (WebAppHeaderUtils.isMinimalUiEnabled() && shouldUseMinimalUi) {
             return DisplayMode.MINIMAL_UI;
         }
 

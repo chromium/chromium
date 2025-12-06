@@ -5004,12 +5004,6 @@ inline constexpr char kAndroidMediaInsertionName[] =
 inline constexpr char kAndroidMediaInsertionDescription[] =
     "Enables IMEs to insert media content such as images, gifs and stickers.";
 
-inline constexpr char kAndroidMinimalUiLargeScreenName[] =
-    "Enable new minimal ui in desktop windowing";
-inline constexpr char kAndroidMinimalUiLargeScreenDescription[] =
-    "Display new minimal ui for PWAs on devices that support "
-    "desktop windowing.";
-
 inline constexpr char kAndroidNewMediaPickerName[] =
     "Enable new media capture picker on Android";
 inline constexpr char kAndroidNewMediaPickerDescription[] =

@@ -93,12 +93,11 @@ public class WebAppHeaderUtils {
     private WebAppHeaderUtils() {}
 
     /**
-     * Checks whether minimal ui for large screens is enabled. This includes checking feature flag
-     * and type of web app that's running right now.
+     * Checks whether minimal ui for large screens is enabled. This checks the type of web app
+     * that's running right now.
      *
      * @param intentDataProvider contains intent data related to the current browser service.
-     * @return true when minimal ui flag is enabled and currently running a web app, otherwise
-     *     false.
+     * @return true when currently running a web app, otherwise false.
      */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
     public static boolean isMinimalUiEnabled(BrowserServicesIntentDataProvider intentDataProvider) {
@@ -106,7 +105,7 @@ public class WebAppHeaderUtils {
 
         boolean isTrustedWebApp =
                 intentDataProvider.isWebApkActivity() || intentDataProvider.isTrustedWebActivity();
-        return isTrustedWebApp && displayMode == DisplayMode.MINIMAL_UI && isMinimalUiFlagEnabled();
+        return isTrustedWebApp && displayMode == DisplayMode.MINIMAL_UI && isMinimalUiEnabled();
     }
 
     /**
@@ -127,14 +126,13 @@ public class WebAppHeaderUtils {
     }
 
     /**
-     * Checks whether minimal ui feature flag is enabled on Android 15+ SDK.
+     * Checks whether minimal ui is enabled for Android 15+ SDK.
      *
-     * @return true if flag is enabled and running on SDK >= 35, false otherwise.
+     * @return true if running on SDK >= 35, false otherwise.
      */
     @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    public static boolean isMinimalUiFlagEnabled() {
-        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                && ChromeFeatureList.sAndroidMinimalUiLargeScreen.isEnabled();
+    public static boolean isMinimalUiEnabled() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM;
     }
 
     /**

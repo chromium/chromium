@@ -79,7 +79,6 @@ import java.util.Locale;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-@EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
 public class WebAppHeaderLayoutCoordinatorTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;

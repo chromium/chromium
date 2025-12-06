@@ -197,7 +197,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testWebAppEnterDW_HideMenuButton() {
         // Setup web app in fullscreen mode.
         when(env.intentDataProvider.getActivityType())
@@ -238,7 +237,6 @@ public class CustomTabToolbarCoordinatorUnitTest {
 
     @Test
     @Config(sdk = Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({ChromeFeatureList.ANDROID_MINIMAL_UI_LARGE_SCREEN})
     public void testWebAppExitDW_ShowMenuButton() {
         // Setup web app in desktop windowing mode.
         when(env.intentDataProvider.getActivityType())
