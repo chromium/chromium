@@ -2532,7 +2532,7 @@
             ]
         }
     ],
-    "AutofillEnableCvcStorageIOS": [
+    "AutofillEnableCvcStorage": [
         {
             "platforms": [
                 "ios"
