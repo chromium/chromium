@@ -62,7 +62,7 @@ class CONTENT_EXPORT AuctionDownloader {
   // Passes in nullptr on failure. Always invoked asynchronously. Will not be
   // invoked after the AuctionDownloader is destroyed.
   using AuctionDownloaderCallback =
-      base::OnceCallback<void(std::unique_ptr<std::string> response_body,
+      base::OnceCallback<void(std::optional<std::string> response_body,
                               scoped_refptr<net::HttpResponseHeaders> headers,
                               std::optional<std::string> error)>;
 
@@ -209,7 +209,7 @@ class CONTENT_EXPORT AuctionDownloader {
 
   void OnHeadersOnlyReceived(scoped_refptr<net::HttpResponseHeaders> headers);
 
-  void OnBodyReceived(std::unique_ptr<std::string> body);
+  void OnBodyReceived(std::optional<std::string> body);
 
   void OnRedirect(const GURL& url_before_redirect,
                   const net::RedirectInfo& redirect_info,
@@ -232,7 +232,7 @@ class CONTENT_EXPORT AuctionDownloader {
   // alive.
   static void OnRevalidatedBodyReceived(
       std::unique_ptr<network::SimpleURLLoader> simple_url_loader,
-      std::unique_ptr<std::string> body) {}
+      std::optional<std::string> body) {}
 
   const raw_ref<network::mojom::URLLoaderFactory> url_loader_factory_;
   const GURL source_url_;

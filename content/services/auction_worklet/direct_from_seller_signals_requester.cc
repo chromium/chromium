@@ -151,7 +151,7 @@ DirectFromSellerSignalsRequester::Result::ResponseString::~ResponseString() =
 
 DirectFromSellerSignalsRequester::Result::Result(
     GURL signals_url,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error)
     : signals_url_(std::move(signals_url)) {
@@ -164,7 +164,7 @@ DirectFromSellerSignalsRequester::Result::Result(
     response_or_error_ = ErrorString(std::move(*error));
   } else {
     response_or_error_ =
-        base::MakeRefCounted<ResponseString>(std::move(*response_body));
+        base::MakeRefCounted<ResponseString>(std::move(response_body).value());
   }
 }
 
@@ -286,7 +286,7 @@ DirectFromSellerSignalsRequester::CoalescedDownload::operator=(
 void DirectFromSellerSignalsRequester::OnSignalsDownloaded(
     GURL signals_url,
     base::TimeTicks start_time,
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error) {
   if (response_body) {

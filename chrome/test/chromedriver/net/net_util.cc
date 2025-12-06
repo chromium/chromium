@@ -5,6 +5,9 @@
 #include "chrome/test/chromedriver/net/net_util.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
@@ -69,14 +72,14 @@ class SyncUrlFetcher {
                                             base::Unretained(this)));
   }
 
-  void OnURLLoadComplete(std::unique_ptr<std::string> response_body) {
+  void OnURLLoadComplete(std::optional<std::string> response_body) {
     int response_code = -1;
     if (loader_->ResponseInfo() && loader_->ResponseInfo()->headers)
       response_code = loader_->ResponseInfo()->headers->response_code();
 
     success_ = response_code == 200 && response_body;
     if (success_)
-      *response_ = std::move(*response_body);
+      *response_ = std::move(response_body).value();
     loader_.reset();
     event_.Signal();
   }

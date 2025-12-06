@@ -420,11 +420,11 @@ void AuctionDownloader::OnHeadersOnlyReceived(
   // code with the actually-downloading path.
   // (It will get the headers out of SimpleUrlLoader)
   OnBodyReceived(headers && simple_url_loader_->NetError() == net::OK
-                     ? std::make_unique<std::string>()
-                     : nullptr);
+                     ? std::make_optional(std::string())
+                     : std::nullopt);
 }
 
-void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
+void AuctionDownloader::OnBodyReceived(std::optional<std::string> body) {
   DCHECK(auction_downloader_callback_);
 
   auto simple_url_loader = std::move(simple_url_loader_);
@@ -499,7 +499,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
   // so it's done at the same time.
   if (!MimeTypeIsConsistent(mime_type_, *simple_url_loader->ResponseInfo())) {
     std::move(auction_downloader_callback_)
-        .Run(/*body=*/nullptr, /*headers=*/nullptr,
+        .Run(/*body=*/std::nullopt, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected MIME type.",
                  source_url_.spec().c_str()));
@@ -508,7 +508,7 @@ void AuctionDownloader::OnBodyReceived(std::unique_ptr<std::string> body) {
              !IsAllowedCharset(simple_url_loader->ResponseInfo()->charset,
                                *body)) {
     std::move(auction_downloader_callback_)
-        .Run(/*body=*/nullptr, /*headers=*/nullptr,
+        .Run(/*body=*/std::nullopt, /*headers=*/nullptr,
              base::StringPrintf(
                  "Rejecting load of %s due to unexpected charset.",
                  source_url_.spec().c_str()));
@@ -717,7 +717,7 @@ void AuctionDownloader::FailRequest(network::URLLoaderCompletionStatus status,
     network_events_delegate_->OnNetworkRequestComplete(std::move(status));
   }
   std::move(auction_downloader_callback_)
-      .Run(/*body=*/nullptr, /*headers=*/nullptr, std::move(error_string));
+      .Run(/*body=*/std::nullopt, /*headers=*/nullptr, std::move(error_string));
 }
 
 void AuctionDownloader::TraceResult(bool failure,

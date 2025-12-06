@@ -260,7 +260,7 @@ class CONTENT_EXPORT TrustedSignalsFetcher {
       std::string plaintext_request_body,
       Callback callback);
 
-  void OnRequestComplete(std::unique_ptr<std::string> response_body,
+  void OnRequestComplete(std::optional<std::string> response_body,
                          scoped_refptr<net::HttpResponseHeaders> headers,
                          std::optional<std::string> error);
 

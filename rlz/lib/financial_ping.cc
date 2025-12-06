@@ -15,6 +15,8 @@
 
 #include <atomic>
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
@@ -196,18 +198,14 @@ class RefCountedWaitableEvent
 // RefCountedWaitableEvent when the load completes.
 void OnURLLoadComplete(std::unique_ptr<network::SimpleURLLoader> url_loader,
                        scoped_refptr<RefCountedWaitableEvent> event,
-                       std::unique_ptr<std::string> response_body) {
+                       std::optional<std::string> response_body) {
   int response_code = -1;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
     response_code = url_loader->ResponseInfo()->headers->response_code();
   }
 
-  std::string response;
-  if (response_body) {
-    response = std::move(*response_body);
-  }
-
-  event->SignalFetchComplete(response_code, std::move(response));
+  event->SignalFetchComplete(response_code,
+                             std::move(response_body).value_or(""));
 }
 
 bool send_financial_ping_interrupted_for_test = false;

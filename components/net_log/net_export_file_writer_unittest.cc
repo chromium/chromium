@@ -9,6 +9,7 @@
 #include <array>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -782,7 +783,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
       url_loader_factory.get(),
       base::BindOnce(
           [](base::OnceClosure quit_closure,
-             std::unique_ptr<std::string> response_body) {
+             std::optional<std::string> response_body) {
             std::move(quit_closure).Run();
           },
           run_loop2.QuitClosure()));

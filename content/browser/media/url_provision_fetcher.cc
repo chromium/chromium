@@ -4,6 +4,10 @@
 
 #include "content/browser/media/url_provision_fetcher.h"
 
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/browser/provision_fetcher_factory.h"
@@ -106,7 +110,7 @@ void URLProvisionFetcher::Retrieve(
 }
 
 void URLProvisionFetcher::OnSimpleLoaderComplete(
-    std::unique_ptr<std::string> response_body) {
+    std::optional<std::string> response_body) {
   bool success = false;
   int response_code = simple_url_loader_->NetError();
   std::string response;
@@ -122,7 +126,7 @@ void URLProvisionFetcher::OnSimpleLoaderComplete(
 
   if (response_body) {
     success = true;
-    response = std::move(*response_body);
+    response = std::move(response_body).value();
   } else {
     DVLOG(1) << "CDM provision: server returned error code " << response_code;
   }

@@ -125,7 +125,7 @@ WorkletLoaderBase::WorkletLoaderBase(
 WorkletLoaderBase::~WorkletLoaderBase() = default;
 
 void WorkletLoaderBase::OnDownloadComplete(
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error_msg) {
   DCHECK(load_worklet_callback_);
@@ -167,7 +167,7 @@ void WorkletLoaderBase::OnDownloadComplete(
         FROM_HERE,
         base::BindOnce(&WorkletLoaderBase::HandleDownloadResultOnV8Thread,
                        source_url_, mime_type_, v8_helpers_[i], debug_ids_[i],
-                       std::make_unique<std::string>(*body_), error_msg_,
+                       body_, error_msg_,
                        /*cached_data_to_use=*/std::nullopt,
                        pending_results_[i].state_.get(),
                        base::SequencedTaskRunner::GetCurrentDefault(),
@@ -181,7 +181,7 @@ void WorkletLoaderBase::HandleDownloadResultOnV8Thread(
     AuctionDownloader::MimeType mime_type,
     scoped_refptr<AuctionV8Helper> v8_helper,
     scoped_refptr<AuctionV8Helper::DebugId> debug_id,
-    std::unique_ptr<std::string> body,
+    std::optional<std::string> body,
     std::optional<std::string> error_msg,
     const std::optional<scoped_refptr<base::RefCountedBytes>>
         cached_data_to_use,
@@ -325,8 +325,8 @@ void WorkletLoaderBase::DeliverCallbackOnUserThread(
           FROM_HERE,
           base::BindOnce(&WorkletLoaderBase::HandleDownloadResultOnV8Thread,
                          source_url_, mime_type_, v8_helpers_[i], debug_ids_[i],
-                         std::make_unique<std::string>(*body_), error_msg_,
-                         cached_data, pending_results_[i].state_.get(),
+                         body_, error_msg_, cached_data,
+                         pending_results_[i].state_.get(),
                          base::SequencedTaskRunner::GetCurrentDefault(),
                          weak_ptr_factory_.GetWeakPtr()));
     }

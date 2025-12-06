@@ -543,7 +543,7 @@ void TrustedSignalsFetcher::EncryptRequestBodyAndStart(
 }
 
 void TrustedSignalsFetcher::OnRequestComplete(
-    std::unique_ptr<std::string> response_body,
+    std::optional<std::string> response_body,
     scoped_refptr<net::HttpResponseHeaders> headers,
     std::optional<std::string> error) {
   // `auction_downloader_` is no longer needed.
@@ -561,7 +561,8 @@ void TrustedSignalsFetcher::OnRequestComplete(
   if (response_body->size() > 0u) {
     auto maybe_plaintext_response_body =
         quiche::ObliviousHttpResponse::CreateClientObliviousResponse(
-            std::move(*response_body), *ohttp_context_, kResponseMediaType);
+            std::move(response_body).value(), *ohttp_context_,
+            kResponseMediaType);
     // `ohttp_context_` is no longer needed.
     ohttp_context_.reset();
 
