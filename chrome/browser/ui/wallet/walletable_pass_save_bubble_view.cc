@@ -90,9 +90,7 @@ WalletablePassSaveBubbleView::GetAttributesView() {
                           return GetTransitTicketAttributesView(transit_ticket);
                         },
                         [&](const BoardingPass& boarding_pass) {
-                          // TODO(crbug.com/464993127): Implement BoardingPass
-                          // UI.
-                          return std::make_unique<views::BoxLayoutView>();
+                          return GetBoardingPassAttributesView(boarding_pass);
                         }),
                     controller_->pass().pass_data);
 }
@@ -179,6 +177,41 @@ WalletablePassSaveBubbleView::GetTransitTicketAttributesView(
   return container;
 }
 
+std::unique_ptr<views::BoxLayoutView>
+WalletablePassSaveBubbleView::GetBoardingPassAttributesView(
+    const BoardingPass& boarding_pass) {
+  std::unique_ptr<views::BoxLayoutView> container = GetAttributesContainer();
+
+  if (!boarding_pass.airline.empty()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_AIRLINE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(boarding_pass.airline)));
+  }
+  if (!boarding_pass.flight_code.empty()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_FLIGHT_CODE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(boarding_pass.flight_code)));
+  }
+  if (!boarding_pass.origin.empty() && !boarding_pass.destination.empty()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_TRIP_ATTRIBUTE_NAME),
+        l10n_util::GetStringFUTF16(
+            IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_TRIP_VALUE,
+            base::UTF8ToUTF16(boarding_pass.origin),
+            base::UTF8ToUTF16(boarding_pass.destination))));
+  }
+  if (!boarding_pass.date.empty()) {
+    container->AddChildView(autofill::CreateAutofillAiBubbleAttributeRow(
+        l10n_util::GetStringUTF16(
+            IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_DATE_ATTRIBUTE_NAME),
+        base::UTF8ToUTF16(boarding_pass.date)));
+  }
+  return container;
+}
+
 void WalletablePassSaveBubbleView::AddedToWidget() {
   // Set header view
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
@@ -234,8 +267,7 @@ int WalletablePassSaveBubbleView::GetDialogTitleResourceId() const {
             return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
           },
           [](const BoardingPass& boarding_pass) -> int {
-            // TODO(crbug.com/464993127): Implement BoardingPass UI.
-            return IDS_WALLET_WALLETABLE_PASS_SAVE_TRANSPORT_TICKET_DIALOG_TITLE;
+            return IDS_WALLET_WALLETABLE_PASS_SAVE_BOARDING_PASS_DIALOG_TITLE;
           }),
       controller_->pass().pass_data);
 }

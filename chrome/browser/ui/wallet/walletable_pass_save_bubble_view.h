@@ -23,6 +23,7 @@ namespace wallet {
 struct LoyaltyCard;
 struct EventPass;
 struct TransitTicket;
+struct BoardingPass;
 
 class WalletablePassSaveBubbleController;
 
@@ -54,6 +55,9 @@ class WalletablePassSaveBubbleView : public WalletablePassBubbleViewBase {
 
   std::unique_ptr<views::BoxLayoutView> GetTransitTicketAttributesView(
       const TransitTicket& transit_ticket);
+
+  std::unique_ptr<views::BoxLayoutView> GetBoardingPassAttributesView(
+      const BoardingPass& boarding_pass);
 
   int GetDialogTitleResourceId() const;
 

@@ -162,6 +162,20 @@ IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, TransitTicket) {
   ShowAndVerifyUi();
 }
 
+IN_PROC_BROWSER_TEST_P(WalletablePassSaveBubbleViewBrowserTest, BoardingPass) {
+  wallet::WalletablePass pass;
+  wallet::BoardingPass boarding_pass;
+  boarding_pass.airline = "United Airlines";
+  boarding_pass.flight_code = "UA123";
+  boarding_pass.origin = "SFO";
+  boarding_pass.destination = "JFK";
+  boarding_pass.date = "2025-12-25";
+  pass.pass_data = std::move(boarding_pass);
+
+  mock_controller()->SetUpAndShowSaveBubble(pass, base::DoNothing());
+  ShowAndVerifyUi();
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     WalletablePassSaveBubbleViewBrowserTest,

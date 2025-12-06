@@ -39,6 +39,10 @@
     Save transport ticket to Wallet
   </message>
 
+  <message name="IDS_WALLET_WALLETABLE_PASS_SAVE_BOARDING_PASS_DIALOG_TITLE" desc="Title text of the save boarding pass dialog.">
+    Save boarding pass to Wallet
+  </message>
+
   <message name="IDS_WALLET_WALLETABLE_PASS_GOOGLE_WALLET_TITLE" desc="The name of the Google Wallet product.">
     Google Wallet
   </message>
@@ -92,6 +96,26 @@
   </message>
 
   <message name="IDS_WALLET_WALLETABLE_PASS_TRANSPORT_TICKET_DATE_ATTRIBUTE_NAME" desc="Label for the date attribute of a transport ticket.">
+    Date
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_AIRLINE_ATTRIBUTE_NAME" desc="Label for the airline attribute of a boarding pass.">
+    Airline
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_FLIGHT_CODE_ATTRIBUTE_NAME" desc="Label for the flight code attribute of a boarding pass.">
+    Flight
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_TRIP_ATTRIBUTE_NAME" desc="Label for the trip attribute of a boarding pass.">
+    Trip
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_TRIP_VALUE" desc="The value of the trip attribute for a boarding pass, showing origin and destination.">
+    <ph name="ORIGIN">$1<ex>London</ex></ph> - <ph name="DESTINATION">$2<ex>Paris</ex></ph>
+  </message>
+
+  <message name="IDS_WALLET_WALLETABLE_PASS_BOARDING_PASS_DATE_ATTRIBUTE_NAME" desc="Label for the date attribute of a boarding pass.">
     Date
   </message>
 </grit-part>
