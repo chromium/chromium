@@ -57,6 +57,10 @@ extern const char kAskGeminiChipUseSnackbar[];
 bool IsAskGeminiChipPrepopulateFloatyEnabled();
 extern const char kAskGeminiChipPrepopulateFloaty[];
 
+// A variation that combines `kAskGeminiChipIgnoreCriteria` and
+// `kAskGeminiChipPrepopulateFloaty`.
+extern const char kAskGeminiChipPrepopulateAndIgnoreCriteria[];
+
 // Returns true if the Ask Gemini chip should allow non-consented users.
 bool IsAskGeminiChipAllowNonconsentedUsersEnabled();
 extern const char kAskGeminiChipAllowNonconsentedUsers[];

@@ -1327,6 +1327,10 @@ const FeatureEntry::FeatureParam kAskGeminiChipPrepopulateFloatyVariation[] = {
     {kAskGeminiChipPrepopulateFloaty, "true"},
 };
 const FeatureEntry::FeatureParam
+    kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation[] = {
+        {kAskGeminiChipPrepopulateAndIgnoreCriteria, "true"},
+};
+const FeatureEntry::FeatureParam
     kAskGeminiChipAllowNonconsentedUsersVariation[] = {
         {kAskGeminiChipAllowNonconsentedUsers, "true"},
 };
@@ -1337,6 +1341,9 @@ const FeatureEntry::FeatureVariation kAskGeminiChipVariations[] = {
      std::size(kAskGeminiChipIgnoreCriteriaVariation), nullptr},
     {"Prepopulate Floaty", kAskGeminiChipPrepopulateFloatyVariation,
      std::size(kAskGeminiChipPrepopulateFloatyVariation), nullptr},
+    {"Prepopulate Floaty and Ignore Criteria",
+     kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation,
+     std::size(kAskGeminiChipPrepopulateAndIgnoreCriteriaVariation), nullptr},
     {"Allow non-consented users", kAskGeminiChipAllowNonconsentedUsersVariation,
      std::size(kAskGeminiChipAllowNonconsentedUsersVariation), nullptr},
 };

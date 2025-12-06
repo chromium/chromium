@@ -51,6 +51,9 @@ const char kAskGeminiChipIgnoreCriteria[] = "AskGeminiChipIgnoreCriteria";
 
 const char kAskGeminiChipPrepopulateFloaty[] = "AskGeminiChipPrepopulateFloaty";
 
+const char kAskGeminiChipPrepopulateAndIgnoreCriteria[] =
+    "AskGeminiChipPrepopulateAndIgnoreCriteria";
+
 const char kAskGeminiChipAllowNonconsentedUsers[] =
     "AskGeminiChipAllowNonconsentedUsers";
 
@@ -59,6 +62,10 @@ bool IsAskGeminiChipEnabled() {
 }
 
 bool IsAskGeminiChipIgnoreCriteria() {
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kAskGeminiChip, kAskGeminiChipPrepopulateAndIgnoreCriteria, false)) {
+    return true;
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
       kAskGeminiChip, kAskGeminiChipIgnoreCriteria, false);
 }
@@ -69,6 +76,10 @@ bool IsAskGeminiSnackbarEnabled() {
 }
 
 bool IsAskGeminiChipPrepopulateFloatyEnabled() {
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kAskGeminiChip, kAskGeminiChipPrepopulateAndIgnoreCriteria, false)) {
+    return true;
+  }
   return base::GetFieldTrialParamByFeatureAsBool(
       kAskGeminiChip, kAskGeminiChipPrepopulateFloaty, false);
 }
