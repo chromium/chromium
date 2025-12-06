@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
@@ -55,6 +56,11 @@ void DefaultBrowserHandler::RegisterMessages() {
       base::BindRepeating(&DefaultBrowserHandler::RequestDefaultBrowserState,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "requestUserValueStringsFeatureState",
+      base::BindRepeating(
+          &DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "setAsDefaultBrowser",
       base::BindRepeating(&DefaultBrowserHandler::SetAsDefaultBrowser,
                           base::Unretained(this)));
@@ -88,6 +94,17 @@ void DefaultBrowserHandler::RequestDefaultBrowserState(
                      weak_ptr_factory_.GetWeakPtr(), callback_id));
 }
 
+void DefaultBrowserHandler::HandleRequestUserValueStringsFeatureState(
+    const base::Value::List& args) {
+  AllowJavascript();
+
+  CHECK_EQ(args.size(), 1U);
+  auto& callback_id = args[0].GetString();
+
+  bool is_enabled =
+      base::FeatureList::IsEnabled(features::kUserValueDefaultBrowserStrings);
+  ResolveJavascriptCallback(callback_id, base::Value(is_enabled));
+}
 void DefaultBrowserHandler::SetAsDefaultBrowser(const base::Value::List& args) {
   CHECK(!DefaultBrowserIsDisabledByPolicy());
   AllowJavascript();

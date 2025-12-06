@@ -713,22 +713,15 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
 
 #if !BUILDFLAG(IS_CHROMEOS)
 void AddDefaultBrowserStrings(content::WebUIDataSource* html_source) {
-  html_source->AddString(
-      "defaultBrowserDefault",
-      base::FeatureList::IsEnabled(features::kUserValueDefaultBrowserStrings)
-          ? l10n_util::GetStringUTF16(
-                IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT_THANK_YOU)
-          : l10n_util::GetStringUTF16(IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT));
-  html_source->AddString(
-      "defaultBrowserMakeDefault",
-      base::FeatureList::IsEnabled(features::kUserValueDefaultBrowserStrings)
-          ? l10n_util::GetStringUTF16(
-                IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_USER_VALUE)
-          : l10n_util::GetStringUTF16(
-                IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT));
-
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"defaultBrowser", IDS_SETTINGS_DEFAULT_BROWSER},
+      {"defaultBrowserDefault", IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT},
+
+      {"defaultBrowserDefaultThankYou",
+       IDS_SETTINGS_DEFAULT_BROWSER_DEFAULT_THANK_YOU},
+      {"defaultBrowserMakeDefault", IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT},
+      {"defaultBrowserMakeDefaultUserValue",
+       IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_USER_VALUE},
       {"defaultBrowserMakeDefaultAndPin",
        IDS_SETTINGS_DEFAULT_BROWSER_MAKE_DEFAULT_AND_PIN},
       {"defaultBrowserMakeDefaultButton",

@@ -43,6 +43,9 @@ class DefaultBrowserHandler : public SettingsPageUIHandler {
   // Called from WebUI to request the current state.
   void RequestDefaultBrowserState(const base::Value::List& args);
 
+  // Called from WebUI to request the state of kUserValueDefaultBrowserStrings.
+  void HandleRequestUserValueStringsFeatureState(const base::Value::List& args);
+
   // Makes this the default browser. Called from WebUI. If `args` is not empty,
   // and the first value is true, this method will attempt to pin Chrome to the
   // taskbar (currently Windows-only).
