@@ -319,13 +319,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 return;
             }
 
-            ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                    new ChromeAsyncTabLauncher(incognitoInstance);
             // TODO(crbug.com/458761856): Determine the correct NewWindowAppSource instead of assume
             // its always NewWindowAppSource.OTHER.
-            chromeAsyncTabLauncher.launchTabInOtherWindow(
+            launchTabInOtherWindow(
+                    incognitoInstance,
                     loadUrlParams,
-                    mActivity,
                     parentTabId,
                     /* otherActivity= */ null,
                     NewWindowAppSource.OTHER,
@@ -337,13 +335,10 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 (instanceInfo) -> {
                     ChromeTabbedActivity selectedActivity =
                             (ChromeTabbedActivity) getActivityById(instanceInfo.instanceId);
-                    ChromeAsyncTabLauncher chromeAsyncTabLauncher =
-                            new ChromeAsyncTabLauncher(
-                                    selectedActivity != null
-                                            && selectedActivity.isIncognitoWindow());
-                    chromeAsyncTabLauncher.launchTabInOtherWindow(
+                    launchTabInOtherWindow(
+                            /* isIncognito= */ selectedActivity != null
+                                    && selectedActivity.isIncognitoWindow(),
                             loadUrlParams,
-                            mActivity,
                             parentTabId,
                             selectedActivity,
                             NewWindowAppSource.OTHER,
@@ -558,6 +553,19 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 moveCallback,
                 getInstanceInfo(instanceType),
                 titleId);
+    }
+
+    @VisibleForTesting
+    void launchTabInOtherWindow(
+            boolean isIncognito,
+            LoadUrlParams loadUrlParams,
+            int parentId,
+            @Nullable Activity otherActivity,
+            @NewWindowAppSource int newWindowSource,
+            boolean preferNew) {
+        ChromeAsyncTabLauncher chromeAsyncTabLauncher = new ChromeAsyncTabLauncher(isIncognito);
+        chromeAsyncTabLauncher.launchTabInOtherWindow(
+                loadUrlParams, mActivity, parentId, otherActivity, newWindowSource, preferNew);
     }
 
     private Intent createIntentForGeneralReparenting(

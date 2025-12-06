@@ -125,6 +125,7 @@ import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -2669,5 +2670,111 @@ public class MultiInstanceManagerApi31UnitTest {
                 .showTargetSelectorDialog(
                         any(), anyInt(), eq(R.string.menu_move_tab_to_other_window));
         verify(mMultiInstanceManager, times(1)).moveTabsToNewWindow(tabs, NewWindowAppSource.OTHER);
+    }
+
+    @Test
+    public void testOpenUrlInOtherWindow_fromRegularWindow_dialogShown() {
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        mMultiInstanceManager.openUrlInOtherWindow(
+                urlParams,
+                /* parentTabId= */ 1,
+                /* preferNew= */ false,
+                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
+
+        verify(mMultiInstanceManager, times(1))
+                .showTargetSelectorDialog(
+                        any(),
+                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR),
+                        eq(R.string.contextmenu_open_in_other_window));
+    }
+
+    @Test
+    public void testOpenUrlInOtherWindow_fromIncognitoWindow_dialogShown() {
+        MultiWindowUtils.setIncognitoInstanceCountForTesting(2);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+
+        mMultiInstanceManager.openUrlInOtherWindow(
+                urlParams,
+                /* parentTabId= */ 1,
+                /* preferNew= */ false,
+                PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
+
+        verify(mMultiInstanceManager, times(1))
+                .showTargetSelectorDialog(
+                        any(),
+                        eq(PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD),
+                        eq(R.string.contextmenu_open_in_other_window));
+    }
+
+    @Test
+    public void testOpenUrlInOtherWindow_fromRegularWindow_dialogHidden() {
+        MultiWindowUtils.setInstanceCountForTesting(1);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+        doNothing()
+                .when(mMultiInstanceManager)
+                .launchTabInOtherWindow(
+                        /* isIncognito= */ false,
+                        urlParams,
+                        /* parentId= */ 1,
+                        /* otherActivity= */ null,
+                        NewWindowAppSource.OTHER,
+                        /* preferNew= */ false);
+
+        mMultiInstanceManager.openUrlInOtherWindow(
+                urlParams,
+                /* parentTabId= */ 1,
+                /* preferNew= */ false,
+                PersistedInstanceType.ACTIVE | PersistedInstanceType.REGULAR);
+
+        verify(mMultiInstanceManager, Mockito.never())
+                .showTargetSelectorDialog(
+                        any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
+        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage(any());
+        verify(mMultiInstanceManager, times(1))
+                .launchTabInOtherWindow(
+                        /* isIncognito= */ false,
+                        urlParams,
+                        /* parentId= */ 1,
+                        /* otherActivity= */ null,
+                        NewWindowAppSource.OTHER,
+                        /* preferNew= */ false);
+    }
+
+    @Test
+    public void testOpenUrlInOtherWindow_fromIncognitoWindow_dialogHidden() {
+        MultiWindowUtils.setIncognitoInstanceCountForTesting(1);
+        // Regular instance count should be irrelevant.
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        LoadUrlParams urlParams = new LoadUrlParams(new GURL("about:blank"));
+        doNothing()
+                .when(mMultiInstanceManager)
+                .launchTabInOtherWindow(
+                        /* isIncognito= */ true,
+                        urlParams,
+                        /* parentId= */ 1,
+                        /* otherActivity= */ null,
+                        NewWindowAppSource.OTHER,
+                        /* preferNew= */ false);
+
+        mMultiInstanceManager.openUrlInOtherWindow(
+                urlParams,
+                /* parentTabId= */ 1,
+                /* preferNew= */ false,
+                PersistedInstanceType.ACTIVE | PersistedInstanceType.OFF_THE_RECORD);
+
+        verify(mMultiInstanceManager, Mockito.never())
+                .showTargetSelectorDialog(
+                        any(), anyInt(), eq(R.string.contextmenu_open_in_other_window));
+        verify(mMultiInstanceManager, Mockito.never()).showInstanceCreationLimitMessage(any());
+        verify(mMultiInstanceManager, times(1))
+                .launchTabInOtherWindow(
+                        /* isIncognito= */ true,
+                        urlParams,
+                        /* parentId= */ 1,
+                        /* otherActivity= */ null,
+                        NewWindowAppSource.OTHER,
+                        /* preferNew= */ false);
     }
 }
