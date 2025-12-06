@@ -98,10 +98,6 @@ TEST_F(RemovedResultsRankerTest, UpdateResultRanks) {
   EXPECT_FALSE(results_map[ResultType::kInstalledApp][1]->scoring().filtered());
 
   // Omnibox: The 0th result ("C") is marked to be filtered.
-  //
-  // TODO(crbug.com/1272361): Ranking here should not affect Omnibox results,
-  // after support is added to the autocomplete controller for removal of
-  // non-zero state Omnibox results.
   ranker_->UpdateResultRanks(results_map, ResultType::kOmnibox);
   EXPECT_TRUE(results_map[ResultType::kOmnibox][0]->scoring().filtered());
 }
