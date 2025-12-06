@@ -4,8 +4,6 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/test_data_aggregator_service.h"
 
-#include "base/functional/callback_helpers.h"
-
 namespace ash::cfm {
 
 namespace {
