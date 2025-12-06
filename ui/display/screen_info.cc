@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/display/screen_info.h"
+
 #include <inttypes.h>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
-#include "ui/display/screen_info.h"
 
 namespace display {
 

@@ -5,6 +5,7 @@
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "url/url_util.h"
 

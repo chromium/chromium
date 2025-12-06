@@ -7,6 +7,7 @@
 #include <functional>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "components/download/public/common/download_item.h"

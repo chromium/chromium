@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/bindings/lib/native_handle_type_converters.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static

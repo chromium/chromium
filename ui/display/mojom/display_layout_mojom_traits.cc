@@ -4,6 +4,8 @@
 
 #include "ui/display/mojom/display_layout_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 display::mojom::Position

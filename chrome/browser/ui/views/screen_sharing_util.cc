@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/screen_sharing_util.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace {

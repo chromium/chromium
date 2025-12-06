@@ -4,6 +4,7 @@
 
 #include "services/network/public/cpp/source_type_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "services/network/public/mojom/source_type.mojom.h"
 
 namespace mojo {

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_REMOTE_COCOA_COMMON_FONT_MOJOM_TRAITS_H_
 #define COMPONENTS_REMOTE_COCOA_COMMON_FONT_MOJOM_TRAITS_H_
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/remote_cocoa/common/font.mojom.h"
 #include "ui/gfx/font.h"
@@ -106,4 +107,4 @@ struct StructTraits<remote_cocoa::mojom::FontDataView, gfx::Font> {
 
 }  // namespace mojo
 
-#endif  //  COMPONENTS_REMOTE_COCOA_COMMON_FONT_MOJOM_TRAITS_H_
+#endif  // COMPONENTS_REMOTE_COCOA_COMMON_FONT_MOJOM_TRAITS_H_

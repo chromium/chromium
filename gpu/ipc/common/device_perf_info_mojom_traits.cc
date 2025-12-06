@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/common/device_perf_info_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 namespace mojo {

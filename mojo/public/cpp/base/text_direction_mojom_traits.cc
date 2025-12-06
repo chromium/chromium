@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/base/text_direction_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static

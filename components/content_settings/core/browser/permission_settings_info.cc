@@ -5,6 +5,7 @@
 #include "components/content_settings/core/browser/permission_settings_info.h"
 
 #include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_utils.h"

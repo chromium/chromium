@@ -4,6 +4,8 @@
 
 #include "mojo/public/cpp/base/application_state_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/tabs/tabs_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 MojoTabNetworkState

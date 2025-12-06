@@ -4,6 +4,8 @@
 
 #include "services/viz/public/cpp/compositing/shared_image_format_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 // static

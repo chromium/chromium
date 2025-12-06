@@ -4,6 +4,7 @@
 
 #include "ui/display/display_util.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"

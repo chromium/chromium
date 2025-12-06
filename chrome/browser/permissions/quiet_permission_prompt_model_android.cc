@@ -4,6 +4,7 @@
 
 #include "chrome/browser/permissions/quiet_permission_prompt_model_android.h"
 
+#include "base/notreached.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"

@@ -6,6 +6,7 @@
 
 #include <optional>
 
+#include "base/notreached.h"
 #include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom.h"

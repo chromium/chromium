@@ -4,6 +4,7 @@
 
 #include "ui/latency/mojom/latency_info_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 
 namespace mojo {

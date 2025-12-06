@@ -4,6 +4,7 @@
 
 #include "services/viz/public/cpp/compositing/begin_frame_args_mojom_traits.h"
 
+#include "base/notreached.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "services/viz/public/cpp/crash_keys.h"
 

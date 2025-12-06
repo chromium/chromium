@@ -4,6 +4,8 @@
 
 #include "ui/base/ime/mojom/ime_types_mojom_traits.h"
 
+#include "base/notreached.h"
+
 namespace mojo {
 
 #define UI_TO_MOJO_ACTION_CASE(name) \
