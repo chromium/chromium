@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_
 
 #include "base/callback_list.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_context_menu_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -16,7 +17,7 @@
 
 class TabCloseButton;
 class TabCollectionNode;
-class VerticalTabIcon;
+class TabIcon;
 
 namespace views {
 class Label;
@@ -35,7 +36,13 @@ class VerticalTabView : public views::View,
   VerticalTabView& operator=(const VerticalTabView&) = delete;
   ~VerticalTabView() override;
 
-  // LayoutDelegate:
+  // views::View
+  void OnPaint(gfx::Canvas* canvas) override;
+  void AddedToWidget() override;
+  void RemovedFromWidget() override;
+  void OnThemeChanged() override;
+
+  // views::LayoutDelegate
   views::ProposedLayout CalculateProposedLayout(
       const views::SizeBounds& size_bounds) const override;
 
@@ -51,7 +58,7 @@ class VerticalTabView : public views::View,
       const gfx::Point& point,
       ui::mojom::MenuSourceType source_type) override;
 
-  VerticalTabIcon* icon_for_testing() { return icon_; }
+  TabIcon* icon_for_testing() { return icon_; }
   AlertIndicatorButton* alert_indicator_for_testing() {
     return alert_indicator_;
   }
@@ -64,15 +71,28 @@ class VerticalTabView : public views::View,
 
   void UpdateAlertIndicatorVisibility();
 
+  void UpdateColors();
+
+  SkPath GetPath() const;
+
+  bool IsFrameActive() const;
+  TabStyle::TabSelectionState GetSelectionState() const;
+
   raw_ptr<TabCollectionNode> collection_node_ = nullptr;
 
-  base::CallbackListSubscription node_destroyed_subscription_;
-  base::CallbackListSubscription data_changed_subscription_;
+  const raw_ptr<const TabStyle> tab_style_;
 
-  const raw_ptr<VerticalTabIcon> icon_;
+  const raw_ptr<TabIcon> icon_;
   const raw_ptr<views::Label> title_;
   const raw_ptr<AlertIndicatorButton> alert_indicator_;
   const raw_ptr<TabCloseButton> close_button_;
+
+  base::CallbackListSubscription node_destroyed_subscription_;
+  base::CallbackListSubscription data_changed_subscription_;
+  base::CallbackListSubscription paint_as_active_subscription_;
+
+  bool active_ = false;
+  bool selected_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_VIEW_H_

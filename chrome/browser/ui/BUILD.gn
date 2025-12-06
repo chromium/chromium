@@ -4473,8 +4473,6 @@ static_library("ui") {
       "views/tabs/tab_style_views.h",
       "views/tabs/tab_width_constraints.cc",
       "views/tabs/tab_width_constraints.h",
-      "views/tabs/vertical/vertical_tab_icon.cc",
-      "views/tabs/vertical/vertical_tab_icon.h",
       "views/tabs/vertical/vertical_tab_strip_controller.cc",
       "views/tabs/vertical/vertical_tab_strip_controller.h",
       "views/tabs/window_finder.cc",

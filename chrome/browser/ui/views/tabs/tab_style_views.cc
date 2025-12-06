@@ -75,7 +75,7 @@ class TabStyleViewsImpl : public TabStyleViews {
   gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
   float GetCurrentActiveOpacity() const override;
-  TabActive GetApparentActiveState() const override;
+  bool IsApparentlyActive() const override;
   TabStyle::TabColors CalculateTargetColors() const override;
   void PaintTab(gfx::Canvas* canvas) const override;
   void ShowHover(TabStyle::ShowHoverStyle style) override;
@@ -85,9 +85,6 @@ class TabStyleViewsImpl : public TabStyleViews {
   virtual SkColor GetTabSeparatorColor() const;
 
   // Painting helper functions:
-  virtual SkColor GetTargetTabBackgroundColor(
-      TabStyle::TabSelectionState selection_state,
-      bool hovered) const;
   virtual SkColor GetCurrentTabBackgroundColor(
       TabStyle::TabSelectionState selection_state,
       bool hovered) const;
@@ -570,34 +567,22 @@ float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
   return std::lerp(base_opacity, GetHoverOpacity(), GetHoverAnimationValue());
 }
 
-TabActive TabStyleViewsImpl::GetApparentActiveState() const {
+bool TabStyleViewsImpl::IsApparentlyActive() const {
   const TabStyle::TabSelectionState selection_state = GetSelectionState();
   if (selection_state == TabStyle::TabSelectionState::kActive) {
-    return TabActive::kActive;
+    return true;
   }
   if (IsHovering()) {
-    return GetHoverOpacity() > 0.5f ? TabActive::kActive : TabActive::kInactive;
+    return GetHoverOpacity() > 0.5f;
   }
-  if (selection_state == TabStyle::TabSelectionState::kSelected) {
-    return TabActive::kActive;
-  }
-  return TabActive::kInactive;
+  return selection_state == TabStyle::TabSelectionState::kSelected;
 }
 
 TabStyle::TabColors TabStyleViewsImpl::CalculateTargetColors() const {
-  const TabActive active = GetApparentActiveState();
-  const SkColor foreground_color =
-      tab_->controller()->GetTabForegroundColor(active);
-  const SkColor background_color =
-      GetTargetTabBackgroundColor(GetSelectionState(), IsHovering());
-  const ui::ColorId focus_ring_color = (active == TabActive::kActive)
-                                           ? kColorTabFocusRingActive
-                                           : kColorTabFocusRingInactive;
-  const ui::ColorId close_button_focus_ring_color =
-      (active == TabActive::kActive) ? kColorTabCloseButtonFocusRingActive
-                                     : kColorTabCloseButtonFocusRingInactive;
-  return {foreground_color, background_color, focus_ring_color,
-          close_button_focus_ring_color};
+  return tab_style()->CalculateTargetColors(
+      GetSelectionState(), IsApparentlyActive(), IsHovering(),
+      tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true,
+      tab()->GetColorProvider());
 }
 
 void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
@@ -892,32 +877,15 @@ SkColor TabStyleViewsImpl::GetTabSeparatorColor() const {
                           : kColorTabDividerFrameInactive);
 }
 
-SkColor TabStyleViewsImpl::GetTargetTabBackgroundColor(
-    const TabStyle::TabSelectionState selection_state,
-    bool hovered) const {
-  // Tests may not have a color provider or a widget.
-  const bool active_widget =
-      tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true;
-  if (!tab()->GetColorProvider()) {
-    return gfx::kPlaceholderColor;
-  }
-
-  return tab_style()->GetTabBackgroundColor(
-      selection_state, hovered, active_widget, *tab()->GetColorProvider());
-}
-
 SkColor TabStyleViewsImpl::GetCurrentTabBackgroundColor(
     const TabStyle::TabSelectionState selection_state,
     bool hovered) const {
-  const SkColor color = GetTargetTabBackgroundColor(selection_state, hovered);
-  if (!hovered) {
-    return color;
-  }
-
-  const SkColor unhovered_color =
-      GetTargetTabBackgroundColor(selection_state, /*hovered=*/false);
-  return color_utils::AlphaBlend(color, unhovered_color,
-                                 static_cast<float>(GetHoverAnimationValue()));
+  const bool frame_active =
+      tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true;
+  const ui::ColorProvider* color_provider = tab()->GetColorProvider();
+  return tab_style()->GetCurrentTabBackgroundColor(
+      selection_state, hovered, GetHoverAnimationValue(), frame_active,
+      color_provider);
 }
 
 TabStyle::TabSelectionState TabStyleViewsImpl::GetSelectionState() const {

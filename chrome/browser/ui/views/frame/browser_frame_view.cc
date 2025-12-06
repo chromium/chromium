@@ -238,7 +238,7 @@ bool BrowserFrameView::HasVisibleBackgroundTabShapes(
   return TabStyle::Get()->GetTabBackgroundColor(
              TabStyle::TabSelectionState::kInactive,
              /*hovered=*/false, ShouldPaintAsActiveForState(active_state),
-             *GetColorProvider()) != GetFrameColor(active_state);
+             GetColorProvider()) != GetFrameColor(active_state);
 }
 
 SkColor BrowserFrameView::GetCaptionColor(

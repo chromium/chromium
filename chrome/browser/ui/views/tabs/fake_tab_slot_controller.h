@@ -78,7 +78,6 @@ class FakeTabSlotController : public TabSlotController {
   bool CanPaintThrobberToLayer() const override;
   bool HasVisibleBackgroundTabShapes() const override;
   SkColor GetTabSeparatorColor() const override;
-  SkColor GetTabForegroundColor(TabActive active) const override;
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
@@ -108,11 +107,6 @@ class FakeTabSlotController : public TabSlotController {
   void SetLockedForOnTask(bool locked) { on_task_locked_ = locked; }
 #endif
 
-  void SetTabColors(SkColor fg_color_active, SkColor fg_color_inactive) {
-    tab_fg_color_active_ = fg_color_active;
-    tab_fg_color_inactive_ = fg_color_inactive;
-  }
-
  private:
   raw_ptr<TabStripController> tab_strip_controller_;
   raw_ptr<TabContainer, DanglingUntriaged> tab_container_;
@@ -122,9 +116,6 @@ class FakeTabSlotController : public TabSlotController {
 #if BUILDFLAG(IS_CHROMEOS)
   bool on_task_locked_ = false;
 #endif
-
-  SkColor tab_fg_color_active_ = gfx::kPlaceholderColor;
-  SkColor tab_fg_color_inactive_ = gfx::kPlaceholderColor;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_FAKE_TAB_SLOT_CONTROLLER_H_

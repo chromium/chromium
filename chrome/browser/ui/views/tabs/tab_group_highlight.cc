@@ -43,7 +43,7 @@ void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
   flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(TabStyle::Get()->GetTabBackgroundColor(
       TabStyle::TabSelectionState::kSelected, /*hovered=*/false,
-      GetWidget()->ShouldPaintAsActive(), *GetColorProvider()));
+      GetWidget()->ShouldPaintAsActive(), GetColorProvider()));
   canvas->DrawPath(path, flags);
 }
 

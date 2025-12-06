@@ -13,12 +13,16 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
+#include "components/browser_apis/tab_strip/tab_strip_api_data_model.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "third_party/skia/include/core/SkPathBuilder.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/background.h"
@@ -37,6 +41,7 @@ constexpr int kTitleNoCloseButtonRightPadding = 11;
 constexpr int kTitleHeight = 18;
 // TODO(crbug.com/454686636): Determine what this min width should be.
 constexpr int kVerticalTabExpandedMinWidth = 50;
+constexpr int kVerticalTabRoundedCornerRadius = 7;
 
 class VerticalTabTitle : public views::Label {
   METADATA_HEADER(VerticalTabTitle, views::Label)
@@ -56,9 +61,8 @@ END_METADATA
 
 VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
     : collection_node_(collection_node),
-      icon_(AddChildView(
-          std::make_unique<VerticalTabIcon>(std::get<const tabs::TabInterface*>(
-              collection_node_->GetNodeData())))),
+      tab_style_(TabStyle::Get()),
+      icon_(AddChildView(std::make_unique<TabIcon>())),
       title_(AddChildView(std::make_unique<VerticalTabTitle>())),
       alert_indicator_(
           AddChildView(std::make_unique<AlertIndicatorButton>(this))),
@@ -82,6 +86,35 @@ VerticalTabView::VerticalTabView(TabCollectionNode* collection_node)
 }
 
 VerticalTabView::~VerticalTabView() = default;
+
+void VerticalTabView::OnPaint(gfx::Canvas* canvas) {
+  // TODO(crbug.com/465540287): Properly paint background with fill image and
+  // hover opacity.
+  canvas->ClipPath(GetPath(), true);
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  // TODO(crbug.com/457525745): Use the actual hovered state and animation value
+  // here.
+  flags.setColor(tab_style_->GetCurrentTabBackgroundColor(
+      GetSelectionState(), false, 0.0f, IsFrameActive(), GetColorProvider()));
+  canvas->DrawRect(GetLocalBounds(), flags);
+}
+
+void VerticalTabView::AddedToWidget() {
+  paint_as_active_subscription_ =
+      GetWidget()->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
+          &VerticalTabView::UpdateColors, base::Unretained(this)));
+}
+
+void VerticalTabView::RemovedFromWidget() {
+  paint_as_active_subscription_ = {};
+}
+
+void VerticalTabView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  UpdateColors();
+}
 
 views::ProposedLayout VerticalTabView::CalculateProposedLayout(
     const views::SizeBounds& size_bounds) const {
@@ -168,9 +201,12 @@ void VerticalTabView::ToggleTabAudioMute() {
 }
 
 bool VerticalTabView::IsApparentlyActive() const {
-  // TODO(crbug.com/457522224): Use hover state and active/selected state to
-  // determine if the tab looks like it is active.
-  return true;
+  if (active_) {
+    return true;
+  }
+  // TODO(crbug.com/457525745): Use hover state to determine if the tab looks
+  // like it is active.
+  return selected_;
 }
 
 void VerticalTabView::AlertStateChanged() {
@@ -199,12 +235,18 @@ void VerticalTabView::OnDataChanged() {
   const tabs::TabInterface* tab =
       std::get<const tabs::TabInterface*>(collection_node_->GetNodeData());
 
+  active_ = tab->IsActivated();
+  selected_ = tab->IsSelected();
+
   int index =
       tab->GetBrowserWindowInterface()->GetTabStripModel()->GetIndexOfTab(tab);
   TabRendererData tab_data = TabRendererData::FromTabInModel(
       tab->GetBrowserWindowInterface()->GetTabStripModel(), index);
 
-  icon_->SetData(tab);
+  icon_->SetData(tab_data);
+  icon_->SetActiveState(active_);
+  icon_->SetAttention(TabIcon::AttentionType::kBlockedWebContents,
+                      active_ && tab_data.blocked);
   title_->SetText(tab_data.title);
   alert_indicator_->TransitionToAlertState(
       tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state));
@@ -213,8 +255,7 @@ void VerticalTabView::OnDataChanged() {
   // states.
   close_button_->SetVisible(tab->IsActivated());
 
-  // TODO(crbug.com/460535066): Update tab colors.
-
+  UpdateColors();
   InvalidateLayout();
 }
 
@@ -222,6 +263,38 @@ void VerticalTabView::UpdateAlertIndicatorVisibility() {
   alert_indicator_->UpdateAlertIndicatorAnimation();
   alert_indicator_->SetVisible(
       alert_indicator_->showing_alert_state().has_value());
+}
+
+void VerticalTabView::UpdateColors() {
+  // TODO(crbug.com/457525745): Use the actual hovered state here.
+  TabStyle::TabColors colors = tab_style_->CalculateTargetColors(
+      GetSelectionState(), IsApparentlyActive(), false, IsFrameActive(),
+      GetColorProvider());
+  title_->SetEnabledColor(colors.foreground_color);
+  close_button_->SetColors(colors);
+  alert_indicator_->OnParentTabButtonColorChanged();
+  // TODO(crbug.com/465159185): Update focus ring colors.
+  SchedulePaint();
+}
+
+SkPath VerticalTabView::GetPath() const {
+  SkVector radius = {kVerticalTabRoundedCornerRadius,
+                     kVerticalTabRoundedCornerRadius};
+  const SkVector radii[4] = {radius, radius, radius, radius};
+  SkPathBuilder path;
+  path.addRRect(
+      SkRRect::MakeRectRadii(SkRect::MakeWH(width(), height()), radii));
+  return path.detach();
+}
+
+bool VerticalTabView::IsFrameActive() const {
+  return GetWidget() ? GetWidget()->ShouldPaintAsActive() : true;
+}
+
+TabStyle::TabSelectionState VerticalTabView::GetSelectionState() const {
+  return active_ ? TabStyle::TabSelectionState::kActive
+                 : (selected_ ? TabStyle::TabSelectionState::kSelected
+                              : TabStyle::TabSelectionState::kInactive);
 }
 
 BEGIN_METADATA(VerticalTabView)

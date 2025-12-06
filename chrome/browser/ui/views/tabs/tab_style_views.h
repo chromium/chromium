@@ -64,9 +64,9 @@ class TabStyleViews {
   // TabStyle::GetMaximumZValue()).
   virtual float GetZValue() const = 0;
 
-  // Returns whichever of (active, inactive) the tab appears more like given the
-  // active opacity.
-  virtual TabActive GetApparentActiveState() const = 0;
+  // Returns whether the tab appears more like the active opacity than the
+  // inactive opacity.
+  virtual bool IsApparentlyActive() const = 0;
 
   // Returns the current opacity of the "active" portion of the tab's state.
   virtual float GetCurrentActiveOpacity() const = 0;

@@ -919,7 +919,7 @@ void Tab::ToggleTabAudioMute() {
 }
 
 bool Tab::IsApparentlyActive() const {
-  return tab_style_views()->GetApparentActiveState() == TabActive::kActive;
+  return tab_style_views()->IsApparentlyActive();
 }
 
 void Tab::AlertStateChanged() {

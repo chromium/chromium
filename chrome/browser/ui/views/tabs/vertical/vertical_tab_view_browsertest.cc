@@ -15,9 +15,9 @@
 #include "chrome/browser/ui/tabs/tab_network_state.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab_close_button.h"
+#include "chrome/browser/ui/views/tabs/tab_icon.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
-#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_icon.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,11 +71,12 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
   // The initial tab is the first child of the unpinned collection which is the
   // second child of the root node.
   TabCollectionNode* tab_node = root_node.children()[1]->children()[0].get();
-  VerticalTabIcon* icon =
+  TabIcon* icon =
       static_cast<VerticalTabView*>(tab_node->get_view_for_testing())
           ->icon_for_testing();
 
-  // Expect the favicon to not be loading initially.
+  // Expect the favicon to be in the active state and not be loading initially.
+  EXPECT_TRUE(icon->GetActiveStateForTesting());
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
   // After changing network state, expect the favicon to be loading.
@@ -91,6 +92,13 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, IconDataChanged) {
       base::DoNothing());
   run_loop.Run();
   EXPECT_TRUE(icon->GetShowingLoadingAnimation());
+
+  // After adding a new tab, the old tab is no longer activated so the icon
+  // should not be active.
+  NavigateToURLWithDisposition(browser(), GURL(url::kAboutBlankURL),
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  EXPECT_FALSE(icon->GetActiveStateForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, TitleDataChanged) {
@@ -202,3 +210,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, CloseButtonDataChanged) {
                                ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   EXPECT_FALSE(close_button->GetVisible());
 }
+
+// TODO(crbug.com/465540287): Determine how to test the background changing
+// based on active/selected/hovered states.

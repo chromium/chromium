@@ -158,14 +158,43 @@ class TabStyle {
   // Returns the radius of the outer corners of the tab shape.
   int GetBottomCornerRadius() const;
 
-  // Returns the background color of a tab with selection state `state`.
-  // `frame_active` is whether the tab's widget is painted as active or not.
+  std::tuple<float, float, float, SkColor> GetContrastRatioValues(
+      bool frame_active,
+      const ui::ColorProvider* color_provider) const;
+
+  TabStyle::TabColors CalculateTargetColors(
+      const TabSelectionState state,
+      const bool apparently_active,
+      const bool hovered,
+      const bool frame_active,
+      const ui::ColorProvider* color_provider) const;
+
+  // Returns the tab foreground color of the the text based on `active` and the
+  // activation state of the window.
+  SkColor GetTabForegroundColor(const bool apparently_active,
+                                const bool frame_active,
+                                const ui::ColorProvider* color_provider) const;
+
+  // Returns the target background color of a tab with selection state `state`
+  // and hover state `hovered`. `frame_active` is whether the tab's widget is
+  // painted as active or not.
   // TODO(tbergquist): Non-Tab callers of this should probably be refactored to
   // use their own color ids.
-  SkColor GetTabBackgroundColor(TabSelectionState state,
-                                bool hovered,
-                                bool frame_active,
-                                const ui::ColorProvider& color_provider) const;
+  SkColor GetTabBackgroundColor(const TabSelectionState state,
+                                const bool hovered,
+                                const bool frame_active,
+                                const ui::ColorProvider* color_provider) const;
+
+  // Returns the background color of a tab with selection state `state` and
+  // hover state `hovered`. If `hovered`, this blends the hovered and unhovered
+  // background colors according to the `hover_animation_value`.
+  // `frame_active` is whether the tab's widget is painted as active or not.
+  SkColor GetCurrentTabBackgroundColor(
+      const TabSelectionState state,
+      const bool hovered,
+      float hover_animation_value,
+      const bool frame_active,
+      const ui::ColorProvider* color_provider) const;
 
   // Opacity of the active tab background painted over inactive selected tabs.
   float GetSelectedTabOpacity() const;

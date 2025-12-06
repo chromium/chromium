@@ -777,7 +777,14 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
         kColorTabBackgroundInactiveFrameActive, colors.bg_inactive);
     tab->GetColorProvider()->SetColorForTesting(
         kColorTabBackgroundInactiveFrameInactive, colors.bg_inactive);
-    controller->SetTabColors(colors.fg_active, colors.fg_inactive);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundActiveFrameActive, colors.fg_active);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundActiveFrameInactive, colors.fg_active);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundInactiveFrameActive, colors.fg_inactive);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabForegroundInactiveFrameInactive, colors.fg_inactive);
     for (TabActive active : {TabActive::kInactive, TabActive::kActive}) {
       controller->set_active_tab(active == TabActive::kActive ? tab : nullptr);
       tab->UpdateForegroundColors();
@@ -786,7 +793,7 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
           active == TabActive::kActive ? TabStyle::TabSelectionState::kActive
                                        : TabStyle::TabSelectionState::kInactive,
           /*hovered=*/false, tab->GetWidget()->ShouldPaintAsActive(),
-          *tab->GetColorProvider());
+          tab->GetColorProvider());
       const float contrast = color_utils::GetContrastRatio(fg_color, bg_color);
       EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
     }
