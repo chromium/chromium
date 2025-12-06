@@ -2027,7 +2027,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2367972762794486313">Pokaż aplikacje</translation>
 <translation id="2369058545741334020">Otwórz w trybie czytania</translation>
 <translation id="236939127352773362">Gdy urządzenia w pobliżu udostępniają dane</translation>
-<translation id="2371076942591664043">Otwórz po &amp;zakończeniu</translation>
+<translation id="2371076942591664043">Otwórz po zakończeniu</translation>
 <translation id="237336063998926520">Użyj swojego adresu IP, by określić lokalizację</translation>
 <translation id="2373499590298659902">Aby nacisnąć i przytrzymać przycisk myszy, użyj klawisza „0”</translation>
 <translation id="2373666622366160481">Dopasuj do papieru</translation>
@@ -10846,7 +10846,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8474561048882755118">Pozwala porównywać podobne produkty obok siebie i łatwo sprawdzać ważne szczegóły</translation>
 <translation id="8475313423285172237">Inny program na Twoim komputerze dodał rozszerzenie, które może zmienić działanie Chrome.</translation>
 <translation id="8476408756881832830">Wstrzymaj odtwarzanie, gdy ChromeVox mówi</translation>
-<translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida i dotyczące ich dane diagnostyczne. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />
+<translation id="8476491056950015181"><ph name="BEGIN_PARAGRAPH1" />Jeśli pozwolisz na wysyłanie automatycznych raportów z urządzeń z ChromeOS, pomożesz nam w ustalaniu, co przede wszystkim należy naprawić i ulepszyć w tym systemie operacyjnym. Raporty mogą zawierać na przykład informacje o czasie wystąpienia awarii w ChromeOS, używanych funkcjach i typowym wykorzystaniu pamięci, a także dane o korzystaniu z aplikacji na Androida i dotyczące ich dane diagnostyczne. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Wysyłanie raportów możesz rozpocząć lub zatrzymać w dowolnym momencie w ustawieniach używanego przez dziecko urządzenia z ChromeOS. Jeśli jesteś administratorem domeny, możesz zmienić to ustawienie w konsoli administracyjnej.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH4" />Jeśli na koncie Google dziecka włączysz ustawienie Aktywność w internecie i aplikacjach, dane dziecka mogą być zapisywane na jego koncie. Więcej informacji o tych ustawieniach i sposobie ich zmiany znajdziesz na families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="8476630458761527665">Wpisz hasło pliku</translation>

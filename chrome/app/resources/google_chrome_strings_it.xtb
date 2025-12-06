@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">Rileva lingua</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> richiede di leggere e accettare i seguenti Termini di servizio prima di utilizzare il dispositivo. Questi termini non ampliano, modificano né limitano i Termini di Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puoi cambiare per vedere le password di un altro profilo Chrome</translation>
+<translation id="1343830902827845050">Accedi a Chrome</translation>
 <translation id="1356661055722410047">Novità. Puoi tradurre sia testo che immagini sullo schermo</translation>
 <translation id="1363996462118479832">Impossibile sincronizzare i dati in ChromeOS a causa di un errore durante l'accesso.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -555,6 +556,7 @@
 <translation id="7098166902387133879">Google Chrome sta utilizzando il microfono.</translation>
 <translation id="7099479769133613710">Riavvia per aggiornare &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
+<translation id="7121179479711575744">Accedi a Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio.}=1{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. La finestra di navigazione in incognito non verrà riaperta.}other{È disponibile un nuovo aggiornamento di Chrome che verrà installato appena eseguirai il riavvio. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="7155997830309522122">In questo caso, modifica la password salvata su Chrome in modo che corrisponda alla nuova password.</translation>
 <translation id="7161904924553537242">Ti diamo il benvenuto in Google Chrome</translation>

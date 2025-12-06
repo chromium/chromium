@@ -35,6 +35,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1330562121671411446">I-detect ang wika</translation>
 <translation id="1335640173511558774">Hinihiling ng <ph name="MANAGER" /> na basahin at tanggapin mo ang sumusunod na Mga Tuntunin ng Serbisyo bago gamitin ang device na ito. Hindi pinapalawak, binabago, o nililimitahan ng mga tuntuning ito ang Mga Tuntunin ng Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Puwede kang lumipat para makita ang mga password mula sa ibang profile sa Chrome</translation>
+<translation id="1343830902827845050">Mag-sign in sa Chrome</translation>
 <translation id="1356661055722410047">Bago! Puwede kang magsalin ng text at mga larawan sa iyong screen</translation>
 <translation id="1363996462118479832">Hindi ma-sync ng ChromeOS ang iyong data dahil sa isang error sa pag-sign in.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -564,6 +565,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="7098166902387133879">Ginagamit ng Google Chrome ang iyong mikropono.</translation>
 <translation id="7099479769133613710">Ilunsad ulit para ma-update ang &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Task Manager - Google Chrome</translation>
+<translation id="7121179479711575744">Mag-sign in sa Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chrome at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="7155997830309522122">Kung nagawa mo na ito, paki-edit ang iyong naka-save na password sa Chrome para tumugma ito sa bago mong password.</translation>
 <translation id="7161904924553537242">Maligayang pagdating sa Google Chrome</translation>

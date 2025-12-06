@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Iscrizione a <ph name="SITE_NAME" /> annullata. Alla tua prossima visita verrà visualizzata la stessa richiesta.</translation>
 <translation id="1340839264183302272">Lascia il gruppo</translation>
 <translation id="1342886103232377846">Per controllare la presenza di password compromesse, vai a Gestore delle password di Google</translation>
+<translation id="1343830902827845050">Accedi a Chrome</translation>
 <translation id="1344653310988386453">Includi link al testo evidenziato</translation>
 <translation id="1347468774581902829">Gestisci attività</translation>
 <translation id="1355088659320425659">Cronologia e schede</translation>
@@ -718,6 +719,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="414128724510021958">Siti desktop richiesti per impostazione predefinita</translation>
 <translation id="4162867837470729563">Elenco di opzioni di condivisione a schermo intero.</translation>
 <translation id="4170011742729630528">Il servizio non è disponibile, riprova più tardi.</translation>
+<translation id="4170577491341606575">Recupero dei tuoi dati in corso…</translation>
 <translation id="4177222230309051052">Recupera tutti i tuoi preferiti</translation>
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="417865198503699526">Cerca un'impostazione</translation>
@@ -1457,6 +1459,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7115358764509798967">Predefinito di sistema</translation>
 <translation id="7117485132243600300">Gestisci i contenuti che segui e gli argomenti e le ricerche suggeriti</translation>
 <translation id="7119984597597798764">Chiudi <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Accedi a Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Autorizzazioni esaminate per 1 sito}other{Autorizzazioni esaminate per # siti}}</translation>
 <translation id="7138678301420049075">Altro</translation>
 <translation id="7140829094791862589">Ordina manualmente</translation>

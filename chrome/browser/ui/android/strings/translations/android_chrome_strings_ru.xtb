@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Вы отказались от уведомлений с сайта <ph name="SITE_NAME" />. При следующем посещении будет снова запрошено разрешение.</translation>
 <translation id="1340839264183302272">Покинуть группу</translation>
 <translation id="1342886103232377846">Чтобы проверить наличие раскрытых паролей, воспользуйтесь Google Менеджером паролей</translation>
+<translation id="1343830902827845050">Войдите в Chrome</translation>
 <translation id="1344653310988386453">Добавьте ссылку на выделенный текст.</translation>
 <translation id="1347468774581902829">Управление историей</translation>
 <translation id="1355088659320425659">История и вкладки</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">Полная версия сайта запрашивается по умолчанию</translation>
 <translation id="4162867837470729563">Список способов отправки развернут на весь экран.</translation>
 <translation id="4170011742729630528">Сервис недоступен. Повторите попытку позже.</translation>
+<translation id="4170577491341606575">Загрузка данных\u2026</translation>
 <translation id="4177222230309051052">Все ваши закладки под рукой</translation>
 <translation id="4177501066905053472">Темы рекламы</translation>
 <translation id="417865198503699526">Введите название настройки</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">По умолчанию</translation>
 <translation id="7117485132243600300">Подписки на контент, рекомендованные темы и варианты поисковых запросов</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" />: закрыть</translation>
+<translation id="7121179479711575744">Войти в Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Проверены разрешения у 1 сайта.}one{Проверены разрешения у # сайта.}few{Проверены разрешения у # сайтов.}many{Проверены разрешения у # сайтов.}other{Проверены разрешения у # сайта.}}</translation>
 <translation id="7138678301420049075">Другое</translation>
 <translation id="7140829094791862589">Сортировать вручную</translation>

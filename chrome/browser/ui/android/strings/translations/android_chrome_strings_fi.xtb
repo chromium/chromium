@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Sivuston <ph name="SITE_NAME" /> tilaus peruutettu. Tästä kysytään uudelleen seuraavalla käyntikerralla.</translation>
 <translation id="1340839264183302272">Poistu ryhmästä</translation>
 <translation id="1342886103232377846">Siirry Google Salasanoihin ja tarkista vaarantuneet salasanat</translation>
+<translation id="1343830902827845050">Chromeen kirjautuminen</translation>
 <translation id="1344653310988386453">Lisää linkki korostukseen</translation>
 <translation id="1347468774581902829">Toimintavalinnat</translation>
 <translation id="1355088659320425659">Historia ja välilehdet</translation>
@@ -718,6 +719,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="414128724510021958">Oletusarvoiset tietokonesivustot</translation>
 <translation id="4162867837470729563">Jakamisvaihtoehtojen lista koko näytön kokoisena.</translation>
 <translation id="4170011742729630528">Palvelu ei ole käytettävissä. Yritä myöhemmin uudelleen.</translation>
+<translation id="4170577491341606575">Haetaan dataa\u2026</translation>
 <translation id="4177222230309051052">Hae kaikki kirjanmerkkisi</translation>
 <translation id="4177501066905053472">Mainosten aiheet</translation>
 <translation id="417865198503699526">Hae asetusta</translation>
@@ -1457,6 +1459,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7115358764509798967">Järjestelmän oletusarvo</translation>
 <translation id="7117485132243600300">Valitse seurattava sisältö sekä ehdotetut aiheet ja haut</translation>
 <translation id="7119984597597798764">Sulje <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Kirjaudu Chromeen</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Yhden sivuston luvat tarkistettu}other{# sivuston luvat tarkistettu}}</translation>
 <translation id="7138678301420049075">Muu</translation>
 <translation id="7140829094791862589">Lajittele manuaalisesti</translation>

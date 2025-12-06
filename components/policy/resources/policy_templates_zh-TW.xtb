@@ -11984,6 +11984,10 @@ Topics API 已淘汰，因此這項政策也已在 <ph name="PRODUCT_NAME" /> 14
 <translation id="966425658642788645">套用預設行為</translation>
 <translation id="971677226939413180">使用者無法選擇「以圖片形式列印」選項。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 範本</translation>
+<translation id="975005959611437646">設為啟用後，儲存空間配額 API 會傳回靜態值，該值等於用量 + min(10 GiB，磁碟空間四捨五入至最接近的 1 GiB)。
+如果設為停用，無論用量為何，儲存空間配額 API 通常都會傳回與裝置可用總空間成比例的動態值。
+如未設定，儲存空間配額 API 會採用預設的 Chrome 行為。
+這項設定不會影響具備無限儲存空間權限的網站，也不會影響強制執行的配額限制。</translation>
 <translation id="976415389478739655">要求使用者裝置必須連上受管理的網路，才能加入<ph name="CLASS_TOOLS_NAME" />課程</translation>
 <translation id="978619365985286086">課程管理工具設定</translation>
 <translation id="978658824596356870">24 小時制</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Nag-unsubscribe sa <ph name="SITE_NAME" />. Tatanungin ka ulit sa iyong susunod na pagbisita.</translation>
 <translation id="1340839264183302272">Umalis sa grupo</translation>
 <translation id="1342886103232377846">Para tingnan kung may mga nakompromisong password, pumunta sa Google Password Manager</translation>
+<translation id="1343830902827845050">Mag-sign in sa Chrome</translation>
 <translation id="1344653310988386453">Isama ang link sa highlight</translation>
 <translation id="1347468774581902829">Pamahalaan ang aktibidad</translation>
 <translation id="1355088659320425659">History at mga tab</translation>
@@ -718,6 +719,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="414128724510021958">Hinihiling bilang default ang mga pang-desktop na site</translation>
 <translation id="4162867837470729563">Nakabukas nang buo ang taas ang listahan ng mga opsyon sa pagbabahagi.</translation>
 <translation id="4170011742729630528">Hindi available ang serbisyo; subukan ulit sa ibang pagkakataon.</translation>
+<translation id="4170577491341606575">Kinukuha ang iyong bagay-bagay\u2026</translation>
 <translation id="4177222230309051052">Kunin ang lahat ng bookmark mo</translation>
 <translation id="4177501066905053472">Mga paksa ng ad</translation>
 <translation id="417865198503699526">Maghanap ng setting</translation>
@@ -1457,6 +1459,7 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7115358764509798967">Default ng system</translation>
 <translation id="7117485132243600300">Pamahalaan ang content na sinusubaybayan mo at mga iminumungkahing paksa at paghahanap</translation>
 <translation id="7119984597597798764">Isara ang <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Mag-sign in sa Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Sinuri ang mga pahintulot para sa 1 site}one{Sinuri ang mga pahintulot para sa # site}other{Sinuri ang mga pahintulot para sa # na site}}</translation>
 <translation id="7138678301420049075">Iba pa</translation>
 <translation id="7140829094791862589">I-sort sa manual order</translation>

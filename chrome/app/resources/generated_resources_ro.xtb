@@ -1472,7 +1472,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1982851102516626421">Te-ai deconectat</translation>
 <translation id="1983612835086592681">Deschis de tine în ultima săptămână</translation>
 <translation id="1984087999855033707">număr de telefon</translation>
-<translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
+<translation id="1984417487208496350">Fără protecție (nerecomandat)</translation>
 <translation id="1984683754853869253">Vrei să creezi un profil nou pentru școală?</translation>
 <translation id="198507684520034826">Ajutor</translation>
 <translation id="1986113927738155371">iPad</translation>
@@ -2808,7 +2808,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2894757982205307093">Filă nouă în grup</translation>
 <translation id="289695669188700754">ID cheie: <ph name="KEY_ID" /></translation>
 <translation id="2897713966423243833">Această setare personalizată va fi eliminată când închizi toate ferestrele incognito</translation>
-<translation id="2897878306272793870">Sunteți sigur că doriți să deschideți <ph name="TAB_COUNT" /> (de) file?</translation>
+<translation id="2897878306272793870">Sigur dorești să deschizi <ph name="TAB_COUNT" /> file?</translation>
 <translation id="2900247416110050639">Pentru Documente Google, Foi de calcul și Prezentări este necesară stocarea fișierelor în Google Drive. Fișierele locale vor fi mutate, iar fișierele din alte locații vor fi copiate. Fișierele se găsesc în dosarul Google Drive din aplicația Fișiere.</translation>
 <translation id="290105521672621980">Fișierul folosește funcții neacceptate</translation>
 <translation id="2901348420151309559">Fotografii și aplicații recente</translation>
@@ -3192,7 +3192,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3167446923957429259">Mișcă-ți gura spre stânga</translation>
 <translation id="3167562202484086668">Șterge toate datele despre <ph name="BRAND" /></translation>
 <translation id="3169930038976362151">Alege tema potrivită pentru nevoile tale. Pentru a schimba tema, imaginea de fundal, screensaverul și altele, atinge lung pe computer.</translation>
-<translation id="3170072451822350649">De asemenea, puteți să omiteți conectarea și să <ph name="LINK_START" />navigați ca invitat<ph name="LINK_END" />.</translation>
+<translation id="3170072451822350649">De asemenea, poți să omiți conectarea și să <ph name="LINK_START" />navighezi ca invitat<ph name="LINK_END" />.</translation>
 <translation id="3175067642577044620">Corp</translation>
 <translation id="3175862692832442091">Pădure</translation>
 <translation id="3176347586396987181">Folosește „z” pentru a apăsa lung un buton al mouse-ului</translation>
@@ -9349,7 +9349,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7457027286267861992">Nu există suficient spațiu pe disc. Eliberează mai mult spațiu pe disc și încearcă din nou. Codul de eroare este <ph name="ERROR" />.</translation>
 <translation id="7457831169406914076">{COUNT,plural, =1{un link}few{# linkuri}other{# de linkuri}}</translation>
 <translation id="7458168200501453431">Folosește același verificator ortografic folosit în Căutarea Google. Textul pe care îl introduci în browser este trimis la Google.</translation>
-<translation id="7458933488302148148">Verifică parolele salvate pentru a consolida securitatea și a rămâne în siguranță online</translation>
+<translation id="7458933488302148148">Îți verifică parolele salvate pentru a consolida securitatea și a rămâne în siguranță online</translation>
 <translation id="7460045493116006516">Tema actuală pe care ai instalat-o</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746216226901520237">Data viitoare, telefonul va debloca dispozitivul <ph name="DEVICE_TYPE" />. Poți debloca Smart Lock în Setări.</translation>
@@ -10607,7 +10607,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8297292446125062288">Setări pentru HID</translation>
 <translation id="8298429963694909221">Acum poți primi notificări de pe telefon pe dispozitivul <ph name="DEVICE_TYPE" />. Dacă închizi notificările pe <ph name="DEVICE_TYPE" />, le vei închide și pe telefon. Asigură-te că telefonul este în apropiere, cu Bluetooth și Wi-Fi activate.</translation>
 <translation id="829923460755755423">Adaugă o comandă rapidă către Managerul de parole Google</translation>
-<translation id="8299319456683969623">În prezent, sunteți în modul offline.</translation>
+<translation id="8299319456683969623">În prezent, ești în modul offline.</translation>
 <translation id="829937697336000302">Crește-ți productivitatea</translation>
 <translation id="8299951061833867575">Wi-Fi, date mobile</translation>
 <translation id="8300011035382349091">Editează marcajul pentru această filă</translation>
@@ -10683,7 +10683,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8349826889576450703">lansator</translation>
 <translation id="8350789879725387295">Instrumente pentru creion fixate</translation>
 <translation id="8351316842353540018">Afișează întotdeauna opțiunile a11y</translation>
-<translation id="8351419472474436977">Această extensie a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faceți online. Dacă nu știți sigur de ce a apărut această modificare, probabil că nu ați aprobat-o.</translation>
+<translation id="8351419472474436977">Această extensie a preluat controlul asupra setărilor de proxy, ceea ce înseamnă că poate modifica, întrerupe sau intercepta tot ceea ce faci online. Dacă nu știi sigur de ce a apărut această modificare, probabil că nu ai aprobat-o.</translation>
 <translation id="8351630282875799764">Bateria nu se încarcă</translation>
 <translation id="8352287103893778223">Titlul grupului de file</translation>
 <translation id="835238322900896202">A apărut o eroare în timpul dezinstalării. Te rugăm să dezinstalezi folosind Terminal.</translation>
@@ -11487,7 +11487,7 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser, 
 <translation id="8890170499370378450">Se pot aplica taxe pentru date mobile</translation>
 <translation id="8890516388109605451">Surse</translation>
 <translation id="8890529496706615641">Profilul nu a putut fi redenumit. Încearcă din nou sau contactează operatorul pentru asistență tehnică.</translation>
-<translation id="8892168913673237979">Totul este pregătit!</translation>
+<translation id="8892168913673237979">Gata!</translation>
 <translation id="8892246501904593980">Vezi toate marcajele în Marcaje și Liste</translation>
 <translation id="8893779047492837414">Momentan ai <ph name="NUMBERED_ITEM_1" />, <ph name="NUMBERED_ITEM_2" /> și altele. Organizația ta, <ph name="ACCOUNT_MANAGER" />, va putea să vadă și să gestioneze aceste date.</translation>
 <translation id="8893801527741465188">Dezinstalarea este finalizată</translation>

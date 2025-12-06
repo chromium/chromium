@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Notifikationer fra <ph name="SITE_NAME" /> er frameldt. Du bliver spurgt igen, næste gang du besøger websitet.</translation>
 <translation id="1340839264183302272">Forlad gruppe</translation>
 <translation id="1342886103232377846">Gå til Google Adgangs­kode­admin­istrator for at tjekke, om der er kompromitterede adgangskoder</translation>
+<translation id="1343830902827845050">Log ind i Chrome</translation>
 <translation id="1344653310988386453">Medtag link til fremhævning</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1355088659320425659">Historik og faner</translation>
@@ -718,6 +719,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="414128724510021958">Der anmodes som standard om computerwebsites</translation>
 <translation id="4162867837470729563">Listen over delingsindstillinger er åbnet i fuld højde.</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgængelig. Prøv igen senere.</translation>
+<translation id="4170577491341606575">Henter dine data\u2026</translation>
 <translation id="4177222230309051052">Få alle dine bogmærker</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="417865198503699526">Søg efter en indstilling</translation>
@@ -1457,6 +1459,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7115358764509798967">Systemstandard</translation>
 <translation id="7117485132243600300">Administrer indhold, du følger, og forslag til emner og søgninger</translation>
 <translation id="7119984597597798764">Luk <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Log ind i Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tilladelserne er gennemgået for 1 website}one{Tilladelserne er gennemgået for # website}other{Tilladelserne er gennemgået for # websites}}</translation>
 <translation id="7138678301420049075">Andet</translation>
 <translation id="7140829094791862589">Sortér manuelt</translation>

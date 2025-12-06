@@ -1915,6 +1915,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2287617382468007324">Mencetak Alamat IPP</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}other{Untuk melindungi data anda, kebenaran telah dialih keluar daripada laman yang tidak anda lawati baru-baru ini}}</translation>
 <translation id="2287944065963043964">Skrin log masuk</translation>
+<translation id="2289567621059034186">Tab baharu di bawah</translation>
 <translation id="2290615375132886363">Butang navigasi tablet</translation>
 <translation id="2290703778620332549">Gantikan atau Buat Kumpulan Baharu?</translation>
 <translation id="2291452790265535215">Cuba gunakan panel sisi untuk penanda halaman, perjalanan dan pelbagai lagi</translation>
@@ -3279,6 +3280,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="322708765617468434">Anda boleh menambahkan orang lain pada peranti selepas persediaan. Setiap orang boleh memeribadikan pengalaman mereka dan merahsiakan data.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Menampung</translation>
+<translation id="3228962656492373217">Tutup tab di bawah</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Alih keluar atau gantikan dengan sambungan yang serupa daripada <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Alih keluar atau gantikan dengan sambungan yang serupa daripada <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Semak tarikh</translation>
 <translation id="3230539834943294477">Paparkan artikel bantuan atau cari sokongan peranti</translation>
@@ -5015,6 +5017,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4404843640767531781"><ph name="APP_NAME" /> disekat oleh ibu/bapa anda. Minta kebenaran untuk menggunakan apl ini daripada ibu bapa anda.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Alihkan ke…</translation>
+<translation id="4405580203042711503">Tab Baharu di Bawah</translation>
 <translation id="4405781821077215583">Kecilkan atau besarkan item pada skrin anda</translation>
 <translation id="4406308048672435032">Anda boleh menjadikan tab ini tidak aktif atau menyegarkan semula tab untuk melihat senarai penuh semula</translation>
 <translation id="4406881185911439342">Kumpulan tumpuan</translation>
@@ -6732,6 +6735,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="5609231933459083978">Apl kelihatan tidak sah.</translation>
 <translation id="5610867721023328944">Cuba lagi atau pilih salah satu daripada tema yang tersedia di bawah.</translation>
 <translation id="5611398002774823980">Simpan dalam akaun</translation>
+<translation id="5611474372949142946">Tutup Tab di Bawah</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notis Pengguna</translation>
 <translation id="5614553682702429503">Simpan kata laluan?</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Afgemeld voor <ph name="SITE_NAME" />. Dit wordt volgende keer opnieuw gevraagd.</translation>
 <translation id="1340839264183302272">Groep verlaten</translation>
 <translation id="1342886103232377846">Ga naar Google Wachtwoordmanager om te checken op gehackte wachtwoorden</translation>
+<translation id="1343830902827845050">Inloggen bij Chrome</translation>
 <translation id="1344653310988386453">Link naar markering opnemen</translation>
 <translation id="1347468774581902829">Activiteit beheren</translation>
 <translation id="1355088659320425659">Geschiedenis en tabbladen</translation>
@@ -718,6 +719,7 @@ Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtw
 <translation id="414128724510021958">Desktopsites standaard aangevraagd</translation>
 <translation id="4162867837470729563">Lijst met deelopties op volledige hoogte.</translation>
 <translation id="4170011742729630528">De service is niet beschikbaar. Probeer het later opnieuw.</translation>
+<translation id="4170577491341606575">Je items ophalen\u2026</translation>
 <translation id="4177222230309051052">Haal al je bookmarks op</translation>
 <translation id="4177501066905053472">Advertentieonderwerpen</translation>
 <translation id="417865198503699526">Zoek naar een instelling</translation>
@@ -1457,6 +1459,7 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7115358764509798967">Systeemstandaard</translation>
 <translation id="7117485132243600300">Beheer content die je volgt en voorgestelde onderwerpen en zoekopdrachten</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> sluiten</translation>
+<translation id="7121179479711575744">Inloggen bij Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Rechten beoordeeld voor 1 site}other{Rechten beoordeeld voor # sites}}</translation>
 <translation id="7138678301420049075">Overige</translation>
 <translation id="7140829094791862589">Sorteren op handmatige volgorde</translation>

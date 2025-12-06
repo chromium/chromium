@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">Tunnista kieli</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> edellyttää, että luet ja hyväksyt seuraavat käyttöehdot ennen tämän laitteen käyttöä. Nämä ehdot eivät laajenna, muokkaa tai rajoita Google ChromeOS Flexin ehtoja.</translation>
 <translation id="1341711321000856656">Voit vaihtaa profiilia nähdäksesi toisen Chrome-profiilin salasanat</translation>
+<translation id="1343830902827845050">Chromeen kirjautuminen</translation>
 <translation id="1356661055722410047">Uutta! Voit kääntää näytöllä näkyvän tekstin ja kuvat</translation>
 <translation id="1363996462118479832">Chrome-käyttöjärjestelmä ei voi synkronoida dataa sisäänkirjautumisvirheen vuoksi.</translation>
 <translation id="137466361146087520">Google Chromen betaversio</translation>
@@ -556,6 +557,7 @@
 <translation id="7098166902387133879">Google Chrome käyttää mikrofoniasi.</translation>
 <translation id="7099479769133613710">Päivitä &amp;Chrome-käyttöjärjestelmä käynnistämällä se uudelleen</translation>
 <translation id="7106741999175697885">Tehtävänhallinta - Google Chrome</translation>
+<translation id="7121179479711575744">Kirjaudu Chromeen</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen.}=1{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito-ikkunaasi ei avata uudelleen.}other{Uusi Chrome-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="7155997830309522122">Jos vaihdoit, päivitä muutos Chromen tallennettuihin salasanoihin.</translation>
 <translation id="7161904924553537242">Tervetuloa Google Chromeen</translation>

@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> എന്നതിന്റെ വരിക്കാരല്ലാതായി. നിങ്ങൾ അടുത്ത തവണ സന്ദർശിക്കുമ്പോൾ ഇത് വീണ്ടും ചോദിക്കും.</translation>
 <translation id="1340839264183302272">ഗ്രൂപ്പ് വിടുക</translation>
 <translation id="1342886103232377846">അപഹരിക്കപ്പെട്ട പാസ്‌വേഡുകൾക്കായി പരിശോധിക്കാൻ, Google Password Manager-ലേക്ക് പോകൂ</translation>
+<translation id="1343830902827845050">Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="1344653310988386453">ഹൈലൈറ്റിലേക്കുള്ള ലിങ്ക് ഉൾപ്പെടുത്തുക</translation>
 <translation id="1347468774581902829">ആക്റ്റിവിറ്റി മാനേജ് ചെയ്യുക</translation>
 <translation id="1355088659320425659">ചരിത്രവും ടാബുകളും</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ഡിഫോൾട്ടായി അഭ്യർത്ഥിച്ച ഡെസ്‌ക്‌ടോപ്പ് സൈറ്റുകൾ</translation>
 <translation id="4162867837470729563">മുഴുവൻ ഉയരത്തിൽ തുറന്ന പങ്കിടൽ ഓപ്ഷനുകളുടെ ലിസ്റ്റ്.</translation>
 <translation id="4170011742729630528">സേവനം ലഭ്യമല്ല; പിന്നീട് വീണ്ടും ശ്രമിക്കുക.</translation>
+<translation id="4170577491341606575">നിങ്ങളുടെ ഡാറ്റ ലഭ്യമാക്കുന്നു\u2026</translation>
 <translation id="4177222230309051052">നിങ്ങളുടെ എല്ലാ ബുക്ക്‌മാർക്കുകളും നേടുക</translation>
 <translation id="4177501066905053472">പരസ്യ വിഷയങ്ങൾ</translation>
 <translation id="417865198503699526">ക്രമീകരണം തിരയുക</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">സിസ്‌റ്റം ഡിഫോൾട്ട്</translation>
 <translation id="7117485132243600300">നിങ്ങൾ പിന്തുടരുന്ന ഉള്ളടക്കവും നിർദ്ദേശിച്ച വിഷയങ്ങളും തിരയലുകളും മാനേജ് ചെയ്യുക</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> അടയ്‌ക്കുക</translation>
+<translation id="7121179479711575744">Chrome-ൽ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 സൈറ്റിന്റെ അനുമതികൾ അവലോകനം ചെയ്തു}other{# സൈറ്റുകളുടെ അനുമതികൾ അവലോകനം ചെയ്തു}}</translation>
 <translation id="7138678301420049075">മറ്റുള്ളവ</translation>
 <translation id="7140829094791862589">നേരിട്ടുള്ള ക്രമം പ്രകാരമടുക്കൂ</translation>

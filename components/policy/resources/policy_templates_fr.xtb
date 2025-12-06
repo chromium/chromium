@@ -12232,6 +12232,10 @@ La valeur par défaut est "RollbackDisabled".</translation>
 <translation id="966425658642788645">Appliquer le comportement par défaut</translation>
 <translation id="971677226939413180">L'option "Imprimer en tant qu'image" n'est pas proposée à l'utilisateur.</translation>
 <translation id="974349541138387272">Permet de définir le modèle URI du résolveur DNS-over-HTTPS souhaité</translation>
+<translation id="975005959611437646">Lorsque cette règle est activée, les API de quota de stockage renvoient une valeur statique égale à l'utilisation + min (10 Gio, espace disque arrondi à l'entier le plus proche de 1 Gio).
+Lorsque cette règle est désactivée, les API de quota de stockage renvoient généralement une valeur dynamique proportionnelle à l'espace total disponible sur l'appareil, quelle que soit l'utilisation.
+Si cette règle n'est pas configurée, les API de quota de stockage utilisent le comportement Chrome par défaut.
+Les sites disposant d'autorisations de stockage illimité ne sont pas concernés par ce paramètre. Le quota appliqué n'est pas non plus affecté.</translation>
 <translation id="976415389478739655">Exiger que les appareils des utilisateurs soient connectés un réseau géré pour que ces utilisateurs rejoignent une session <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Paramètres des outils de gestion des cours</translation>
 <translation id="978658824596356870">Format 24 heures</translation>

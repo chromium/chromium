@@ -43,6 +43,7 @@
 <translation id="1497802159252041924">Installationsfejl: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Denne side er beskyttet</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
+<translation id="154404805518949443">Log ind i Chromium</translation>
 <translation id="1547469039832541117">Afslutter den fremhævede opgave.</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.}one{Denne udvidelse understøttes ikke længere. Chromium anbefaler, at du fjerner den.}other{Disse udvidelser understøttes ikke længere. Chromium anbefaler, at du fjerner dem.}}</translation>
@@ -230,6 +231,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er allerede logget ind.  Hvis du vil holde din browsing adskilt, skal du logge ind i Chromium på din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Tillad skærmoptagelse for Chromium under Systemindstillinger for at dele din skærm.</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Log ind i Chromium</translation>
 <translation id="3639635944603682591">Brugerens browserdata slettes fra denne enhed. Log ind på Chromium som <ph name="USER_EMAIL" /> for at gendanne dataene.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chromium-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3651803019964686660">Hvis du vil sende et nummer fra <ph name="ORIGIN" /> til din Android-telefon, skal du logge ind på Chromium på begge enheder.</translation>

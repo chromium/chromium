@@ -12726,6 +12726,10 @@ A configuração padrão é permitir que o navegador do host faça a renderizaç
 <translation id="966425658642788645">Aplicar comportamento padrão</translation>
 <translation id="971677226939413180">A opção "Imprimir como imagem" não está disponível para a seleção do usuário.</translation>
 <translation id="974349541138387272">Especifica o modelo de URI do resolvedor DNS sobre HTTPS desejado</translation>
+<translation id="975005959611437646">Quando ativadas, as APIs de cota de armazenamento vão retornar um valor estático igual ao uso e mais um mínimo de 10 GiB de disco, arredondado para o próximo 1 GiB.
+Quando desativadas, as APIs de cota de armazenamento geralmente vão retornar um valor dinâmico proporcional ao espaço total disponível no dispositivo, não importando o uso.
+Se forem deixadas sem definição, as APIs de cota de armazenamento vão usar o comportamento padrão do Chrome.
+Os sites com permissões de armazenamento ilimitado não são afetados por essa configuração. A cota obrigatória também não é impactada.</translation>
 <translation id="976415389478739655">Exigir que os dispositivos dos usuários estejam em uma rede gerenciada para fazer parte da turma de <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Configurações das ferramentas de gerenciamento de turmas</translation>
 <translation id="978658824596356870">Formato de relógio de 24 horas</translation>

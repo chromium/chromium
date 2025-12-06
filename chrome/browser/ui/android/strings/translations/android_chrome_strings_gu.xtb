@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" />માંથી અનસબ્સ્ક્રાઇબ કર્યું. તમને તમારી આગલી મુલાકાત વખતે ફરી પૂછવામાં આવશે.</translation>
 <translation id="1340839264183302272">ગ્રૂપ છોડો</translation>
 <translation id="1342886103232377846">ચેડાં કરાયેલા પાસવર્ડ ચેક કરવા માટે, Google Password Manager પર જાઓ</translation>
+<translation id="1343830902827845050">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="1344653310988386453">હાઇલાઇટ કરેલી ટેક્સ્ટની લિંક શામેલ કરો</translation>
 <translation id="1347468774581902829">પ્રવૃત્તિ મેનેજ કરો</translation>
 <translation id="1355088659320425659">ઇતિહાસ અને ટૅબ</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ડિફૉલ્ટ તરીકે વિનંતી કરાયેલી ડેસ્કટૉપ સાઇટ</translation>
 <translation id="4162867837470729563">શેરિંગના વિકલ્પોની સૂચિ સંપૂર્ણ ઊંચાઈએ ખોલી છે.</translation>
 <translation id="4170011742729630528">સેવા ઉપલબ્ધ નથી; પછી ફરીથી પ્રયાસ કરો</translation>
+<translation id="4170577491341606575">તમારું કન્ટેન્ટ મેળવી રહ્યાં છીએ\u2026</translation>
 <translation id="4177222230309051052">તમારા બધા બુકમાર્ક મેળવો</translation>
 <translation id="4177501066905053472">જાહેરાતના વિષયો</translation>
 <translation id="417865198503699526">સેટિંગ શોધો</translation>
@@ -1457,6 +1459,7 @@
 <translation id="7115358764509798967">સિસ્ટમ ડિફૉલ્ટ</translation>
 <translation id="7117485132243600300">તમે ફૉલો કરો છો તે કન્ટેન્ટ, સૂચવેલા વિષયો અને શોધને મેનેજ કરો</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> બંધ કરો</translation>
+<translation id="7121179479711575744">Chromeમાં સાઇન ઇન કરો</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}one{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}other{# સાઇટની પરવાનગીઓનો રિવ્યૂ કર્યો}}</translation>
 <translation id="7138678301420049075">અન્ય</translation>
 <translation id="7140829094791862589">મેન્યુઅલ ક્રમે સૉર્ટ કરો</translation>

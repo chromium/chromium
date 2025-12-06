@@ -1901,6 +1901,7 @@
 <translation id="2287617382468007324">પ્રિન્ટિંગ IPP સરનામું</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{તમારા ડેટાની સુરક્ષા માટે, તમે તાજેતરમાં મુલાકાત લીધી ન હોય એવી સાઇટની પરવાનગીઓ કાઢી નાખવામાં આવી હતી}one{તમારા ડેટાની સુરક્ષા માટે, તમે તાજેતરમાં મુલાકાત લીધી ન હોય એવી સાઇટની પરવાનગીઓ કાઢી નાખવામાં આવી હતી}other{તમારા ડેટાની સુરક્ષા માટે, તમે તાજેતરમાં મુલાકાત લીધી ન હોય એવી સાઇટની પરવાનગીઓ કાઢી નાખવામાં આવી હતી}}</translation>
 <translation id="2287944065963043964">લૉગ ઇન સ્ક્રીન</translation>
+<translation id="2289567621059034186">નીચે નવું ટૅબ</translation>
 <translation id="2290615375132886363">ટૅબ્લેટ નૅવિગેશનનાં બટન</translation>
 <translation id="2290703778620332549">બદલીએ અથવા નવું ગ્રૂપ બનાવીએ?</translation>
 <translation id="2291452790265535215">બુકમાર્ક અને પ્રવાસ જેવી બીજી ઘણી બાબતો માટે, બાજુની પૅનલનો ઉપયોગ અજમાવી જુઓ</translation>
@@ -3265,6 +3266,7 @@
 <translation id="322708765617468434">સેટઅપ કર્યા પછી તમે હંમેશા અન્ય કોઈપણ વ્યક્તિને ડિવાઇસમાં ઉમેરી શકો છો. દરેક વ્યક્તિ તેમનો અનુભવ મનગમતો બનાવી શકે છે અને ડેટા ખાનગી રાખી શકે છે.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
 <translation id="3227701057281907159">પૅચ કરી રહ્યાં છીએ</translation>
+<translation id="3228962656492373217">નીચેના ટૅબ બંધ કરો</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{<ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" />માંથી તેને કાઢી નાખો અથવા સમાન એક્સ્ટેન્શન વડે બદલો.}one{<ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" />માંથી તેમને કાઢી નાખો અથવા સમાન એક્સ્ટેન્શન વડે બદલો}other{<ph name="BEGIN_LINK" />Chrome વેબ સ્ટોર<ph name="END_LINK" />માંથી તેમને કાઢી નાખો અથવા સમાન એક્સ્ટેન્શન વડે બદલો}}</translation>
 <translation id="3229254977651514276">તારીખ ચેક કરો</translation>
 <translation id="3230539834943294477">સહાય લેખો જુઓ અથવા ડિવાઇસ માટે સપોર્ટ મેળવો</translation>
@@ -5001,6 +5003,7 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> તમારા માતાપિતા દ્વારા બ્લૉક કરવામાં આવી છે. આ ઍપનો ઉપયોગ કરવા માટે તમારા માતાપિતા પાસેથી પરવાનગી મેળવો.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">આમાં ખસેડો…</translation>
+<translation id="4405580203042711503">નીચે નવું ટૅબ</translation>
 <translation id="4405781821077215583">તમારી સ્ક્રીન પર ટેક્સ્ટ સહિત બધી આઇટમને નાની અથવા મોટી કરો</translation>
 <translation id="4406308048672435032">સંપૂર્ણ સૂચિ ફરીથી જોવા માટે, તમે આ ટૅબને નિષ્ક્રિય કે રિફ્રેશ કરી શકો છો</translation>
 <translation id="4406881185911439342">ફોકસ ગ્રૂપ</translation>
@@ -6718,6 +6721,7 @@
 <translation id="5609231933459083978">ઍપ્લિકેશન અમાન્ય હોય તેવું લાગે છે.</translation>
 <translation id="5610867721023328944">ફરીથી પ્રયાસ કરો અથવા નીચે ઉપલબ્ધ થીમમાંથી એક થીમ પસંદ કરો.</translation>
 <translation id="5611398002774823980">એકાઉન્ટમાં સાચવો</translation>
+<translation id="5611474372949142946">નીચેના ટૅબ બંધ કરો</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">વપરાશકર્તા સૂચના</translation>
 <translation id="5614553682702429503">પાસવર્ડ સાચવીએ?</translation>

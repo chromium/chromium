@@ -12207,6 +12207,10 @@ Standardwert ist RollbackDisabled.</translation>
 <translation id="966425658642788645">Standardverhalten anwenden</translation>
 <translation id="971677226939413180">Macht die Option „Als Bild drucken“ nicht zur Auswahl durch den Nutzer verfügbar.</translation>
 <translation id="974349541138387272">Die URI-Vorlage des gewünschten DoH-Resolvers (DNS over HTTPS) angeben</translation>
+<translation id="975005959611437646">Wenn diese Richtlinie aktiviert ist, geben die Speicherkontingent-APIs einen statischen Wert zurück, der dem belegten Speicherplatz + mindestens 10 GiB (Laufwerk wird auf das nächste GiB aufgerundet) entspricht.
+Wenn diese Richtlinie deaktiviert ist, geben die Speicherkontingent-APIs in der Regel einen dynamischen Wert zurück, der proportional zum auf dem Gerät verfügbaren Gesamtspeicherplatz berechnet wird, unabhängig davon, wie viel Speicherplatz belegt ist.
+Ist diese Richtlinie nicht konfiguriert, verwenden die Speicherkontingent-APIs das Standardverhalten von Chrome.
+Websites mit der Berechtigung zur unbegrenzten Speicherung sind von dieser Einstellung nicht betroffen. Auch das erzwungene Kontingent ist davon nicht betroffen.</translation>
 <translation id="976415389478739655">Verlangen, dass Geräte von Nutzern mit einem verwalteten Netzwerk verbunden sind, um einem <ph name="CLASS_TOOLS_NAME" />-Kurs beitreten zu können</translation>
 <translation id="978619365985286086">Einstellungen für die Tools zur Kursverwaltung</translation>
 <translation id="978658824596356870">24-Stunden-Format</translation>

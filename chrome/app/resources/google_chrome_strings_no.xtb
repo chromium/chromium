@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">Gjenkjenn språk</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> krever at du leser og godtar følgende vilkår før du bruker denne enheten. Disse vilkårene verken utvider, endrer eller begrenser Google ChromeOS Flex-vilkårene.</translation>
 <translation id="1341711321000856656">Du kan bytte til å se passord fra en annen Chrome-profil</translation>
+<translation id="1343830902827845050">Logg på Chrome</translation>
 <translation id="1356661055722410047">Nyhet! Du kan oversette både tekst og bilder på skjermen</translation>
 <translation id="1363996462118479832">ChromeOS kunne ikke synkronisere dataene dine på grunn av en feil under pålogging.</translation>
 <translation id="137466361146087520">Google Chrome Beta</translation>
@@ -556,6 +557,7 @@
 <translation id="7098166902387133879">Google Chrome bruker mikrofonen din.</translation>
 <translation id="7099479769133613710">Start på nytt for å oppdatere &amp;ChromeOS</translation>
 <translation id="7106741999175697885">Oppgavebehandling – Google Chrome</translation>
+<translation id="7121179479711575744">Logg på Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt.}=1{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chrome er tilgjengelig og tas i bruk når du starter Chrome på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="7155997830309522122">I så fall bør du endre det lagrede passordet i Chrome så det samsvarer med det nye passordet.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>

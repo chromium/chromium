@@ -1914,6 +1914,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2287617382468007324">Tulostetaan IPP-osoitetta</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Datasi suojaamiseksi luvat on poistettu sivustolta, jolla et ole käynyt viime aikoina}other{Datasi suojaamiseksi luvat on poistettu sivustoilta, joilla et ole käynyt viime aikoina}}</translation>
 <translation id="2287944065963043964">Kirjautumisnäyttö</translation>
+<translation id="2289567621059034186">Uusi välilehti alle</translation>
 <translation id="2290615375132886363">Tabletin navigointipainikkeet</translation>
 <translation id="2290703778620332549">Korvataanko ryhmä vai luodaanko uusi?</translation>
 <translation id="2291452790265535215">Käytä sivupaneelia esimerkiksi kirjanmerkkejä tai selailua varten</translation>
@@ -3278,6 +3279,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="322708765617468434">Voit lisätä laitteelle toisen henkilön milloin tahansa käyttöönoton jälkeen. Jokainen henkilö voi personoida kokemuksensa ja pitää datan yksityisenä.</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3227701057281907159">Korjataan</translation>
+<translation id="3228962656492373217">Sulje alla olevat välilehdet</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Poista se tai korvaa se samanlaisilla laajennuksilla <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" />.}other{Poista ne tai korvaa ne samanlaisilla laajennuksilla <ph name="BEGIN_LINK" />Chrome Web Storesta<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Tarkista päivämäärä</translation>
 <translation id="3230539834943294477">Katso ohjeartikkeleita tai etsi laitetukea</translation>
@@ -5011,6 +5013,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="4404843640767531781"><ph name="APP_NAME" /> on vanhempasi estämä. Pyydä vanhemmaltasi lupaa käyttää tätä sovellusta.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Siirrä…</translation>
+<translation id="4405580203042711503">Uusi välilehti alle</translation>
 <translation id="4405781821077215583">Pienennä tai suurenna näytön sisältöä, esimerkiksi tekstiä</translation>
 <translation id="4406308048672435032">Voit tehdä tästä välilehdestä ei-aktiivisen tai päivittää sen, jos haluat nähdä koko listan uudelleen</translation>
 <translation id="4406881185911439342">Kohderyhmä</translation>
@@ -6728,6 +6731,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5609231933459083978">Sovellus vaikuttaa virheelliseltä.</translation>
 <translation id="5610867721023328944">Yritä uudelleen tai valitse alta jokin käytettävissä olevista teemoista.</translation>
 <translation id="5611398002774823980">Tallenna tilille</translation>
+<translation id="5611474372949142946">Sulje alla olevat välilehdet</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Käyttäjäilmoitus</translation>
 <translation id="5614553682702429503">Tallennetaanko salasana?</translation>

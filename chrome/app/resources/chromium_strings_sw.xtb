@@ -45,6 +45,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="1497802159252041924">Hitilafu ya kusakinisha: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ukurasa huu umelindwa</translation>
 <translation id="1524282610922162960">Shiriki kichupo cha Chromium</translation>
+<translation id="154404805518949443">Ingia katika Chromium</translation>
 <translation id="1547469039832541117">Hukamilisha jukumu lililoangaziwa.</translation>
 <translation id="1553461853655228091">Chromium inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Kiendelezi hiki hakitumiki tena. Chromium inapendekeza ukiondoe.}other{Viendelezi hivi havitumiki tena. Chromium inapendekeza uviondoe.}}</translation>
@@ -232,6 +233,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3530103706039034513">Tayari umeingia katika akaunti ya <ph name="EXISTING_USER" />.  Ili utenganishe shughuli zako za kuvinjari, ingia katika akaunti kwenye Chromium katika wasifu wako binafsi ukitumia <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Ili uonyeshe skrini yako, washa kinasa skrini katika Chromium kwenye Mipangilio ya Mfumo.</translation>
 <translation id="3597003331831379823">Imeshindwa kuweka mipangilio ikitumia ufikiaji maalum. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Ingia katika Chromium</translation>
 <translation id="3639635944603682591">Data ya kuvinjari ya mtu huyu itafutwa kwenye kifaa hiki. Ili kurejesha data, ingia katika Chromium ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Sasisho jipya la Chromium linapatikana na litaanza kutumika pindi utakapofungua tena.}=1{Sasisho jipya la Chromium linapatikana na litaanza kutumika pindi utakapofungua tena. Haitafungua upya dirisha fiche.}other{Sasisho jipya la Chromium linapatikana na litaanza kutumika pindi utakapofungua tena. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3651803019964686660">Ili uweze kutuma namba kwa simu yako ya Android kutoka <ph name="ORIGIN" />, ingia katika akaunti kwenye Chromium ukitumia vifaa vyote viwili.</translation>

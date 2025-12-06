@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Đã huỷ đăng ký nhận thông báo từ <ph name="SITE_NAME" />. Chúng tôi sẽ hỏi lại bạn trong lần tiếp theo bạn truy cập.</translation>
 <translation id="1340839264183302272">Rời khỏi nhóm</translation>
 <translation id="1342886103232377846">Để kiểm tra xem có mật khẩu nào bị lộ không, hãy truy cập vào Trình quản lý mật khẩu của Google</translation>
+<translation id="1343830902827845050">Đăng nhập vào Chrome</translation>
 <translation id="1344653310988386453">Thêm đường liên kết đến văn bản được làm nổi bật</translation>
 <translation id="1347468774581902829">Quản lý hoạt động</translation>
 <translation id="1355088659320425659">Nhật ký và thẻ</translation>
@@ -718,6 +719,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="414128724510021958">Yêu cầu trang web dành cho máy tính (theo mặc định)</translation>
 <translation id="4162867837470729563">Danh sách các lựa chọn chia sẻ được mở trên toàn màn hình.</translation>
 <translation id="4170011742729630528">Dịch vụ không khả dụng; thử lại sau.</translation>
+<translation id="4170577491341606575">Đang tải dữ liệu của bạn\u2026</translation>
 <translation id="4177222230309051052">Lấy tất cả dấu trang</translation>
 <translation id="4177501066905053472">Chủ đề quảng cáo</translation>
 <translation id="417865198503699526">Tìm một chế độ cài đặt</translation>
@@ -1457,6 +1459,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7115358764509798967">Giá trị mặc định của hệ thống</translation>
 <translation id="7117485132243600300">Quản lý nội dung bạn theo dõi cũng như các chủ đề và nội dung tìm kiếm được đề xuất</translation>
 <translation id="7119984597597798764">Đóng <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Đăng nhập vào Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Đã xem xét các quyền của 1 trang web}other{Đã xem xét các quyền của # trang web}}</translation>
 <translation id="7138678301420049075">Khác</translation>
 <translation id="7140829094791862589">Tự sắp xếp thứ tự</translation>

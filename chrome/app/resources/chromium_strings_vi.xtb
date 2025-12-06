@@ -43,6 +43,7 @@
 <translation id="1497802159252041924">Lỗi cài đặt: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Trang này được bảo vệ</translation>
 <translation id="1524282610922162960">Chia sẻ một thẻ Chromium</translation>
+<translation id="154404805518949443">Đăng nhập vào Chromium</translation>
 <translation id="1547469039832541117">Kết thúc tác vụ được làm nổi bật.</translation>
 <translation id="1553461853655228091">Chromium cần có quyền sử dụng camera để tạo bản đồ 3D khu vực xung quanh bạn</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Tiện ích này không còn được hỗ trợ nữa. Chromium khuyên bạn nên xoá tiện ích này.}other{Các tiện ích này không còn được hỗ trợ nữa. Chromium khuyên bạn nên xoá các tiện ích này.}}</translation>
@@ -230,6 +231,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> đã đăng nhập.  Để tách biệt hoạt động duyệt web của bạn, hãy đăng nhập vào Chromium bằng hồ sơ của riêng bạn qua địa chỉ <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Để chia sẻ màn hình, hãy cho phép Chromium ghi màn hình trong phần Cài đặt hệ thống.</translation>
 <translation id="3597003331831379823">Không thể chạy quy trình thiết lập bằng đặc quyền cấp cao. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Đăng nhập vào Chromium</translation>
 <translation id="3639635944603682591">Dữ liệu duyệt web của người này sẽ bị xóa khỏi thiết bị này. Để khôi phục dữ liệu, hãy đăng nhập vào Chromium bằng <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium.}=1{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Đã có bản cập nhật Chromium mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chromium. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="3651803019964686660">Để gửi số điện thoại từ <ph name="ORIGIN" /> đến điện thoại Android của bạn, hãy đăng nhập vào Chromium trên cả hai thiết bị.</translation>

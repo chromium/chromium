@@ -43,6 +43,7 @@
 <translation id="1497802159252041924">Installasjonsfeil: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Denne siden er beskyttet</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
+<translation id="154404805518949443">Logg på Chromium</translation>
 <translation id="1547469039832541117">Avslutter den fremhevede oppgaven.</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen støttes ikke lenger. Chromium anbefaler at du fjerner den.}other{Disse utvidelsene støttes ikke lenger. Chromium anbefaler at du fjerner dem.}}</translation>
@@ -230,6 +231,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> er allerede logget på.  For å holde surfingen din atskilt, logg på Chromium i din egen profil som <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">For å dele skjermen, tillat skjermopptak for Chromium i Systeminnstillinger.</translation>
 <translation id="3597003331831379823">Kunne ikke kjøre konfigureringen med overordnede rettigheter. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Logg på Chromium</translation>
 <translation id="3639635944603682591">Denne personens nettlesingsdata slettes fra denne enheten. For å gjenopprette dataene, logg på Chromium som <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt.}=1{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. Inkognitovinduet ditt blir ikke gjenåpnet.}other{En ny oppdatering for Chromium er tilgjengelig og tas i bruk når du starter Chromium på nytt. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="3651803019964686660">For å sende numre fra <ph name="ORIGIN" /> til Android-telefonen din, logg på Chromium på begge enhetene.</translation>

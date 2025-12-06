@@ -43,6 +43,7 @@
 <translation id="1497802159252041924">Asennusvirhe: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Tämä sivu on suojattu</translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
+<translation id="154404805518949443">Kirjaudu Chromiumiin</translation>
 <translation id="1547469039832541117">Lopettaa korostetun tehtävän.</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Tätä laajennusta ei enää tueta. Chromium suosittelee sen poistamista.}other{Näitä laajennuksia ei enää tueta. Chromium suosittelee niiden poistamista.}}</translation>
@@ -230,6 +231,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> on jo kirjautunut sisään.  Jos haluat pitää selaamisen erillään, kirjaudu Chromiumiin omalla profiilillasi käyttämällä tiliä <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Jos haluat jakaa näytön, salli Chromiumin näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="3597003331831379823">Käyttöönotto laajennetuilla pääsyoikeuksilla epäonnistui. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Chromiumiin kirjautuminen</translation>
 <translation id="3639635944603682591">Käyttäjän selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromiumiin käyttäjänä <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen.}=1{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. Incognito-ikkunaasi ei avata uudelleen.}other{Uusi Chromium-päivitys on saatavilla, ja se otetaan käyttöön uudelleenkäynnistyksen jälkeen. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="3651803019964686660">Jos haluat lähettää numeron osoitteesta <ph name="ORIGIN" /> Android-puhelimeesi, kirjaudu Chromiumiin molemmilla laitteilla.</translation>

@@ -12470,6 +12470,10 @@ Bu politika, Devre Dışı değerine ayarlanırsa kullanıcılara ürün içi an
 <translation id="966425658642788645">Varsayılan davranışı uygula</translation>
 <translation id="971677226939413180">Resim olarak yazdır seçeneği kullanıcı tarafından seçilemez.</translation>
 <translation id="974349541138387272">İstenen DNS-over-HTTPS çözümleyicisinin URI şablonunu belirler</translation>
+<translation id="975005959611437646">Bu politika etkinleştirildiğinde depolama alanı kotası API'leri, kullanım + minimum (10 GiB, disk en yakın 1 GiB'a yuvarlanır) değere eşit statik bir değer döndürür.
+Politika devre dışı bırakıldığında depolama alanı kotası API'leri, genellikle kullanımdan bağımsız olarak cihazda mevcut toplam alanla orantılı dinamik bir değer döndürür.
+Politika ayarlanmadan bırakılırsa depolama alanı kotası API'leri varsayılan Chrome davranışını kullanır.
+Sınırsız depolama izni olan siteler bu ayardan etkilenmez. Zorunlu kılınan kota da etkilenmez.</translation>
 <translation id="976415389478739655">Kullanıcıların, <ph name="CLASS_TOOLS_NAME" /> sınıfına katılmak için cihazlarının yönetilen bir ağa bağlı olmasını zorunlu kıl</translation>
 <translation id="978619365985286086">Sınıf yönetimi araçlarıyla ilgili ayarlar</translation>
 <translation id="978658824596356870">24 saatlik biçim</translation>

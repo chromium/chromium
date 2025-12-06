@@ -1909,6 +1909,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2287617382468007324">IPP-adresse for utskrift</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{For å beskytte dataene dine har vi fjernet tillatelser fra et nettsted du ikke har besøkt i det siste}other{For å beskytte dataene dine har vi fjernet tillatelser fra nettsteder du ikke har besøkt i det siste}}</translation>
 <translation id="2287944065963043964">Påloggingsskjerm</translation>
+<translation id="2289567621059034186">Ny fane nedenfor</translation>
 <translation id="2290615375132886363">Navigeringsknapper i nettbrettmodus</translation>
 <translation id="2290703778620332549">Vil du erstatte eller opprette en ny gruppe?</translation>
 <translation id="2291452790265535215">Prøv å bruke sidepanelet for bokmerker, søkereiser med mer</translation>
@@ -3273,6 +3274,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="322708765617468434">Du kan når som helst legge til flere personer på enheten etter konfigureringen. Hver person kan få en personlig opplevelse og holde dataene sine private.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Feilretting</translation>
+<translation id="3228962656492373217">Lukk fanene nedenfor</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjern eller erstatt den med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />.}other{Fjern eller erstatt dem med lignende utvidelser fra <ph name="BEGIN_LINK" />Chrome Nettmarked<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Sjekk datoen</translation>
 <translation id="3230539834943294477">Se hjelpeartikler, eller finn brukerstøtte for enheten</translation>
@@ -5007,6 +5009,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokkert av forelderen din. Spør forelderen din om tillatelse til å bruke denne appen.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flytt til …</translation>
+<translation id="4405580203042711503">Ny fane nedenfor</translation>
 <translation id="4405781821077215583">Gjør elementer på skjermen, inkludert tekst, mindre eller større</translation>
 <translation id="4406308048672435032">Du kan gjøre denne fanen inaktiv eller laste inn listen på nytt for å se hele listen igjen</translation>
 <translation id="4406881185911439342">Fokusgruppe</translation>
@@ -6721,6 +6724,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5609231933459083978">Appen ser ut til å være ugyldig.</translation>
 <translation id="5610867721023328944">Prøv på nytt, eller velg et av de tilgjengelige temaene nedenfor.</translation>
 <translation id="5611398002774823980">Lagre i kontoen</translation>
+<translation id="5611474372949142946">Lukk fanene nedenfor</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" /> – <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Brukerinformasjon</translation>
 <translation id="5614553682702429503">Vil du lagre passordet?</translation>

@@ -1898,6 +1898,7 @@
 <translation id="2287617382468007324">印刷の IPP アドレス</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{データ保護のため、最近アクセスしていないサイトから権限を削除しました}other{データ保護のため、最近アクセスしていないサイトから権限を削除しました}}</translation>
 <translation id="2287944065963043964">ログイン画面</translation>
+<translation id="2289567621059034186">下の新しいタブ</translation>
 <translation id="2290615375132886363">タブレットのナビゲーション ボタン</translation>
 <translation id="2290703778620332549">グループを置き換えるか、新しいグループを作成しますか？</translation>
 <translation id="2291452790265535215">ブックマークやジャーニーなどのサイドパネル表示をお試しください</translation>
@@ -3259,6 +3260,7 @@
 <translation id="322708765617468434">設定後にいつでも別のユーザーをデバイスに追加できます。ユーザーごとに使用環境をカスタマイズして、データのプライバシーを確保できます。</translation>
 <translation id="3227137524299004712">マイク</translation>
 <translation id="3227701057281907159">パッチ適用中</translation>
+<translation id="3228962656492373217">下のタブを閉じる</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。}other{削除するか、<ph name="BEGIN_LINK" />Chrome ウェブストア<ph name="END_LINK" />にある同様の拡張機能に置き換えてください。}}</translation>
 <translation id="3229254977651514276">日付を確認してください</translation>
 <translation id="3230539834943294477">ヘルプ記事やデバイスのサポートを確認できます</translation>
@@ -4993,6 +4995,7 @@
 <translation id="4404843640767531781"><ph name="APP_NAME" /> は保護者によってブロックされています。このアプリを使用するには、保護者の許可が必要です。</translation>
 <translation id="4405117686468554883">*.jpeg、*.jpg、*.png</translation>
 <translation id="4405224443901389797">移動…</translation>
+<translation id="4405580203042711503">下の新しいタブ</translation>
 <translation id="4405781821077215583">画面上の項目（テキストなど）のサイズを変更する</translation>
 <translation id="4406308048672435032">このタブを無効にできます。または更新すると完全なリストが再び表示されます</translation>
 <translation id="4406881185911439342">グループにフォーカス</translation>
@@ -6704,6 +6707,7 @@
 <translation id="5609231933459083978">アプリケーションが無効になっているようです。</translation>
 <translation id="5610867721023328944">もう一度お試しいただくか、以下の使用可能なテーマから選択してください。</translation>
 <translation id="5611398002774823980">アカウントに保存</translation>
+<translation id="5611474372949142946">下のタブを閉じる</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />、<ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">ユーザー通知</translation>
 <translation id="5614553682702429503">パスワードを保存しますか？</translation>

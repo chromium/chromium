@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">検出言語</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> では、このデバイスを使用する前に下記の利用規約を確認しこれに同意していただく必要があります。これらの規約は Google ChromeOS Flex 利用規約を拡張、変更、制限するものではありません。</translation>
 <translation id="1341711321000856656">別の Chrome プロフィールに切り替えて、そのプロフィールのパスワードを表示できます</translation>
+<translation id="1343830902827845050">Chrome にログイン</translation>
 <translation id="1356661055722410047">New! 画面上のテキストや画像を翻訳できるようになりました</translation>
 <translation id="1363996462118479832">ログイン時にエラーが発生したため、ChromeOS はデータを同期できませんでした。</translation>
 <translation id="137466361146087520">Google Chrome ベータ版</translation>
@@ -555,6 +556,7 @@
 <translation id="7098166902387133879">Google Chrome がマイクを使用しています。</translation>
 <translation id="7099479769133613710">再起動して ChromeOS を更新</translation>
 <translation id="7106741999175697885">タスク マネージャ - Google Chrome</translation>
+<translation id="7121179479711575744">Chrome にログイン</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chrome の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="7155997830309522122">その場合は、Chrome に保存したパスワードを編集して、新しいパスワードと一致するようにしてください。</translation>
 <translation id="7161904924553537242">Google Chrome へようこそ</translation>

@@ -1911,6 +1911,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2287617382468007324">Anwani ya Kuchapishia ya IPP</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Ili kulinda data yako, ruhusa zimeondolewa kwenye tovuti ambayo hujaitembelea hivi majuzi}other{Ili kulinda data yako, ruhusa zimeondolewa kwenye tovuti ambazo hujazitembelea hivi majuzi}}</translation>
 <translation id="2287944065963043964">Skrini ya kuingia katika akaunti</translation>
+<translation id="2289567621059034186">Kichupo kipya kilicho hapa chini</translation>
 <translation id="2290615375132886363">Vitufe vya usogezaji kwenye kompyuta kibao</translation>
 <translation id="2290703778620332549">Ungependa Kubadilisha au Kuanzisha Kikundi Kipya?</translation>
 <translation id="2291452790265535215">Jaribu kutumia vidirisha vya pembeni vya alamisho, safari na zaidi</translation>
@@ -3276,6 +3277,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="322708765617468434">Unaweza kuongeza mtu mwingine wakati wowote kwenye kifaa baada ya kuweka mipangilio. Kila mtu anaweza kuweka mapendeleo ya hali yake ya utumiaji na kuweka data yake iwe ya faragha.</translation>
 <translation id="3227137524299004712">Maikrofoni</translation>
 <translation id="3227701057281907159">Inarekebisha</translation>
+<translation id="3228962656492373217">Funga vichupo vilivyo hapa chini</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Kiondoe au utumie viendelezi vinavyofanana vilivyo katika <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" />.}other{Viondoe au utumie viendelezi vinavyofanana vilivyo katika <ph name="BEGIN_LINK" />Duka la Chrome kwenye Wavuti<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Angalia tarehe</translation>
 <translation id="3230539834943294477">Angalia makala ya usaidizi au utafute usaidizi kuhusu kifaa</translation>
@@ -5010,6 +5012,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> imezuiwa na mzazi wako. Mwombe mzazi wako ruhusa ya kutumia programu hii.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Hamishia kwenye…</translation>
+<translation id="4405580203042711503">Kichupo Kipya Kilicho Hapa Chini</translation>
 <translation id="4405781821077215583">Ongeza au upunguze ukubwa wa vipengee vilivyo kwenye skrini yako, ikijumuisha maandishi</translation>
 <translation id="4406308048672435032">Unaweza kufanya kichupo hiki kisitumikie au kukionyesha upya ili uone orodha kamili tena</translation>
 <translation id="4406881185911439342">Angazia kikundi</translation>
@@ -6727,6 +6730,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5609231933459083978">Programu inaonekana kuwa batili.</translation>
 <translation id="5610867721023328944">Jaribu tena au uchague kwenye mojawapo ya mandhari yanayopatikana hapo chini.</translation>
 <translation id="5611398002774823980">Hifadhi kwenye akaunti</translation>
+<translation id="5611474372949142946">Funga Vichupo Vilivyo Hapa Chini</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Arifa ya Mtumiaji</translation>
 <translation id="5614553682702429503">Ungependa kuhifadhi nenosiri?</translation>

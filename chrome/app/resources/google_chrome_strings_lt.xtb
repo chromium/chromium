@@ -35,6 +35,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="1330562121671411446">Aptikti kalbą</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> reikia, kad prieš naudodami šį įrenginį perskaitytumėte toliau pateiktas paslaugų teikimo sąlygas. Šios sąlygos neišplečia, nepakeičia ir neapriboja „ChromeOS Flex“ sąlygų.</translation>
 <translation id="1341711321000856656">Galite perjungti, kad būtų rodomi slaptažodžiai iš kito „Chrome“ profilio</translation>
+<translation id="1343830902827845050">Prisijungimas prie „Chrome“</translation>
 <translation id="1356661055722410047">Naujiena! Galite versti ir tekstą, ir vaizdus ekrane</translation>
 <translation id="1363996462118479832">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes prisijungiant įvyko klaida.</translation>
 <translation id="137466361146087520">„Google Chrome“ beta</translation>
@@ -564,6 +565,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="7098166902387133879">„Google Chrome“ naudoja jūsų mikrofoną.</translation>
 <translation id="7099479769133613710">Paleisti iš naujo ir atnaujinti „&amp;Chrome“ OS</translation>
 <translation id="7106741999175697885">Užduočių tvarkytuvė – „Google Chrome“</translation>
+<translation id="7121179479711575744">Prisijungti prie „Chrome“</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo.}=1{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. Inkognito langas nebus atidarytas iš naujo.}one{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langas nebus atidarytas iš naujo.}few{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langai nebus atidaryti iš naujo.}many{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito lango nebus atidaryta iš naujo.}other{Pasiekiamas naujas „Chrome“ naujinys. Jis bus pritaikytas, kai paleisite „Chrome“ iš naujo. # inkognito langų nebus atidaryta iš naujo.}}</translation>
 <translation id="7155997830309522122">Jei taip, redaguokite išsaugotą slaptažodį naršyklėje „Chrome“, kad jis atitiktų naują.</translation>
 <translation id="7161904924553537242">Sveiki! Tai - „Google Chrome“</translation>

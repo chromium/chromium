@@ -1902,6 +1902,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2287617382468007324">IPP-adres afdrukken</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Ter bescherming van je gegevens zijn de rechten verwijderd voor een site die je niet recent hebt bezocht}other{Ter bescherming van je gegevens zijn de rechten verwijderd voor sites die je niet recent hebt bezocht}}</translation>
 <translation id="2287944065963043964">Inlogscherm</translation>
+<translation id="2289567621059034186">Nieuw tabblad hieronder</translation>
 <translation id="2290615375132886363">Navigatieknoppen tablet</translation>
 <translation id="2290703778620332549">Vervangen of nieuwe groep maken?</translation>
 <translation id="2291452790265535215">Gebruik het zijvenster onder meer voor bookmarks en trajecten</translation>
@@ -3264,6 +3265,7 @@ Je kunt instellingen op deze kaart altijd beheren of meer opties bekijken in het
 <translation id="322708765617468434">Na het instellen kun je altijd iemand anders aan het apparaat toevoegen. Ze kunnen ieder hun functionaliteit personaliseren en gegevens privé houden.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
 <translation id="3227701057281907159">Patchen</translation>
+<translation id="3228962656492373217">Tabbladen hieronder sluiten</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Verwijder de extensie of vervang deze door een vergelijkbare extensie uit de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Verwijder de extensies of vervang ze door vergelijkbare extensies uit de <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Check de datum</translation>
 <translation id="3230539834943294477">Help-artikelen bekijken of support voor apparaten vinden</translation>
@@ -4999,6 +5001,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4404843640767531781"><ph name="APP_NAME" /> is geblokkeerd door je ouder. Vraag je ouder toestemming om deze app te gebruiken.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Verplaatsen naar…</translation>
+<translation id="4405580203042711503">Nieuw tabblad hieronder</translation>
 <translation id="4405781821077215583">Maak items op je scherm, waaronder tekst, kleiner of groter</translation>
 <translation id="4406308048672435032">Je kunt dit tabblad inactief maken of vernieuwen om de hele lijst weer te zien</translation>
 <translation id="4406881185911439342">Focus op groep plaatsen</translation>
@@ -6714,6 +6717,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5609231933459083978">De app blijkt ongeldig te zijn.</translation>
 <translation id="5610867721023328944">Probeer het opnieuw of selecteer een van de beschikbare thema's hieronder.</translation>
 <translation id="5611398002774823980">Opslaan in account</translation>
+<translation id="5611474372949142946">Tabbladen hieronder sluiten</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Gebruikerskennisgeving</translation>
 <translation id="5614553682702429503">Wachtwoord opslaan?</translation>

@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">リンク プレビューを表示する</translation>
 <translation id="452750746583162491">同期したデータを確認する</translation>
 <translation id="4532845899244822526">フォルダの選択</translation>
+<translation id="454217142158335225">閉じたタブやタブグループは、[最近使ったタブ] または [タブグループ] で再度開くことができます。固定タブは閉じられません。</translation>
 <translation id="4547181496285029457">最近使用したタブに戻る</translation>
 <translation id="4552042254369397518">コピー中…</translation>
 <translation id="4564893319561643483">「<ph name="TITLE" />」を非表示にする</translation>
@@ -1841,6 +1842,7 @@
 <translation id="7887174313503389866">ガイドに沿って、プライバシーとセキュリティに関する重要な設定を確認します。その他のオプションについては、それぞれの設定で行います。</translation>
 <translation id="7887198238286927132">プライバシー保護のため、Chrome ではこの欄の自動入力は行われません。</translation>
 <translation id="7887552845761062935">ダブルタップして長押しするとその他のオプションが開きます</translation>
+<translation id="7888562068293422208">すべて閉じますか？</translation>
 <translation id="7889910613639381518">Google パスワード マネージャー ウィジェットを使えば簡単かつ安全にアクセスできます。</translation>
 <translation id="7899199123054742721">すべて未読にする</translation>
 <translation id="7911190106180361398">お客様の組織では、[すべてを同期する] の設定は許可されていません。</translation>

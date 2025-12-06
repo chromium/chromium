@@ -43,6 +43,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="1497802159252041924">Ralat pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Halaman ini dilindungi</translation>
 <translation id="1524282610922162960">Kongsi tab Chromium</translation>
+<translation id="154404805518949443">Log masuk ke Chromium</translation>
 <translation id="1547469039832541117">Tamatkan tugasan yang diserlahkan.</translation>
 <translation id="1553461853655228091">Chromium memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Sambungan ini tidak disokong lagi. Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut.}other{Sambungan ini tidak disokong lagi. Chromium mengesyorkan supaya anda mengalih keluar sambungan tersebut.}}</translation>
@@ -230,6 +231,7 @@ peranti Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK"
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> sudah log masuk.  Untuk memastikan penyemakan imbas anda terpisah, log masuk ke Chromium dalam profil anda sendiri sebagai <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Untuk berkongsi skrin anda, benarkan rakaman skrin untuk Chromium dalam Tetapan Sistem.</translation>
 <translation id="3597003331831379823">Gagal untuk menjalankan persediaan dengan keistimewaan dipertingkat. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Log masuk ke Chromium</translation>
 <translation id="3639635944603682591">Data semakan imbas orang ini akan dipadamkan daripada peranti ini. Untuk memulihkan data itu, log masuk ke Chromium sebagai <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium.}=1{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Kemas kini baharu tersedia untuk Chromium dan akan digunakan sebaik sahaja anda melancarkan semula Chromium. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="3651803019964686660">Untuk menghantar nombor daripada <ph name="ORIGIN" /> ke telefon Android anda, log masuk ke Chromium pada kedua-dua peranti.</translation>

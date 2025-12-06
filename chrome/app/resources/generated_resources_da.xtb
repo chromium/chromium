@@ -1917,6 +1917,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2287617382468007324">IPP-adresse til udskrivning</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}one{Tilladelserne blev fjernet fra et website, du ikke har besøgt for nylig, for at beskytte dine data}other{Tilladelserne blev fjernet fra websites, du ikke har besøgt for nylig, for at beskytte dine data}}</translation>
 <translation id="2287944065963043964">Loginskærm</translation>
+<translation id="2289567621059034186">Ny fane nedenfor</translation>
 <translation id="2290615375132886363">Knapper til navigation i tablettilstand</translation>
 <translation id="2290703778620332549">Vil du erstatte den eller oprette en ny gruppe?</translation>
 <translation id="2291452790265535215">Prøv at bruge sidepanelet til bogmærker, søgeforløb m.m.</translation>
@@ -3281,6 +3282,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="322708765617468434">Du kan til enhver tid føje en anden person til enheden efter konfigurationen. Hver person kan tilpasse sin brugeroplevelse personligt og holde sine data private.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3227701057281907159">Retter program</translation>
+<translation id="3228962656492373217">Luk fanerne nedenfor</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Fjern eller erstat den med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" />.}one{Fjern eller erstat den med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" />}other{Fjern eller erstat dem med lignende udvidelser fra <ph name="BEGIN_LINK" />Chrome Webshop<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Tjek datoen</translation>
 <translation id="3230539834943294477">Se artikler i Hjælp, eller find enhedssupport</translation>
@@ -5017,6 +5019,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4404843640767531781"><ph name="APP_NAME" /> er blokeret af din forælder. Bed din forælder om at give dig tilladelse til at bruge denne app.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Flyt til…</translation>
+<translation id="4405580203042711503">Ny fane nedenfor</translation>
 <translation id="4405781821077215583">Forstør eller formindsk elementer på din skærm, inklusive tekst</translation>
 <translation id="4406308048672435032">Du kan gøre denne fane inaktiv eller opdatere for at se hele listen igen</translation>
 <translation id="4406881185911439342">Sæt fokus på gruppe</translation>
@@ -6734,6 +6737,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5609231933459083978">Applikationen ser ud til at være ugyldig.</translation>
 <translation id="5610867721023328944">Prøv igen, eller vælg ét af de tilgængelige temaer nedenfor.</translation>
 <translation id="5611398002774823980">Gem på konto</translation>
+<translation id="5611474372949142946">Luk fanerne nedenfor</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Brugerbesked</translation>
 <translation id="5614553682702429503">Vil du gemme adgangskoden?</translation>

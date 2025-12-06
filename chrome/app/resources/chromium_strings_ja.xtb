@@ -42,6 +42,7 @@
 <translation id="1497802159252041924">インストール エラー: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">このページは保護されています</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
+<translation id="154404805518949443">Chromium にログイン</translation>
 <translation id="1547469039832541117">ハイライト表示されているタスクを終了します。</translation>
 <translation id="1553461853655228091">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{この拡張機能のサポートは終了しました。削除することをおすすめします。}other{これらの拡張機能のサポートは終了しました。削除することをおすすめします}}</translation>
@@ -227,6 +228,7 @@
 <translation id="3530103706039034513"><ph name="EXISTING_USER" />さんがすでにログインしています。ブラウジング環境を分ける場合は、自分用のプロファイルで <ph name="USER_EMAIL_ADDRESS" /> として Chromium にログインしてください。</translation>
 <translation id="3561853857681580870">画面を共有するには、[システム設定] で Chromium に画面の録画を許可してください。</translation>
 <translation id="3597003331831379823">昇格された権限で設定を実行できませんでした。<ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Chromium にログイン</translation>
 <translation id="3639635944603682591">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。}=1{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。シークレット ウィンドウは、再起動後は自動的には開きません。}other{Chromium の新しいアップデートを利用できます。再起動するとすぐにアップデートが適用されます。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3651803019964686660"><ph name="ORIGIN" /> から Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>

@@ -33,6 +33,7 @@
 <translation id="1330562121671411446">Registrer sprog</translation>
 <translation id="1335640173511558774"><ph name="MANAGER" /> kræver, at du læser og accepterer følgende servicevilkår, inden du bruger denne enhed. Disse vilkår udvider, ændrer eller begrænser på ingen måde vilkårene for Google ChromeOS Flex.</translation>
 <translation id="1341711321000856656">Du kan skifte for at se adgangskoder fra en anden Chrome-profil</translation>
+<translation id="1343830902827845050">Log ind i Chrome</translation>
 <translation id="1356661055722410047">Nyhed! Du kan oversætte både tekst og billeder på din skærm</translation>
 <translation id="1363996462118479832">ChromeOS kunne ikke synkronisere dine data på grund af en fejl under login.</translation>
 <translation id="137466361146087520">Google Chrome beta</translation>
@@ -556,6 +557,7 @@
 <translation id="7098166902387133879">Google Chrome bruger din mikrofon.</translation>
 <translation id="7099479769133613710">Genstart og opdater &amp;Chrome OS</translation>
 <translation id="7106741999175697885">Jobliste – Google Chrome</translation>
+<translation id="7121179479711575744">Log ind i Chrome</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter.}=1{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dit inkognitovindue åbnes ikke igen.}one{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. # inkognitovindue åbnes ikke igen.}other{Der er en ny Chrome-opdatering, som anvendes, så snart du genstarter. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="7155997830309522122">Hvis ja, skal du redigere den gemte adgangskode i Chrome, så den matcher den nye adgangskode.</translation>
 <translation id="7161904924553537242">Velkommen til Google Chrome</translation>

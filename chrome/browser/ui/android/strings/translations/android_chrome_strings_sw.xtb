@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Umejiondoa kwenye <ph name="SITE_NAME" />. Utaombwa ujisajili tena utakapoitembelea wakati mwingine.</translation>
 <translation id="1340839264183302272">Ondoka kwenye kikundi</translation>
 <translation id="1342886103232377846">Ili ukague manenosiri yaliyoathiriwa, nenda kwenye Kidhibiti cha Manenosiri cha Google</translation>
+<translation id="1343830902827845050">Ingia katika Chrome</translation>
 <translation id="1344653310988386453">Jumuisha kiungo cha maandishi yaliyoangaziwa</translation>
 <translation id="1347468774581902829">Dhibiti shughuli</translation>
 <translation id="1355088659320425659">Historia na vichupo</translation>
@@ -718,6 +719,7 @@ Mtu aliye na kauli yako ya siri pekee ndiye anaweza kusoma data yako iliyosimbwa
 <translation id="414128724510021958">Tovuti za kompyuta ya mezani zinaombwa kwa chaguomsingi</translation>
 <translation id="4162867837470729563">Orodha ya chaguo za kushiriki imefunguliwa kwenye skrini nzima.</translation>
 <translation id="4170011742729630528">Huduma haipatikani; jaribu tena baadaye.</translation>
+<translation id="4170577491341606575">Inakusanya data yako\u2026</translation>
 <translation id="4177222230309051052">Pata alamisho zako zote</translation>
 <translation id="4177501066905053472">Mada za matangazo</translation>
 <translation id="417865198503699526">Tafuta mipangilio</translation>
@@ -1457,6 +1459,7 @@ Kwa mfano, baadhi ya tovuti zinaweza kujibu ombi hili kwa kukuonyesha matangazo 
 <translation id="7115358764509798967">Chaguomsingi ya mfumo</translation>
 <translation id="7117485132243600300">Dhibiti maudhui unayofuatilia, utafutaji na mada unazopendekezewa</translation>
 <translation id="7119984597597798764">Funga <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Ingia katika Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Imekagua ruhusa katika tovuti 1}other{Imekagua ruhusa katika tovuti #}}</translation>
 <translation id="7138678301420049075">Nyingine</translation>
 <translation id="7140829094791862589">Panga mwenyewe</translation>

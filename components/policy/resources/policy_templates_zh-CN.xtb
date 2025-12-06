@@ -12132,6 +12132,10 @@ Gemini 只能在部分国家/地区启用，并且仅支持部分语言。设置
 <translation id="966425658642788645">应用默认行为</translation>
 <translation id="971677226939413180">不提供“以图片形式打印”选项供用户选择。</translation>
 <translation id="974349541138387272">指定所需 DNS-over-HTTPS 解析器的 URI 模板</translation>
+<translation id="975005959611437646">如果启用了此设置，存储空间配额 API 会返回一个静态值，该值等于当前用量 + 最小用量（10 GiB，磁盘空间向上取整到最接近的 GiB 数值）。
+如果停用了此设置，存储空间配额 API 通常会返回一个动态值，该值与设备上的总可用空间成正比，无论实际用量是多少。
+如果未设置此设置，存储空间配额 API 将采用默认的 Chrome 行为。
+具有无限存储权限的网站不受此设置的影响。强制执行的配额也不受影响。</translation>
 <translation id="976415389478739655">要求用户的设备连上受管理的网络，才能加入“<ph name="CLASS_TOOLS_NAME" />”课程</translation>
 <translation id="978619365985286086">课程管理工具设置</translation>
 <translation id="978658824596356870">24 小时制</translation>

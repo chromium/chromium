@@ -1902,6 +1902,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2287617382468007324">Stampa indirizzo IPP in corso…</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni di un sito che non hai visitato di recente}other{Per proteggere i tuoi dati, sono state rimosse le autorizzazioni di siti che non hai visitato di recente}}</translation>
 <translation id="2287944065963043964">Schermata di accesso</translation>
+<translation id="2289567621059034186">Nuova scheda in basso</translation>
 <translation id="2290615375132886363">Pulsanti di navigazione in modalità tablet</translation>
 <translation id="2290703778620332549">Vuoi sostituire o creare un nuovo gruppo?</translation>
 <translation id="2291452790265535215">Prova a utilizzare il riquadro laterale per preferiti, percorsi e altro ancora</translation>
@@ -3266,6 +3267,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="322708765617468434">Puoi aggiungere un'altra persona al dispositivo in qualsiasi momento dopo la configurazione. Ogni persona può personalizzare la sua esperienza e mantenere privati i dati.</translation>
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3227701057281907159">Applicazione patch in corso…</translation>
+<translation id="3228962656492373217">Chiudi le schede in basso</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Rimuovila o sostituiscila con estensioni simili dal <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}other{Rimuovile o sostituiscile con estensioni simili dal <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Controlla la data</translation>
 <translation id="3230539834943294477">Visualizza articoli del Centro assistenza o trova assistenza per il dispositivo</translation>
@@ -5002,6 +5004,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4404843640767531781">L'app <ph name="APP_NAME" /> è stata bloccata da un genitore. Chiedi al tuo genitore l'autorizzazione per poterla usare.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, *.png</translation>
 <translation id="4405224443901389797">Sposta in…</translation>
+<translation id="4405580203042711503">Nuova scheda in basso</translation>
 <translation id="4405781821077215583">Ingrandisci o rimpicciolisci gli elementi sullo schermo, compreso il testo</translation>
 <translation id="4406308048672435032">Puoi rendere inattiva questa scheda o aggiornare per visualizzare di nuovo l'elenco completo</translation>
 <translation id="4406881185911439342">Seleziona gruppo</translation>
@@ -6718,6 +6721,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="5609231933459083978">L'applicazione non sembra essere valida.</translation>
 <translation id="5610867721023328944">Riprova o seleziona uno dei temi disponibili di seguito.</translation>
 <translation id="5611398002774823980">Salva nell'account</translation>
+<translation id="5611474372949142946">Chiudi le schede in basso</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notifica all'utente</translation>
 <translation id="5614553682702429503">Salvare la password?</translation>

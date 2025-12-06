@@ -83,6 +83,7 @@
 <translation id="1843347690926158494">‏‫Google لینز کے ساتھ اس ٹیب کو تلاش کریں</translation>
 <translation id="1849248141818021764">‏صرف پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو آپ کو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو حذف<ph name="END_LINK" /> کرنا ہوگا۔</translation>
 <translation id="1860536484129686729">‏Chrome کو اس سائٹ کیلئے آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
+<translation id="1867503717113754604">‏<ph name="START_GLIC_STYLING" />‫Gemini<ph name="END_GLIC_STYLING" /> استعمال کرنے کے لیے اپنے Google اکاؤنٹ سے Chrome میں سائن ان کریں</translation>
 <translation id="1873233029667955273">‏Google Chrome آپ کا ڈیفالٹ براؤزر نہیں ہے</translation>
 <translation id="1874309113135274312">‏Google Chrome بی ٹا (mDNS-In)</translation>
 <translation id="1877026089748256423">‏Chrome پرانا ہے</translation>
@@ -173,6 +174,7 @@
 <translation id="286025080868315611">‏Chrome کے کچھ ڈاؤن لوڈز کو مسدود کرنے کی وجہ جانیں</translation>
 <translation id="2861074815332034794">‏Chrome اپ ڈیٹ کیا جا رہا ہے (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="2871893339301912279">‏آپ Chrome میں سائن ان ہیں!</translation>
+<translation id="2875053229394024379">‏جب آپ اپنے Google اکاؤنٹ سے Chrome میں سائن ان کرتے ہیں تو آپ Gemini کے ساتھ اپنی Chrome پروفائل استعمال کر سکتے ہیں۔ <ph name="BEGIN_LINK" />‫Chrome میں سائن ان کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
 <translation id="2876628302275096482">‏اس بارے میں مزید جانیں کہ <ph name="BEGIN_LINK" />Chrome آپ کے ڈیٹا کو کس طرح نجی رکھتا ہے<ph name="END_LINK" /></translation>
 <translation id="2885378588091291677">ٹاسک مینیجر</translation>
 <translation id="2888126860611144412">‏Chrome کے بارے میں</translation>
@@ -222,6 +224,7 @@
 <translation id="3352986031709923790">تلاش کے حلقے کا اوپری بایاں کونا: <ph name="RIGHT" /> فیصد بائیں، <ph name="TOP" /> فیصد اوپر</translation>
 <translation id="3360895254066713204">‏Chrome مدد کنندہ</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏ابھی Chrome دوبارہ لانچ ہوگا}=1{‏1 سیکنڈ میں Chrome دوبارہ لانچ ہوگا}other{‏# سیکنڈ میں Chrome دوبارہ لانچ ہوگا}}</translation>
+<translation id="3380249972812870825">‏‫Chrome میں Gemini کھولنے کے لیے، <ph name="GLOBAL_HOTKEY" /> دبائیں</translation>
 <translation id="3396977131400919238">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Google Chrome دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="3428747202529429621">‏آپ کے سائن ان ہونے پر آپ کو Chrome پر محفوظ رکھتا ہے اور دیگر Google ایپس میں آپ کی سیکیورٹی کو بہتر بنانے کے لیے استعمال کیا جا سکتا ہے</translation>
 <translation id="3434246496373299699">‏جب آپ اپنے Google اکاؤنٹ سے سائن ان ہوتے ہیں تو Chrome آپ کے پاس ورڈز کو چیک کر سکتا ہے</translation>
@@ -349,6 +352,7 @@
 <translation id="4891791193823137474">‏Google Chrome کو پس منظر میں چلنے دیں</translation>
 <translation id="4895437082222824641">‏لنک کو نئے Chrome &amp;ٹیب میں کھولیں</translation>
 <translation id="4918844574251943176">تصویر کاپی ہو گئی</translation>
+<translation id="4926882258455737990">‏‫Chrome میں Gemini کے ساتھ ایک مختلف Google اکاؤنٹ استعمال کرنے کے لیے، <ph name="BEGIN_LINK" />ایک نئی پروفائل بنائیں<ph name="END_LINK" /> اور اس اکاؤنٹ سے سائن ان کریں جو آپ چاہتے ہیں</translation>
 <translation id="492720062778050435">‏Chrome تجویز کرتا ہے کہ آپ اس ایکسٹینشن کا جائزہ لیں</translation>
 <translation id="4946912144186040233">‏‫Chrome فارمز کو بہتر طور پر سمجھتا ہے اور آپ کے لیے انہیں تیزی سے آٹو فل کر سکتا ہے۔ یہ ترتیب آف ہے۔</translation>
 <translation id="4953650215774548573">‏Google Chrome کو اپنے ڈیفالٹ براؤزر کے بطور سیٹ کریں</translation>
@@ -374,6 +378,7 @@
 ممکن ہے کچھ خصوصیات دستیاب نہ ہوں۔ براہ کرم ایک مختلف پروفائل ڈائرکٹری کا تعین کریں یا Chrome کا ایک جدید تر ورژن استعمال کریں۔</translation>
 <translation id="5174969993834422967">آپ عام طور پر اطلاعات کو مسدود کرتے ہیں۔ اس سائٹ کو آپ کو مطلع کرنے کی اجازت دینے کے لیے، اپنے مقام بار کے دائیں کونے میں نوٹیفکیشن آئیکن پر کلک کریں۔</translation>
 <translation id="5174983315706567306">ڈسک میں کافی اسپیس نہیں ہے۔</translation>
+<translation id="5179933070463113976">‏‫Chrome میں Gemini استعمال کرنے کے لیے، آپ کا اپنے Google اکاؤنٹ سے Chrome میں سائن ان ہونا ضروری ہے</translation>
 <translation id="5190467473654176081">‏‫Chrome کو نئی شکل دینے کے لیے اسے حسب ضرورت بنائیں</translation>
 <translation id="5201744974236816379">‏Chrome اپ ڈیٹ</translation>
 <translation id="521447420733633466">‏اگر آپ کسی آلے کا اشتراک کرتے ہیں تو دوست اور اہل خانہ الگ الگ براؤز کر سکتے ہیں اور Chrome کو اپنی مرضی کے مطابق سیٹ اپ کر سکتے ہیں</translation>
@@ -394,6 +399,7 @@
 <translation id="5430073640787465221">‏آپ کی ترجیحات کی فائل خراب یا غلط ہے۔
 
 Google Chrome آپ کی ترتیبات کو بازیافت کرنے سے قاصر ہے۔</translation>
+<translation id="5465210843490471889">‏<ph name="START_GLIC_STYLING" />‫Gemini<ph name="END_GLIC_STYLING" /> کے ساتھ استعمال کرنے کے لیے Chrome پروفائل کا انتخاب کریں</translation>
 <translation id="5468572406162360320">‏ان خصوصیات کو بہتر بنانے میں مدد کے لیے، Chrome ان کے ساتھ آپ کے تعاملات کو Google کو بھیجتا ہے۔ اس ڈیٹا کو انسان جائزہ کار پڑھ سکتے ہیں، اس پر کارروائی کر سکتے ہیں اور تشریح کر سکتے ہیں۔</translation>
 <translation id="5510398294750420479">‏دوران سفر ہونے پر تحفظ کی ایک اضافی پرت شامل کرنے کے لیے اپنے فون پر Chrome ڈاؤن لوڈ کریں</translation>
 <translation id="5524890928877629608">تلاش کے حلقے کا اوپری دایاں کونا: <ph name="LEFT" /> فیصد دائیں، <ph name="TOP" /> فیصد اوپر</translation>

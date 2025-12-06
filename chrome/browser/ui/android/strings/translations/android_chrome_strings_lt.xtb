@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Atšaukta „<ph name="SITE_NAME" />“ prenumerata. Jūsų bus klausiama dar kartą, kai kitą kartą apsilankysite.</translation>
 <translation id="1340839264183302272">Išeiti iš grupės</translation>
 <translation id="1342886103232377846">Jei norite patikrinti, ar nėra pažeistų slaptažodžių, eikite į „Google“ slaptažodžių tvarkyklę</translation>
+<translation id="1343830902827845050">Prisijungimas prie „Chrome“</translation>
 <translation id="1344653310988386453">Įtraukite nuorodą į paryškintą tekstą</translation>
 <translation id="1347468774581902829">Tvarkyti veiklą</translation>
 <translation id="1355088659320425659">Istorija ir skirtukai</translation>
@@ -718,6 +719,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="414128724510021958">Svetainės kompiuteriams, kurių užklausos pateikiamos pagal numatytuosius nustatymus</translation>
 <translation id="4162867837470729563">Bendrinimo parinkčių sąrašas per visą ekrano aukštį.</translation>
 <translation id="4170011742729630528">Paslauga nepasiekiama; vėliau bandykite dar kartą.</translation>
+<translation id="4170577491341606575">Gaunami jūsų duomenys\u2026</translation>
 <translation id="4177222230309051052">Gaukite visas žymes</translation>
 <translation id="4177501066905053472">Skelbimų temos</translation>
 <translation id="417865198503699526">Ieškokite nustatymo</translation>
@@ -1457,6 +1459,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7115358764509798967">Numatytoji sistemos vertė</translation>
 <translation id="7117485132243600300">Tvarkykite stebimą turinį, siūlomas temas ir paieškas</translation>
 <translation id="7119984597597798764">Uždaryti „<ph name="INSTANCE_TITLE" />“</translation>
+<translation id="7121179479711575744">Prisijungti prie „Chrome“</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Peržiūrėti vienos svetainės leidimai}one{Peržiūrėti # svetainės leidimai}few{Peržiūrėti # svetainių leidimai}many{Peržiūrėti # svetainės leidimai}other{Peržiūrėti # svetainių leidimai}}</translation>
 <translation id="7138678301420049075">Kitas</translation>
 <translation id="7140829094791862589">Rūšiuoti neautomatiškai</translation>

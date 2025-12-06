@@ -907,6 +907,7 @@
 <translation id="4525629404718770519">Näytä linkkien esikatselut</translation>
 <translation id="452750746583162491">Tarkista synkronoitu datasi</translation>
 <translation id="4532845899244822526">Valitse kansio</translation>
+<translation id="454217142158335225">Voit avata suljetut kohteet uudelleen Viimeaikaiset välilehdet- tai Välilehtiryhmät-osioista. Kiinnitettyjä välilehtiä ei suljeta.</translation>
 <translation id="4547181496285029457">Palaa viimeisimmälle välilehdelle</translation>
 <translation id="4552042254369397518">Kopioidaan…</translation>
 <translation id="4564893319561643483">Piilota "<ph name="TITLE" />"</translation>
@@ -1841,6 +1842,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="7887174313503389866">Osallistu tärkeimpien yksityisyys‑ ja turvallisuusasetusten esittelyyn. Lisää vaihtoehtoja yksittäisissä asetuksissa.</translation>
 <translation id="7887198238286927132">Tietojesi suojaamiseksi Chrome ei täytä tätä kenttää automaattisesti.</translation>
 <translation id="7887552845761062935">Avaa lisää vaihtoehtoja kaksoisnapauttamalla ja koskettamalla pitkään</translation>
+<translation id="7888562068293422208">Suljetaanko kaikki?</translation>
 <translation id="7889910613639381518">Helppo ja suojattu pääsy Google Salasanat ‑widgetillä</translation>
 <translation id="7899199123054742721">Merkitse kaikki lukemattomiksi</translation>
 <translation id="7911190106180361398">Organisaatiosi ei salli sinun synkronoida kaikkea.</translation>

@@ -1916,6 +1916,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2287617382468007324">IPP Address sa Pag-print</translation>
 <translation id="2287704681286152065">{NUM_SITES,plural, =1{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa isang site na hindi mo binisita kamakailan}one{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo binisita kamakailan}other{Para maprotektahan ang iyong data, inalis ang mga pahintulot sa mga site na hindi mo binisita kamakailan}}</translation>
 <translation id="2287944065963043964">Screen sa pag-log in</translation>
+<translation id="2289567621059034186">Bagong tab sa ibaba</translation>
 <translation id="2290615375132886363">Mga button sa pag-navigate sa tablet</translation>
 <translation id="2290703778620332549">Palitan o Gumawa ng Bagong Grupo?</translation>
 <translation id="2291452790265535215">Subukang gamitin ang panel sa gilid para sa mga bookmark, journey, at higit pa</translation>
@@ -3280,6 +3281,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="322708765617468434">Puwede kang magdagdag ng isa pang tao sa device anumang oras pagkatapos ng pag-set up. Magagawa ng bawat taong i-personalize ang kanyang experience at panatilihing pribado ang data.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
 <translation id="3227701057281907159">Pag-patch</translation>
+<translation id="3228962656492373217">Isara ang mga tab sa ibaba</translation>
 <translation id="3228985231489269630">{NUM_EXTENSIONS,plural, =1{Alisin o palitan ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />.}one{Alisin o palitan ang mga ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}other{Alisin o palitan ang mga ito ng mga katulad na extension mula sa <ph name="BEGIN_LINK" />Chrome Web Store<ph name="END_LINK" />}}</translation>
 <translation id="3229254977651514276">Tingnan ang petsa</translation>
 <translation id="3230539834943294477">Tumingin ng mga artikulo ng tulong o humanap ng suporta sa device</translation>
@@ -5016,6 +5018,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4404843640767531781">Na-block ng iyong magulang ang <ph name="APP_NAME" />. Humiling sa iyong magulang ng pahintulot na gamitin ang app na ito.</translation>
 <translation id="4405117686468554883">*.jpeg, *.jpg, at *.png</translation>
 <translation id="4405224443901389797">Ilipat sa…</translation>
+<translation id="4405580203042711503">Bagong Tab sa Ibaba</translation>
 <translation id="4405781821077215583">Paliitin o palakihin ang mga item sa iyong screen, kabilang ang text</translation>
 <translation id="4406308048672435032">Puwede mong gawing hindi aktibo ang tab na ito o mag-refresh para makita ulit ang buong listahan</translation>
 <translation id="4406881185911439342">I-focus ang grupo</translation>
@@ -6733,6 +6736,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5609231933459083978">Mukhang di-wasto ang application.</translation>
 <translation id="5610867721023328944">Subukan ulit o pumili mula sa isa sa mga available na tema sa ibaba.</translation>
 <translation id="5611398002774823980">I-save sa account</translation>
+<translation id="5611474372949142946">Isara ang Mga Tab sa Ibaba</translation>
 <translation id="561236229031062396"><ph name="SHORTCUT_NAME" />, <ph name="APP_FULL_NAME" /></translation>
 <translation id="5614190747811328134">Notice sa User</translation>
 <translation id="5614553682702429503">I-save ang password?</translation>

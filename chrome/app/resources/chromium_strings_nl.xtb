@@ -44,6 +44,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1497802159252041924">Installatiefout: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Deze pagina wordt beschermd</translation>
 <translation id="1524282610922162960">Een Chromium-tabblad delen</translation>
+<translation id="154404805518949443">Inloggen bij Chromium</translation>
 <translation id="1547469039832541117">Beëindigd de gemarkeerde taak.</translation>
 <translation id="1553461853655228091">Chromium heeft toegangsrechten voor de camera nodig om een 3D-kaart van je omgeving te maken</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Deze extensie wordt niet meer ondersteund. Chromium raadt je aan deze te verwijderen.}other{Deze extensies worden niet meer ondersteund. Chromium raadt je aan deze te verwijderen.}}</translation>
@@ -231,6 +232,7 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="3530103706039034513"><ph name="EXISTING_USER" /> is al ingelogd.  Als je je browsegegevens gescheiden wilt houden, log je in Chromium in op je eigen profiel bij als <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Als je je scherm wilt delen, sta je schermopname voor Chromium toe in Systeeminstellingen.</translation>
 <translation id="3597003331831379823">Kan configuratie met rechten op hoger niveau niet uitvoeren. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Inloggen bij Chromium</translation>
 <translation id="3639635944603682591">De browsegegevens van deze persoon worden verwijderd van dit apparaat. Als je de gegevens wilt herstellen, log je in bij Chromium als <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start.}=1{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je incognitovenster kan niet opnieuw worden geopend.}other{Er is een nieuwe update voor Chromium beschikbaar die wordt uitgevoerd zodra je het programma opnieuw start. Je # incognitovensters kunnen niet opnieuw worden geopend.}}</translation>
 <translation id="3651803019964686660">Als je een nummer vanaf <ph name="ORIGIN" /> naar je Android-telefoon wilt sturen, log je in bij Chromium op beide apparaten.</translation>

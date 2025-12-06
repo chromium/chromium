@@ -45,6 +45,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="1497802159252041924">Error sa pag-install: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Pinoprotektahan ang page na ito</translation>
 <translation id="1524282610922162960">Magbahagi ng tab ng Chromium</translation>
+<translation id="154404805518949443">Mag-sign in sa Chromium</translation>
 <translation id="1547469039832541117">Tatapusin ang naka-highlight na gawain.</translation>
 <translation id="1553461853655228091">Kailangan ng Chromium ng access sa iyong camera para gumawa ng 3D na mapa ng kapaligiran mo</translation>
 <translation id="1555494096857516577">{NUM_EXTENSIONS,plural, =1{Hindi na sinusuportahan ang extension na ito. Inirerekomenda ng Chromium na alisin mo ito.}one{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}other{Hindi na sinusuportahan ang mga extension na ito. Inirerekomenda ng Chromium na alisin mo ang mga ito.}}</translation>
@@ -232,6 +233,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3530103706039034513">Naka-sign in na si <ph name="EXISTING_USER" />.  Para panatilihing hiwalay ang iyong pag-browse, mag-sign in sa Chromium sa sarili mong profile bilang <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="3561853857681580870">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chromium sa System Settings.</translation>
 <translation id="3597003331831379823">Hindi napagana ang pag-set up na may mga mas mataas na pribilehiyo. <ph name="METAINSTALLER_ERROR" /></translation>
+<translation id="3600428265489994557">Mag-sign in sa Chromium</translation>
 <translation id="3639635944603682591">Made-delete sa device na ito ang data sa pag-browse ng taong ito. Para ma-recover ang data, mag-sign in sa Chromium bilang <ph name="USER_EMAIL" />.</translation>
 <translation id="364817392622123556">{COUNT,plural, =0{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit.}=1{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong Incognito window.}one{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # Incognito window.}other{May available na bagong update para sa Chromium at ilalapat ito sa sandaling maglunsad ka ulit. Hindi bubukas ulit ang iyong # na Incognito window.}}</translation>
 <translation id="3651803019964686660">Para magpadala ng numero sa iyong Android phone mula sa <ph name="ORIGIN" />, mag-sign in sa Chromium sa parehong device.</translation>

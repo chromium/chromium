@@ -87,6 +87,7 @@
 <translation id="1336996151357442890"><ph name="SITE_NAME" /> ನಿಂದ ಅನ್‌ಸಬ್‌‌ಸ್ಕ್ರೈಬ್ ಮಾಡಲಾಗಿದೆ. ನೀವು ಮುಂದಿನ ಬಾರಿ ಭೇಟಿ ನೀಡಿದಾಗ ಮತ್ತೊಮ್ಮೆ ಕೇಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="1340839264183302272">ಗುಂಪನ್ನು ತೊರೆಯಿರಿ</translation>
 <translation id="1342886103232377846">ಅಪಾಯಕ್ಕೀಡಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು, Google Password Manager ಗೆ ಹೋಗಿ</translation>
+<translation id="1343830902827845050">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="1344653310988386453">ಹೈಲೈಟ್ ಮಾಡಲು ಲಿಂಕ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="1347468774581902829">ಚಟುವಟಿಕೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="1355088659320425659">ಇತಿಹಾಸ ಮತ್ತು ಟ್ಯಾಬ್‌ಗಳು</translation>
@@ -718,6 +719,7 @@
 <translation id="414128724510021958">ಡೆಸ್ಕ್‌ಟಾಪ್ ಸೈಟ್‌ಗಳನ್ನು ಡಿಫಾಲ್ಟ್ ಆಗಿ ವಿನಂತಿಸಲಾಗಿದೆ</translation>
 <translation id="4162867837470729563">ಹಂಚಿಕೊಳ್ಳುವ ಆಯ್ಕೆಗಳ ಪಟ್ಟಿಯನ್ನು ಸ್ಕ್ರೀನ್‌ನ ಪೂರ್ಣ ಎತ್ತರದಲ್ಲಿ ತೆರೆಯಲಾಗಿದೆ.</translation>
 <translation id="4170011742729630528">ಈ ಸೇವೆಯು ಲಭ್ಯವಿಲ್ಲ; ನಂತರ ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
+<translation id="4170577491341606575">ನಿಮ್ಮ ವಿಷಯವನ್ನು ಪಡೆಯಲಾಗುತ್ತಿದೆ\u2026</translation>
 <translation id="4177222230309051052">ನಿಮ್ಮ ಎಲ್ಲಾ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆಯಿರಿ</translation>
 <translation id="4177501066905053472">ಜಾಹೀರಾತು ವಿಷಯಗಳು</translation>
 <translation id="417865198503699526">ಸೆಟ್ಟಿಂಗ್‌ಗಾಗಿ ಹುಡುಕಿ</translation>
@@ -1456,6 +1458,7 @@
 <translation id="7115358764509798967">ಸಿಸ್ಟಂ ಡೀಫಾಲ್ಟ್</translation>
 <translation id="7117485132243600300">ನೀವು ಫಾಲೋ ಮಾಡುವ ಕಂಟೆಂಟ್‌ ಮತ್ತು ಸೂಚಿಸಲಾದ ವಿಷಯಗಳು ಹಾಗೂ ಹುಡುಕಾಟಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7119984597597798764"><ph name="INSTANCE_TITLE" /> ಅನ್ನು ಮುಚ್ಚಿ</translation>
+<translation id="7121179479711575744">Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{1 ಸೈಟ್‌ಗಾಗಿ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}one{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}other{# ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಗಳನ್ನು ಪರಿಶೀಲಿಸಲಾಗಿದೆ}}</translation>
 <translation id="7138678301420049075">ಇತರೆ</translation>
 <translation id="7140829094791862589">ಹಸ್ತಚಾಲಿತ ಪ್ರಕಾರ ವಿಂಗಡಣೆ</translation>

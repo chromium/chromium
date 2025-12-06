@@ -12439,6 +12439,10 @@ L'impostazione predefinita è RollbackDisabled.</translation>
 <translation id="966425658642788645">Applica il comportamento predefinito</translation>
 <translation id="971677226939413180">L'opzione Stampa come immagine non può essere selezionata dagli utenti</translation>
 <translation id="974349541138387272">Specifica il modello URI del resolver DNS over HTTPS desiderato</translation>
+<translation id="975005959611437646">Se la policy viene attivata, le API per la quota di spazio di archiviazione restituiranno un valore statico pari a utilizzo + min (10 GiB, disco arrotondato per eccesso al GiB più vicino).
+Se la policy viene disattivata, le API per la quota di spazio di archiviazione in genere restituiranno un valore dinamico proporzionale allo spazio totale disponibile sul dispositivo, indipendentemente dall'utilizzo.
+Se la policy non viene configurata, le API per la quota di spazio di archiviazione utilizzeranno il comportamento predefinito di Chrome.
+Questa impostazione non influisce sui siti con autorizzazioni di spazio di archiviazione illimitato. Neanche la quota applicata è interessata.</translation>
 <translation id="976415389478739655">Richiedi che i dispositivi degli utenti siano su una rete gestita per poter far parte del corso <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Impostazioni degli strumenti di gestione dei corsi</translation>
 <translation id="978658824596356870">Formato dell'orologio di 24 ore</translation>

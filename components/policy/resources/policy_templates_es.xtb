@@ -12297,6 +12297,10 @@ El valor predeterminado es RollbackDisabled.</translation>
 <translation id="966425658642788645">Aplicar comportamiento predeterminado</translation>
 <translation id="971677226939413180">Opción Imprimir como imagen no disponible para el usuario.</translation>
 <translation id="974349541138387272">Especifica la plantilla URI de resolución de DNS-over-HTTPS deseada</translation>
+<translation id="975005959611437646">Si se habilita, las APIs de cuota de almacenamiento devolverán un valor estático igual al uso más un mínimo (10 GiB, espacio en disco redondeado al alza en tramos de 1 GiB).
+Si se inhabilita, las APIs de cuota de almacenamiento suelen devolver un valor dinámico proporcional al espacio total disponible en el dispositivo, independientemente del uso.
+Si no se define, las APIs de cuota de almacenamiento usarán el comportamiento predeterminado de Chrome.
+Los sitios con permisos de almacenamiento ilimitado no se ven afectados por este ajuste. Tampoco se verá afectada la cuota obligatoria.</translation>
 <translation id="976415389478739655">Requerir que los dispositivos de los usuarios estén en una red gestionada para formar parte de la clase <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Ajustes de las herramientas de gestión de clases</translation>
 <translation id="978658824596356870">Formato de reloj de 24 horas</translation>

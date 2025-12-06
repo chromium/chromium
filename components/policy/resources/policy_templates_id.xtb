@@ -12754,6 +12754,10 @@ Nilai defaultnya adalah RollbackDisabled.</translation>
 <translation id="966425658642788645">Terapkan perilaku default</translation>
 <translation id="971677226939413180">Opsi Cetak sebagai gambar tidak tersedia bagi pilihan pengguna.</translation>
 <translation id="974349541138387272">Menentukan template URI pada resolver DNS-over-HTTPS yang diinginkan</translation>
+<translation id="975005959611437646">Jika kebijakan ini diaktifkan, API kuota penyimpanan akan menampilkan nilai statis yang sama dengan penggunaan + min(10 GiB, disk dibulatkan ke 1 GiB terdekat).
+Jika kebijakan ini dinonaktifkan, API kuota penyimpanan umumnya akan menampilkan nilai dinamis yang proporsional dengan total ruang yang tersedia di perangkat, terlepas dari penggunaan.
+Jika kebijakan ini tidak disetel, API kuota penyimpanan akan menggunakan perilaku Chrome default.
+Situs dengan izin penyimpanan tak terbatas tidak akan terpengaruh oleh setelan ini. Kuota yang diterapkan juga tidak akan terpengaruh.</translation>
 <translation id="976415389478739655">Wajibkan perangkat pengguna berada di jaringan terkelola agar dapat bergabung ke kelas <ph name="CLASS_TOOLS_NAME" /></translation>
 <translation id="978619365985286086">Setelan alat pengelolaan kelas</translation>
 <translation id="978658824596356870">Format jam 24 jam</translation>

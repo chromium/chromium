@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Sluttet å abonnere på <ph name="SITE_NAME" />. Du blir spurt på nytt neste gang du besøker nettstedet.</translation>
 <translation id="1340839264183302272">Forlat gruppen</translation>
 <translation id="1342886103232377846">For å sjekke om du har passord som er utsatt for sikkerhetsbrudd, gå til Google Passordlagring</translation>
+<translation id="1343830902827845050">Logg på Chrome</translation>
 <translation id="1344653310988386453">Inkluder link til markert tekst</translation>
 <translation id="1347468774581902829">Administrer aktivitet</translation>
 <translation id="1355088659320425659">Logg og faner</translation>
@@ -718,6 +719,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="414128724510021958">Nettsteder for datamaskiner blir forespurt som standard</translation>
 <translation id="4162867837470729563">Listen over delingsalternativer er åpnet i full høyde.</translation>
 <translation id="4170011742729630528">Tjenesten er ikke tilgjengelig. Prøv på nytt senere.</translation>
+<translation id="4170577491341606575">Henter tingene dine\u2026</translation>
 <translation id="4177222230309051052">Få alle bokmerkene dine</translation>
 <translation id="4177501066905053472">Annonseemner</translation>
 <translation id="417865198503699526">Søk etter en innstilling</translation>
@@ -1457,6 +1459,7 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7115358764509798967">Systemstandard</translation>
 <translation id="7117485132243600300">Administrer innholdet du følger og foreslåtte emner og søk</translation>
 <translation id="7119984597597798764">Lukk <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Logg på Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Tillatelsene er gjennomgått for 1 nettsted}other{Tillatelsene er gjennomgått for # nettsteder}}</translation>
 <translation id="7138678301420049075">Annet</translation>
 <translation id="7140829094791862589">Sorter manuelt</translation>

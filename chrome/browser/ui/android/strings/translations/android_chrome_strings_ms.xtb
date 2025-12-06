@@ -87,6 +87,7 @@
 <translation id="1336996151357442890">Telah menyahlanggan daripada <ph name="SITE_NAME" />. Anda akan ditanya lagi pada lawatan akan datang.</translation>
 <translation id="1340839264183302272">Tinggalkan kumpulan</translation>
 <translation id="1342886103232377846">Untuk menyemak kata laluan yang terjejas, akses Google Password Manager</translation>
+<translation id="1343830902827845050">Log masuk ke Chrome</translation>
 <translation id="1344653310988386453">Sertakan pautan kepada serlahan</translation>
 <translation id="1347468774581902829">Urus aktiviti</translation>
 <translation id="1355088659320425659">Sejarah dan tab</translation>
@@ -718,6 +719,7 @@ Orang yang mengetahui ungkapan laluan anda sahaja yang dapat membaca data anda y
 <translation id="414128724510021958">Laman desktop diminta secara lalai</translation>
 <translation id="4162867837470729563">Senarai pilihan perkongsian pada ketinggian penuh.</translation>
 <translation id="4170011742729630528">Perkhidmatan tidak tersedia; cuba lagi kemudian.</translation>
+<translation id="4170577491341606575">Mendapatkan data anda\u2026</translation>
 <translation id="4177222230309051052">Dapatkan semua penanda halaman anda</translation>
 <translation id="4177501066905053472">Topik iklan</translation>
 <translation id="417865198503699526">Cari tetapan</translation>
@@ -1457,6 +1459,7 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7115358764509798967">Ciri lalai sistem</translation>
 <translation id="7117485132243600300">Urus kandungan yang anda ikuti serta topik dan carian yang dicadangkan</translation>
 <translation id="7119984597597798764">Tutup <ph name="INSTANCE_TITLE" /></translation>
+<translation id="7121179479711575744">Log masuk ke Chrome</translation>
 <translation id="7136902389402789299">{NUM_SITES,plural, =1{Kebenaran telah disemak untuk 1 laman}other{Kebenaran telah disemak untuk # laman}}</translation>
 <translation id="7138678301420049075">Lain-lain</translation>
 <translation id="7140829094791862589">Isih ikut tertib manual</translation>
