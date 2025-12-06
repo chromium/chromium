@@ -14,6 +14,8 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 
 namespace storage {
+// The "map-" prefix for all key/value pairs.
+inline constexpr const uint8_t kMapIdPrefix[] = {'m', 'a', 'p', '-'};
 
 // The "namespace-" prefix for all metadata entries.
 inline constexpr const uint8_t kNamespacePrefix[] = {'n', 'a', 'm', 'e', 's',
@@ -22,6 +24,10 @@ inline constexpr const uint8_t kNamespacePrefix[] = {'n', 'a', 'm', 'e', 's',
 // For metadata keys, splits the session id and storage key:
 // "namespace-<session_id>-<storage_key>".
 inline constexpr const uint8_t kNamespaceStorageKeySeparator = '-';
+
+// For key/value pairs, splits the map id and the script provided key:
+// "map-<map_id>-<key from script>".
+inline constexpr const uint8_t kMapIdKeySeparator = '-';
 
 // The "next-map-id" key.
 inline constexpr const uint8_t kNextMapIdKey[] = {'n', 'e', 'x', 't', '-', 'm',
@@ -84,10 +90,16 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   DomStorageDatabaseLevelDB& GetLevelDB() override;
   StatusOr<Metadata> ReadAllMetadata() override;
   DbStatus PutMetadata(Metadata metadata) override;
+
+  // For each storage key, removes the metadata entry:
+  // "namespace-<session_id>-<storage_key>".
+  //
+  // For each deleted map, removes all key/value pairs using the prefix:
+  // "map-<map_id>-".
   DbStatus DeleteStorageKeysFromSession(
       std::string session_id,
-      std::vector<blink::StorageKey> storage_keys,
-      absl::flat_hash_set<int64_t> excluded_cloned_map_ids) override;
+      std::vector<blink::StorageKey> metadata_to_delete,
+      std::vector<MapLocator> maps_to_delete) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.
@@ -100,6 +112,13 @@ class SessionStorageLevelDB : public DomStorageDatabase {
   // swappable backend for SQLite.
   static Key CreateMapMetadataKey(std::string session_id,
                                   const blink::StorageKey& storage_key);
+
+  // Returns the prefix for all key/value pairs that belong to a specific map.
+  // For example: "map-1-".
+  //
+  // TODO(crbug.com/377242771): Make private after refactoring to support a
+  // swappable backend for SQLite.
+  static Key GetMapPrefix(int64_t map_id);
 
  private:
   // Parses the value from the next map ID key in the LevelDB.  Converts the

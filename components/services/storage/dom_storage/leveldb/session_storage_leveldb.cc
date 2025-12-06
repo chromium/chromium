@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -130,10 +131,28 @@ DbStatus SessionStorageLevelDB::PutMetadata(Metadata metadata) {
 
 DbStatus SessionStorageLevelDB::DeleteStorageKeysFromSession(
     std::string session_id,
-    std::vector<blink::StorageKey> storage_keys,
-    absl::flat_hash_set<int64_t> excluded_cloned_map_ids) {
-  // TODO(crbug.com/377242771): Implement and use for session storage.
-  return DbStatus::NotSupported("");
+    std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<MapLocator> maps_to_delete) {
+  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+      leveldb_->CreateBatchOperation();
+
+  // Delete each storage key's metadata.
+  for (const blink::StorageKey& storage_key : metadata_to_delete) {
+    batch->Delete(CreateMapMetadataKey(session_id, storage_key));
+  }
+
+  // Delete the key/value pairs in `maps_to_delete`.
+  for (const DomStorageDatabase::MapLocator& map : maps_to_delete) {
+    // A valid `map` must be in `storage_keys` and `session_id`.
+    CHECK_EQ(map.session_id(), session_id);
+    DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
+
+    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.map_id().value()));
+    if (!status.ok()) {
+      return status;
+    }
+  }
+  return batch->Commit();
 }
 
 DbStatus SessionStorageLevelDB::RewriteDB() {
@@ -176,6 +195,25 @@ DomStorageDatabase::Key SessionStorageLevelDB::CreateMapMetadataKey(
   key.insert(key.end(), serialized_storage_key.begin(),
              serialized_storage_key.end());
   return key;
+}
+
+DomStorageDatabase::Key SessionStorageLevelDB::GetMapPrefix(int64_t map_id) {
+  std::string map_id_text = base::NumberToString(map_id);
+
+  Key map_prefix;
+  map_prefix.reserve(std::size(kMapIdPrefix) + map_id_text.size() +
+                     /*kMapIdKeySeparator=*/1);
+
+  // Append "map-".
+  map_prefix.insert(map_prefix.end(), std::begin(kMapIdPrefix),
+                    std::end(kMapIdPrefix));
+
+  // Append `map_id` as text.
+  map_prefix.insert(map_prefix.end(), map_id_text.begin(), map_id_text.end());
+
+  // Append "-".
+  map_prefix.push_back(kMapIdKeySeparator);
+  return map_prefix;
 }
 
 StatusOr<int64_t> SessionStorageLevelDB::ReadNextMapId() const {

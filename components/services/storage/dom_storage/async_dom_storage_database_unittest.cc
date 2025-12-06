@@ -131,9 +131,13 @@ TEST_F(AsyncDomStorageDatabaseTest,
   }
 
   // Delete the first and third storage keys.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFirstStorageKey);
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
+
   DeleteStorageKeysFromSessionSync(*database, kLocalStorageSessionId,
                                    {kFirstStorageKey, kThirdStorageKey},
-                                   /*excluded_cloned_map_ids=*/{});
+                                   std::move(maps_to_delete));
 
   ASSERT_NO_FATAL_FAILURE(ReadAllMetadataSync(*database, &read_metadata));
   EXPECT_EQ(read_metadata.next_map_id, std::nullopt);

@@ -145,12 +145,12 @@ void PutMetadataSync(AsyncDomStorageDatabase& database,
 void DeleteStorageKeysFromSessionSync(
     AsyncDomStorageDatabase& database,
     std::string session_id,
-    std::vector<blink::StorageKey> storage_keys,
-    absl::flat_hash_set<int64_t> excluded_cloned_map_ids) {
+    std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete) {
   base::test::TestFuture<DbStatus> status_future;
   database.DeleteStorageKeysFromSession(
-      std::move(session_id), std::move(storage_keys),
-      std::move(excluded_cloned_map_ids), status_future.GetCallback());
+      std::move(session_id), std::move(metadata_to_delete),
+      std::move(maps_to_delete), status_future.GetCallback());
 
   const DbStatus& status = status_future.Get();
   EXPECT_TRUE(status.ok()) << status.ToString();

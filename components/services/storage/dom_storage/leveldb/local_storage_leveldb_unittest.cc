@@ -706,9 +706,12 @@ TEST_F(LocalStorageLevelDBTest,
           },
       }));
 
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, {kFakeUrlStorageKey},
-      /*excluded_cloned_map_ids=*/{});
+      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which should only include the
@@ -735,9 +738,12 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithWriteMetadata) {
           },
       }));
 
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, {kFakeUrlStorageKey},
-      /*excluded_cloned_map_ids=*/{});
+      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which should only include the
@@ -750,8 +756,7 @@ TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithWriteMetadata) {
   VerifyDatabaseVersionEntry(all_entries[0]);
 }
 
-TEST_F(LocalStorageLevelDBTest,
-       DeleteStorageKeysFromSessionWithWriteMapKeyValues) {
+TEST_F(LocalStorageLevelDBTest, DeleteStorageKeysFromSessionWithMapKeyValues) {
   std::unique_ptr<LocalStorageLevelDB> local_storage_leveldb;
   ASSERT_NO_FATAL_FAILURE(OpenInMemory(&local_storage_leveldb));
 
@@ -768,9 +773,12 @@ TEST_F(LocalStorageLevelDBTest,
                        },
                    }));
 
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, {kFakeUrlStorageKey},
-      /*excluded_cloned_map_ids=*/{});
+      kLocalStorageSessionId, /*metadata_to_delete=*/{kFakeUrlStorageKey},
+      std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which should only include the
@@ -851,9 +859,14 @@ TEST_F(LocalStorageLevelDBTest,
       }));
 
   // Erase the first and third storage keys.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
+
   DbStatus status = local_storage_leveldb->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, {kFakeUrlStorageKey, kThirdStorageKey},
-      /*excluded_cloned_map_ids=*/{});
+      kLocalStorageSessionId,
+      /*metadata_to_delete=*/{kFakeUrlStorageKey, kThirdStorageKey},
+      std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which should include the second
@@ -883,15 +896,22 @@ TEST_F(LocalStorageLevelDBTest,
   EXPECT_EQ(all_entries[3].value, ToBytes("value_3"));
 
   // Erase all the storage keys.
+  maps_to_delete.clear();
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFakeUrlStorageKey);
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kSecondStorageKey);
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kThirdStorageKey);
+  maps_to_delete.emplace_back(kLocalStorageSessionId, kFourthStorageKey);
+
   status = local_storage_leveldb->DeleteStorageKeysFromSession(
       kLocalStorageSessionId,
+      /*metadata_to_delete=*/
       {
           kFakeUrlStorageKey,
           kSecondStorageKey,
           kThirdStorageKey,
           kFourthStorageKey,
       },
-      /*excluded_cloned_map_ids=*/{});
+      std::move(maps_to_delete));
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // Verify the contents in the database, which should only include the

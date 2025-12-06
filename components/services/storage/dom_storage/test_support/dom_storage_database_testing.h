@@ -57,8 +57,8 @@ void PutMetadataSync(AsyncDomStorageDatabase& database,
 void DeleteStorageKeysFromSessionSync(
     AsyncDomStorageDatabase& database,
     std::string session_id,
-    std::vector<blink::StorageKey> storage_keys,
-    absl::flat_hash_set<int64_t> excluded_cloned_map_ids);
+    std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
 
 }  // namespace storage
 

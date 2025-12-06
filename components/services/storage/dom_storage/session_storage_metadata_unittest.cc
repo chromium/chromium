@@ -288,11 +288,12 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   ReadMetadataFromDatabase(&metadata);
 
   // First delete an area with a shared map.
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  metadata.DeleteArea(test_namespace1_id_, test_storage_key1_, &tasks);
-  DbStatus status;
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
+  scoped_refptr<SessionStorageMetadata::MapData> map_data =
+      metadata.TakeExistingMap(test_namespace1_id_, test_storage_key1_);
+  EXPECT_EQ(map_data->ReferenceCount(), 1);
+
+  DeleteStorageKeysFromSessionSync(*database_, test_namespace1_id_,
+                                   {test_storage_key1_}, /*maps_to_delete=*/{});
 
   // Verify in-memory metadata is correct.
   auto ns1_entry = metadata.GetOrCreateNamespaceEntry(test_namespace1_id_);
@@ -316,10 +317,16 @@ TEST_F(SessionStorageMetadataTest, DeleteArea) {
   EXPECT_TRUE(base::Contains(contents, StdStringToUint8Vector("map-4-key1")));
 
   // Now delete an area with a unique map.
-  tasks.clear();
-  metadata.DeleteArea(test_namespace2_id_, test_storage_key2_, &tasks);
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
+  map_data = metadata.TakeExistingMap(test_namespace2_id_, test_storage_key2_);
+  EXPECT_EQ(map_data->ReferenceCount(), 0);
+
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(test_namespace2_id_, test_storage_key2_,
+                              map_data->map_id());
+
+  DeleteStorageKeysFromSessionSync(*database_, test_namespace2_id_,
+                                   {test_storage_key2_},
+                                   std::move(maps_to_delete));
 
   // Verify in-memory metadata is correct.
   EXPECT_FALSE(base::Contains(ns1_entry->second, test_storage_key1_));

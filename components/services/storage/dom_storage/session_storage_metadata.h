@@ -118,13 +118,11 @@ class SessionStorageMetadata {
   void DeleteNamespace(const std::string& namespace_id,
                        std::vector<BatchDatabaseTask>* save_tasks);
 
-  // This returns a BatchDatabaseTask to remove the metadata entry for this
-  // namespace-StorageKey area. If the map at this entry isn't referenced by any
-  // other area (refcount hits 0), then the task will also delete that map on
-  // disk and invalidate that MapData.
-  void DeleteArea(const std::string& namespace_id,
-                  const blink::StorageKey& storage_key,
-                  std::vector<BatchDatabaseTask>* save_tasks);
+  // Removes and returns a `MapData` from `namespace_storage_key_map_`,
+  // decreasing its `reference_count_`.  Returns nullptr when `MapData` is not
+  // found.
+  scoped_refptr<MapData> TakeExistingMap(const std::string& namespace_id,
+                                         const blink::StorageKey& storage_key);
 
   NamespaceEntry GetOrCreateNamespaceEntry(const std::string& namespace_id);
 
@@ -137,9 +135,6 @@ class SessionStorageMetadata {
  private:
   static std::vector<uint8_t> GetNamespacePrefix(
       const std::string& namespace_id);
-  static std::vector<uint8_t> GetMapPrefix(int64_t map_number);
-  static std::vector<uint8_t> GetMapPrefix(
-      const std::vector<uint8_t>& map_number_as_bytes);
 
   int64_t next_map_id_ = 0;
 

@@ -145,17 +145,19 @@ class LocalStorageLevelDB : public DomStorageDatabase {
 
   // Removes the following for each storage key:
   //
-  // (1) All of the map's key/value pairs using the prefix "_<storage key>\x00".
-  //
-  // (2) The "META:<storage key>" entry, containing the map's last modified time
+  // (1) The "META:<storage key>" entry, containing the map's last modified time
   //     and total size.
   //
-  // (3) The "METAACCESS:<storage key>" entry, containing the map's last
+  // (2) The "METAACCESS:<storage key>" entry, containing the map's last
   //     accessed time.
+  //
+  // Also removes the following for each `map_to_delete`:
+  //
+  // (1) All of the map's key/value pairs using the prefix "_<storage key>\x00".
   DbStatus DeleteStorageKeysFromSession(
       std::string session_id,
-      std::vector<blink::StorageKey> storage_keys,
-      absl::flat_hash_set<int64_t> excluded_cloned_map_ids) override;
+      std::vector<blink::StorageKey> metadata_to_delete,
+      std::vector<MapLocator> maps_to_delete) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

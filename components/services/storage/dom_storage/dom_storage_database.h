@@ -20,7 +20,6 @@
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "storage/common/database/db_status.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
@@ -143,13 +142,14 @@ class DomStorageDatabase {
   // will replace map X's metadata in the database.
   virtual DbStatus PutMetadata(Metadata metadata) = 0;
 
-  // In `session_id`, deletes the map and metadata for each provided storage
-  // key.  Use `excluded_cloned_map_ids` to prevent the deletion of maps still
-  // in use by another cloned session.
+  // In `session_id`, deletes the metadata and optionally the map for each
+  // provided storage key.  Use `maps_to_delete` to specify which map key/value
+  // pairs to remove.  Callers must not delete maps still in use by other
+  // cloned sessions.
   virtual DbStatus DeleteStorageKeysFromSession(
       std::string session_id,
-      std::vector<blink::StorageKey> storage_keys,
-      absl::flat_hash_set<int64_t> excluded_cloned_map_ids) = 0;
+      std::vector<blink::StorageKey> metadata_to_delete,
+      std::vector<MapLocator> maps_to_delete) = 0;
 
   // For LevelDB only. Rewrites the database on disk to
   // clean up traces of deleted entries.

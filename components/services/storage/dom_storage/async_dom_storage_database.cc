@@ -60,21 +60,22 @@ void AsyncDomStorageDatabase::PutMetadata(DomStorageDatabase::Metadata metadata,
 
 void AsyncDomStorageDatabase::DeleteStorageKeysFromSession(
     std::string session_id,
-    std::vector<blink::StorageKey> storage_keys,
-    absl::flat_hash_set<int64_t> excluded_cloned_map_ids,
+    std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
     StatusCallback callback) {
-  RunDatabaseTask(base::BindOnce(
-                      [](std::string session_id,
-                         std::vector<blink::StorageKey> storage_keys,
-                         absl::flat_hash_set<int64_t> excluded_cloned_map_ids,
-                         DomStorageDatabase& db) {
-                        return db.DeleteStorageKeysFromSession(
-                            std::move(session_id), std::move(storage_keys),
-                            std::move(excluded_cloned_map_ids));
-                      },
-                      std::move(session_id), std::move(storage_keys),
-                      std::move(excluded_cloned_map_ids)),
-                  std::move(callback));
+  RunDatabaseTask(
+      base::BindOnce(
+          [](std::string session_id,
+             std::vector<blink::StorageKey> metadata_to_delete,
+             std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
+             DomStorageDatabase& db) {
+            return db.DeleteStorageKeysFromSession(
+                std::move(session_id), std::move(metadata_to_delete),
+                std::move(maps_to_delete));
+          },
+          std::move(session_id), std::move(metadata_to_delete),
+          std::move(maps_to_delete)),
+      std::move(callback));
 }
 
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {

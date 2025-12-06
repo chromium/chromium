@@ -272,8 +272,12 @@ void LocalStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
         base::BindOnce(&SuccessResponse, std::move(callback)));
     found->second->storage_area()->ScheduleImmediateCommit();
   } else if (database_) {
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+    maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
+
     database_->DeleteStorageKeysFromSession(
-        kLocalStorageSessionId, {storage_key}, /*excluded_cloned_map_ids=*/{},
+        kLocalStorageSessionId, /*metadata_to_delete=*/{storage_key},
+        std::move(maps_to_delete),
         base::BindOnce([](base::OnceClosure callback,
                           DbStatus) { std::move(callback).Run(); },
                        std::move(callback)));
@@ -705,7 +709,8 @@ void LocalStorageImpl::OnGotWriteMetaData(
 
 void LocalStorageImpl::OnGotStorageUsageForShutdown(
     std::vector<mojom::StorageUsageInfoPtr> usage) {
-  std::vector<blink::StorageKey> storage_keys_to_delete;
+  std::vector<blink::StorageKey> metadata_to_delete;
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   for (const auto& info : usage) {
     const blink::StorageKey& storage_key = info->storage_key;
     const url::Origin& key_origin = storage_key.origin();
@@ -729,16 +734,17 @@ void LocalStorageImpl::OnGotStorageUsageForShutdown(
       if (key_origin == origin_to_purge ||
           (storage_key.IsThirdPartyContext() &&
            storage_key.top_level_site().IsSameSiteWith(origin_to_purge))) {
-        storage_keys_to_delete.push_back(storage_key);
+        metadata_to_delete.push_back(storage_key);
+        maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
         break;
       }
     }
   }
 
-  if (!storage_keys_to_delete.empty() && database_) {
+  if (!metadata_to_delete.empty() && database_) {
     database_->DeleteStorageKeysFromSession(
-        kLocalStorageSessionId, std::move(storage_keys_to_delete),
-        /*excluded_cloned_map_ids=*/{},
+        kLocalStorageSessionId, std::move(metadata_to_delete),
+        std::move(maps_to_delete),
         base::BindOnce(&LocalStorageImpl::OnStorageKeysDeleted,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
@@ -822,6 +828,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
   }
   // Filter and collect stale storage areas for deletion.
   std::vector<blink::StorageKey> stale_storage_keys;
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
   uint64_t orphans_found = 0;
   for (const DomStorageDatabase::MapMetadata& usage_metadata :
        all_metadata->map_metadata) {
@@ -848,6 +855,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area has not been accessed or modified within 400 days
       // it can be cleared.
       stale_storage_keys.push_back(storage_key);
+      maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
     } else if ((storage_key.nonce().has_value() ||
                 storage_key.top_level_site().opaque()) &&
                (base::Time::Now() - accessed_or_modified_time) >=
@@ -855,6 +863,7 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
       // If the storage area has not been accessed or modified in this browsing
       // session and is transient (has a nonce) then it can be cleared.
       stale_storage_keys.push_back(storage_key);
+      maps_to_delete.emplace_back(kLocalStorageSessionId, storage_key);
       orphans_found++;
     }
   }
@@ -865,8 +874,9 @@ void LocalStorageImpl::OnGotMetaDataToDeleteStaleStorageAreas(
   // Delete stale storage areas and count results.
   size_t deleted_count = stale_storage_keys.size();
   database_->DeleteStorageKeysFromSession(
-      kLocalStorageSessionId, std::move(stale_storage_keys),
-      /*excluded_cloned_map_ids=*/{},
+      kLocalStorageSessionId,
+      /*metadata_to_delete=*/std::move(stale_storage_keys),
+      std::move(maps_to_delete),
       base::BindOnce(
           [](size_t keys_deleted, DbStatus status) {
             base::UmaHistogramBoolean(

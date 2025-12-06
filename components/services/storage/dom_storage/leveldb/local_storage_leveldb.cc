@@ -5,6 +5,7 @@
 #include "components/services/storage/dom_storage/leveldb/local_storage_leveldb.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_view_util.h"
 #include "base/types/expected_macros.h"
 #include "components/services/storage/dom_storage/dom_storage_constants.h"
@@ -281,27 +282,34 @@ DbStatus LocalStorageLevelDB::PutMetadata(Metadata metadata) {
 
 DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
     std::string session_id,
-    std::vector<blink::StorageKey> storage_keys,
-    absl::flat_hash_set<int64_t> excluded_cloned_map_ids) {
-  // Local storage uses a single global session without clones.
+    std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<MapLocator> maps_to_delete) {
+  // Local storage uses a single global session without clones.  To avoid
+  // orphaned maps, each deleted storage key must also delete its map.
   CHECK_EQ(session_id, kLocalStorageSessionId);
-  CHECK_EQ(excluded_cloned_map_ids.size(), 0u);
+  CHECK_EQ(maps_to_delete.size(), metadata_to_delete.size());
 
   std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
       leveldb_->CreateBatchOperation();
 
-  for (const blink::StorageKey& storage_key : storage_keys) {
-    // Erase all map key/value pairs.
-    DbStatus status = batch->DeletePrefixed(GetMapPrefix(storage_key));
-    if (!status.ok()) {
-      return status;
-    }
-
+  for (const blink::StorageKey& storage_key : metadata_to_delete) {
     // Erase the "METAACCESS:" entry.
     batch->Delete(CreateAccessMetaDataKey(storage_key));
 
     // Erase the "META:" entry.
     batch->Delete(CreateWriteMetaDataKey(storage_key));
+  }
+
+  // Erase all map key/value pairs.
+  for (const MapLocator& map : maps_to_delete) {
+    // A valid `map` must be in `storage_keys` and `kLocalStorageSessionId`.
+    CHECK_EQ(map.session_id(), kLocalStorageSessionId);
+    DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
+
+    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.storage_key()));
+    if (!status.ok()) {
+      return status;
+    }
   }
   return batch->Commit();
 }

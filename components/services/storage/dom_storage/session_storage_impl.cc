@@ -341,25 +341,36 @@ void SessionStorageImpl::DeleteStorage(const blink::StorageKey& storage_key,
                                     namespace_id, std::move(callback)));
     return;
   }
+
   auto found = namespaces_.find(namespace_id);
   if (found != namespaces_.end() &&
       found->second->state() !=
           SessionStorageNamespaceImpl::State::kNotPopulated) {
     found->second->RemoveStorageKeyData(storage_key, std::move(callback));
-  } else {
-    // If we don't have the namespace loaded, then we can delete it all
-    // using the metadata.
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-    metadata_.DeleteArea(namespace_id, storage_key, &tasks);
-    if (database_) {
-      database_->RunBatchDatabaseTasks(
-          RunBatchTasksContext::kDeleteStorage, std::move(tasks),
-          base::BindOnce(&SessionStorageImpl::OnCommitResultWithCallback,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-    } else {
-      std::move(callback).Run();
-    }
+    return;
   }
+
+  // If we don't have the namespace loaded, then we can delete it all using the
+  // metadata.
+  scoped_refptr<SessionStorageMetadata::MapData> map_data =
+      metadata_.TakeExistingMap(namespace_id, storage_key);
+  if (!map_data || !database_) {
+    // Nothing to delete.
+    std::move(callback).Run();
+    return;
+  }
+
+  // Delete `storage_key` from `namespace_id` in the database.  Also delete
+  // `map_data` when not referenced by a cloned session.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  if (map_data->ReferenceCount() == 0) {
+    maps_to_delete.emplace_back(namespace_id, storage_key, map_data->map_id());
+  }
+  database_->DeleteStorageKeysFromSession(
+      namespace_id, /*metadata_to_delete=*/{storage_key},
+      std::move(maps_to_delete),
+      base::BindOnce(&SessionStorageImpl::OnCommitResultWithCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void SessionStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
