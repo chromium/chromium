@@ -7,6 +7,7 @@
 
 #include <type_traits>
 
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/array_serialization.h"

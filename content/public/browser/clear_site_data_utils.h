@@ -11,6 +11,7 @@
 
 #include "base/containers/enum_set.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/cookies/cookie_partition_key.h"

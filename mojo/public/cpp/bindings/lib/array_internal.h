@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"

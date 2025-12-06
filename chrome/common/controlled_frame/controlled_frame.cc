@@ -8,6 +8,8 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/initialize_extensions_client.h"
 #include "components/version_info/version_info.h"

@@ -32,6 +32,8 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_group.h"
 #include "mojo/public/cpp/bindings/associated_group_controller.h"
+#include "mojo/public/cpp/bindings/connection_group.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
@@ -290,7 +292,7 @@ class ResponderThunk : public MessageReceiverWithStatus {
 
   // Allows this thunk to be attached to a ConnectionGroup as a means of keeping
   // the group from idling while the response is pending.
-  void set_connection_group(ConnectionGroup::Ref connection_group) {
+  void set_connection_group(ConnectionGroupRef connection_group) {
     connection_group_ = std::move(connection_group);
   }
 
@@ -332,7 +334,7 @@ class ResponderThunk : public MessageReceiverWithStatus {
   base::WeakPtr<InterfaceEndpointClient> endpoint_client_;
   bool accept_was_invoked_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  ConnectionGroup::Ref connection_group_;
+  ConnectionGroupRef connection_group_;
 };
 
 }  // namespace

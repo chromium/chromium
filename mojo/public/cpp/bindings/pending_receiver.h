@@ -12,7 +12,7 @@
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "mojo/public/c/system/types.h"
-#include "mojo/public/cpp/bindings/connection_group.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
@@ -122,17 +122,17 @@ class PendingReceiver {
 
   // Assigns this PendingReceiver to the ConnectionGroup referenced by |ref|.
   // Any Receiver which binds this PendingReceiver will inherit the Ref.
-  void set_connection_group(ConnectionGroup::Ref ref) {
+  void set_connection_group(ConnectionGroupRef ref) {
     state_.connection_group = std::move(ref);
   }
 
-  const ConnectionGroup::Ref& connection_group() const {
+  const ConnectionGroupRef& connection_group() const {
     return state_.connection_group;
   }
 
   // Passes ownership of this PendingReceiver's ConnectionGroup Ref, removing it
   // from its group.
-  ConnectionGroup::Ref PassConnectionGroupRef() {
+  ConnectionGroupRef PassConnectionGroupRef() {
     return std::move(state_.connection_group);
   }
 

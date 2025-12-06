@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/types/is_instantiation.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"

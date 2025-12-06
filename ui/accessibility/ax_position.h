@@ -21,6 +21,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/export_template.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/i18n/break_iterator.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"

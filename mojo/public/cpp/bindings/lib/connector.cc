@@ -226,7 +226,7 @@ void Connector::RaiseError() {
   HandleError(true, true);
 }
 
-void Connector::SetConnectionGroup(ConnectionGroup::Ref ref) {
+void Connector::SetConnectionGroup(ConnectionGroupRef ref) {
   // If this Connector already belonged to a group, parent the new group to that
   // one so that the reference is not lost.
   if (connection_group_)

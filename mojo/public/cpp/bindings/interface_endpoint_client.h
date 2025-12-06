@@ -30,7 +30,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/connection_error_callback.h"
-#include "mojo/public/cpp/bindings/connection_group.h"
+#include "mojo/public/cpp/bindings/connection_group_ref.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/lib/control_message_handler.h"
 #include "mojo/public/cpp/bindings/lib/control_message_proxy.h"
@@ -184,7 +184,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // new ConnectionGroup Ref that is expected to be adopted by whatever owns
   // this endpoint.
   using IdleTrackingEnabledCallback =
-      base::OnceCallback<void(ConnectionGroup::Ref connection_group)>;
+      base::OnceCallback<void(ConnectionGroupRef connection_group)>;
   void SetIdleTrackingEnabledCallback(IdleTrackingEnabledCallback callback);
 
   // Called by the ControlMessageHandler when receiving corresponding control
@@ -318,7 +318,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) InterfaceEndpointClient
   // A ref to a ConnectionGroup used to track the idle state of this endpoint,
   // if any. Only non-null if an EnableIdleTracking message has been received.
   // This is a weak ref to the group.
-  ConnectionGroup::Ref idle_tracking_connection_group_;
+  ConnectionGroupRef idle_tracking_connection_group_;
 
   // Indicates the number of unacked messages that have been sent so far. Only
   // non-zero when |idle_handler_| has been set and some number of unacked

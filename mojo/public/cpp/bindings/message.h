@@ -16,10 +16,9 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
@@ -30,6 +29,7 @@
 namespace mojo {
 
 class AssociatedGroupController;
+class ConnectionGroupRef;
 
 using ReportBadMessageCallback =
     base::OnceCallback<void(std::string_view error)>;
@@ -237,10 +237,10 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
   // any. This is called immediately after a Message is read from a message pipe
   // but before it's deserialized. If non-null, |ref| must point to a Ref that
   // outlives this Message object.
-  void set_receiver_connection_group(const ConnectionGroup::Ref* ref) {
+  void set_receiver_connection_group(const ConnectionGroupRef* ref) {
     receiver_connection_group_ = ref;
   }
-  const ConnectionGroup::Ref* receiver_connection_group() const {
+  const ConnectionGroupRef* receiver_connection_group() const {
     return receiver_connection_group_;
   }
 
@@ -330,7 +330,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   std::vector<ScopedHandle> handles_;
   std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
-  raw_ptr<const ConnectionGroup::Ref, DanglingUntriaged>
+  raw_ptr<const ConnectionGroupRef, DanglingUntriaged>
       receiver_connection_group_ = nullptr;
 
   // Indicates whether this Message object is transferable, i.e. can be sent

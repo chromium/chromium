@@ -49,6 +49,8 @@ component("bindings_base") {
     "clone_traits.h",
     "connection_group.cc",
     "connection_group.h",
+    "connection_group_ref.cc",
+    "connection_group_ref.h",
     "deprecated_interface_types_forward.h",
     "disconnect_reason.h",
     "enum_traits.h",
