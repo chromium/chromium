@@ -10,7 +10,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/glic/glic_metrics_provider.h"
 #include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,10 +44,18 @@ class GlicEnablingTest : public InProcessBrowserTest {
     InProcessBrowserTest::SetUp();
   }
 
+  void TearDown() override {
+    scoped_feature_list_.Reset();
+    InProcessBrowserTest::TearDown();
+  }
+
  protected:
   virtual void InitializeFeatureList() {
     scoped_feature_list_.InitWithFeatures(
         {
+            features::kGlic,
+            features::kTabstripComboButton,
+            features::kGlicRollout,
 #if BUILDFLAG(IS_CHROMEOS)
             chromeos::features::kFeatureManagementGlic,
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -64,20 +71,19 @@ class GlicEnablingTest : public InProcessBrowserTest {
     return profile_manager()->GetProfileAttributesStorage();
   }
 
-  GlicTestEnvironment glic_test_env_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTest, EnabledForProfileTest) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+  ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTest, AttributeEntryUpdatesOnChange) {
-  SetGlicCapability(profile(), false);
-  glic_test_env_.GetService(profile())->SetFRECompletion(
-      prefs::FreStatus::kIncomplete);
+  SigninWithPrimaryAccount(profile());
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 
   ProfileAttributesEntry* entry =
@@ -115,6 +121,8 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingWithSeparateAccountCapabilityTest,
                        EnabledForProfileTest) {
   ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(nullptr));
 
+  ASSERT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
+  ForceSigninAndGlicCapability(profile());
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
 }
 
@@ -154,12 +162,11 @@ class GlicEnablingTieredRolloutTest : public GlicEnablingTest {
         ->GetDelegatingProviderForTesting()
         ->ProvideCurrentSessionData(&uma_proto);
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
+  ForceSigninAndGlicCapability(profile());
+
   // Should not be enabled as profile not eligible for tiered rollout.
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
 
@@ -174,7 +181,6 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest, EnabledForProfileTest) {
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingTieredRolloutTest,
                        InTieredRolloutGroupOtherCriteriaNotPassing) {
-  glic_test_env_.GetService(profile())->SetModelExecutionCapability(false);
   // Should be enabled as profile.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
   EXPECT_FALSE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -208,6 +214,8 @@ class GlicEnablingSimultaneousRolloutTest
 
 IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
                        EnabledForProfileTest) {
+  ForceSigninAndGlicCapability(profile());
+
   // Eligible for tiered rollout. Profile enabled for GLIC.
   SetTieredRolloutEligibilityForProfile(/*is_eligible=*/true);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(profile()));
@@ -229,6 +237,7 @@ IN_PROC_BROWSER_TEST_F(GlicEnablingSimultaneousRolloutTest,
   base::FilePath new_path = profile_manager->GenerateNextProfileDirectoryPath();
   Profile* second_profile =
       &profiles::testing::CreateProfileSync(profile_manager, new_path);
+  ForceSigninAndGlicCapability(second_profile);
   ASSERT_TRUE(GlicEnabling::IsEnabledForProfile(second_profile));
 
   {

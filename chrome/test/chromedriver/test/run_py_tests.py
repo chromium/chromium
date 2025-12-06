@@ -4343,7 +4343,6 @@ class ChromeDriverTest(ChromeDriverBaseTestWithWebServer):
             'glic-automation',
             'glic-always-open-fre',
             'enable-features=Glic,TabstripComboButton,ContextualCueing',
-            'disable-features=GlicCountryFiltering,GlicLocaleFiltering',
             'glic-fre-url=' + self.GetHttpUrlForFile('/fre.html'),
             ])
     driver.SendCommandAndGetResult('Browser.executeBrowserCommand', {

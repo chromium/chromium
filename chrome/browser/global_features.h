@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_GLOBAL_FEATURES_H_
 #define CHROME_BROWSER_GLOBAL_FEATURES_H_
 
-#include <memory>
+#include <memory.h>
 
 #include "base/functional/callback.h"
 #include "build/branding_buildflags.h"
@@ -29,7 +29,6 @@ class DefaultBrowserManager;
 #if BUILDFLAG(ENABLE_GLIC)
 namespace glic {
 class GlicBackgroundModeManager;
-class GlicGlobalEnabling;
 class GlicProfileManager;
 class GlicSyntheticTrialManager;
 }  // namespace glic
@@ -114,10 +113,6 @@ class GlobalFeatures {
   glic::GlicSyntheticTrialManager* glic_synthetic_trial_manager() {
     return synthetic_trial_manager_.get();
   }
-
-  glic::GlicGlobalEnabling& glic_global_enabling() {
-    return *glic_global_enabling_.get();
-  }
 #endif
 
   ApplicationLocaleStorage* application_locale_storage() {
@@ -183,7 +178,6 @@ class GlobalFeatures {
 #endif
 
 #if BUILDFLAG(ENABLE_GLIC)
-  std::unique_ptr<glic::GlicGlobalEnabling> glic_global_enabling_;
   std::unique_ptr<glic::GlicProfileManager> glic_profile_manager_;
   std::unique_ptr<glic::GlicBackgroundModeManager>
       glic_background_mode_manager_;

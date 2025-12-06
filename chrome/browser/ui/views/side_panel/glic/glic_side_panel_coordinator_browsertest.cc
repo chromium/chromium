@@ -9,7 +9,6 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -69,10 +68,7 @@ class GlicSidePanelCoordinatorTest : public InProcessBrowserTest {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
         },
-        {
-            features::kGlicLocaleFiltering,
-            features::kGlicCountryFiltering,
-        });
+        {});
   }
 
  protected:
