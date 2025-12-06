@@ -541,32 +541,19 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
   }
 
-  // TODO(crbug.com/362675965): remove after origin trial.
-  if (trial_name == "AISummarizationAPI") {
-    return base::FeatureList::IsEnabled(features::kAISummarizationAPI);
-  }
-
   if (trial_name == "AIRewriterAPI") {
     return base::FeatureList::IsEnabled(features::kAIRewriterAPI);
   }
 
   if (trial_name == "AIWriterAPI") {
-    return base::FeatureList::IsEnabled(features::kAIRewriterAPI);
+    return base::FeatureList::IsEnabled(features::kAIWriterAPI);
   }
 
-  if (trial_name == "LanguageDetectionAPI") {
-    return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
+  if (trial_name == "AIPromptAPIMultimodalInput") {
+    return base::FeatureList::IsEnabled(features::kAIPromptAPIMultimodalInput);
   }
 
-  if (trial_name == "TranslationAPI") {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-    return base::FeatureList::IsEnabled(features::kTranslationAPI);
-#else
-    return false;
-#endif
-  }
-
-  if (trial_name == "AIProofreadingAPI") {
+  if (trial_name == "AIProofreaderAPI") {
     return base::FeatureList::IsEnabled(features::kAIProofreadingAPI);
   }
 
