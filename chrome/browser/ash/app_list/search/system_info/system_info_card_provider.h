@@ -30,8 +30,6 @@ information such as Storage usage, CPU consumption, battery health, current
 version, network information and memory usage. The answer cards link to the
 relevant pages within the Settings and Diagnostics apps.*/
 
-// TODO(b/263994165): Complete the System Info Card Provider to return results.
-// This provider is a work in progress.
 class SystemInfoCardProvider : public SearchProvider,
                                public ash::settings::SizeCalculator::Observer {
  public:
