@@ -1668,6 +1668,15 @@ class TabListMediator implements TabListNotificationHandler {
      */
     boolean resetWithListOfTabs(
             @Nullable List<Tab> tabs, @Nullable List<String> tabGroupSyncIds, boolean quickMode) {
+        // Update the selected count.
+        mCurrentSelectionCount =
+                mSelectionDelegateProvider == null
+                        ? 0
+                        : mSelectionDelegateProvider
+                                .getSelectionDelegate()
+                                .getSelectedItems()
+                                .size();
+
         mShowingTabs = tabs != null;
         // The reset supersedes any delayed tab additions, don't add the tab.
         mTabToAddDelayed = null;
