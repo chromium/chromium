@@ -6,6 +6,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/run_loop.h"
