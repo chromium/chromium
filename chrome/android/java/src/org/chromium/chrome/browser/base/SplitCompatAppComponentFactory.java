@@ -23,7 +23,6 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito_window.PreAttachIntentObserver;
 
 import java.lang.annotation.Retention;
@@ -79,7 +78,6 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
                         getComponentClassLoader(cl, className), className, intent);
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE
-                && ChromeFeatureList.sAndroidOpenIncognitoAsWindow.isEnabled()
                 && intent != null
                 && activity instanceof PreAttachIntentObserver observer) {
             observer.onPreAttachIntentAvailable(intent);
