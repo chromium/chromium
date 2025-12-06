@@ -39,6 +39,8 @@ constexpr char kZeroMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.ZeroList";
 constexpr char kFreeMemoryListHistogramName[] =
     "Memory.SystemMemoryLists.ExhaustedIntervalsPerThirtySeconds.FreeList";
+constexpr char kTotalIntervalsRecordedHistogramName[] =
+    "Memory.SystemMemoryLists.TotalIntervalsRecorded";
 constexpr char kFreeListCountHistogramName[] =
     "Memory.SystemMemoryLists.FreePageCount";
 constexpr char kZeroListCountHistogramName[] =
@@ -384,6 +386,8 @@ TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckEmptyList) {
 
   histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 1);
   histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 1);
+  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
+                                      1);
   histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 0, 1);
   histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 0, 1);
   histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 1);
@@ -405,9 +409,38 @@ TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCheckNonEmptyList) {
 
   histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 0, 1);
   histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 0, 1);
+  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
+                                      1);
   histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 1, 1);
   histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 1, 1);
   histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 1, 1);
+}
+
+// Verifies that we correctly reset all the counters by ensuring we don't record
+// '2' for any of the values.
+TEST(WinSystemMemoryPressureEvaluatorMemoryList, SystemListCounterReset) {
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester;
+  TestSystemMemoryPressureEvaluator evaluator(nullptr);
+
+  evaluator.SetFreeList(0);
+  evaluator.SetModifiedList(0);
+  evaluator.SetZeroList(0);
+
+  task_environment.FastForwardBy(base::Seconds(40));
+  evaluator.CheckSystemMemoryListPageCounts();
+
+  task_environment.FastForwardBy(base::Seconds(40));
+  evaluator.CheckSystemMemoryListPageCounts();
+
+  histogram_tester.ExpectUniqueSample(kZeroMemoryListHistogramName, 1, 2);
+  histogram_tester.ExpectUniqueSample(kFreeMemoryListHistogramName, 1, 2);
+  histogram_tester.ExpectUniqueSample(kTotalIntervalsRecordedHistogramName, 1,
+                                      2);
+  histogram_tester.ExpectUniqueSample(kFreeListCountHistogramName, 0, 2);
+  histogram_tester.ExpectUniqueSample(kZeroListCountHistogramName, 0, 2);
+  histogram_tester.ExpectUniqueSample(kModifiedListCountHistogramName, 0, 2);
 }
 
 }  // namespace win

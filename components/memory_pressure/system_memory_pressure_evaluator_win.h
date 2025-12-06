@@ -156,6 +156,7 @@ class SystemMemoryPressureEvaluator
   // then we reset these.
   int zero_list_exhausted_interval_count_ = 0;
   int free_list_exhausted_interval_count_ = 0;
+  int total_intervals_recorded_ = 0;
   base::TimeTicks last_pressured_interval_emission_time_;
 
   // Ensures that this object is used from a single sequence.
