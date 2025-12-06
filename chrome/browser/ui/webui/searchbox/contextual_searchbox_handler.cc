@@ -486,7 +486,6 @@ void ContextualSearchboxHandler::ComputeAndOpenQueryUrl(
         query_text, base::DoNothing());
   }
 #endif
-  ClearFiles();
 }
 
 void ContextualSearchboxHandler::OnGetTabPageContext(
