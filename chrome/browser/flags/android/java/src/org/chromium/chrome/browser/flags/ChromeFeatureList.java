@@ -1385,6 +1385,8 @@ public abstract class ChromeFeatureList {
 
     // CachedFeatureParam instances.
     /* Alphabetical order by feature name, arbitrary order by param name: */
+    public static final IntCachedFeatureParam sAndroidAnimatedProgressBarFpsCap =
+            newIntCachedFeatureParam(ANDROID_ANIMATED_PROGRESS_BAR_IN_BROWSER, "fps_cap", 0);
     public static final BooleanCachedFeatureParam sAndroidThemeModuleForceDependencies =
             newBooleanCachedFeatureParam(
                     ANDROID_THEME_MODULE, "force_theme_module_dependencies", false);
@@ -1722,6 +1724,7 @@ public abstract class ChromeFeatureList {
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
                     // keep-sorted start
+                    sAndroidAnimatedProgressBarFpsCap,
                     sAndroidAppIntegrationModuleForceCardShow,
                     sAndroidAppIntegrationModuleShowThirdPartyCard,
                     sAndroidAppIntegrationMultiDataSourceSkipDeviceCheck,
