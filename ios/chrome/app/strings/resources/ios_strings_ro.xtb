@@ -273,7 +273,7 @@
 <translation id="1979188886349613713">Include extensii de fișier care nu sunt specificate de site</translation>
 <translation id="1980417445547898121">{count,plural, =1{Accesează {count} filă activă recent de pe celălalt dispozitiv pe acest iPhone}few{Accesează {count} file active recent de pe celălalt dispozitiv pe acest iPhone}other{Accesează {count} de file active recent de pe celălalt dispozitiv pe acest iPhone}}</translation>
 <translation id="1981118202195772574">Mobil</translation>
-<translation id="1984417487208496350">Fără protecție (nu este recomandat)</translation>
+<translation id="1984417487208496350">Fără protecție (nerecomandat)</translation>
 <translation id="1989112275319619282">Răsfoiește</translation>
 <translation id="1989404831625305000">Ascunde Managerul de parole</translation>
 <translation id="1989858546814009832">{count,plural, =1{Salvează un marcaj în Contul Google}few{Salvează {count} marcaje în Contul Google}other{Salvează {count} de marcaje în Contul Google}}</translation>
@@ -1165,7 +1165,7 @@
 <translation id="5475793109165786685">{count,plural, =0{Nicio parolă importată}=1{{count} parolă importată}few{{count} parole importate}other{{count} de parole importate}}</translation>
 <translation id="5478327362747197944">Creează evenimente în calendar direct dând clic pe o dată dintr-o pagină web.</translation>
 <translation id="5482922178977937393">Vrei să primești notificări pentru știri, sport și altele pe baza intereselor tale?</translation>
-<translation id="5483838506518938965">Ați terminat</translation>
+<translation id="5483838506518938965">Ai terminat</translation>
 <translation id="5487521232677179737">Șterge datele</translation>
 <translation id="5494920125229734069">Selectează-le pe toate</translation>
 <translation id="5499648645977734083">Gestionează metodele de plată…</translation>

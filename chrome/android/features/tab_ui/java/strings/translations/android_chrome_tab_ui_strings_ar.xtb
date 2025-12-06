@@ -85,7 +85,7 @@
 <translation id="374923079891132274">صورة مصغّرة لمعاينة صفحة المشاركة</translation>
 <translation id="3776329373944672717">عنوان مجموعة علامات التبويب "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="3810973564298564668">إدارة</translation>
-<translation id="3849789634341518784">{TAB_COUNT,plural, =1{إزالة تثبيت علامة تبويب واحدة}zero{إزالة تثبيت علامات التبويب}two{إزالة تثبيت علامتَي التبويب}few{إزالة تثبيت علامات التبويب}many{إزالة تثبيت علامات التبويب}other{إزالة تثبيت علامات التبويب}}</translation>
+<translation id="3849789634341518784">{TAB_COUNT,plural, =1{إزالة تثبيت علامة التبويب}zero{إزالة تثبيت علامات التبويب}two{إزالة تثبيت علامتَي التبويب}few{إزالة تثبيت علامات التبويب}many{إزالة تثبيت علامات التبويب}other{إزالة تثبيت علامات التبويب}}</translation>
 <translation id="3940195383040445971">تتبُّع الأسعار في علامات التبويب</translation>
 <translation id="3940717704786481856">{NUMBER_OF_TABS_ADDED,plural, =1{علامة تبويب (<ph name="ONE_ADDED" />) جديدة وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}zero{‫<ph name="MANY_ADDED" /> علامة تبويب جديدة، وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}two{علامتا تبويب (<ph name="MANY_ADDED" />) جديدتان، وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}few{‫<ph name="MANY_ADDED" /> علامات تبويب جديدة، وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}many{‫<ph name="MANY_ADDED" /> علامة تبويب جديدة، وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}other{‫<ph name="MANY_ADDED" /> علامة تبويب جديدة، وعلامات مغلقة عددها <ph name="ANY_CLOSED" />}}</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{تجميع علامة التبويب}zero{تجميع علامات التبويب}two{تجميع علامتَي التبويب}few{تجميع علامات التبويب}many{تجميع علامات التبويب}other{تجميع علامات التبويب}}</translation>

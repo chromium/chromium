@@ -30,7 +30,7 @@ Se a opção "<ph name="SERVICE_SCRIPT_NAME" />" já estiver marcada, desmarque-
 <translation id="2366718077645204424">Não é possível acessar o host. Isso se deve, provavelmente, à configuração da rede que você está usando.</translation>
 <translation id="242591256144136845">Copyright 2025 Google LLC. Todos os direitos reservados.</translation>
 <translation id="2504109125669302160">Conceder a permissão "Acessibilidade" para o <ph name="PRODUCT_NAME" /></translation>
-<translation id="2509394361235492552">Conectado a <ph name="HOSTNAME" /></translation>
+<translation id="2509394361235492552">Conectado à <ph name="HOSTNAME" /></translation>
 <translation id="2540992418118313681">Gostaria de compartilhar este computador para que outro usuário o veja e controle?</translation>
 <translation id="2579271889603567289">Ocorreu uma falha no host ou não foi possível iniciá-lo.</translation>
 <translation id="2599300881200251572">Este serviço permite conexões de entrada a partir de clientes da Área de trabalho remota do Google Chrome.</translation>
