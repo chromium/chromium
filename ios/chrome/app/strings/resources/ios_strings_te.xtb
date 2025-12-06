@@ -57,7 +57,7 @@
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1204075260022434100">{count,plural, =1{బుక్‌మార్క్ మీ {email} ఖాతాలోని "{title}"లో సేవ్ అయ్యింది}other{{count} బుక్‌మార్క్‌లు మీ {email} ఖాతాలోని "{title}"లో సేవ్ అయ్యాయి}}</translation>
 <translation id="1207493287814084192">5:30 PM</translation>
-<translation id="1217294226280635614">విభజన వీక్షణ</translation>
+<translation id="1217294226280635614">స్ప్లిట్ వ్యూ</translation>
 <translation id="1219674500290482172">ఇంటర్నెట్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
 <translation id="1223498995510244364">సారాంశం అందించండి</translation>
 <translation id="1227113644794103810">ఇన్‌యాక్టివ్ ట్యాబ్‌లు</translation>
@@ -1591,7 +1591,7 @@
 <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="7005768247344091502">సెట్టింగ్‌లకు వెళ్లి దానిని 'ఆటోమేటిక్ సెట్టింగ్'గా సెట్ చేయండి…</translation>
 <translation id="7007970306646738803">ఈ పరికరంలో ఇప్పటికే ఉన్న ట్యాబ్‌లు, హిస్టరీ, పాస్‌వర్డ్‌ల వంటి బ్రౌజింగ్ డేటాతో ఏమి చేయాలో ఎంచుకోండి.</translation>
-<translation id="7015418667643980944">విభజన వీక్షణ</translation>
+<translation id="7015418667643980944">స్ప్లిట్ వ్యూ</translation>
 <translation id="7016070607649558507">మీ వద్ద 1 బలహీనమైన పాస్‌వర్డ్ ఉంది. సురక్షితంగా ఉండటానికి ఇప్పుడే దాన్ని పరిష్కరించండి.</translation>
 <translation id="7016958933495968912">Discover కోసం ఆప్షన్‌లు</translation>
 <translation id="7029809446516969842">పాస్‌వర్డ్‌లు</translation>

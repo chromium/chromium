@@ -1534,7 +1534,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6054305421211936131">Conectează-te cu cardul inteligent</translation>
 <translation id="6059276912018042191">File Chrome recente</translation>
 <translation id="606147842285839995">ExpressKey 3</translation>
-<translation id="6062360702481658777">Veți fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
+<translation id="6062360702481658777">Vei fi deconectat(ă) automat peste <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6064463340679478396">Am terminat de folosit fișierul</translation>
 <translation id="6068258534237496331">Comenzi pentru apeluri video</translation>
 <translation id="6073451960410192870">Oprește înregistrarea</translation>
@@ -1552,7 +1552,7 @@ Niciun dispozitiv conectat.</translation>
 <translation id="6119972796024789243">Corecția culorilor</translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
-<translation id="6127395413317891856">Ești offline. Verifică conexiunea și încearcă din nou.</translation>
+<translation id="6127395413317891856">Ești offline. Verifică-ți conexiunea și încearcă din nou.</translation>
 <translation id="6129953537138746214">Spațiu</translation>
 <translation id="6136872094979134163">Nu se pot prelua știrile despre Steam pentru Chromebook.</translation>
 <translation id="6137566720514957455">Deschide fereastra de dialog Elimină pentru <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -2345,7 +2345,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8822104519413696986">Acesta este un joc tactil</translation>
 <translation id="8825863694328519386">Glisează dinspre stânga pentru a reveni</translation>
 <translation id="8832513206237979203">Afișează sau ascunde bara de marcaje</translation>
-<translation id="8834539327799336565">Conectat</translation>
+<translation id="8834539327799336565">Conectate</translation>
 <translation id="8841375032071747811">Butonul Înapoi</translation>
 <translation id="8843682306134542540">Comută blocarea rotației. <ph name="STATE_TEXT" /></translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
