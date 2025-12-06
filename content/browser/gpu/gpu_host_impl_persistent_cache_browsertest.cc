@@ -184,28 +184,41 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
 
   WaitForSetChannelPersistentCacheFile();
 
-  // Get the cache directory. It should be the only child folder in the temp
-  // dir.
+  base::RunLoop run_loop;
+  std::vector<std::unique_ptr<base::FilePathWatcher>> watchers;
+
+  // Get the cache directories, they should be the only child folders in the
+  // temp dir.
   base::FileEnumerator enumerator(temp_dir_.GetPath(), false,
                                   base::FileEnumerator::DIRECTORIES);
-  base::FilePath cache_dir = enumerator.Next();
-  EXPECT_FALSE(cache_dir.empty());
-  EXPECT_TRUE(enumerator.Next().empty());
-  // Verify that the cache dir is not empty.
-  EXPECT_FALSE(base::IsDirectoryEmpty(cache_dir));
+  std::set<base::FilePath> cache_dirs;
+  for (base::FilePath cache_dir = enumerator.Next(); !cache_dir.empty();
+       cache_dir = enumerator.Next()) {
+    // Verify that the cache dir is not empty.
+    EXPECT_FALSE(base::IsDirectoryEmpty(cache_dir));
+    cache_dirs.insert(cache_dir);
 
-  base::RunLoop run_loop;
-  // Watch for cache directory changes
-  base::FilePathWatcher watcher;
-  watcher.Watch(cache_dir, base::FilePathWatcher::Type::kNonRecursive,
-                base::BindRepeating(
-                    [](base::RunLoop* run_loop, const base::FilePath& cache_dir,
-                       const base::FilePath& path, bool error) {
-                      if (base::IsDirectoryEmpty(cache_dir)) {
-                        run_loop->Quit();
-                      }
-                    },
-                    &run_loop, cache_dir));
+    // Watch for cache directory changes
+    auto watcher = std::make_unique<base::FilePathWatcher>();
+    watcher->Watch(
+        cache_dir, base::FilePathWatcher::Type::kNonRecursive,
+        base::BindRepeating(
+            [](base::RunLoop* run_loop, const base::FilePath& cache_dir,
+               std::set<base::FilePath>* cache_dirs, const base::FilePath& path,
+               bool error) {
+              if (base::IsDirectoryEmpty(cache_dir)) {
+                cache_dirs->erase(cache_dir);
+
+                // End the run loop if all cache directories are cleared.
+                if (cache_dirs->empty()) {
+                  run_loop->Quit();
+                }
+              }
+            },
+            &run_loop, cache_dir, &cache_dirs));
+    watchers.push_back(std::move(watcher));
+  }
+  EXPECT_FALSE(cache_dirs.empty());
 
   // Simulate a crash.
   viz::GpuHostImpl* gpu_host_impl = GpuProcessHost::Get()->gpu_host();
@@ -215,10 +228,12 @@ IN_PROC_BROWSER_TEST_F(GpuHostImplPersistentCacheTest, ClearCacheOnCrash) {
 
   gpu_host_impl->OnProcessCrashed();
 
-  // The cache directory should be empty after the crash.
+  // The cache directories should be empty after the crash.
   run_loop.Run();
 
-  EXPECT_TRUE(base::IsDirectoryEmpty(cache_dir));
+  // The file watcher callback removes empty entries from cache_dirs, verify
+  // they are all cleared.
+  EXPECT_TRUE(cache_dirs.empty());
 }
 
 #endif  // BUILDFLAG(SKIA_USE_DAWN)

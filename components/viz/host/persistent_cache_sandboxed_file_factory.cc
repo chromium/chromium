@@ -185,4 +185,16 @@ void PersistentCacheSandboxedFileFactory::ClearFilesAsync(
       std::move(callback));
 }
 
+void PersistentCacheSandboxedFileFactory::DeletePendingBackendAsync(
+    persistent_cache::PendingBackend backend) {
+  // The reply will be posted to the current SequencedTaskRunner.
+  background_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](persistent_cache::PendingBackend backend) {
+                       // Do nothing, simply let the `backend` destructor be
+                       // called
+                     },
+                     std::move(backend)));
+}
+
 }  // namespace viz

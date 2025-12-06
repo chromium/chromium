@@ -197,6 +197,7 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
 }
 
 GpuHostImpl::~GpuHostImpl() {
+  ClearPersistentCaches(false);
   GetFontRenderParams().SetGpuHostImpl(nullptr);
   SendOutstandingReplies();
 }
@@ -227,21 +228,10 @@ void GpuHostImpl::OnProcessCrashed() {
   // cached binaries. Completely clear the shader cache to force shader binaries
   // to be re-created.
   if (use_shader_cache_shm_count_.GetCount() > 0) {
-    auto* persistent_cache_file_factory =
-        PersistentCacheSandboxedFileFactory::GetInstance();
-    // Clear GraphiteDawn's persistent cache files
-    if (persistent_cache_file_factory) {
-#if BUILDFLAG(SKIA_USE_DAWN)
-      graphite_dawn_persistent_cache_files_.reset();
-      pending_graphite_dawn_persistent_cache_files_request_ = false;
+    // Clear persistent cache files
+    send_persistent_cache_files_to_service_ = false;
+    ClearPersistentCaches(true);
 
-      // TODO(crbug.com/399642827): Clear other persistent cache types.
-      persistent_cache_file_factory->ClearFilesAsync(
-          /*cache_id=*/GetGpuDiskCacheSubdir(
-              gpu::GpuDiskCacheType::kDawnGraphite),
-          GraphiteDawnCacheVersion(), base::DoNothing());
-#endif
-    }
     auto* gpu_disk_cache_factory = delegate_->GetGpuDiskCacheFactory();
     for (auto& [_, cache] : client_id_to_caches_) {
       // This call will temporarily extend the lifetime of the cache (kept
@@ -333,7 +323,8 @@ void GpuHostImpl::EstablishGpuChannel(int client_id,
   }
 
   // The gpu host channel uses the same cache as the compositor client.
-  if (is_gpu_host) {
+  if (is_gpu_host &&
+      !base::FeatureList::IsEnabled(features::kGpuPersistentCache)) {
     SetChannelDiskCacheHandle(client_id,
                               gpu::kDisplayCompositorGpuDiskCacheHandle);
   }
@@ -466,60 +457,53 @@ void GpuHostImpl::TerminateGpuProcess(const std::string& message) {
 #endif  // BUILDFLAG(IS_OZONE)
 
 void GpuHostImpl::InitPersistentCache() {
-#if BUILDFLAG(SKIA_USE_DAWN)
-  if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
-    // Use persistent cache for graphite if enabled.
-    // TODO(crbug.com/399642827): Enable persistent cache for other cache types.
     auto* persistent_cache_file_factory =
         PersistentCacheSandboxedFileFactory::GetInstance();
     if (!persistent_cache_file_factory) {
       // This can happen in tests when the cache directory is not defined.
       return;
     }
-    persistent_cache_file_factory->CreateFilesAsync(
-        /*cache_id=*/GetGpuDiskCacheSubdir(
-            gpu::GpuDiskCacheType::kDawnGraphite),
-        GraphiteDawnCacheVersion(),
-        base::BindOnce(
-            [](base::WeakPtr<GpuHostImpl> gpu_host,
-               std::optional<persistent_cache::PendingBackend>
-                   pending_backend) {
-              TRACE_EVENT0("gpu", "GpuHostImpl::InitPersistentCacheCallback");
-              if (!gpu_host) {
-                return;
-              }
-              gpu_host->graphite_dawn_persistent_cache_files_ =
-                  std::move(pending_backend);
-              if (gpu_host
-                      ->pending_graphite_dawn_persistent_cache_files_request_) {
-                // If channel is already initialized, we send the files to the
-                // GPU process immediately.
-                gpu_host
-                    ->pending_graphite_dawn_persistent_cache_files_request_ =
-                    false;
-                gpu_host->SetChannelPersistentCachePendingBackend(
-                    gpu::kGraphiteDawnClientId,
-                    gpu::kGraphiteDawnGpuDiskCacheHandle,
-                    std::move(gpu_host->graphite_dawn_persistent_cache_files_));
-              }
-            },
-            weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
+
+    auto load_persistent_cache = [&](gpu::GpuDiskCacheHandle handle,
+                                     std::string cache_version) {
+      persistent_cache_file_factory->CreateFilesAsync(
+          GetGpuDiskCacheSubdir(gpu::GetHandleType(handle)), cache_version,
+          base::BindOnce(
+              [](base::WeakPtr<GpuHostImpl> gpu_host,
+                 gpu::GpuDiskCacheHandle handle,
+                 std::optional<persistent_cache::PendingBackend>
+                     pending_backend) {
+                if (!gpu_host || !pending_backend) {
+                  return;
+                }
+
+                gpu_host->OnPersistentCacheFilesCreated(
+                    handle, std::move(*pending_backend));
+              },
+              weak_ptr_factory_.GetWeakPtr(), handle));
+    };
+
+    if (base::FeatureList::IsEnabled(features::kGpuPersistentCache)) {
+      // The compositor and Skia cache both use GrShaderGpuDiskCache with the
+      // persistent cache.
+      load_persistent_cache(gpu::kGrShaderGpuDiskCacheHandle, params_.product);
+    }
+#if BUILDFLAG(SKIA_USE_DAWN)
+    if (features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
+      load_persistent_cache(gpu::kGraphiteDawnGpuDiskCacheHandle,
+                            GraphiteDawnCacheVersion());
+    }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
 }
 
 void GpuHostImpl::SetChannelPersistentCachePendingBackend(
     int client_id,
     const gpu::GpuDiskCacheHandle& handle,
-    std::optional<persistent_cache::PendingBackend> pending_backend) {
-  if (!pending_backend) {
-    return;
-  }
+    persistent_cache::PendingBackend pending_backend) {
   TRACE_EVENT2("gpu", "GpuHostImpl::SetChannelPersistentCachePendingBackend",
                "client_id", client_id, "handle_type", GetHandleType(handle));
   gpu_service()->SetChannelPersistentCachePendingBackend(
-      client_id, handle, *std::move(pending_backend));
+      client_id, handle, std::move(pending_backend));
 }
 
 std::string GpuHostImpl::GetShaderPrefixKey() {
@@ -619,26 +603,30 @@ void GpuHostImpl::DidInitialize(
                            gpu_feature_info_for_hardware_gpu, gpu_extra_info);
 
   if (!params_.disable_gpu_shader_disk_cache) {
-    SetChannelDiskCacheHandle(gpu::kDisplayCompositorClientId,
-                              gpu::kDisplayCompositorGpuDiskCacheHandle);
-    SetChannelDiskCacheHandle(gpu::kGrShaderCacheClientId,
-                              gpu::kGrShaderGpuDiskCacheHandle);
+    // Signal that any delayed loads of the persistent cache files should be
+    // immediately forwarded to the GPU process.
+    send_persistent_cache_files_to_service_ = true;
+
+    // Forward existing persistent cache files now. They would only have been
+    // loaded if the experiment is active.
+    for (auto& persistent_cache_files : persistent_cache_files_) {
+      const gpu::GpuDiskCacheHandle& handle = persistent_cache_files.first;
+      persistent_cache::PendingBackend files =
+          std::move(persistent_cache_files.second);
+      SetChannelPersistentCachePendingBackend(gpu::GetHandleValue(handle),
+                                              handle, std::move(files));
+    }
+    persistent_cache_files_.clear();
+
+    if (!base::FeatureList::IsEnabled(features::kGpuPersistentCache)) {
+      SetChannelDiskCacheHandle(gpu::kDisplayCompositorClientId,
+                                gpu::kDisplayCompositorGpuDiskCacheHandle);
+      SetChannelDiskCacheHandle(gpu::kGrShaderCacheClientId,
+                                gpu::kGrShaderGpuDiskCacheHandle);
+    }
     if (!features::kSkiaGraphiteDawnUsePersistentCache.Get()) {
       SetChannelDiskCacheHandle(gpu::kGraphiteDawnClientId,
                                 gpu::kGraphiteDawnGpuDiskCacheHandle);
-    } else {
-#if BUILDFLAG(SKIA_USE_DAWN)
-      if (!graphite_dawn_persistent_cache_files_) {
-        // Persistent cache files are not yet available, set pending request
-        // flag so that the files will be sent immediately once they are
-        // available.
-        pending_graphite_dawn_persistent_cache_files_request_ = true;
-      } else {
-        SetChannelPersistentCachePendingBackend(
-            gpu::kGraphiteDawnClientId, gpu::kGraphiteDawnGpuDiskCacheHandle,
-            std::move(graphite_dawn_persistent_cache_files_));
-      }
-#endif  // BUILDFLAG(SKIA_USE_DAWN)
     }
   }
 }
@@ -818,5 +806,55 @@ void GpuHostImpl::LogFrame(base::Value frame_data) {
     viz_debug_output_callback_.Run(std::move(frame_data));
 }
 #endif
+
+void GpuHostImpl::ClearPersistentCaches(bool delete_cache_files) {
+  auto* persistent_cache_file_factory =
+      PersistentCacheSandboxedFileFactory::GetInstance();
+  if (!persistent_cache_file_factory) {
+    return;
+  }
+
+  auto clear_persistent_cache = [&](const gpu::GpuDiskCacheHandle& handle,
+                                    const std::string& cache_version) {
+    // If a pending backend was created but not sent to the service yet, tell
+    // the factory to asynchronously delete it since it is a potentially
+    // blocking call.
+    if (auto iter = persistent_cache_files_.find(handle);
+        iter != persistent_cache_files_.end()) {
+      persistent_cache_file_factory->DeletePendingBackendAsync(
+          std::move(iter->second));
+      persistent_cache_files_.erase(iter);
+    }
+
+    // if `delete_cache_files` is set, delete all cache data.
+    if (delete_cache_files) {
+      persistent_cache_file_factory->ClearFilesAsync(
+          GetGpuDiskCacheSubdir(gpu::GetHandleType(handle)), cache_version,
+          base::DoNothing());
+    }
+  };
+
+  clear_persistent_cache(gpu::kGrShaderGpuDiskCacheHandle, params_.product);
+#if BUILDFLAG(SKIA_USE_DAWN)
+  clear_persistent_cache(gpu::kGraphiteDawnGpuDiskCacheHandle,
+                         GraphiteDawnCacheVersion());
+#endif
+
+  DCHECK(persistent_cache_files_.empty());
+}
+
+void GpuHostImpl::OnPersistentCacheFilesCreated(
+    gpu::GpuDiskCacheHandle handle,
+    persistent_cache::PendingBackend pending_backend) {
+  TRACE_EVENT0("gpu", "GpuHostImpl::OnPersistentCacheFilesCreated");
+
+  if (send_persistent_cache_files_to_service_) {
+    // If the service is already initialized, we send the files  immediately.
+    SetChannelPersistentCachePendingBackend(gpu::GetHandleValue(handle), handle,
+                                            std::move(pending_backend));
+  } else {
+    persistent_cache_files_[handle] = std::move(pending_backend);
+  }
+}
 
 }  // namespace viz

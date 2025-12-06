@@ -931,9 +931,13 @@ void GpuServiceImpl::SetChannelPersistentCachePendingBackend(
     persistent_cache::PendingBackend pending_backend) {
   TRACE_EVENT2("gpu", "GpuServiceImpl::SetChannelPersistentCachePendingBackend",
                "client_id", client_id, "handle_type", GetHandleType(handle));
-  // TODO(399642827): Support other cache types.
-  CHECK_EQ(client_id, gpu::kGraphiteDawnClientId);
-  CHECK_EQ(GetHandleType(handle), gpu::GpuDiskCacheType::kDawnGraphite);
+
+  // TODO(399642827): Support persistent cache for non-reserved clients (WebGPU,
+  // WebGL)
+  CHECK(gpu::IsReservedGpuDiskCacheHandle(handle));
+  // The persistent cache does not use a separate cache for the display
+  // compositor.
+  CHECK_NE(client_id, gpu::kDisplayCompositorClientId);
 
   scoped_refptr<gpu::GpuPersistentCache> cache =
       persistent_caches_.GetCache(handle);

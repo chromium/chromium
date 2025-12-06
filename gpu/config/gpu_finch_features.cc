@@ -379,6 +379,11 @@ const base::FeatureParam<bool> kSkiaGraphiteDawnD3D11DelayFlush{
 BASE_FEATURE(kSkiaGraphiteDawnUseD3D12, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Whether to use the GpuPersistentCache for caching GPU process shader blobs.
+// Usage for Graphite is controlled independently with
+// kSkiaGraphiteDawnUsePersistentCache.
+BASE_FEATURE(kGpuPersistentCache, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enabling this will make the GPU decode path use a mock implementation of
 // discardable memory.
 BASE_FEATURE(kNoDiscardableMemoryForGpuDecodePath,

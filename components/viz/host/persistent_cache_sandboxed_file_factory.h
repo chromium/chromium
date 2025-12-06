@@ -71,6 +71,9 @@ class VIZ_HOST_EXPORT PersistentCacheSandboxedFileFactory
                        const std::string& product,
                        ClearFilesCallback callback);
 
+  // Destroy `backend` asynchronously using background_task_runner_.
+  void DeletePendingBackendAsync(persistent_cache::PendingBackend backend);
+
  protected:
   // Make ctor protected so that the tests can derive and test it directly.
   PersistentCacheSandboxedFileFactory(

@@ -200,6 +200,7 @@ CompositorGpuThread::GetSharedContextState() {
   // Initialize Skia.
   if (!shared_context_state->InitializeSkia(
           gpu_preferences, workarounds, gpu_channel_manager_->gr_shader_cache(),
+          gpu_channel_manager_->persistent_cache(),
           gpu_channel_manager_->use_shader_cache_shm_count(),
           /*progress_reporter=*/nullptr)) {
     LOG(ERROR) << "Failed to Initialize Skia for DrDC SharedContextState";

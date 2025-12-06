@@ -540,8 +540,8 @@ void BindDiscardableMemoryReceiverOnUI(
 // src/content/browser/browser_main_loop.cc once the persistent cache is used
 // for all cache types.
 void InitGpuPersistentCacheFileFactoryOnce() {
-#if BUILDFLAG(SKIA_USE_DAWN)
-  if (features::kSkiaGraphiteDawnUsePersistentCache.Get() &&
+  if ((features::kSkiaGraphiteDawnUsePersistentCache.Get() ||
+       base::FeatureList::IsEnabled(features::kGpuPersistentCache)) &&
       !viz::PersistentCacheSandboxedFileFactory::GetInstance()) {
     base::FilePath cache_root_dir =
         GetContentClient()->browser()->GetGPUPersistentCacheDirectory();
@@ -553,7 +553,6 @@ void InitGpuPersistentCacheFileFactoryOnce() {
     }
     viz::PersistentCacheSandboxedFileFactory::CreateInstance(cache_root_dir);
   }
-#endif
 }
 
 }  // anonymous namespace

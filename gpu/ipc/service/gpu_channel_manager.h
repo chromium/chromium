@@ -215,7 +215,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   raster::GrShaderCache* gr_shader_cache() {
     return gr_shader_cache_ ? &*gr_shader_cache_ : nullptr;
   }
-
+  scoped_refptr<GpuPersistentCache> persistent_cache();
   webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory() {
     return dawn_caching_interface_factory_.get();
   }
@@ -372,6 +372,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
   // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
   raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
 
+  const bool use_persistent_cache_for_ganesh_ = false;
   const raw_ptr<GpuPersistentCacheCollection> persistent_caches_;
 
   scoped_refptr<GpuPeakMemoryMonitor> peak_memory_monitor_;

@@ -111,8 +111,12 @@ void GL_APIENTRY GLBlobCacheSetCallback(const void* key,
 // GPU.PersistentCache.{CachePrefix}.MetricName
 // Do not modify without changing
 // tools/metrics/histograms/metadata/gpu/histograms.xml
-const char* GetCacheHistogramPrefix(GpuDiskCacheType type) {
-  switch (type) {
+const char* GetCacheHistogramPrefix(GpuDiskCacheHandle handle) {
+  switch (GetHandleType(handle)) {
+    case GpuDiskCacheType::kGlShaders:
+      return IsReservedGpuDiskCacheHandle(handle) ? "Ganesh" : "WebGL";
+    case GpuDiskCacheType::kDawnWebGPU:
+      return "WebGPU";
     case GpuDiskCacheType::kDawnGraphite:
       return "GraphiteDawn";
     default:
@@ -751,8 +755,8 @@ scoped_refptr<GpuPersistentCache> GpuPersistentCacheCollection::GetCache(
 
   auto [iter, inserted] = caches_.emplace(
       handle, base::MakeRefCounted<GpuPersistentCache>(
-                  GetCacheHistogramPrefix(GetHandleType(handle)),
-                  std::move(memory_cache), async_write_options_));
+                  GetCacheHistogramPrefix(handle), std::move(memory_cache),
+                  async_write_options_));
   DCHECK(inserted);
   return iter->second;
 }
@@ -771,8 +775,7 @@ bool GpuPersistentCacheCollection::OnMemoryDump(
   base::AutoLock lock(mutex_);
   for (auto& [handle, cache] : caches_) {
     std::ostringstream dump_name;
-    dump_name << "gpu/shader_cache/"
-              << GetCacheHistogramPrefix(GetHandleType(handle));
+    dump_name << "gpu/shader_cache/" << GetCacheHistogramPrefix(handle);
     if (!IsReservedGpuDiskCacheHandle(handle)) {
       int32_t value = GetHandleValue(handle);
       DCHECK_GE(value, 0);

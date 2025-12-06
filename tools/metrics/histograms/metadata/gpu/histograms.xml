@@ -36,6 +36,13 @@ chromium-metrics-reviews@google.com.
   <variant name="TextureDrawQuad"/>
 </variants>
 
+<variants name="GpuPersistentCacheType">
+  <variant name="Ganesh"/>
+  <variant name="GraphiteDawn"/>
+  <variant name="WebGL"/>
+  <variant name="WebGPU"/>
+</variants>
+
 <variants name="GPUProtectedVideoType">
   <variant name="Clear" summary="Clear"/>
   <variant name="HardwareProtected" summary="HardwareProtected"/>
@@ -1279,7 +1286,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Load"
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.Load"
     units="microseconds" expires_after="2026-05-24">
   <owner>lehoangquyen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1288,10 +1295,10 @@ chromium-metrics-reviews@google.com.
     Time it takes in gpu::GpuPersistentCache::LoadData (only when it is ready).
     Recorded only for clients that support high-resolution clocks.
   </summary>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>
 
-<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.LoadResult"
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.LoadResult"
     enum="GpuPersistentCacheLoadResult" expires_after="2026-03-22">
   <owner>geofflang@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1300,10 +1307,10 @@ chromium-metrics-reviews@google.com.
     Records the results of gpu::GpuPersistentCache::Load for determining cache
     hit rates.
   </summary>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>
 
-<histogram name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.Store"
+<histogram name="GPU.PersistentCache.{GpuPersistentCacheType}.Store"
     units="microseconds" expires_after="2026-05-24">
   <owner>kylechar@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1312,11 +1319,11 @@ chromium-metrics-reviews@google.com.
     Time it takes in gpu::GpuPersistentCache::StoreData (only when it is ready).
     Recorded only for clients that support high-resolution clocks.
   </summary>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
 </histogram>
 
 <histogram
-    name="GPU.PersistentCache.{GraphiteDawnOrWebGPU}.{LoadStore}.CacheAvailable"
+    name="GPU.PersistentCache.{GpuPersistentCacheType}.{LoadStore}.CacheAvailable"
     enum="Boolean" expires_after="2026-05-24">
   <owner>lehoangquyen@chromium.org</owner>
   <owner>chrome-gpu-metric-alerts@chromium.org</owner>
@@ -1325,7 +1332,7 @@ chromium-metrics-reviews@google.com.
     Whether the gpu::GpuPersistentCache is ready when {LoadStore}Data() is
     called. Recorded only for first 100 {LoadStore}.
   </summary>
-  <token key="GraphiteDawnOrWebGPU" variants="GraphiteDawnOrWebGPU"/>
+  <token key="GpuPersistentCacheType" variants="GpuPersistentCacheType"/>
   <token key="LoadStore">
     <variant name="Load"/>
     <variant name="Store"/>

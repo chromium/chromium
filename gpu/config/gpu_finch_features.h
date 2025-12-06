@@ -90,6 +90,8 @@ GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kSkiaGraphiteSmallPathAtlas);
 GPU_CONFIG_EXPORT extern const base::FeatureParam<int>
     kSkiaGraphiteMinPathSizeForMsaa;
 
+GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kGpuPersistentCache);
+
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kConditionallySkipGpuChannelFlush);
 
 GPU_CONFIG_EXPORT BASE_DECLARE_FEATURE(kNoDiscardableMemoryForGpuDecodePath);

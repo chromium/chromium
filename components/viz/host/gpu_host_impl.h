@@ -242,7 +242,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void SetChannelPersistentCachePendingBackend(
       int client_id,
       const gpu::GpuDiskCacheHandle& handle,
-      std::optional<persistent_cache::PendingBackend> pending_backend);
+      persistent_cache::PendingBackend pending_backend);
 
   std::string GetShaderPrefixKey();
 
@@ -304,6 +304,11 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   void LogFrame(base::Value frame_data) override;
 #endif
 
+  void ClearPersistentCaches(bool delete_cache_files);
+  void OnPersistentCacheFilesCreated(
+      gpu::GpuDiskCacheHandle handle,
+      persistent_cache::PendingBackend pending_backend);
+
   // Can be modified in tests by GpuHostImplTestApi.
   raw_ptr<Delegate> delegate_;
 
@@ -345,10 +350,14 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
 
   base::OneShotTimer shutdown_timeout_;
 
-  // Opened persistent cache files for GraphiteDawn.
-  std::optional<persistent_cache::PendingBackend>
-      graphite_dawn_persistent_cache_files_;
-  bool pending_graphite_dawn_persistent_cache_files_request_ = false;
+  // Opened persistent cache files which have not been forwarded to the GPU
+  // process yet.
+  std::map<gpu::GpuDiskCacheHandle, persistent_cache::PendingBackend>
+      persistent_cache_files_;
+
+  // Signal that the GPU process is ready to accept persistent cache files. They
+  // should be forwarded as soon as they are loaded.
+  bool send_persistent_cache_files_to_service_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

@@ -365,6 +365,8 @@ GpuChannelManager::GpuChannelManager(
       vulkan_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
+      use_persistent_cache_for_ganesh_(
+          base::FeatureList::IsEnabled(features::kGpuPersistentCache)),
       persistent_caches_(persistent_caches),
       peak_memory_monitor_(base::MakeRefCounted<GpuPeakMemoryMonitor>()),
       gr_context_options_provider_(gr_context_options_provider) {
@@ -377,7 +379,8 @@ GpuChannelManager::GpuChannelManager(
       (gpu_feature_info_
            .status_values[GPU_FEATURE_TYPE_GPU_TILE_RASTERIZATION] ==
        gpu::kGpuFeatureStatusEnabled) &&
-      !gpu_preferences_.disable_gpu_shader_disk_cache;
+      !gpu_preferences_.disable_gpu_shader_disk_cache &&
+      !use_persistent_cache_for_ganesh_;
   UMA_HISTOGRAM_BOOLEAN("Gpu.GrShaderCacheEnabled", enable_gr_shader_cache);
   if (enable_gr_shader_cache) {
     size_t gr_shader_cache_size = gpu_preferences.gpu_program_cache_size;
@@ -982,7 +985,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   if (!shared_context_state->InitializeSkia(
           gpu_preferences_, gpu_driver_bug_workarounds_, gr_shader_cache(),
-          use_shader_cache_shm_count_, watchdog_)) {
+          persistent_cache(), use_shader_cache_shm_count_, watchdog_)) {
     LOG(ERROR) << "ContextResult::kFatalFailure: Failed to initialize Skia for "
                   "SharedContextState";
     *result = ContextResult::kFatalFailure;
@@ -1066,6 +1069,12 @@ void GpuChannelManager::ScheduleGrContextCleanup() {
   if (shared_context_state_) {
     shared_context_state_->ScheduleSkiaCleanup();
   }
+}
+
+scoped_refptr<GpuPersistentCache> GpuChannelManager::persistent_cache() {
+  return use_persistent_cache_for_ganesh_
+             ? persistent_caches_->GetCache(kGrShaderGpuDiskCacheHandle)
+             : nullptr;
 }
 
 void GpuChannelManager::StoreShader(const std::string& key,

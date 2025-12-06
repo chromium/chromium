@@ -341,6 +341,7 @@ SharedContextState::~SharedContextState() {
 
   if (IsCurrent(nullptr, true) && feature_info_) {
     UnbindGLContextFromShaderCache(feature_info_);
+    UnbindCacheFromCurrentOpenGLContext();
   }
 
 #if BUILDFLAG(ENABLE_VULKAN) && \
@@ -457,10 +458,10 @@ bool SharedContextState::IsGraphiteDawnVulkanSwiftShader() const {
 bool SharedContextState::InitializeSkia(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    gpu::raster::GrShaderCache* cache,
+    gpu::raster::GrShaderCache* gr_cache,
+    scoped_refptr<GpuPersistentCache> persistent_cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
-
   if (gr_context_type_ == GrContextType::kNone) {
     // SharedContextState only exists to hold a GL context for WebGL fallback
     // if context type is set to none. We don't need to initialization Skia
@@ -474,18 +475,21 @@ bool SharedContextState::InitializeSkia(
                               use_shader_cache_shm_count);
   }
 
-  return InitializeGanesh(gpu_preferences, workarounds, cache,
+  return InitializeGanesh(gpu_preferences, workarounds, gr_cache,
+                          std::move(persistent_cache),
                           use_shader_cache_shm_count, progress_reporter);
 }
 
 bool SharedContextState::InitializeGanesh(
     const GpuPreferences& gpu_preferences,
     const GpuDriverBugWorkarounds& workarounds,
-    gpu::raster::GrShaderCache* cache,
+    gpu::raster::GrShaderCache* gr_cache,
+    scoped_refptr<GpuPersistentCache> persistent_cache,
     GpuProcessShmCount* use_shader_cache_shm_count,
     gl::ProgressReporter* progress_reporter) {
   progress_reporter_ = progress_reporter;
-  gr_shader_cache_ = cache;
+  gr_shader_cache_ = gr_cache;
+  persistent_cache_ = std::move(persistent_cache);
   use_shader_cache_shm_count_ = use_shader_cache_shm_count;
 
   size_t max_resource_cache_bytes;
@@ -504,7 +508,11 @@ bool SharedContextState::InitializeGanesh(
   if(workarounds.msaa_is_slow && !workarounds.msaa_is_slow_2)
     options.fInternalMultisampleCount = 4;
   options.fReduceOpsTaskSplitting = GrContextOptions::Enable::kNo;
-  options.fPersistentCache = cache;
+  if (persistent_cache_) {
+    options.fPersistentCache = persistent_cache_.get();
+  } else {
+    options.fPersistentCache = gr_cache;
+  }
   options.fShaderErrorHandler = this;
   if (gpu_preferences.force_max_texture_size)
     options.fMaxTextureSizeOverride = gpu_preferences.force_max_texture_size;
@@ -523,7 +531,7 @@ bool SharedContextState::InitializeGanesh(
       return false;
     }
 
-    if (use_shader_cache_shm_count && cache) {
+    if (use_shader_cache_shm_count && (gr_cache || persistent_cache_)) {
       // |use_shader_cache_shm_count| is safe to capture here since it must
       // outlive the this context state.
       gr_gl_interface->fFunctions.fProgramBinary =
@@ -535,7 +543,8 @@ bool SharedContextState::InitializeGanesh(
           };
     }
 
-    BindGLContextToShaderCache(feature_info_, cache);
+    BindGLContextToShaderCache(feature_info_, gr_cache);
+    BindCacheToCurrentOpenGLContext(persistent_cache_.get());
 
     options.fDriverBugWorkarounds =
         GrDriverBugWorkarounds(workarounds.ToIntSet());
