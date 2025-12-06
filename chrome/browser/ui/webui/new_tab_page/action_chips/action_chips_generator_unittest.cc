@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <functional>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -310,6 +311,96 @@ TEST(ActionChipGeneratorTest,
                           Eq(std::cref(GetStaticImageGenerationChip()))));
 }
 
+struct StaticChipsGenerationWithAimEligibilityTestCase {
+  // Whether the most recent tab exists.
+  bool tab_exists = false;
+  // Whether the user is eligible for deep search.
+  bool is_deepsearch_eligible = false;
+  // Whether the user is eligible for image creation.
+  bool is_create_images_eligible = false;
+  using TupleT = std::tuple<bool, bool, bool>;
+  explicit StaticChipsGenerationWithAimEligibilityTestCase(TupleT tuple)
+      : tab_exists(get<0>(tuple)),
+        is_deepsearch_eligible(get<1>(tuple)),
+        is_create_images_eligible(get<2>(tuple)) {}
+};
+
+using ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest =
+    testing::TestWithParam<StaticChipsGenerationWithAimEligibilityTestCase>;
+INSTANTIATE_TEST_SUITE_P(
+    ActionChipGeneratorTests,
+    ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest,
+    ::testing::ConvertGenerator<
+        StaticChipsGenerationWithAimEligibilityTestCase::TupleT>(
+        testing::Combine(testing::Bool(), testing::Bool(), testing::Bool())),
+    [](const testing::TestParamInfo<
+        StaticChipsGenerationWithAimEligibilityTestCase>& param_info) {
+      const StaticChipsGenerationWithAimEligibilityTestCase& param =
+          param_info.param;
+      std::string test_name;
+      if (!param.is_deepsearch_eligible && !param.is_create_images_eligible) {
+        test_name = "NoEligibility";
+      } else {
+        test_name = "EligibilityFor";
+        if (param.is_deepsearch_eligible) {
+          test_name += "DeepSearch";
+        }
+        if (param.is_create_images_eligible) {
+          test_name += "ImageCreation";
+        }
+      }
+
+      if (param.tab_exists) {
+        test_name += "AndTabExists";
+      }
+      return test_name;
+    });
+
+TEST_P(ActionChipGeneratorStaticChipsGenerationWithAimEligibilityTest,
+       GenerateStaticChipsWhenNtpNextShowStaticTextParamIsTrue) {
+  EnvironmentFixture env;
+  const GURL page_url("https://google.com/");
+  const std::u16string page_title(u"Google");
+  std::optional<TabFixture> tab_fixture;
+  if (GetParam().tab_exists) {
+    tab_fixture.emplace(page_url, page_title);
+  }
+  GeneratorFixture generator_fixture;
+
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsDeepSearchEligible())
+      .WillOnce(Return(GetParam().is_deepsearch_eligible));
+  EXPECT_CALL(generator_fixture.mock_aim_eligibility_service(),
+              IsCreateImagesEligible())
+      .WillOnce(Return(GetParam().is_create_images_eligible));
+
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpNextFeatures,
+      {{ntp_features::kNtpNextShowStaticTextParam.name, "true"}});
+
+  base::RunLoop run_loop;
+  std::vector<ActionChipPtr> actual;
+  TabInterface* tab =
+      tab_fixture.has_value() ? &tab_fixture->mock_tab() : nullptr;
+  generator_fixture.GenerateActionChips(tab, run_loop, actual);
+  run_loop.Run();
+
+  std::vector<Matcher<ActionChipPtr>> expected;
+  ActionChipPtr most_resent_tab_chip;
+  if (tab != nullptr) {
+    most_resent_tab_chip = CreateStaticRecentTabChip(CreateTabInfo(tab));
+    expected.push_back(Eq(std::cref(most_resent_tab_chip)));
+  }
+  if (GetParam().is_deepsearch_eligible) {
+    expected.push_back(Eq(std::cref(GetStaticDeepSearchChip())));
+  }
+  if (GetParam().is_create_images_eligible) {
+    expected.push_back(Eq(std::cref(GetStaticImageGenerationChip())));
+  }
+  EXPECT_THAT(actual, ElementsAreArray(expected));
+}
+
 TEST(ActionChipGeneratorWithNoRecentTabTest,
      GenerateStaticChipsWhenHistorySyncIsOptOut) {
   EnvironmentFixture env;
@@ -557,13 +648,13 @@ struct ActionChipsGeneratorDeepDiveBackfillTestCase {
   SearchSuggestionParser::SuggestResults response;
   // Whether the user is eligible for each AIM tools. When the value is
   // std::nullopt, it means that no call is made to the corresponding method.
-  // When a non-empty value is set, the method is called and its return value is
-  // its content.
+  // When a non-empty value is set, the method is called and its return value
+  // is its content.
   std::optional<bool> is_deepsearch_eligible_call = true;
   std::optional<bool> is_create_images_eligible_call = true;
   // The functions that generate additional chips. This, together with the
-  // static tab context chip and the deep dive chips from suggestions, forms the
-  // expected output.
+  // static tab context chip and the deep dive chips from suggestions, forms
+  // the expected output.
   std::vector<base::FunctionRef<const ActionChipPtr&()>>
       additional_static_chips;
 };

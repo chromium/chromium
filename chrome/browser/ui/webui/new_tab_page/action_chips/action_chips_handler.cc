@@ -148,6 +148,12 @@ void ActionChipsHandler::SendActionChipsToUi(std::vector<ActionChipPtr> chips) {
   if (!page_.is_bound()) {
     return;
   }
+  if (chips.size() <= 1) {
+    // We show a chip only when there are more than one chip. This occurs when
+    // there is no tab opened and only one of the AIM features are enabled.
+    // This branch ensures that no chip is displayed by returning an empty list.
+    chips.clear();
+  }
   RecordImpressionMetrics(chips);
 
   page_->OnActionChipsChanged(std::move(chips));

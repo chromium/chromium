@@ -193,7 +193,7 @@ std::vector<ActionChipPtr> CreateDeepDiveChips(
   return chips;
 }
 
-void AppendAimChipsBasedOnEligibility(
+void AppendStaticAimChipsBasedOnEligibility(
     std::vector<ActionChipPtr>& chips,
     const AimEligibilityService* aim_eligibility_service) {
   for (base::FunctionRef<std::optional<ActionChipPtr>(
@@ -228,14 +228,26 @@ struct CreateChipsForSteadyStateOptions {
 
 std::vector<ActionChipPtr> CreateChipsForSteadyState(
     TabInfoPtr tab,
+    const AimEligibilityService* aim_eligibility_service,
     const CreateChipsForSteadyStateOptions& options) {
   std::vector<ActionChipPtr> chips;
   if (!tab.is_null()) {
     chips.push_back(
         CreateRecentTabChip(std::move(tab), options.recent_tab_suggestion));
   }
-  chips.push_back(CreateDeepSearchChip(options.deep_search_suggestion));
-  chips.push_back(CreateImageCreationChip(options.image_creation_suggestion));
+  std::optional<ActionChipPtr> deep_search_chip =
+      CreateDeepSearchChipIfEligible(options.deep_search_suggestion,
+                                     aim_eligibility_service);
+  if (deep_search_chip.has_value()) {
+    chips.push_back(*std::move(deep_search_chip));
+  }
+
+  std::optional<ActionChipPtr> image_creation_chip =
+      CreateImageCreationChipIfEligible(options.image_creation_suggestion,
+                                        aim_eligibility_service);
+  if (image_creation_chip.has_value()) {
+    chips.push_back(*std::move(image_creation_chip));
+  }
   return chips;
 }
 }  // namespace
@@ -283,6 +295,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
     case ChipsGenerationScenario::kStaticChipsOnly: {
       std::move(callback).Run(CreateChipsForSteadyState(
           tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
+          aim_eligibility_service_,
           /*options=*/{}));
       break;
     }
@@ -292,6 +305,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
         // TODO: b:457512149 - Use the new endpoint once it is ready.
         std::move(callback).Run(CreateChipsForSteadyState(
             tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
+            aim_eligibility_service_,
             /*options=*/{}));
       } else {
         content::WebContents& contents = *tab->GetContents();
@@ -310,6 +324,7 @@ void ActionChipsGeneratorImpl::GenerateActionChips(
       // TODO: b:457512149 - handle the other cases correctly.
       std::move(callback).Run(CreateChipsForSteadyState(
           tab.has_value() ? CreateTabInfo(*tab_id_generator_, *tab) : nullptr,
+          aim_eligibility_service_,
           /*options=*/{}));
   }
 }
@@ -321,6 +336,7 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
     RemoteSuggestionsServiceSimple::ActionChipSuggestionsResult&& result) {
   if (!result.has_value()) {
     std::move(callback).Run(CreateChipsForSteadyState(std::move(tab),
+                                                      aim_eligibility_service_,
                                                       /*options=*/{}));
     return;
   }
@@ -329,7 +345,7 @@ void ActionChipsGeneratorImpl::GenerateDeepDiveChipsFromRemoteResponse(
     // This ensures that at least two chips are available for display.
     // Assumption: The user is either deepsearch eligible or nanobanana
     // eligible (and can be both).
-    AppendAimChipsBasedOnEligibility(chips, aim_eligibility_service_);
+    AppendStaticAimChipsBasedOnEligibility(chips, aim_eligibility_service_);
   }
   std::move(callback).Run(std::move(chips));
 }

@@ -58,6 +58,7 @@ using ::testing::_;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::Invoke;
+using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::Pointee;
 using ::testing::Return;
@@ -439,6 +440,30 @@ TEST_P(ActionChipsHandlerStaticChipsTest,
   histogram_tester_.ExpectTotalCount(
       "NewTabPage.ActionChips.Handler.ActionChipsRetrievalLatency",
       expected_call_count);
+}
+
+TEST_F(ActionChipsHandlerStaticChipsTest,
+       StartActionChipsRetrievalSendsAnEmptyListWhenThereAreLessThanTwoChips) {
+  std::vector<ActionChipPtr> actual_chips;
+  base::RunLoop run_loop;
+  EXPECT_CALL(page_, OnActionChipsChanged(_))
+      .WillOnce(
+          [&actual_chips, &run_loop](std::vector<ActionChipPtr> action_chips) {
+            actual_chips = std::move(action_chips);
+            run_loop.Quit();
+          });
+  EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
+      .WillOnce(
+          [](base::optional_ref<const tabs::TabInterface>,
+             base::OnceCallback<void(
+                 std::vector<action_chips::mojom::ActionChipPtr>)> callback) {
+            std::vector<ActionChipPtr> chips;
+            chips.push_back(MakeActionChip(CreateStaticDeepSearchChip()));
+            std::move(callback).Run(std::move(chips));
+          });
+  handler().StartActionChipsRetrieval();
+  run_loop.Run();
+  EXPECT_THAT(actual_chips, IsEmpty());
 }
 
 TEST_F(ActionChipsHandlerTest, DiscardWebContentsDoesNotCrash) {
