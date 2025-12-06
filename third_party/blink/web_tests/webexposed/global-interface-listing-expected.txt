@@ -6793,6 +6793,7 @@ interface NavigationHistoryEntry : EventTarget
     setter ondispose
 interface NavigationPrecommitController
     attribute @@toStringTag
+    method addHandler
     method constructor
     method redirect
 interface NavigationPreloadManager

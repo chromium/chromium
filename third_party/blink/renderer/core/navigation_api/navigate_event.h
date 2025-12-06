@@ -78,6 +78,8 @@ class NavigateEvent final : public Event,
   void MaybeCommitImmediately(ScriptState*);
 
   void Redirect(const String& url, NavigationNavigateOptions*, ExceptionState&);
+  void AddHandlerDuringPrecommit(V8NavigationInterceptHandler*,
+                                 ExceptionState&);
 
   void React(ScriptState* script_state);
 

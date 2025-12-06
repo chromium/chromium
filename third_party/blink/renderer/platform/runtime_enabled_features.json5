@@ -3458,6 +3458,10 @@
       status: "stable",
     },
     {
+      name: "NavigateEventAddHandlerOnPrecommit",
+      status: "experimental",
+    },
+    {
       name: "NavigateEventCanTransition",
     },
     {

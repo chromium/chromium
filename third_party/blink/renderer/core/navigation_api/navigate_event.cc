@@ -300,6 +300,22 @@ void NavigateEvent::Redirect(const String& url_string,
   }
 }
 
+void NavigateEvent::AddHandlerDuringPrecommit(
+    V8NavigationInterceptHandler* handler,
+    ExceptionState& exception_state) {
+  if (!PerformSharedChecks("addHandler", exception_state)) {
+    return;
+  }
+
+  if (intercept_state_ > InterceptState::kIntercepted) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "navigation has already committed.");
+    return;
+  }
+
+  navigation_action_handlers_list_.push_back(handler);
+}
+
 void NavigateEvent::MaybeCommitImmediately(ScriptState* script_state) {
   delayed_load_start_task_handle_ = PostDelayedCancellableTask(
       *DomWindow()->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
