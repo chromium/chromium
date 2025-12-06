@@ -42,6 +42,9 @@ struct VectorIcon;
 
 class AutocompleteControllerEmitter;
 class PrefService;
+namespace omnibox {
+class OmniboxPopupCloser;
+}  // namespace omnibox
 
 // Interface that allows the omnibox component to interact with its embedder
 // (e.g., getting information about the current page, retrieving objects
@@ -108,6 +111,7 @@ class OmniboxClient {
   }
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
+  virtual omnibox::OmniboxPopupCloser* GetOmniboxPopupCloser();
   virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
   // Returns the port used by the embedded https server in tests. This is used
   // to determine the correct port while upgrading typed URLs to https if the

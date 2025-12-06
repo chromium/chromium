@@ -54,6 +54,10 @@ AutocompleteClassifier* OmniboxClient::GetAutocompleteClassifier() {
   return nullptr;
 }
 
+omnibox::OmniboxPopupCloser* OmniboxClient::GetOmniboxPopupCloser() {
+  return nullptr;
+}
+
 bool OmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
   return false;
 }

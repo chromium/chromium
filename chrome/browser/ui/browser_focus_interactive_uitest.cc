@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/frame/window_frame_util.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
@@ -37,6 +38,7 @@
 #include "chrome/browser/ui/views/find_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/contents_web_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_closer.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -501,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(BrowserFocusTest, FocusTraversal) {
   ASSERT_TRUE(IsViewFocused(VIEW_ID_OMNIBOX));
 
   // Simulate ESC being pressed to close the omnibox suggestions popup.
-  browser()->window()->GetLocationBar()->GetOmniboxView()->CloseOmniboxPopup();
+  browser()->browser_window_features()->omnibox_popup_closer()->CloseWithReason(
+      omnibox::PopupCloseReason::kEscapeKeyPressed);
 
   // Loop through the focus chain twice in each direction for good measure.
   TestFocusTraversal(false);

@@ -26,11 +26,6 @@ BASE_FEATURE(kAllowEyeDropperWGCScreenCapture,
 #endif  // BUILDFLAG(IS_WIN)
 );
 
-// When enabled, clicks outside the omnibox and its popup will close an open
-// omnibox popup.
-BASE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCreateNewTabGroupAppMenuTopLevel,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
