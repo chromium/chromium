@@ -174,8 +174,6 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
         ConvertPolicyType(state.next_state_active_policy);
     if (notification_type.has_value()) {
       // Schedule notification based on the remaining screen time until lock.
-      // TODO(crbug.com/41422189): Dismiss a shown notification when it no
-      // longer applies.
       const base::TimeDelta remaining_time = state.next_state_change_time - now;
       time_limit_notifier_.MaybeScheduleLockNotifications(
           notification_type.value(), remaining_time);
