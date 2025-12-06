@@ -286,5 +286,5 @@ void ComposeboxHandler::SubmitQuery(
 
 void ComposeboxHandler::UpdateSuggestedTabContext(
     searchbox::mojom::TabInfoPtr tab_info) {
-  SearchboxHandler::page_->UpdateSuggestedTabContext(std::move(tab_info));
+  SearchboxHandler::page_->UpdateAutoSuggestedTabContext(std::move(tab_info));
 }

@@ -577,8 +577,9 @@ suite('NewTabPageComposeboxTest', () => {
     // Assert.
     assertEquals(composeboxElement.$.context.$.carousel.files.length, 1);
     assertEquals(searchboxHandler.getCallCount('deleteContext'), 1);
-    const [idArg] = searchboxHandler.getArgs('deleteContext');
+    const [idArg, fromChip] = searchboxHandler.getArgs('deleteContext')[0];
     assertEquals(idArg, deletedId);
+    assertFalse(fromChip);
   });
 
   test('NotifySessionStarted called on composebox created', () => {
@@ -659,8 +660,9 @@ suite('NewTabPageComposeboxTest', () => {
 
     // Assert thumbnail is removed.
     assertEquals(searchboxHandler.getCallCount('deleteContext'), 1);
-    const [idArg] = searchboxHandler.getArgs('deleteContext');
+    const [idArg, fromChip] = searchboxHandler.getArgs('deleteContext')[0];
     assertEquals(idArg, FAKE_TOKEN_STRING);
+    assertFalse(fromChip);
     // The carousel is removed from the DOM when there are no files, so
     // assert its absence.
     assertFalse(

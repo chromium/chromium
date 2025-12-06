@@ -40,6 +40,8 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler {
                    bool meta_key,
                    bool shift_key) override;
   void HandleLensButtonClick() override;
+  void DeleteContext(const base::UnguessableToken& file_token,
+                     bool from_automatic_chip) override;
 
   void CreateAndSendQueryMessage(const std::string& query);
 

@@ -158,6 +158,9 @@ class ContextualTasksUI : public TaskInfoDelegate,
   // tab.
   void OnSidePanelStateChanged();
 
+  // Called to disable active tab context suggestion on compose box.
+  void DisableActiveTabContextSuggestion();
+
   // Called when the active tab has been changed, either a new page is loaded or
   // a title change. This is only called when the of this class is rendered in
   // the side panel.

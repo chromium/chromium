@@ -76,7 +76,9 @@ class MockSearchboxPage : public searchbox::mojom::Page {
               AddFileContext,
               (const base::UnguessableToken&,
                searchbox::mojom::SelectedFileInfoPtr));
-  MOCK_METHOD(void, UpdateSuggestedTabContext, (searchbox::mojom::TabInfoPtr));
+  MOCK_METHOD(void,
+              UpdateAutoSuggestedTabContext,
+              (searchbox::mojom::TabInfoPtr));
 };
 
 class MockAutocompleteController : public AutocompleteController {

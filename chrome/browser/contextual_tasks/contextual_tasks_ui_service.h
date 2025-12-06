@@ -143,6 +143,14 @@ class ContextualTasksUiService : public KeyedService {
                                    const GURL& url,
                                    BrowserWindowInterface* browser);
 
+  void set_auto_tab_context_suggestion_enabled(bool enabled) {
+    auto_tab_context_suggestion_enabled_ = enabled;
+  }
+
+  bool auto_tab_context_suggestion_enabled() const {
+    return auto_tab_context_suggestion_enabled_;
+  }
+
  protected:
   // The actual implementation of `HandleNavigation` that extracts more of the
   // components needed to decide if the navigation should be handled by this
@@ -166,6 +174,10 @@ class ContextualTasksUiService : public KeyedService {
   // intercepting a query from some other surface like the omnibox. The entry
   // in this map is removed once the UI is loaded with the correct thread.
   std::map<base::Uuid, GURL> task_id_to_creation_url_;
+
+  // Whether to allow active tab context to be suggested on compose box
+  // automatically.
+  bool auto_tab_context_suggestion_enabled_ = true;
 
   base::WeakPtrFactory<ContextualTasksUiService> weak_ptr_factory_{this};
 };
