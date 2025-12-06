@@ -76,6 +76,9 @@ struct OpenXrExtensionMethods {
   OPENXR_DECLARE_FN(xrCreateSpatialAnchorEXT);
   OPENXR_DECLARE_FN(xrEnumerateSpatialAnchorAttachableComponentsANDROID);
 
+  // Spatial HitTest
+  OPENXR_DECLARE_FN(xrCreateSpatialRaycastSnapshotANDROID);
+
   // Visibility Mask
   OPENXR_DECLARE_FN(xrGetVisibilityMaskKHR);
 

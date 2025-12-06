@@ -147,62 +147,23 @@ XrSpatialSnapshotEXT OpenXrSpatialHitTestManager::GetSnapshot(
   // component type for both plane and depth based hit tests.
   std::array<XrSpatialComponentTypeEXT, 1> enabled_components = {
       XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID};
-  XrSpatialDiscoverySnapshotCreateInfoEXT snapshot_create_info = {
-      .type = XR_TYPE_SPATIAL_DISCOVERY_SNAPSHOT_CREATE_INFO_EXT,
-      .next = &raycast_info,
+  XrSpatialRaycastSnapshotCreateInfoANDROID snapshot_create_info = {
+      .type = XR_TYPE_SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID,
       .componentTypeCount = static_cast<uint32_t>(enabled_components.size()),
       .componentTypes = enabled_components.data(),
+      .raycastBounds = &raycast_info,
   };
 
-  XrFutureEXT future;
+  XrSpatialSnapshotEXT snapshot;
   if (XR_FAILED(extension_helper_->ExtensionMethods()
-                    .xrCreateSpatialDiscoverySnapshotAsyncEXT(
-                        spatial_context, &snapshot_create_info, &future))) {
+                    .xrCreateSpatialRaycastSnapshotANDROID(
+                        spatial_context, &snapshot_create_info, &snapshot))) {
     DLOG(ERROR) << __func__
                 << " Failed to create discovery snapshot for hit test";
     return XR_NULL_HANDLE;
   }
 
-  // This is a temporary solution that is only safe because the current
-  // implementation is synchronous. This should be replaced with a proper
-  // synchronous API when it is available.
-  // TODO(https://crbug.com/394772465)
-  XrFuturePollInfoEXT poll_info = {XR_TYPE_FUTURE_POLL_INFO_EXT};
-  poll_info.future = future;
-  XrFuturePollResultEXT poll_result = {XR_TYPE_FUTURE_POLL_RESULT_EXT};
-  while (poll_result.state != XR_FUTURE_STATE_READY_EXT) {
-    if (XR_FAILED(extension_helper_->ExtensionMethods().xrPollFutureEXT(
-            instance_, &poll_info, &poll_result))) {
-      DLOG(ERROR) << __func__ << " Failed to poll future for hit test snapshot";
-      return XR_NULL_HANDLE;
-    }
-  }
-
-  XrCreateSpatialDiscoverySnapshotCompletionInfoEXT completion_info = {
-      .type = XR_TYPE_CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_INFO_EXT,
-      .baseSpace = mojo_space_,
-      .time = predicted_display_time_,
-      .future = future,
-  };
-
-  XrCreateSpatialDiscoverySnapshotCompletionEXT completion = {
-      .type = XR_TYPE_CREATE_SPATIAL_DISCOVERY_SNAPSHOT_COMPLETION_EXT};
-  if (XR_FAILED(extension_helper_->ExtensionMethods()
-                    .xrCreateSpatialDiscoverySnapshotCompleteEXT(
-                        spatial_context, &completion_info, &completion))) {
-    DLOG(ERROR) << __func__
-                << " Failed to complete snapshot creation for hit test";
-    return XR_NULL_HANDLE;
-  }
-
-  if (XR_FAILED(completion.futureResult)) {
-    DLOG(ERROR) << __func__
-                << " Hit test snapshot creation resulted in an error: "
-                << std::hex << completion.futureResult;
-    return XR_NULL_HANDLE;
-  }
-
-  return completion.snapshot;
+  return snapshot;
 }
 
 std::vector<mojom::XRHitResultPtr> OpenXrSpatialHitTestManager::RequestHitTest(
@@ -249,7 +210,7 @@ std::vector<mojom::XRHitResultPtr> OpenXrSpatialHitTestManager::RequestHitTest(
   query_result.entityStates = entity_states.data();
   query_result.entityStateCapacityInput = entity_states.size();
 
-  std::vector<XrSpatialRaycastResultANDROID> raycast_results(
+  std::vector<XrSpatialRaycastResultDataANDROID> raycast_results(
       query_result.entityIdCountOutput);
   XrSpatialComponentRaycastResultListANDROID raycast_result_list = {
       .type = XR_TYPE_SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID,

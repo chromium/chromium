@@ -223,6 +223,8 @@ typedef XrResult(XRAPI_PTR* PFN_xrAcquireDepthSwapchainImagesANDROID)(
 #define XR_TYPE_SPATIAL_BOUNDS_RAYCAST_ANDROID ((XrStructureType)1000786001U)
 #define XR_TYPE_SPATIAL_COMPONENT_RAYCAST_RESULT_LIST_ANDROID \
   ((XrStructureType)1000786002U)
+#define XR_TYPE_SPATIAL_RAYCAST_SNAPSHOT_CREATE_INFO_ANDROID \
+  ((XrStructureType)1000786003U)
 #define XR_TYPE_SPATIAL_CAPABILITY_CONFIGURATION_DEPTH_RAYCAST_ANDROID \
   ((XrStructureType)1000786000U)
 
@@ -231,10 +233,10 @@ typedef XrResult(XRAPI_PTR* PFN_xrAcquireDepthSwapchainImagesANDROID)(
 #define XR_SPATIAL_COMPONENT_TYPE_RAYCAST_RESULT_ANDROID \
   ((XrSpatialComponentTypeEXT)1000786000U)
 
-typedef struct XrSpatialRaycastResultANDROID {
+typedef struct XrSpatialRaycastResultDataANDROID {
     XrPosef    hitPose;
     float      distanceSquared;
-} XrSpatialRaycastResultANDROID;
+} XrSpatialRaycastResultDataANDROID;
 
 typedef struct XrSpatialCapabilityConfigurationDepthRaycastANDROID {
     XrStructureType                     type;
@@ -260,8 +262,22 @@ typedef struct XrSpatialComponentRaycastResultListANDROID {
     XrStructureType                   type;
     void* XR_MAY_ALIAS                next;
     uint32_t                          raycastResultCount;
-    XrSpatialRaycastResultANDROID*    raycastResults;
+    XrSpatialRaycastResultDataANDROID*    raycastResults;
 } XrSpatialComponentRaycastResultListANDROID;
+
+typedef struct XrSpatialRaycastSnapshotCreateInfoANDROID {
+  XrStructureType type;
+  const void* next;
+  uint32_t componentTypeCount;
+  const XrSpatialComponentTypeEXT* componentTypes;
+  const XrSpatialBoundsRaycastANDROID* raycastBounds;
+} XrSpatialRaycastSnapshotCreateInfoANDROID;
+
+typedef XrResult (XRAPI_PTR* PFN_xrCreateSpatialRaycastSnapshotANDROID)(
+  XrSpatialContextEXT spatialContext,
+  const XrSpatialRaycastSnapshotCreateInfoANDROID* createInfo,
+  XrSpatialSnapshotEXT* snapshot);
+
 #endif  // XR_ANDROID_spatial_discovery_raycast
 
 #ifndef XR_ANDROID_spatial_entity_bound_anchor
