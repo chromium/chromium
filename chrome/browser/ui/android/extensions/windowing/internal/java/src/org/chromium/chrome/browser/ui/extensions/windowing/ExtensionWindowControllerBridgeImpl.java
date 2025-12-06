@@ -10,6 +10,7 @@ import android.util.ArrayMap;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -41,11 +42,35 @@ final class ExtensionWindowControllerBridgeImpl
      * has been loaded, which usually means starting a {@code ChromeTabbedActivity}. Otherwise, the
      * JNI call in the method will cause {@code UnsatisfiedLinkError}.
      */
+    static void initializeWindowControllerListObserverForTesting() {
+        ExtensionWindowControllerBridgeImplJni.get()
+                .addWindowControllerListObserverForTesting(); // IN-TEST
+
+        ResettersForTesting.register(
+                () -> {
+                    ExtensionWindowControllerBridgeImplJni.get()
+                            .removeWindowControllerListObserverForTesting(); // IN-TEST
+                    sExtensionInternalEventsForTesting.clear();
+                });
+    }
+
+    /**
+     * Deprecated. Use {@link #initializeWindowControllerListObserverForTesting()} instead.
+     *
+     * <p>TODO(crbug.com/466457024): delete this method.
+     */
+    @Deprecated
     static void addWindowControllerListObserverForTesting() {
         ExtensionWindowControllerBridgeImplJni.get()
                 .addWindowControllerListObserverForTesting(); // IN-TEST
     }
 
+    /**
+     * Deprecated. Use {@link #initializeWindowControllerListObserverForTesting()} instead.
+     *
+     * <p>TODO(crbug.com/466457024): delete this method.
+     */
+    @Deprecated
     static void removeWindowControllerListObserverForTesting() {
         ExtensionWindowControllerBridgeImplJni.get()
                 .removeWindowControllerListObserverForTesting(); // IN-TEST

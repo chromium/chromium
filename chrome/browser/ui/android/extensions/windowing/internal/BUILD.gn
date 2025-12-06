@@ -37,6 +37,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/extensions/windowing/ExtensionWindowControllerBridgeImpl.java",
   ]
   deps = [
+    "//base:resetters_java",
     "//build/android:build_java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/extensions/windowing:java",
