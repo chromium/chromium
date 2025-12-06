@@ -3157,24 +3157,100 @@ void WebViewImpl::DidAccessInitialMainDocument() {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-void WebViewImpl::Minimize() {
+// TODO(https://crbug.com/40946306): Add timeouts to the callbacks and consider
+// queuing requests instead of rejecting them.
+void WebViewImpl::Minimize(WindowShowStateChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
-  local_main_frame_host_remote_->Minimize();
+  if (window_show_state_change_callback_.has_value()) {
+    std::move(callback).Run(/*succeeded=*/false);
+  } else {
+    window_show_state_change_callback_.emplace(
+        WindowShowStateChangeType::Minimize, std::move(callback));
+    local_main_frame_host_remote_->Minimize();
+  }
 }
 
-void WebViewImpl::Maximize() {
+void WebViewImpl::Maximize(WindowShowStateChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
-  local_main_frame_host_remote_->Maximize();
+  if (window_show_state_change_callback_.has_value()) {
+    std::move(callback).Run(/*succeeded=*/false);
+  } else {
+    window_show_state_change_callback_.emplace(
+        WindowShowStateChangeType::Maximize, std::move(callback));
+    local_main_frame_host_remote_->Maximize();
+  }
 }
 
-void WebViewImpl::Restore() {
+void WebViewImpl::Restore(WindowShowStateChangeCallback callback) {
   DCHECK(local_main_frame_host_remote_);
-  local_main_frame_host_remote_->Restore();
+  if (window_show_state_change_callback_.has_value()) {
+    std::move(callback).Run(/*succeeded=*/false);
+  } else {
+    window_show_state_change_callback_.emplace(
+        WindowShowStateChangeType::Restore, std::move(callback));
+    local_main_frame_host_remote_->Restore();
+  }
 }
 
 void WebViewImpl::SetResizable(bool resizable) {
   DCHECK(local_main_frame_host_remote_);
   local_main_frame_host_remote_->SetResizable(resizable);
+}
+
+void WebViewImpl::OnWindowShowStateChanged(
+    ui::mojom::blink::WindowShowState old_state,
+    ui::mojom::blink::WindowShowState new_state) {
+  if (!RuntimeEnabledFeatures::
+          DesktopPWAsAdditionalWindowingControlsEnabled()) {
+    return;
+  }
+
+  using ui::mojom::blink::WindowShowState;
+  switch (new_state) {
+    case WindowShowState::kDefault:
+    case WindowShowState::kNormal:
+      if (window_show_state_change_callback_.has_value() &&
+          window_show_state_change_callback_->first ==
+              WindowShowStateChangeType::Restore) {
+        std::move(window_show_state_change_callback_->second)
+            .Run(/*succeeded=*/true);
+        window_show_state_change_callback_.reset();
+      }
+      break;
+    case WindowShowState::kMinimized:
+      if (window_show_state_change_callback_.has_value() &&
+          window_show_state_change_callback_->first ==
+              WindowShowStateChangeType::Minimize) {
+        std::move(window_show_state_change_callback_->second)
+            .Run(/*succeeded=*/true);
+        window_show_state_change_callback_.reset();
+      }
+      break;
+    case WindowShowState::kMaximized:
+      if (window_show_state_change_callback_.has_value() &&
+          window_show_state_change_callback_->first ==
+              WindowShowStateChangeType::Maximize) {
+        std::move(window_show_state_change_callback_->second)
+            .Run(/*succeeded=*/true);
+        window_show_state_change_callback_.reset();
+        break;
+      }
+      if (old_state == WindowShowState::kMinimized ||
+          old_state == WindowShowState::kFullscreen) {
+        if (window_show_state_change_callback_.has_value() &&
+            window_show_state_change_callback_->first ==
+                WindowShowStateChangeType::Restore) {
+          std::move(window_show_state_change_callback_->second)
+              .Run(/*succeeded=*/true);
+          window_show_state_change_callback_.reset();
+        }
+      }
+      break;
+    case WindowShowState::kInactive:
+    case WindowShowState::kFullscreen:
+    case WindowShowState::kEnd:
+      break;
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 

@@ -170,6 +170,43 @@ SkColor GetFrameColor(Browser* browser) {
   return result;
 }
 
+content::EvalJsResult EvalDisplayStateChange(
+    const content::ToRenderFrameHost& execution_target,
+    std::string window_method,
+    std::string expected_state) {
+  constexpr char script[] =
+      R"(new Promise((resolve, reject) => {
+        window.$1().then(() => {
+          if (window.matchMedia('(display-state: $2)').matches) {
+            resolve('window.$1() succeeded.');
+          } else {
+            reject('window.$1() resolved, but ' +
+            '`display-state: $2` not matched.');
+          }
+        }).catch(() => reject('window.$1() rejected.'));
+      });)";
+  return content::EvalJs(
+      execution_target,
+      base::ReplaceStringPlaceholders(
+          script, {std::move(window_method), std::move(expected_state)},
+          nullptr));
+}
+
+content::EvalJsResult EvalFullscreenRequest(
+    const content::ToRenderFrameHost& execution_target) {
+  constexpr char script[] = R"(
+    new Promise((resolve, reject) => {
+      window.matchMedia('(display-state: fullscreen)').addEventListener(
+        'change', e => {
+          if (e.matches) {
+            resolve('document.documentElement.requestFullscreen() succeeded.');
+          }
+        }, { once: true });
+      document.documentElement.requestFullscreen();
+    });)";
+  return content::EvalJs(execution_target, script);
+}
+
 }  // namespace
 
 class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
@@ -2310,7 +2347,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MinimizeWindowWithApi) {
+    MinimizeAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2321,19 +2358,26 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
 
   // Minimize window
-  EXPECT_TRUE(ExecJs(web_contents, "window.minimize()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsMinimized(); }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "minimize", "minimized"),
+            "window.minimize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMinimized());
 
-  // On Windows the minimizing seems to be so fast that it doesn't have
-  // sufficient time to update the CSS before it already minimized.
-#if !BUILDFLAG(IS_WIN)
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: minimized)').matches");
-  }));
-#endif
+  // Check if minimizing again succeeds
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "minimize", "minimized"),
+            "window.minimize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMinimized());
+
+  // Restore window
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
+  EXPECT_FALSE(helper()->browser_view()->IsMinimized());
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
+
+  // Check if restoring again succeeds
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
+  EXPECT_FALSE(helper()->browser_view()->IsMinimized());
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 }
 
 // TODO(crbug.com/458526513): Flaky on Linux.
@@ -2355,24 +2399,67 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(helper()->browser_view()->CanMaximize());
   content::WaitForLoadStop(web_contents);
 
-  // Maximize window
-  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: maximized)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+            "window.maximize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
+
+  // Check if maximizing again succeeds
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+            "window.maximize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
 
   // Restore window
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents, "window.matchMedia('(display-state: normal)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
+
+  // Check if restoring again succeeds
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
+}
+
+// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MaximizeMinimizeAndRestoreWindowWithApi \
+  DISABLED_MaximizeMinimizeAndRestoreWindowWithApi
+#else
+#define MAYBE_MaximizeMinimizeAndRestoreWindowWithApi \
+  MaximizeMinimizeAndRestoreWindowWithApi
+#endif
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    MAYBE_MaximizeMinimizeAndRestoreWindowWithApi) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Ensure minimizing is allowed.
+  helper()->browser_view()->SetCanMinimize(true);
+  EXPECT_TRUE(helper()->browser_view()->CanMinimize());
+  content::WaitForLoadStop(web_contents);
+
+  // Maximize window
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+            "window.maximize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
+
+  // Minimize window
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "minimize", "minimized"),
+            "window.minimize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMinimized());
+
+  // Restore window
+  // Window should be first maximized
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "maximized"),
+            "window.restore() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
+
+  // Restore window again
+  // Window should be now in default state
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 }
 
 // TODO(crbug.com/459532445): Flaky on Linux Wayland.
@@ -2392,15 +2479,8 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
 
   // Enter fullscreen
-  EXPECT_TRUE(
-      ExecJs(web_contents, "document.documentElement.requestFullscreen();"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsFullscreen(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: fullscreen)').matches");
-  }));
+  EXPECT_EQ(EvalFullscreenRequest(web_contents),
+            "document.documentElement.requestFullscreen() succeeded.");
   EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
 #if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(helper()->browser_view()->browser()->SupportsWindowFeature(
@@ -2412,13 +2492,8 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 
   // Restore window
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsFullscreen(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents, "window.matchMedia('(display-state: normal)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
   EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
@@ -2447,50 +2522,40 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
 
   // Enter fullscreen
-  EXPECT_TRUE(
-      ExecJs(web_contents, "document.documentElement.requestFullscreen();"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsFullscreen(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: fullscreen)').matches");
-  }));
+  EXPECT_EQ(EvalFullscreenRequest(web_contents),
+            "document.documentElement.requestFullscreen() succeeded.");
   EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
   EXPECT_FALSE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
 
   // Maximize window
-  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: maximized)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+            "window.maximize() succeeded.");
   EXPECT_TRUE(helper()->browser_view()->IsMaximized());
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
   EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
 
   // Restore window
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents, "window.matchMedia('(display-state: normal)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
   EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
 }
 
+// TODO(https://crbug.com/458599317) The test doesn't work correctly on Mac
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_MaximizeFullscreenAndRestoreWindowWithApi \
+  DISABLED_MaximizeFullscreenAndRestoreWindowWithApi
+#else
+#define MAYBE_MaximizeFullscreenAndRestoreWindowWithApi \
+  MaximizeFullscreenAndRestoreWindowWithApi
+#endif
 IN_PROC_BROWSER_TEST_F(
     WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
-    MaximizeFullscreenAndRestoreWindowWithApi) {
+    MAYBE_MaximizeFullscreenAndRestoreWindowWithApi) {
   InstallAndLaunchWebApp();
   helper()->GrantWindowManagementPermission();
   auto* web_contents = helper()->browser_view()->GetActiveWebContents();
@@ -2501,27 +2566,18 @@ IN_PROC_BROWSER_TEST_F(
   content::WaitForLoadStop(web_contents);
 
   // Maximize window
-  EXPECT_TRUE(ExecJs(web_contents, "window.maximize()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: maximized)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "maximize", "maximized"),
+            "window.maximize() succeeded.");
+  EXPECT_TRUE(helper()->browser_view()->IsMaximized());
+  EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
+  EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
+      Browser::WindowFeature::kFeatureTitleBar));
 
   // Enter fullscreen
-  EXPECT_TRUE(
-      ExecJs(web_contents, "document.documentElement.requestFullscreen();"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return helper()->browser_view()->IsFullscreen(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: fullscreen)').matches");
-  }));
-  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
+  EXPECT_EQ(EvalFullscreenRequest(web_contents),
+            "document.documentElement.requestFullscreen() succeeded.");
   EXPECT_TRUE(helper()->browser_view()->IsFullscreen());
+  EXPECT_FALSE(helper()->browser_view()->IsMaximized());
 #if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
@@ -2532,31 +2588,40 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 
   // Restore window
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsFullscreen(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents,
-        "window.matchMedia('(display-state: maximized)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "maximized"),
+            "window.restore() succeeded.");
   EXPECT_TRUE(helper()->browser_view()->IsMaximized());
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
   EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
 
   // Restore window once again
-  EXPECT_TRUE(ExecJs(web_contents, "window.restore()"));
-  EXPECT_TRUE(
-      RunUntil([&]() { return !helper()->browser_view()->IsMaximized(); }));
-  EXPECT_TRUE(RunUntil([&]() {
-    return MatchMediaMatches(
-        web_contents, "window.matchMedia('(display-state: normal)').matches");
-  }));
+  EXPECT_EQ(EvalDisplayStateChange(web_contents, "restore", "normal"),
+            "window.restore() succeeded.");
   EXPECT_FALSE(helper()->browser_view()->IsMaximized());
   EXPECT_FALSE(helper()->browser_view()->IsFullscreen());
   EXPECT_TRUE(helper()->browser_view()->browser()->SupportsWindowFeature(
       Browser::WindowFeature::kFeatureTitleBar));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    WebAppFrameToolbarBrowserTest_AdditionalWindowingControls,
+    RejectSimultaneousWindowChanges) {
+  InstallAndLaunchWebApp();
+  helper()->GrantWindowManagementPermission();
+  auto* web_contents = helper()->browser_view()->GetActiveWebContents();
+
+  // Minimize window 2 times simultaneously
+  constexpr char script[] =
+      R"(new Promise((resolve, reject) => {
+        window.minimize();
+        window.minimize()
+          .then(() => resolve('Second window.minimize() was resolved'))
+          .catch(() => reject('Second window.minimize() was rejected.'));
+      });)";
+  EXPECT_THAT(EvalJs(web_contents, script),
+              content::EvalJsResult::ErrorIs(testing::HasSubstr(
+                  "Second window.minimize() was rejected.")));
 }
 
 // windows.setResizable API should block only user-initiated requests

@@ -1813,6 +1813,9 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
   // VisualProperties waterfall, instead of coming to each WebFrameWidgetImpl
   // independently.
   // https://developer.mozilla.org/en-US/docs/Web/CSS/@media/display-mode
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  ui::mojom::blink::WindowShowState old_show_state = window_show_state_;
+#endif
   SetDisplayMode(visual_properties.display_mode);
   SetWindowShowState(visual_properties.window_show_state);
   SetResizable(visual_properties.resizable);
@@ -1868,6 +1871,12 @@ void WebFrameWidgetImpl::UpdateVisualProperties(
           remote_frame->DidChangeVisibleViewportSize(visible_viewport_size);
         });
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (old_show_state != window_show_state_) {
+    View()->OnWindowShowStateChanged(old_show_state, window_show_state_);
+  }
+#endif  //  !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // All non-top-level Widgets (child local-root frames, GuestViews,
   // etc.) propagate and consume the page scale factor as "external", meaning
