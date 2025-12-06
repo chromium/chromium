@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/buffer_types.h"
 
 using testing::_;

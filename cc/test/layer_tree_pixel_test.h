@@ -17,9 +17,8 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gl/gl_implementation.h"
-
-class SkBitmap;
 
 namespace base {
 namespace test {

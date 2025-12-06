@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "cc/resources/scoped_ui_resource.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace cc {
 
