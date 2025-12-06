@@ -41,12 +41,30 @@ class FuseboxViewBinder {
      * @see PropertyModelChangeProcessor.ViewBinder#bind(Object, Object, Object)
      */
     public static void bind(PropertyModel model, FuseboxViewHolder view, PropertyKey propertyKey) {
+        // go/keep-sorted start block=yes by_regex=propertyKey\s*==\s*FuseboxProperties\.(\w+)
         if (propertyKey == FuseboxProperties.ADAPTER) {
             view.attachmentsView.setAdapter(model.get(FuseboxProperties.ADAPTER));
+        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
+            view.addButton.setVisibility(
+                    model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
+            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE) {
             reanchorViewsForCompactFusebox(model, view);
             updateButtonsVisibilityAndStyling(model, view);
             updateToolDrawables(model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE), view);
+        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
+            updateButtonsVisibilityAndStyling(model, view);
+        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
+            view.requestType.setOnClickListener(
+                    v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
+            boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
+            view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
+            view.addButton.setOnClickListener(
+                    v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
         } else if (propertyKey == FuseboxProperties.COLOR_SCHEME) {
             updateButtonsVisibilityAndStyling(model, view);
             Context context = view.parentView.getContext();
@@ -56,26 +74,24 @@ class FuseboxViewBinder {
             view.popup.mPopupWindow.setBackgroundDrawable(background);
         } else if (propertyKey == FuseboxProperties.COMPACT_UI) {
             reanchorViewsForCompactFusebox(model, view);
-        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED) {
-            view.requestType.setOnClickListener(
-                    v -> model.get(FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED) {
+            view.popup.mAddCurrentTab.setOnClickListener(
+                    v -> model.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run());
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED) {
+            setIsEnabledAndReapplyColorFilter(
+                    view.popup.mAddCurrentTab,
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON) {
+            updateForCurrentTabFavicon(
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON), view);
+        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE) {
+            view.popup.mAddCurrentTab.setVisibility(
+                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE)
+                            ? View.VISIBLE
+                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.POPUP_AI_MODE_CLICKED) {
             view.popup.mAiModeButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_AI_MODE_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_VISIBLE) {
-            boolean visible = model.get(FuseboxProperties.ATTACHMENTS_VISIBLE);
-            view.attachmentsView.setVisibility(visible ? View.VISIBLE : View.GONE);
-        } else if (propertyKey == FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE) {
-            view.addButton.setVisibility(
-                    model.get(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
-            updateButtonsVisibilityAndStyling(model, view);
-        } else if (propertyKey == FuseboxProperties.BUTTON_ADD_CLICKED) {
-            view.addButton.setOnClickListener(
-                    v -> model.get(FuseboxProperties.BUTTON_ADD_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE_CHANGEABLE) {
-            updateButtonsVisibilityAndStyling(model, view);
         } else if (propertyKey == FuseboxProperties.POPUP_CAMERA_CLICKED) {
             view.popup.mCameraButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_CAMERA_CLICKED).run());
@@ -113,24 +129,12 @@ class FuseboxViewBinder {
         } else if (propertyKey == FuseboxProperties.POPUP_TAB_PICKER_CLICKED) {
             view.popup.mTabButton.setOnClickListener(
                     v -> model.get(FuseboxProperties.POPUP_TAB_PICKER_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED) {
-            view.popup.mAddCurrentTab.setOnClickListener(
-                    v -> model.get(FuseboxProperties.CURRENT_TAB_BUTTON_CLICKED).run());
-        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED) {
-            setIsEnabledAndReapplyColorFilter(
-                    view.popup.mAddCurrentTab,
-                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_ENABLED));
-        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON) {
-            updateForCurrentTabFavicon(
-                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_FAVICON), view);
-        } else if (propertyKey == FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE) {
-            view.popup.mAddCurrentTab.setVisibility(
-                    model.get(FuseboxProperties.CURRENT_TAB_BUTTON_VISIBLE)
-                            ? View.VISIBLE
-                            : View.GONE);
         } else if (propertyKey == FuseboxProperties.SHOW_DEDICATED_MODE_BUTTON) {
             updateButtonsVisibilityAndStyling(model, view);
+        } else if (propertyKey == FuseboxProperties.POPUP_TAB_PICKER_ENABLED) {
+            view.popup.mTabButton.setEnabled(model.get(FuseboxProperties.POPUP_TAB_PICKER_ENABLED));
         }
+        // go/keep-sorted end
     }
 
     private static void setIsEnabledAndReapplyColorFilter(Button button, boolean isEnabled) {
