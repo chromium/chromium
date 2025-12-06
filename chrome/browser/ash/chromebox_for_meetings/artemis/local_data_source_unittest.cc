@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/local_data_source.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
