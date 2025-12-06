@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -24,6 +25,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "services/media_session/public/cpp/features.h"
 #include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
+#include "third_party/blink/public/strings/grit/blink_strings.h"
 
 namespace content {
 
@@ -731,6 +733,31 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
   ASSERT_EQ(true, EvalJs(shell(), "enterPictureInPicture();"));
 
   EXPECT_EQ(overlay_window()->source_title(), u"File on your device");
+}
+
+IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
+                       SendsSourceTitleToOverlayWindow_DataUrl) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  const GURL test_page_url = embedded_test_server()->GetURL(
+      "example.com", "/media/picture_in_picture/one-video.html");
+  GURL data_url(base::StrCat(
+      {"data:text/html,<html><body><iframe width='400px' height='400px' "
+       "onload='document.title=\"iframe loaded\"' src='",
+       test_page_url.spec(), "'></iframe></html>"}));
+  ASSERT_TRUE(NavigateToURL(shell(), data_url));
+  WaitForTitle(u"iframe loaded");
+
+  auto* main_frame = shell()->web_contents()->GetPrimaryMainFrame();
+  RenderFrameHost* sub_frame = ChildFrameAt(main_frame, 0);
+  ASSERT_TRUE(sub_frame);
+
+  ASSERT_EQ(true, EvalJs(sub_frame, "play();"));
+  ASSERT_TRUE(ExecJs(sub_frame, "video.pause();"));
+  ASSERT_EQ(true, EvalJs(sub_frame, "enterPictureInPicture();"));
+  ASSERT_TRUE(web_contents_delegate()->is_in_picture_in_picture());
+
+  EXPECT_EQ(overlay_window()->source_title(), u"Data URL");
 }
 
 IN_PROC_BROWSER_TEST_F(VideoPictureInPictureContentBrowserTest,
