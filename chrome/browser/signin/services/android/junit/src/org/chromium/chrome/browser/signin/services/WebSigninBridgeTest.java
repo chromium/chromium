@@ -43,25 +43,21 @@ public class WebSigninBridgeTest {
     @Before
     public void setUp() {
         WebSigninBridgeJni.setInstanceForTesting(mNativeMock);
-        when(mNativeMock.createWithCoreAccountId(
-                        mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock))
+        when(mNativeMock.create(mProfileMock, CORE_ACCOUNT_INFO, mCallbackMock))
                 .thenReturn(NATIVE_WEB_SIGNIN_BRIDGE);
     }
 
     @Test
     public void testFactoryCreate() {
         WebSigninBridge webSigninBridge =
-                mFactory.createWithCoreAccountId(
-                        mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
+                mFactory.create(mProfileMock, CORE_ACCOUNT_INFO, mCallbackMock);
         Assert.assertNotNull("Factory#create should not return null!", webSigninBridge);
-        verify(mNativeMock)
-                .createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock);
+        verify(mNativeMock).create(mProfileMock, CORE_ACCOUNT_INFO, mCallbackMock);
     }
 
     @Test
     public void testDestroy() {
-        mFactory.createWithCoreAccountId(mProfileMock, CORE_ACCOUNT_INFO.getId(), mCallbackMock)
-                .destroy();
+        mFactory.create(mProfileMock, CORE_ACCOUNT_INFO, mCallbackMock).destroy();
         verify(mNativeMock).destroy(NATIVE_WEB_SIGNIN_BRIDGE);
     }
 

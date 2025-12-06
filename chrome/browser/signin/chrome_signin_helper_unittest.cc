@@ -16,6 +16,7 @@
 #include "base/test/bind.h"
 #include "build/buildflag.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/signin/android/signin_bridge_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -46,8 +47,6 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/signin/android/signin_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
 #include "ui/android/window_android.h"
@@ -201,7 +200,7 @@ class MockSigninBridge : public SigninBridge {
 
   MOCK_METHOD(void,
               StartAddAccountFlow,
-              (TabAndroid * window,
+              (ui::WindowAndroid * window,
                const std::string& prefilled_email,
                const GURL& continue_url),
               (override));
