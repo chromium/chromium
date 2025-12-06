@@ -109,7 +109,6 @@ void NotificationActionsView::UpdateWithNotification(
                                      PillButton::Type::kFloatingWithoutIcon,
                                      /*icon=*/nullptr);
 
-    // TODO(b/330374431) Update button color after ash notification clean up.
     button_and_icon_background_color_ =
         notification_style_utils::CalculateIconBackgroundColor(&notification);
 
