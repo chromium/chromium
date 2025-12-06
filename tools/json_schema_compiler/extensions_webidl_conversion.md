@@ -248,6 +248,48 @@ interface OnFooEvent : ExtensionEvent {
 static attribute OnFooEvent onFoo;
 ```
 
+### Properties
+Instead of using `interface Properties { ... }` to define constant properties exposed on the API, these are now just defined on the main API interface definition. Additionally, instead of using Operation definitions with an extended attribute for the value, they are defined as actual `consts` specifying the type and value.
+
+String values have to be handled a little bit differently, as WebIDL doesn't allow using string literals when specifying the value of a const. Instead we set the value as `= 0` and use a `[StringValue="Foo"]` extended attribute to specify the actual string literal.
+
+For example:
+```
+// Old .idl file
+interface Properties {
+  // The maximum allowed number.
+  [value=100] static long MAX_NUMBER_ALLOWED();
+
+  // An important string key.
+  [value="_importantKey"] static DOMString KEY_STRING();
+}
+```
+Would become:
+```
+// New .webidl file
+interface FooAPI {
+  // The maximum allowed number.
+  const long MAX_NUMBER_ALLOWED = 100;
+
+  // An important string key.
+  [StringValue="_importantKey"] const DOMString KEY_STRING = 0;
+}
+```
+
+### Copyright Notice
+Since the updated schema files are heavily modified from the previous files and not just renames, the year for the copyright notice at the top of the file should be updated to the current year.
+```
+// Copyright 2021 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+```
+Would become:
+```
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+```
+
 ## Canonical Examples
 The `./test/converted_schemas/` folder contains examples of previous conversions that can be used as reference for other syntax and formatting. An example of the alarms conversion from that folder:
 
