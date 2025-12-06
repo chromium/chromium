@@ -64,6 +64,10 @@ class FuseboxAttachmentViewBinder {
                             .getDimensionPixelSize(R.dimen.fusebox_attachment_loading_width);
             imageView.setVisibility(View.GONE);
             progressView.setVisibility(View.VISIBLE);
+            TextView titleView = view.findViewById(R.id.attachment_title);
+            if (titleView != null) {
+                titleView.setVisibility(View.GONE);
+            }
         }
         view.setLayoutParams(layoutParams);
     }
