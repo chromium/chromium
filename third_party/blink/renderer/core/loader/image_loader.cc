@@ -275,6 +275,9 @@ void ImageLoader::Trace(Visitor* visitor) const {
 void ImageLoader::SetImageForTest(ImageResourceContent* new_image) {
   DCHECK(new_image);
   SetImageWithoutConsideringPendingLoadEvent(new_image);
+  // This is needed if the `new_image` is pending, since setting the image this
+  // way will only update the layout object if the image is fully loaded.
+  UpdateLayoutObject();
 }
 
 bool ImageLoader::ImageIsPotentiallyAvailable() const {

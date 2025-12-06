@@ -102,6 +102,16 @@ ImageResourceContent* ImageResourceContent::CreateLoaded(
   return content;
 }
 
+ImageResourceContent* ImageResourceContent::CreatePendingForTest(
+    scoped_refptr<blink::Image> image) {
+  DCHECK(image);
+  ImageResourceContent* content =
+      MakeGarbageCollected<ImageResourceContent>(std::move(image));
+  content->content_status_ = ResourceStatus::kPending;
+  content->size_available_ = Image::kSizeUnavailable;
+  return content;
+}
+
 ImageResourceContent* ImageResourceContent::Fetch(FetchParameters& params,
                                                   ResourceFetcher* fetcher) {
   // TODO(hiroshige): Remove direct references to ImageResource by making

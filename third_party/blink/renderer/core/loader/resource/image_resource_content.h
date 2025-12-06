@@ -60,6 +60,10 @@ class CORE_EXPORT ImageResourceContent final
   // Creates ImageResourceContent from an already loaded image.
   static ImageResourceContent* CreateLoaded(scoped_refptr<blink::Image>);
 
+  // Creates a partially loaded `ImageResourceContent` from an existing image.
+  static ImageResourceContent* CreatePendingForTest(
+      scoped_refptr<blink::Image>);
+
   static ImageResourceContent* Fetch(FetchParameters&, ResourceFetcher*);
 
   explicit ImageResourceContent(scoped_refptr<blink::Image> = nullptr);
