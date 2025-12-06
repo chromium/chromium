@@ -123,7 +123,6 @@ void OpenFileSessionToReadOnIOThread(const GURL& url,
                                     std::move(callback))));
 }
 
-// TODO(b/222823695): Consider using a mojo interface to disconnect remote.
 void CloseFileSession(const std::string& url_id, const CloseStatus status) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CloseFileSessionOnUIThread, url_id, status));
