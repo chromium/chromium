@@ -148,7 +148,7 @@ enum EnumType {
   "name2"
 };
 
-partial dictionary Manifest {
+partial dictionary ExtensionManifest {
   // Description of a manifest key.
   required DOMString string_key;
   required ExampleType custom_type_key;

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 // This will raise an error as the dict should be a partial dictionary.
-dictionary Manifest {
+dictionary ExtensionManifest {
   DOMString string_key;
 };
 
-// Example WebIDL schema which is invalid as it defines a Manifest dictionary
-// for defining associated manifest keys, but doesn't make it partial.
+// Example WebIDL schema which is invalid as it defines an ExtensionManifest
+// dictionary for defining associated manifest keys, but doesn't make it
+// partial.
 interface TestWebIdl {
 };
 

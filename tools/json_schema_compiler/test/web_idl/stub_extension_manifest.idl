@@ -1,0 +1,19 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Example WebIDL which is just a stub ExtensionManifest definition for manifest
+// keys without a Browser definition or any other API pieces.
+
+// Example type defined and used in a manifest key stub.
+dictionary Item {
+  required DOMString src;
+  DOMString sizes;
+};
+
+// Example stub manifest key definition.
+[Namespace=ExampleManifestStub]
+partial dictionary ExtensionManifest {
+  required DOMString string_key;
+  required sequence<Item> item_list;
+};
