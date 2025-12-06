@@ -879,7 +879,7 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       ProcessManager::Get(browser_context());
   CHECK(process_manager);
 
-  auto get_context_type = [](content::WebContents* web_contents) {
+  auto get_context_type = [this](content::WebContents* web_contents) {
     mojom::ViewType view_type = GetViewType(web_contents);
     switch (view_type) {
       // These should never be reached for extensions capable of calling this
@@ -889,7 +889,9 @@ RuntimeGetContextsFunction::GetFrameContexts() {
       case mojom::ViewType::kBackgroundContents:
       case mojom::ViewType::kComponent:
       case mojom::ViewType::kExtensionBackgroundPage:
-        DUMP_WILL_BE_NOTREACHED();
+        DUMP_WILL_BE_NOTREACHED()
+            << "Unexpected view type found: " << (static_cast<int>(view_type))
+            << ", Extension ID: " << extension_id();
         break;
 
       case mojom::ViewType::kExtensionPopup:
