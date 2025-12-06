@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "chrome/common/chrome_paths.h"
 #include "extensions/common/extension.h"

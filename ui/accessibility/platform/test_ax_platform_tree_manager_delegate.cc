@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/test_ax_platform_tree_manager_delegate.h"
 
+#include "base/functional/callback.h"
+
 namespace ui {
 
 TestAXPlatformTreeManagerDelegate::TestAXPlatformTreeManagerDelegate()

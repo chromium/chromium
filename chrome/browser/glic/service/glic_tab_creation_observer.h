@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_GLIC_SERVICE_GLIC_TAB_CREATION_OBSERVER_H_
 #define CHROME_BROWSER_GLIC_SERVICE_GLIC_TAB_CREATION_OBSERVER_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/ui/browser_list_observer.h"

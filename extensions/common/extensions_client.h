@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom-forward.h"

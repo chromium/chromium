@@ -9,7 +9,7 @@
 #include <optional>
 #include <string>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-data-view.h"
 
 namespace chromeos {

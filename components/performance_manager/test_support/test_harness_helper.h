@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "components/performance_manager/embedder/graph_features.h"
 #include "components/performance_manager/graph/graph_impl.h"
 

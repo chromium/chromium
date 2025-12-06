@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/public/browser/client_hints_controller_delegate.h"

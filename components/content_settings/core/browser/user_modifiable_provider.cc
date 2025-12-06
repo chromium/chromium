@@ -4,6 +4,8 @@
 
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
 
+#include "base/functional/callback.h"
+
 namespace content_settings {
 
 void UserModifiableProvider::ExpireWebsiteSetting(

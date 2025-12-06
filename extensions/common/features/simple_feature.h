@@ -15,7 +15,7 @@
 #include <string_view>
 #include <vector>
 
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "components/version_info/channel.h"
 #include "extensions/common/context_data.h"

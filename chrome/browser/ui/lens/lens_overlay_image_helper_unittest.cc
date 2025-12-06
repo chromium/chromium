@@ -6,6 +6,7 @@
 
 #include <array>
 
+#include "base/functional/callback.h"
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"

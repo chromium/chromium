@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"

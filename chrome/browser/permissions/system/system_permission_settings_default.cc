@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "build/buildflag.h"
 #include "chrome/browser/permissions/system/platform_handle.h"

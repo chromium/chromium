@@ -4,6 +4,8 @@
 
 #include "components/permissions/test/mock_permission_ui_selector.h"
 
+#include "base/functional/callback.h"
+
 void MockPermissionUiSelector::SelectUiToUse(
     content::WebContents* web_contents,
     permissions::PermissionRequest* request,
