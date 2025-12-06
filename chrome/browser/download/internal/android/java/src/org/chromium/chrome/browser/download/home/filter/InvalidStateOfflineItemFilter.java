@@ -9,20 +9,27 @@ import android.os.Environment;
 import org.chromium.base.ContentUriUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
+import org.chromium.components.download.DownloadDangerType;
+import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 
 import java.io.File;
 
 /**
- * A {@link OfflineItemFilter} responsible for pruning out items that do not have the right state
- *  to show in the UI or have been externally deleted.
+ * A {@link OfflineItemFilter} responsible for pruning out items that do not have the right state to
+ * show in the UI or have been externally deleted.
  */
 @NullMarked
 public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
+    private final boolean mIncludeBlockedSensitiveItems;
+
     /** Creates an instance of this filter and wraps {@code source}. */
-    public InvalidStateOfflineItemFilter(OfflineItemFilterSource source) {
+    public InvalidStateOfflineItemFilter(
+            DownloadManagerUiConfig config, OfflineItemFilterSource source) {
         super(source);
+        mIncludeBlockedSensitiveItems = config.showBlockedSensitiveItems;
         onFilterChanged();
     }
 
@@ -35,7 +42,12 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
 
         switch (item.state) {
             case OfflineItemState.CANCELLED:
+                return true;
             case OfflineItemState.FAILED:
+                if (mIncludeBlockedSensitiveItems) {
+                    return item.failState != FailState.FILE_BLOCKED
+                            || item.dangerType != DownloadDangerType.SENSITIVE_CONTENT_BLOCK;
+                }
                 return true;
             case OfflineItemState.INTERRUPTED:
             default:

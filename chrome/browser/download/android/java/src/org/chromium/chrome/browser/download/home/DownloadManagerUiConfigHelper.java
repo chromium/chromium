@@ -21,11 +21,14 @@ public class DownloadManagerUiConfigHelper {
         boolean showDangerousItems =
                 ChromeFeatureList.sMaliciousApkDownloadCheck.isEnabled()
                         && !ChromeFeatureList.sMaliciousApkDownloadCheckTelemetryOnly.getValue();
+        boolean showBlockedSensitiveItems =
+                ChromeFeatureList.isEnabled(ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD);
         boolean isLff = DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
         return new DownloadManagerUiConfig.Builder()
                 .setShowDangerousItems(showDangerousItems)
                 .setSupportsGrouping(true)
                 .setInlineSearchBar(isLff)
-                .setAutoFocusSearchBox(isLff && DeviceInput.supportsKeyboard());
+                .setAutoFocusSearchBox(isLff && DeviceInput.supportsKeyboard())
+                .setShowBlockedSensitiveItems(showBlockedSensitiveItems);
     }
 }

@@ -58,7 +58,10 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import java.util.concurrent.atomic.AtomicReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
+@EnableFeatures({
+    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
+    ChromeFeatureList.SHOW_BLOCKED_SENSITIVE_DOWNLOAD
+})
 public class DownloadPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();

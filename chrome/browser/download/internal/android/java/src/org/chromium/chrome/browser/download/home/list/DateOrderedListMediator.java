@@ -228,7 +228,7 @@ class DateOrderedListMediator implements BackPressHandler {
         mOffTheRecordFilter =
                 new OffTheRecordOfflineItemFilter(
                         OtrProfileId.isOffTheRecord(config.otrProfileId), mDangerousFilter);
-        mInvalidStateFilter = new InvalidStateOfflineItemFilter(mOffTheRecordFilter);
+        mInvalidStateFilter = new InvalidStateOfflineItemFilter(config, mOffTheRecordFilter);
         mDeleteUndoFilter = new DeleteUndoOfflineItemFilter(mInvalidStateFilter);
         mSearchFilter = new SearchOfflineItemFilter(mDeleteUndoFilter);
         mTypeFilter = new TypeOfflineItemFilter(mSearchFilter);

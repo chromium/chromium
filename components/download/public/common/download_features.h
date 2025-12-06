@@ -27,6 +27,9 @@ COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kRefreshExpirationDate);
 // Whether to enable smart suggestion for large downloads
 COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(
     kSmartSuggestionForLargeDownloads);
+
+// Whether to show blocked sensitive downloads on download home.
+COMPONENTS_DOWNLOAD_EXPORT BASE_DECLARE_FEATURE(kShowBlockedSensitiveDownload);
 #endif
 
 // On downloads-related UI surfaces, attribute the download to the initiator

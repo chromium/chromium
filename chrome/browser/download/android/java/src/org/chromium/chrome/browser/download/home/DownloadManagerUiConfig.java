@@ -64,6 +64,12 @@ public class DownloadManagerUiConfig {
     public final boolean showDangerousItems;
 
     /**
+     * Whether or not items with blocked sentive content verdict from Safe Browsing should be shown
+     * with warning text/icon in the list.
+     */
+    public final boolean showBlockedSensitiveItems;
+
+    /**
      * A generator for the {@link EdgeToEdgePadAdjuster} to be used to adjust the padding for the
      * download manager.
      */
@@ -90,6 +96,7 @@ public class DownloadManagerUiConfig {
         inlineSearchBar = builder.mInlineSearchBar;
         autoFocusSearchBox = builder.mAutoFocusSearchBox;
         edgeToEdgePadAdjusterGenerator = builder.mEdgeToEdgePadAdjusterGenerator;
+        showBlockedSensitiveItems = builder.mShowBlockedSensitiveItems;
     }
 
     /** Helper class for building a {@link DownloadManagerUiConfig}. */
@@ -108,6 +115,7 @@ public class DownloadManagerUiConfig {
         private boolean mShowPaginationHeaders;
         private boolean mStartWithPrefetchedContent;
         private boolean mShowDangerousItems;
+        private boolean mShowBlockedSensitiveItems;
         private @Nullable Function<View, EdgeToEdgePadAdjuster> mEdgeToEdgePadAdjusterGenerator;
         private boolean mInlineSearchBar;
         private boolean mAutoFocusSearchBox;
@@ -166,6 +174,11 @@ public class DownloadManagerUiConfig {
 
         public Builder setShowDangerousItems(boolean showDangerousItems) {
             mShowDangerousItems = showDangerousItems;
+            return this;
+        }
+
+        public Builder setShowBlockedSensitiveItems(boolean showBlockedSensitiveItems) {
+            mShowBlockedSensitiveItems = showBlockedSensitiveItems;
             return this;
         }
 
