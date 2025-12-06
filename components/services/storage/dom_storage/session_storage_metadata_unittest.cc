@@ -249,16 +249,23 @@ TEST_F(SessionStorageMetadataTest, ShallowCopies) {
                                             test_storage_key2_.Serialize())]);
 }
 
-TEST_F(SessionStorageMetadataTest, DeleteNamespace) {
+TEST_F(SessionStorageMetadataTest, TakeNamespace) {
   SetupTestData();
   SessionStorageMetadata metadata;
   ReadMetadataFromDatabase(&metadata);
 
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  metadata.DeleteNamespace(test_namespace1_id_, &tasks);
-  DbStatus status;
-  RunBatch(std::move(tasks), base::BindOnce(&ErrorCallback, &status));
-  EXPECT_TRUE(status.ok());
+  std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+      namespace_to_delete = metadata.TakeNamespace(test_namespace1_id_);
+
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  for (const auto& [storage_key, map_data] : namespace_to_delete) {
+    if (map_data->ReferenceCount() == 0) {
+      maps_to_delete.emplace_back(test_namespace1_id_, storage_key,
+                                  map_data->map_id());
+    }
+  }
+  DeleteSessionsSync(*database_, {test_namespace1_id_},
+                     std::move(maps_to_delete));
 
   EXPECT_FALSE(base::Contains(metadata.namespace_storage_key_map(),
                               test_namespace1_id_));

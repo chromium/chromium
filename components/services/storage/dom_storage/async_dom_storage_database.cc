@@ -78,6 +78,22 @@ void AsyncDomStorageDatabase::DeleteStorageKeysFromSession(
       std::move(callback));
 }
 
+void AsyncDomStorageDatabase::DeleteSessions(
+    std::vector<std::string> session_ids,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
+    StatusCallback callback) {
+  RunDatabaseTask(
+      base::BindOnce(
+          [](std::vector<std::string> session_ids,
+             std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
+             DomStorageDatabase& db) {
+            return db.DeleteSessions(std::move(session_ids),
+                                     std::move(maps_to_delete));
+          },
+          std::move(session_ids), std::move(maps_to_delete)),
+      std::move(callback));
+}
+
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   RunDatabaseTask(
       base::BindOnce([](DomStorageDatabase& db) { return db.RewriteDB(); }),

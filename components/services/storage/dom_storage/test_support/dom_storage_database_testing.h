@@ -52,12 +52,18 @@ void PutMetadataSync(AsyncDomStorageDatabase& database,
                      DomStorageDatabase::Metadata metadata);
 
 // A synchronous wrapper for
-// `AsyncDomStorageDatabase::DeleteStorageKeysFromSessionSync()`.  Expects
-// success.
+// `AsyncDomStorageDatabase::DeleteStorageKeysFromSession()`.  Expects success.
 void DeleteStorageKeysFromSessionSync(
     AsyncDomStorageDatabase& database,
     std::string session_id,
     std::vector<blink::StorageKey> metadata_to_delete,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
+
+// A synchronous wrapper for
+// `AsyncDomStorageDatabase::DeleteSessions()`.  Expects success.
+void DeleteSessionsSync(
+    AsyncDomStorageDatabase& database,
+    std::vector<std::string> session_ids,
     std::vector<DomStorageDatabase::MapLocator> maps_to_delete);
 
 }  // namespace storage

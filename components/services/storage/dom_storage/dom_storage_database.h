@@ -151,6 +151,13 @@ class DomStorageDatabase {
       std::vector<blink::StorageKey> metadata_to_delete,
       std::vector<MapLocator> maps_to_delete) = 0;
 
+  // Deletes the metadata for each storage key that belongs to a session in
+  // `session_ids`. Optionally deletes map key/value pairs using
+  // `maps_to_delete` to specify what to remove. Callers must not delete maps
+  // still referenced by other cloned sessions.
+  virtual DbStatus DeleteSessions(std::vector<std::string> session_ids,
+                                  std::vector<MapLocator> maps_to_delete) = 0;
+
   // For LevelDB only. Rewrites the database on disk to
   // clean up traces of deleted entries.
   //

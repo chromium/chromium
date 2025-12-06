@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -110,13 +109,12 @@ class SessionStorageMetadata {
   void RegisterShallowClonedNamespace(NamespaceEntry source_namespace,
                                       NamespaceEntry destination_namespace);
 
-  // Deletes the given namespace and any maps that no longer have any
-  // references. This will invalidate all NamespaceEntry objects for the
-  // |namespace_id|, and can invalidate any MapData objects whose reference
-  // count hits zero. Appends operations to |*save_tasks| which will commit the
-  // deletions to disk if run.
-  void DeleteNamespace(const std::string& namespace_id,
-                       std::vector<BatchDatabaseTask>* save_tasks);
+  // Removes and returns a namespace's `MapData` instances from
+  // `namespace_storage_key_map_`. Decreases each of the returned `MapData`
+  // reference counts by 1.  Other namespaces in `namespace_storage_key_map_`
+  // may have outstanding references to the returned `MapData` instances.
+  std::map<blink::StorageKey, scoped_refptr<MapData>> TakeNamespace(
+      const std::string& namespace_id);
 
   // Removes and returns a `MapData` from `namespace_storage_key_map_`,
   // decreasing its `reference_count_`.  Returns nullptr when `MapData` is not
@@ -133,11 +131,7 @@ class SessionStorageMetadata {
   int64_t NextMapId() const { return next_map_id_; }
 
  private:
-  static std::vector<uint8_t> GetNamespacePrefix(
-      const std::string& namespace_id);
-
   int64_t next_map_id_ = 0;
-
   NamespaceStorageKeyMap namespace_storage_key_map_;
 };
 

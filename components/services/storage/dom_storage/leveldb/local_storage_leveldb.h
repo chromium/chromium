@@ -158,6 +158,8 @@ class LocalStorageLevelDB : public DomStorageDatabase {
       std::string session_id,
       std::vector<blink::StorageKey> metadata_to_delete,
       std::vector<MapLocator> maps_to_delete) override;
+  DbStatus DeleteSessions(std::vector<std::string> session_ids,
+                          std::vector<MapLocator> maps_to_delete) override;
   DbStatus RewriteDB() override;
 
   // Test-only functions.

@@ -117,6 +117,10 @@ class AsyncDomStorageDatabase {
       std::vector<blink::StorageKey> metadata_to_delete,
       std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
       StatusCallback callback);
+  void DeleteSessions(
+      std::vector<std::string> session_ids,
+      std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
+      StatusCallback callback);
   void RewriteDB(StatusCallback callback);
 
   // TODO(crbug.com/377242771): Temporarily overload `RunDatabaseTask()` to

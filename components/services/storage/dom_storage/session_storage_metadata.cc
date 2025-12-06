@@ -161,36 +161,24 @@ void SessionStorageMetadata::RegisterShallowClonedNamespace(
   }
 }
 
-void SessionStorageMetadata::DeleteNamespace(
-    const std::string& namespace_id,
-    std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>* save_tasks) {
+std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+SessionStorageMetadata::TakeNamespace(const std::string& namespace_id) {
   std::vector<DomStorageDatabase::Key> prefixes_to_delete;
   auto it = namespace_storage_key_map_.find(namespace_id);
-  if (it == namespace_storage_key_map_.end())
-    return;
+  if (it == namespace_storage_key_map_.end()) {
+    return {};
+  }
 
-  prefixes_to_delete.push_back(GetNamespacePrefix(namespace_id));
+  std::map<blink::StorageKey, scoped_refptr<MapData>> storage_keys =
+      std::move(it->second);
 
-  const std::map<blink::StorageKey, scoped_refptr<MapData>>& storage_keys =
-      it->second;
   for (const auto& storage_key_map_pair : storage_keys) {
     MapData* map_data = storage_key_map_pair.second.get();
     DCHECK_GT(map_data->ReferenceCount(), 0);
     map_data->DecReferenceCount();
-    if (map_data->ReferenceCount() == 0)
-      prefixes_to_delete.push_back(map_data->KeyPrefix());
   }
-
   namespace_storage_key_map_.erase(it);
-
-  save_tasks->push_back(base::BindOnce(
-      [](std::vector<DomStorageDatabase::Key> prefixes_to_delete,
-         DomStorageBatchOperationLevelDB& batch,
-         const DomStorageDatabaseLevelDB& db) {
-        for (const auto& prefix : prefixes_to_delete)
-          std::ignore = batch.DeletePrefixed(prefix);
-      },
-      std::move(prefixes_to_delete)));
+  return storage_keys;
 }
 
 scoped_refptr<SessionStorageMetadata::MapData>
@@ -223,17 +211,6 @@ SessionStorageMetadata::GetOrCreateNamespaceEntry(
       .emplace(std::piecewise_construct, std::forward_as_tuple(namespace_id),
                std::forward_as_tuple())
       .first;
-}
-
-// static
-std::vector<uint8_t> SessionStorageMetadata::GetNamespacePrefix(
-    const std::string& namespace_id) {
-  std::vector<uint8_t> namespace_prefix(kNamespacePrefix,
-                                        std::end(kNamespacePrefix));
-  namespace_prefix.insert(namespace_prefix.end(), namespace_id.begin(),
-                          namespace_id.end());
-  namespace_prefix.push_back(kNamespaceStorageKeySeparator);
-  return namespace_prefix;
 }
 
 }  // namespace storage

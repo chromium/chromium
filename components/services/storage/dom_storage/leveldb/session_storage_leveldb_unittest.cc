@@ -25,6 +25,8 @@ namespace storage {
 StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
     const DomStorageDatabase::KeyValuePair& namespace_entry);
 
+DomStorageDatabase::Key GetSessionPrefix(const std::string& session_id);
+
 std::vector<uint8_t> ToBytes(std::string source);
 
 namespace {
@@ -37,6 +39,8 @@ constexpr const char kOtherFakeSessionId[] =
 constexpr const char kOtherFakeUrlString[] = "https://b-fake.test/";
 constexpr int64_t kOtherFakeMapId = 1566;
 
+constexpr const char kThirdFakeSessionId[] =
+    "5fe0e896_c6d8_4d2b_8b3c_d26f47832125";
 constexpr const char kThirdFakeUrlString[] = "https://c-fake.test/";
 constexpr int64_t kThirdFakeMapId = 1567;
 
@@ -785,6 +789,282 @@ TEST_F(SessionStorageLevelDBTest,
   ASSERT_EQ(all_entries.size(), 1u);
 
   VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(SessionStorageLevelDBTest, GetSessionPrefix) {
+  EXPECT_EQ(GetSessionPrefix(kFakeSessionId),
+            ToBytes("namespace-ce8c7dc5_73b4_4320_a506_ce1f4fd3356f-"));
+}
+
+TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMetadata) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add one metadata entry to the database.
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({.map_locator{
+      kFakeSessionId,
+      kFakeUrlStorageKey,
+      kFakeMapId,
+  }});
+  DbStatus status = session_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the database contains the `metadata` and "VERSION" entries.
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  EXPECT_EQ(all_entries.size(), 2u);
+
+  // Delete the `metadata` entry from the database.
+  status = session_storage_leveldb->DeleteSessions({kFakeSessionId},
+                                                   /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  ASSERT_OK_AND_ASSIGN(all_entries,
+                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapKeyValues) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add two map key/value entries to the database.
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb, {
+                                    {
+                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        ToBytes("value_1"),
+                                    },
+                                    {
+                                        CreateMapDataKey(kFakeMapId, "key_2"),
+                                        ToBytes("value_2"),
+                                    },
+                                }));
+
+  // Verify the database contains two `key/value` entries and one "VERSION"
+  // entry.
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  EXPECT_EQ(all_entries.size(), 3u);
+
+  // Delete the two key/value entries from the database.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kFakeSessionId, kFakeUrlStorageKey, kFakeMapId);
+
+  DbStatus status = session_storage_leveldb->DeleteSessions(
+      {kFakeSessionId}, std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should only include the
+  // "VERSION" entry.
+  ASSERT_OK_AND_ASSIGN(all_entries,
+                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 1u);
+
+  VerifyDatabaseVersionEntry(all_entries[0]);
+}
+
+TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMapExcluded) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Add one metadata entry to the database.
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata.push_back({.map_locator{
+      kFakeSessionId,
+      kFakeUrlStorageKey,
+      kFakeMapId,
+  }});
+  DbStatus status = session_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Add one key/value entry to the database.
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb, {
+                                    {
+                                        CreateMapDataKey(kFakeMapId, "key_1"),
+                                        ToBytes("value_1"),
+                                    },
+                                }));
+
+  // Verify the database contains the metadata, key/value and "VERSION" entries.
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  EXPECT_EQ(all_entries.size(), 3u);
+
+  // Delete the `metadata` entry from the database.
+  status = session_storage_leveldb->DeleteSessions({kFakeSessionId},
+                                                   /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should include the
+  // map key/value entry and the "VERSION" entry.
+  ASSERT_OK_AND_ASSIGN(all_entries,
+                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 2u);
+
+  // Verify the map key/value entry for `kFakeMapId`.
+  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
+
+  VerifyDatabaseVersionEntry(all_entries[1]);
+}
+
+TEST_F(SessionStorageLevelDBTest, DeleteSessionsWithMultipleStorageKeys) {
+  std::unique_ptr<SessionStorageLevelDB> session_storage_leveldb;
+  ASSERT_NO_FATAL_FAILURE(OpenInMemory(&session_storage_leveldb));
+
+  // Create two maps used by two storage keys across three sessions.
+  //
+  // Add 4 metadata entries with one for each map usage.
+  const DomStorageDatabase::MapMetadata kExpectedMapMetadataArray[] = {
+      // The first session's metadata:
+      {
+          .map_locator{
+              kFakeSessionId,
+              kFakeUrlStorageKey,
+              kFakeMapId,
+          },
+      },
+      // The second session's metadata:
+      {
+          .map_locator{
+              kOtherFakeSessionId,
+              kFakeUrlStorageKey,
+              kFakeMapId,
+          },
+      },
+      {
+          .map_locator{
+              kOtherFakeSessionId,
+              kOtherFakeUrlStorageKey,
+              kOtherFakeMapId,
+          },
+      },
+      // The third session's metadata:
+      {
+          .map_locator{
+              kThirdFakeSessionId,
+              kOtherFakeUrlStorageKey,
+              kOtherFakeMapId,
+          },
+      },
+  };
+  std::vector<DomStorageDatabase::MapMetadata> expected_map_metadata =
+      CloneMapMetadataVector(kExpectedMapMetadataArray);
+
+  DomStorageDatabase::Metadata metadata;
+  metadata.map_metadata = CloneMapMetadataVector(expected_map_metadata);
+  DbStatus status = session_storage_leveldb->PutMetadata(std::move(metadata));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Write 3 map key/value entries.
+  ASSERT_NO_FATAL_FAILURE(WriteEntries(
+      *session_storage_leveldb, {// Write the first map's key/value pairs.
+                                 {
+                                     CreateMapDataKey(kFakeMapId, "key_1"),
+                                     ToBytes("value_1"),
+                                 },
+                                 {
+                                     CreateMapDataKey(kFakeMapId, "key_2"),
+                                     ToBytes("value_2"),
+                                 },
+                                 // Write the second map's key/value pairs.
+                                 {
+                                     CreateMapDataKey(kOtherFakeMapId, "key_3"),
+                                     ToBytes("value_3"),
+                                 }}));
+
+  // Verify the database contains the four `metadata` entries, three `key/value`
+  // entries and one "VERSION" entry.
+  ASSERT_OK_AND_ASSIGN(
+      std::vector<DomStorageDatabase::KeyValuePair> all_entries,
+      session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+  EXPECT_EQ(all_entries.size(), 8u);
+
+  // Delete `kFakeSessionId`, which must remove one metadata entry.
+  status = session_storage_leveldb->DeleteSessions({kFakeSessionId},
+                                                   /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should include the following:
+  // - Three metadata entries for `kOtherFakeSessionId` and
+  //   `kThirdFakeSessionId`.
+  // - Three map key/value entries for `kFakeMapId`, and `kOtherFakeMapId`.
+  // - One database VERSION entry.
+  ASSERT_OK_AND_ASSIGN(all_entries,
+                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 7u);
+
+  // Verify the map key/value entries for `kFakeMapId`.
+  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kFakeMapId, "key_1"));
+  EXPECT_EQ(all_entries[0].value, ToBytes("value_1"));
+
+  EXPECT_EQ(all_entries[1].key, CreateMapDataKey(kFakeMapId, "key_2"));
+  EXPECT_EQ(all_entries[1].value, ToBytes("value_2"));
+
+  // Verify the map key/value entries for `kOtherFakeMapId`.
+  EXPECT_EQ(all_entries[2].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[2].value, ToBytes("value_3"));
+
+  VerifyDatabaseVersionEntry(all_entries[6]);
+
+  // Verify the three metadata entries for `kOtherFakeSessionId` and
+  // `kThirdFakeSessionId`. Pop `kFakeSessionId` from the front of
+  // `expected_map_metadata`.
+  expected_map_metadata.erase(expected_map_metadata.begin());
+  ASSERT_OK_AND_ASSIGN(metadata, session_storage_leveldb->ReadAllMetadata());
+  ExpectEqualsMapMetadataSpan(metadata.map_metadata, expected_map_metadata);
+
+  // Delete `kOtherFakeSessionId` along with its no longer referenced map:
+  // `kFakeMapId`. This must remove one metadata entry and two map key/value
+  // entries.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.emplace_back(kOtherFakeSessionId, kFakeUrlStorageKey,
+                              kFakeMapId);
+
+  status = session_storage_leveldb->DeleteSessions({kOtherFakeSessionId},
+                                                   std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // Verify the contents in the database, which should include the following:
+  // - One metadata entry for `kThirdFakeSessionId`.
+  // - One map key/value entry for `kOtherFakeMapId`.
+  // - One database VERSION entry.
+  ASSERT_OK_AND_ASSIGN(all_entries,
+                       session_storage_leveldb->GetLevelDB().GetPrefixed({}));
+
+  EXPECT_TRUE(status.ok()) << status.ToString();
+  ASSERT_EQ(all_entries.size(), 3u);
+
+  // Verify the map key/value entries for `kOtherFakeMapId`.
+  EXPECT_EQ(all_entries[0].key, CreateMapDataKey(kOtherFakeMapId, "key_3"));
+  EXPECT_EQ(all_entries[0].value, ToBytes("value_3"));
+
+  VerifyDatabaseVersionEntry(all_entries[2]);
+
+  // Verify the one metadata entries for `kThirdFakeMapId`.  Pop
+  // `kOtherFakeSessionId` from the front of`expected_map_metadata`.
+  expected_map_metadata.erase(expected_map_metadata.begin(),
+                              expected_map_metadata.begin() + 2);
+  ASSERT_OK_AND_ASSIGN(metadata, session_storage_leveldb->ReadAllMetadata());
+  ExpectEqualsMapMetadataSpan(metadata.map_metadata, expected_map_metadata);
 }
 
 }  // namespace storage

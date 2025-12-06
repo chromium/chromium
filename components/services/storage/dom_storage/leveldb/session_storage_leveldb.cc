@@ -75,6 +75,25 @@ StatusOr<DomStorageDatabase::MapMetadata> ParseMapMetadata(
   };
 }
 
+// Returns "namespace-<session_id>-"
+DomStorageDatabase::Key GetSessionPrefix(const std::string& session_id) {
+  DomStorageDatabase::Key session_prefix;
+  session_prefix.reserve(std::size(kNamespacePrefix) + session_id.size() +
+                         /*kNamespaceStorageKeySeparator=*/1);
+
+  // Append "namespace-"
+  session_prefix.insert(session_prefix.end(), std::begin(kNamespacePrefix),
+                        std::end(kNamespacePrefix));
+
+  // Append `session_id`.
+  session_prefix.insert(session_prefix.end(), session_id.begin(),
+                        session_id.end());
+
+  // Append "-".
+  session_prefix.push_back(kNamespaceStorageKeySeparator);
+  return session_prefix;
+}
+
 SessionStorageLevelDB::SessionStorageLevelDB(PassKey) {}
 
 SessionStorageLevelDB::~SessionStorageLevelDB() = default;
@@ -146,6 +165,33 @@ DbStatus SessionStorageLevelDB::DeleteStorageKeysFromSession(
     // A valid `map` must be in `storage_keys` and `session_id`.
     CHECK_EQ(map.session_id(), session_id);
     DCHECK(base::Contains(metadata_to_delete, map.storage_key()));
+
+    DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.map_id().value()));
+    if (!status.ok()) {
+      return status;
+    }
+  }
+  return batch->Commit();
+}
+
+DbStatus SessionStorageLevelDB::DeleteSessions(
+    std::vector<std::string> session_ids,
+    std::vector<MapLocator> maps_to_delete) {
+  std::unique_ptr<DomStorageBatchOperationLevelDB> batch =
+      leveldb_->CreateBatchOperation();
+
+  // Delete each session's metadata.
+  for (const std::string& session_id : session_ids) {
+    DbStatus status = batch->DeletePrefixed(GetSessionPrefix(session_id));
+    if (!status.ok()) {
+      return status;
+    }
+  }
+
+  // Delete the key/value pairs in `maps_to_delete`.
+  for (const DomStorageDatabase::MapLocator& map : maps_to_delete) {
+    // A valid `map` must be in `session_ids`.
+    DCHECK(base::Contains(session_ids, map.session_id()));
 
     DbStatus status = batch->DeletePrefixed(GetMapPrefix(map.map_id().value()));
     if (!status.ok()) {
@@ -245,6 +291,8 @@ SessionStorageLevelDB::ReadAllMapMetadata() const {
 
   // Create a `MapMetadata` for each entry.
   std::vector<DomStorageDatabase::MapMetadata> results;
+  results.reserve(namespace_entries.size());
+
   for (const KeyValuePair& namespace_entry : namespace_entries) {
     ASSIGN_OR_RETURN(MapMetadata map_metadata,
                      ParseMapMetadata(namespace_entry));

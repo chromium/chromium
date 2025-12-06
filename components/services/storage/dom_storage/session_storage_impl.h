@@ -175,7 +175,11 @@ class SessionStorageImpl : public base::trace_event::MemoryDumpProvider,
   std::unique_ptr<SessionStorageNamespaceImpl>
   CreateSessionStorageNamespaceImpl(std::string namespace_id);
 
-  void DoDatabaseDelete(const std::string& namespace_id);
+  // Removes the namespaces in `namespace_ids` from `metadata_` and `database_`.
+  // Deletes map key/value pairs from `database_` for maps that no longer have
+  // any references.
+  void DeleteNamespacesFromMetadataAndDatabase(
+      std::vector<std::string> namespace_ids);
 
   // Runs |callback| immediately if already connected to a database, otherwise
   // delays running |callback| untill after a connection has been established.

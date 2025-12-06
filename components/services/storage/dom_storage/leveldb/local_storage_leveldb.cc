@@ -245,6 +245,8 @@ StatusOr<DomStorageDatabase::Metadata> LocalStorageLevelDB::ReadAllMetadata() {
 
   // Create a vector of `MapMetadata` to return using the map's values.
   std::vector<DomStorageDatabase::MapMetadata> results;
+  results.reserve(storage_key_metadata_map.size());
+
   for (std::pair<const blink::StorageKey, DomStorageDatabase::MapMetadata>&
            storage_key_metadata : storage_key_metadata_map) {
     results.emplace_back(std::move(storage_key_metadata.second));
@@ -312,6 +314,14 @@ DbStatus LocalStorageLevelDB::DeleteStorageKeysFromSession(
     }
   }
   return batch->Commit();
+}
+
+DbStatus LocalStorageLevelDB::DeleteSessions(
+    std::vector<std::string> session_ids,
+    std::vector<MapLocator> maps_to_delete) {
+  // Not implemented.  Since local storage uses a single global session, callers
+  // should delete the entire database instead of the session.
+  NOTREACHED();
 }
 
 DbStatus LocalStorageLevelDB::RewriteDB() {

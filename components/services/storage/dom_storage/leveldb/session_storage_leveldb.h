@@ -100,6 +100,15 @@ class SessionStorageLevelDB : public DomStorageDatabase {
       std::string session_id,
       std::vector<blink::StorageKey> metadata_to_delete,
       std::vector<MapLocator> maps_to_delete) override;
+
+  // For each session, removes the metadata entries prefixed with:
+  // "namespace-<session_id>-".
+  //
+  // For each deleted map, removes all key/value pairs using the prefix:
+  // "map-<map_id>-".
+  DbStatus DeleteSessions(std::vector<std::string> session_ids,
+                          std::vector<MapLocator> maps_to_delete) override;
+
   DbStatus RewriteDB() override;
 
   // Test-only functions.

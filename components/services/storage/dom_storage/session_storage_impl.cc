@@ -293,9 +293,10 @@ void SessionStorageImpl::DeleteNamespace(const std::string& namespace_id,
     protected_namespaces_from_scavenge_.insert(namespace_id);
 
   if (!should_persist) {
-    RunWhenConnected(base::BindOnce(&SessionStorageImpl::DoDatabaseDelete,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    namespace_id));
+    RunWhenConnected(base::BindOnce(
+        &SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase,
+        weak_ptr_factory_.GetWeakPtr(),
+        std::vector<std::string>({namespace_id})));
   }
 }
 
@@ -497,24 +498,13 @@ void SessionStorageImpl::ScavengeUnusedNamespaces(
   std::vector<std::string> namespaces_to_delete;
   for (const auto& metadata_namespace : metadata_.namespace_storage_key_map()) {
     const std::string& namespace_id = metadata_namespace.first;
-    if (namespaces_.find(namespace_id) != namespaces_.end() ||
-        protected_namespaces_from_scavenge_.find(namespace_id) !=
-            protected_namespaces_from_scavenge_.end()) {
+    if (namespaces_.contains(namespace_id) ||
+        protected_namespaces_from_scavenge_.contains(namespace_id)) {
       continue;
     }
     namespaces_to_delete.push_back(namespace_id);
   }
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> save_tasks;
-  for (const auto& namespace_id : namespaces_to_delete)
-    metadata_.DeleteNamespace(namespace_id, &save_tasks);
-
-  if (database_) {
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kScavengeUnusedNamespaces, std::move(save_tasks),
-        base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
+  DeleteNamespacesFromMetadataAndDatabase(std::move(namespaces_to_delete));
   protected_namespaces_from_scavenge_.clear();
   std::move(callback).Run();
 }
@@ -715,16 +705,32 @@ SessionStorageImpl::CreateSessionStorageNamespaceImpl(
       std::move(namespace_id), this, std::move(map_id_callback), this);
 }
 
-void SessionStorageImpl::DoDatabaseDelete(const std::string& namespace_id) {
+void SessionStorageImpl::DeleteNamespacesFromMetadataAndDatabase(
+    std::vector<std::string> namespace_ids) {
   DCHECK_EQ(connection_state_, CONNECTION_FINISHED);
-  std::vector<AsyncDomStorageDatabase::BatchDatabaseTask> tasks;
-  metadata_.DeleteNamespace(namespace_id, &tasks);
-  if (database_) {
-    database_->RunBatchDatabaseTasks(
-        RunBatchTasksContext::kDoDatabaseDelete, std::move(tasks),
-        base::BindOnce(&SessionStorageImpl::OnCommitResult,
-                       weak_ptr_factory_.GetWeakPtr()));
+
+  // Remove each namespace from `metadata_`.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  for (const std::string& namespace_id : namespace_ids) {
+    std::map<blink::StorageKey, scoped_refptr<SessionStorageMetadata::MapData>>
+        namespace_to_delete = metadata_.TakeNamespace(namespace_id);
+
+    // Find unreferenced map key/value pairs to delete from `database_`.
+    for (const auto& [storage_key, map_data] : namespace_to_delete) {
+      if (map_data->ReferenceCount() == 0) {
+        maps_to_delete.emplace_back(namespace_id, storage_key,
+                                    map_data->map_id());
+      }
+    }
   }
+
+  // Delete the namespaces and map key/values from `database_`.
+  if (!database_) {
+    return;
+  }
+  database_->DeleteSessions(std::move(namespace_ids), std::move(maps_to_delete),
+                            base::BindOnce(&SessionStorageImpl::OnCommitResult,
+                                           weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {

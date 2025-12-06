@@ -156,4 +156,16 @@ void DeleteStorageKeysFromSessionSync(
   EXPECT_TRUE(status.ok()) << status.ToString();
 }
 
+void DeleteSessionsSync(
+    AsyncDomStorageDatabase& database,
+    std::vector<std::string> session_ids,
+    std::vector<DomStorageDatabase::MapLocator> maps_to_delete) {
+  base::test::TestFuture<DbStatus> status_future;
+  database.DeleteSessions(std::move(session_ids), std::move(maps_to_delete),
+                          status_future.GetCallback());
+
+  const DbStatus& status = status_future.Get();
+  EXPECT_TRUE(status.ok()) << status.ToString();
+}
+
 }  // namespace storage
