@@ -6,10 +6,10 @@
 #define BASE_MEMORY_MEMORY_PRESSURE_LISTENER_REGISTRY_H_
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list.h"
-#include "base/observer_list_threadsafe.h"
 
 namespace base {
 
@@ -43,8 +43,14 @@ class BASE_EXPORT MemoryPressureListenerRegistry {
   static void SetNotificationsSuppressed(bool suppressed);
   static void SimulatePressureNotification(
       MemoryPressureLevel memory_pressure_level);
+  // Invokes `SimulatePressureNotification` asynchronously on the main thread,
+  // ensuring that any pending registration tasks have completed by the time it
+  // runs, then posts back `on_notification_sent_callback` to the calling
+  // sequence, allowing tests to ensure that the notification was received by
+  // the MemoryPressureListener under test.
   static void SimulatePressureNotificationAsync(
-      MemoryPressureLevel memory_pressure_level);
+      MemoryPressureLevel memory_pressure_level,
+      OnceClosure on_notification_sent_callback);
 
  private:
   void DoNotifyMemoryPressure(MemoryPressureLevel memory_pressure_level);

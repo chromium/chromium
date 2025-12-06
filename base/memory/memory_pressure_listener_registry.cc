@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/interned_args_helper.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
@@ -142,12 +143,13 @@ void MemoryPressureListenerRegistry::SimulatePressureNotification(
 
 // static
 void MemoryPressureListenerRegistry::SimulatePressureNotificationAsync(
-    MemoryPressureLevel memory_pressure_level) {
+    MemoryPressureLevel memory_pressure_level,
+    OnceClosure on_notification_sent_callback) {
   CHECK(base::SingleThreadTaskRunner::GetMainThreadDefault()
             ->BelongsToCurrentThread());
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&SimulatePressureNotification, memory_pressure_level));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTaskAndReply(
+      FROM_HERE, BindOnce(&SimulatePressureNotification, memory_pressure_level),
+      std::move(on_notification_sent_callback));
 }
 
 }  // namespace base

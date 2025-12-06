@@ -12463,9 +12463,10 @@ TEST_P(ClientModeLayerTreeHostImplTest, OnMemoryPressure) {
   current_memory_usage =
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();
 
+  base::RunLoop run_loop;
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  base::RunLoop().RunUntilIdle();
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, run_loop.QuitClosure());
+  run_loop.Run();
 
   size_t memory_usage_after_memory_pressure =
       host_impl_->resource_pool()->GetTotalMemoryUsageForTesting();

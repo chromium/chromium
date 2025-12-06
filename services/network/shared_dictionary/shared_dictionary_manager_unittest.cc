@@ -390,8 +390,8 @@ TEST_P(SharedDictionaryManagerTest,
       CreateSharedDictionaryManager();
 
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  task_environment_.RunUntilIdle();
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
@@ -422,8 +422,8 @@ TEST_P(SharedDictionaryManagerTest,
       CreateSharedDictionaryManager();
 
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  task_environment_.RunUntilIdle();
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
@@ -468,8 +468,8 @@ TEST_P(SharedDictionaryManagerTest,
   storage.reset();
 
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_MODERATE);
-  task_environment_.RunUntilIdle();
+      base::MEMORY_PRESSURE_LEVEL_MODERATE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   // If `manager` observed moderate memory pressure, it should clear the cached
   // storage.
@@ -500,8 +500,8 @@ TEST_P(SharedDictionaryManagerTest,
   storage.reset();
 
   base::MemoryPressureListener::SimulatePressureNotificationAsync(
-      base::MEMORY_PRESSURE_LEVEL_CRITICAL);
-  task_environment_.RunUntilIdle();
+      base::MEMORY_PRESSURE_LEVEL_CRITICAL, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
 
   // If `manager` observed critical memory pressure, it should clear the cached
   // storage.

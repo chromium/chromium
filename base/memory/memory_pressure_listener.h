@@ -14,6 +14,7 @@
 #include <variant>
 
 #include "base/base_export.h"
+#include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/memory_pressure_level.h"
 #include "base/memory/scoped_refptr.h"
@@ -142,9 +143,12 @@ class BASE_EXPORT MemoryPressureListener : public CheckedObserver {
       MemoryPressureLevel memory_pressure_level);
   // Invokes `SimulatePressureNotification` asynchronously on the main thread,
   // ensuring that any pending registration tasks have completed by the time it
-  // runs.
+  // runs, then posts back `on_notification_sent_callback` to the calling
+  // sequence, allowing tests to ensure that the notification was received by
+  // the MemoryPressureListener under test.
   static void SimulatePressureNotificationAsync(
-      MemoryPressureLevel memory_pressure_level);
+      MemoryPressureLevel memory_pressure_level,
+      OnceClosure on_notification_sent_callback);
 
   virtual void OnMemoryPressure(MemoryPressureLevel memory_pressure_level) = 0;
 };

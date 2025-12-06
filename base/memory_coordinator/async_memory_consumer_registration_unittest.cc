@@ -32,15 +32,11 @@ class TestAsyncMemoryConsumer : public MemoryConsumer {
   MOCK_METHOD(void, OnUpdateMemoryLimit, (), (override));
   MOCK_METHOD(void, OnReleaseMemory, (), (override));
 
-  void ExpectOnUpdateMemoryLimitCall(RepeatingClosure quit_run_loop) {
-    EXPECT_CALL(*this, OnUpdateMemoryLimit())
-        .WillOnce(test::RunClosure(quit_run_loop));
+  void ExpectOnUpdateMemoryLimitCall() {
+    EXPECT_CALL(*this, OnUpdateMemoryLimit());
   }
 
-  void ExpectOnReleaseMemoryCall(RepeatingClosure quit_run_loop) {
-    EXPECT_CALL(*this, OnReleaseMemory())
-        .WillOnce(test::RunClosure(quit_run_loop));
-  }
+  void ExpectOnReleaseMemoryCall() { EXPECT_CALL(*this, OnReleaseMemory()); }
 
  private:
   AsyncMemoryConsumerRegistration async_memory_consumer_registration_;
@@ -65,17 +61,15 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, RegisterOnAnotherSequence) {
 
   {
     RunLoop run_loop;
-    consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnUpdateMemoryLimitCall)
-        .WithArgs(run_loop.QuitClosure());
-    registry.NotifyUpdateMemoryLimit(22);
+    consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnUpdateMemoryLimitCall);
+    registry.NotifyUpdateMemoryLimitAsync(22, run_loop.QuitClosure());
     run_loop.Run();
   }
 
   {
     RunLoop run_loop;
-    consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnReleaseMemoryCall)
-        .WithArgs(run_loop.QuitClosure());
-    registry.NotifyReleaseMemory();
+    consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnReleaseMemoryCall);
+    registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
 
